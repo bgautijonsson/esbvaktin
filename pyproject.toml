@@ -1,0 +1,41 @@
+[project]
+name = "esbvaktin"
+version = "0.1.0"
+description = "Data-driven civic information platform for Iceland's EU membership referendum"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.50",
+    "trafilatura>=2.0",
+    "psycopg[binary]>=3.2",
+    "pgvector>=0.3",
+    "openai>=1.60",
+    "python-dotenv>=1.0",
+    "pydantic>=2.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.9",
+]
+email = [
+    "requests>=2.32",
+]
+ghost = [
+    "pyjwt>=2.10",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
