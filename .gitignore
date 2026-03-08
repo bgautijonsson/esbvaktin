@@ -35,5 +35,10 @@ data/**/*.parquet
 !data/seeds/**
 data/seeds/generated/
 
-# Claude Code
+# Analysis working directories
+data/analyses/
+
+# Claude Code (keep skills)
 .claude/
+!.claude/skills/
+!.claude/skills/**

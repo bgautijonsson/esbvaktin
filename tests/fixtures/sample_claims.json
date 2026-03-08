@@ -1,0 +1,25 @@
+```json
+[
+  {
+    "claim_text": "The CFP would force Iceland to hand over control of its fishing waters",
+    "original_quote": "The Common Fisheries Policy (CFP) would force Iceland to hand over control of its fishing waters to Brussels bureaucrats",
+    "category": "fisheries",
+    "claim_type": "legal_assertion",
+    "confidence": 0.9
+  },
+  {
+    "claim_text": "The EU's fisheries policy has led to a 40% decline in European fishing fleets",
+    "original_quote": "the CFP has led to widespread overfishing and a 40% decline in European fishing fleets over the past two decades",
+    "category": "fisheries",
+    "claim_type": "statistic",
+    "confidence": 0.85
+  },
+  {
+    "claim_text": "Fishing and fish processing account for over 40% of Iceland's export earnings",
+    "original_quote": "Fishing and fish processing account for over 40% of Iceland's export earnings",
+    "category": "fisheries",
+    "claim_type": "statistic",
+    "confidence": 0.95
+  }
+]
+```

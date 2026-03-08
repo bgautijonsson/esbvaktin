@@ -1,0 +1,23 @@
+```json
+{
+  "omissions": [
+    {
+      "topic": "fisheries",
+      "description": "Article does not mention that Iceland's ITQ system has been criticised for concentrating fishing rights in fewer hands, or that some coastal communities have already lost quota allocations under the current system.",
+      "relevant_evidence": ["FISH-DATA-005"]
+    },
+    {
+      "topic": "trade",
+      "description": "Article omits the fact that while EEA provides market access for goods, it does not cover fisheries products equally, and Iceland faces tariffs on some processed fish exports to the EU.",
+      "relevant_evidence": ["TRADE-DATA-001", "TRADE-DATA-003"]
+    },
+    {
+      "topic": "eea_eu_law",
+      "description": "No mention of Iceland's obligation to implement EU directives through the EEA Agreement without having a vote in their formulation — the 'fax democracy' criticism.",
+      "relevant_evidence": ["EEA-LEGAL-002"]
+    }
+  ],
+  "framing_assessment": "leans_anti_eu",
+  "overall_completeness": 0.35
+}
+```

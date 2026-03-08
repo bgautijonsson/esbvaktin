@@ -1,0 +1,49 @@
+```json
+[
+  {
+    "claim": {
+      "claim_text": "The CFP would force Iceland to hand over control of its fishing waters",
+      "original_quote": "The Common Fisheries Policy (CFP) would force Iceland to hand over control of its fishing waters to Brussels bureaucrats",
+      "category": "fisheries",
+      "claim_type": "legal_assertion",
+      "confidence": 0.9
+    },
+    "verdict": "partially_supported",
+    "explanation": "The CFP does require member states to participate in a common fisheries management system, but the characterisation of 'handing over control' is an oversimplification. Accession negotiations could include transitional arrangements or special provisions, as evidenced by precedents from other accessions.",
+    "supporting_evidence": ["FISH-LEGAL-001"],
+    "contradicting_evidence": ["FISH-LEGAL-003"],
+    "missing_context": "Modern EU accession negotiations allow for sector-specific protections, and Iceland's negotiating position would be unusually strong given the significance of its fisheries.",
+    "confidence": 0.8
+  },
+  {
+    "claim": {
+      "claim_text": "The EU's fisheries policy has led to a 40% decline in European fishing fleets",
+      "original_quote": "the CFP has led to widespread overfishing and a 40% decline in European fishing fleets over the past two decades",
+      "category": "fisheries",
+      "claim_type": "statistic",
+      "confidence": 0.85
+    },
+    "verdict": "misleading",
+    "explanation": "While EU fishing fleet capacity has indeed declined significantly, attributing this solely to the CFP is misleading. Fleet reduction was partly a deliberate policy goal to address overcapacity and improve sustainability. Recent CFP reforms have led to stock recovery in several regions.",
+    "supporting_evidence": ["FISH-DATA-001"],
+    "contradicting_evidence": [],
+    "missing_context": "The fleet reduction was an intentional policy measure to combat overfishing, not an unintended consequence.",
+    "confidence": 0.75
+  },
+  {
+    "claim": {
+      "claim_text": "Fishing and fish processing account for over 40% of Iceland's export earnings",
+      "original_quote": "Fishing and fish processing account for over 40% of Iceland's export earnings",
+      "category": "fisheries",
+      "claim_type": "statistic",
+      "confidence": 0.95
+    },
+    "verdict": "unsupported",
+    "explanation": "This figure is outdated. While fisheries were historically dominant, tourism has overtaken fishing as Iceland's largest export sector. Current estimates place fisheries at approximately 25-30% of export earnings, though it remains a vital sector.",
+    "supporting_evidence": [],
+    "contradicting_evidence": ["FISH-DATA-003"],
+    "missing_context": null,
+    "confidence": 0.85
+  }
+]
+```
