@@ -1,0 +1,55 @@
+[
+  {
+    "evidence_id": "SOV-LEGAL-007",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "common_foreign_security_policy",
+    "statement": "EU member states participate in the Common Foreign and Security Policy (CFSP) under Title V of the Treaty on European Union. CFSP decisions require unanimity in the European Council and Council, giving every member state an effective veto on foreign policy positions. However, member states are expected to support EU common positions and sanctions regimes. Iceland currently aligns voluntarily with approximately 95% of EU CFSP declarations through the EEA political dialogue, but membership would make such alignment a treaty obligation rather than a political choice.",
+    "source_name": "Treaty on European Union, Title V (Articles 21–46)",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A12016M042",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "While unanimity protects national sovereignty on CFSP matters, there is significant political pressure to maintain consensus. Small states rarely break consensus alone. Iceland's high voluntary alignment rate suggests limited practical change, but the legal obligation is qualitatively different from voluntary alignment.",
+    "related_entries": ["SOV-LEGAL-008", "SOV-LEGAL-006"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-008",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "defence_nato_relationship",
+    "statement": "The EU's Common Security and Defence Policy (CSDP) operates alongside but does not replace NATO. Article 42(2) TEU states that EU defence policy 'shall not prejudice the specific character of the security and defence policy' of NATO members. Iceland is a founding NATO member (1949) but has no standing military, relying instead on the Icelandic Coast Guard and bilateral defence agreements. EU membership would involve participation in CSDP missions and the European Defence Agency, but would not require establishing armed forces. Six EU members (Austria, Cyprus, Finland, Ireland, Malta, Sweden — though Finland and Sweden joined NATO in 2023–2024) have historically maintained varying forms of military non-alignment.",
+    "source_name": "Treaty on European Union, Article 42; NATO Treaty, Article 5",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A12016M042",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The EU's defence ambitions are evolving rapidly following Russia's invasion of Ukraine in 2022. The European Commission proposed a €150 billion defence spending plan in March 2025. Iceland's lack of a military is unique among NATO members and would create an unusual position within CSDP structures.",
+    "related_entries": ["SOV-LEGAL-007", "PREC-HIST-005"]
+  },
+  {
+    "evidence_id": "SOV-DATA-001",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "arctic_northern_dimension",
+    "statement": "Iceland is a member of the Arctic Council and chairs the Council of Europe (distinct from the EU). The EU has sought observer status in the Arctic Council since 2008 but has been repeatedly blocked, most recently by Russia. Three EU member states (Denmark/Greenland, Finland, Sweden) are Arctic Council members. The EU's Arctic policy, updated in 2021, emphasises climate change, sustainable development, and international cooperation. EU membership would not diminish Iceland's own Arctic Council seat but would add an EU coordination layer to Iceland's Arctic policy positions.",
+    "source_name": "European Commission — EU Arctic Policy, Joint Communication JOIN(2021) 27",
+    "source_url": "https://www.eeas.europa.eu/eeas/eu-arctic-policy_en",
+    "source_date": "2021-10-13",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "Arctic geopolitics have shifted significantly since Russia's suspension from Arctic Council cooperation in 2022. Iceland's strategic position in the North Atlantic (GIUK gap) has gained renewed military significance. EU membership could strengthen or complicate Iceland's independent Arctic voice depending on alignment of interests.",
+    "related_entries": ["SOV-LEGAL-007"]
+  },
+  {
+    "evidence_id": "SOV-DATA-002",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "constitutional_amendment",
+    "statement": "Iceland's constitution (Stjórnarskrá lýðveldisins Íslands) contains no explicit provision on transfer of sovereignty to international organisations. Legal scholars have argued that EU accession would require a constitutional amendment under Article 79, which mandates that amendments be passed by the Alþingi, followed by dissolution, a general election, and passage again by the new Alþingi. The 2026 referendum is advisory (ráðgefandi þjóðaratkvæðagreiðsla), not binding, as the constitution does not provide for binding referendums on policy questions (Article 26 covers only presidential referral of legislation).",
+    "source_name": "Stjórnarskrá lýðveldisins Íslands, Articles 26 and 79",
+    "source_url": "https://www.althingi.is/lagas/nv/1944033.html",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "There is ongoing legal debate about whether a new constitution (which has been discussed since 2011) should include an explicit sovereignty-transfer clause. The advisory nature of the referendum means the Alþingi retains the final decision regardless of outcome.",
+    "related_entries": ["SOV-LEGAL-001", "PREC-HIST-004"]
+  }
+]

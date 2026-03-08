@@ -1,0 +1,72 @@
+[
+  {
+    "evidence_id": "LABOUR-DATA-001",
+    "domain": "economic",
+    "topic": "labour",
+    "subtopic": "free_movement_under_eea",
+    "statement": "Iceland already participates in the free movement of workers through the EEA Agreement, which has been in force since 1994. EEA nationals have the right to live and work in Iceland without work permits, and Icelanders have reciprocal rights across the EU/EEA. EU membership would not create new free movement rights beyond what already exists under the EEA framework. However, EU membership would give Iceland voting rights in shaping the rules governing free movement, whereas under the EEA Iceland implements EU single market legislation without a formal vote in the Council or European Parliament.",
+    "source_name": "EFTA Surveillance Authority — EEA Agreement provisions; Útlendingastofnun (Directorate of Immigration)",
+    "source_url": null,
+    "source_date": "2025-06-01",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "While the legal framework is largely equivalent, EU membership could affect practical implementation details, such as coordination of social security systems and mutual recognition of professional qualifications, where EEA participation sometimes lags behind intra-EU arrangements.",
+    "related_entries": ["LABOUR-DATA-002", "LABOUR-DATA-005"]
+  },
+  {
+    "evidence_id": "LABOUR-DATA-002",
+    "domain": "economic",
+    "topic": "labour",
+    "subtopic": "immigration_patterns_since_eea",
+    "statement": "Since EEA membership took effect in 1994, Iceland's foreign-born population has grown substantially, from approximately 2% of the total population to roughly 18% by 2025 (~70,000 people out of ~390,000). The largest immigrant groups are from Poland (~20,000), Lithuania (~5,000), and the Philippines (~4,000). EEA/EU nationals account for approximately 60% of all foreign residents. Immigration accelerated sharply after 2004 EU enlargement opened labour markets to new member states, and again during Iceland's tourism boom (2015–2019).",
+    "source_name": "Hagstofa Íslands — Population by citizenship and country of birth",
+    "source_url": "https://px.hagstofa.is/",
+    "source_date": "2025-12-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Immigration data captures registered residents, not short-term workers who may stay for seasonal employment. The Filipino community largely immigrated through bilateral work permit arrangements outside the EEA framework. Net migration fluctuates significantly with economic cycles — Iceland experienced net emigration during 2009–2011.",
+    "related_entries": ["LABOUR-DATA-001", "LABOUR-DATA-003"]
+  },
+  {
+    "evidence_id": "LABOUR-DATA-003",
+    "domain": "economic",
+    "topic": "labour",
+    "subtopic": "wage_comparisons",
+    "statement": "Iceland has among the highest average wages in Europe. Adjusted for purchasing power parity, average gross wages in Iceland are approximately 15–20% above the EU-27 average and comparable to Denmark and Luxembourg. The statutory minimum effective wage, set through collective agreements rather than legislation, was approximately ISK 425,000 per month (~EUR 2,800) in early 2026. However, the high cost of living — particularly housing, food, and services — erodes much of the wage premium. Real wage growth has been modest since 2020 due to persistent inflation outpacing nominal wage increases.",
+    "source_name": "Hagstofa Íslands — Wages and income; Eurostat — Structure of Earnings Survey",
+    "source_url": null,
+    "source_date": "2025-12-01",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Cross-country wage comparisons are sensitive to PPP adjustments and exchange rate fluctuations. Iceland's króna volatility makes comparisons in euro terms unreliable over short periods. The collective bargaining system produces different wage structures than countries with statutory minimum wages.",
+    "related_entries": ["LABOUR-DATA-004", "LABOUR-DATA-005"]
+  },
+  {
+    "evidence_id": "LABOUR-DATA-004",
+    "domain": "economic",
+    "topic": "labour",
+    "subtopic": "unemployment_comparison",
+    "statement": "Iceland consistently has one of the lowest unemployment rates in Europe. The unemployment rate averaged approximately 3.5% over 2015–2025, compared to the EU-27 average of approximately 6.5% over the same period. Even during the 2008 crisis, Iceland's unemployment peaked at around 8% (early 2010) and recovered to pre-crisis levels within five years — faster than most EU member states. Youth unemployment (15–24) in Iceland is typically 7–9%, compared to the EU-27 average of approximately 14% and rates exceeding 25% in southern European countries.",
+    "source_name": "Hagstofa Íslands — Labour Force Survey; Eurostat — Unemployment statistics",
+    "source_url": null,
+    "source_date": "2025-12-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Iceland's small labour market and high labour force participation (both genders ~80%) make direct comparison with larger EU economies imperfect. The low unemployment partly reflects labour market flexibility and the ability of the króna to depreciate during downturns, boosting export competitiveness. Euro adoption could reduce this adjustment mechanism.",
+    "related_entries": ["LABOUR-DATA-003", "CURR-DATA-001"]
+  },
+  {
+    "evidence_id": "LABOUR-DATA-005",
+    "domain": "economic",
+    "topic": "labour",
+    "subtopic": "labour_regulation_differences",
+    "statement": "Iceland's labour market regulation differs from the EU norm in several key respects. Union density is approximately 90% (vs EU average ~23%), and wages are set primarily through centralised collective agreements between ASÍ and SA rather than through legislation or sectoral bargaining. There is no statutory minimum wage — the collective agreement minimum functions as the de facto floor. Iceland has already transposed most EU employment directives through the EEA, including working time, equal treatment, and posted workers rules. Key areas where EU membership could bring additional regulation include works councils (European Works Council Directive has limited EEA application), co-determination, and the proposed EU minimum wage directive.",
+    "source_name": "ASÍ — Collective agreements overview; European Commission — Employment acquis",
+    "source_url": null,
+    "source_date": "2025-06-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The EU Minimum Wage Directive (2022/2041) explicitly accommodates Nordic collective bargaining models and does not require a statutory minimum wage where collective agreement coverage exceeds 80%. Iceland's system would likely be protected under this framework. However, future EU employment legislation could be less accommodating. The Nordic countries within the EU (Denmark, Sweden, Finland) have negotiated safeguards for their labour market models that Iceland could reference.",
+    "related_entries": ["LABOUR-DATA-001", "LABOUR-DATA-003", "POL-DATA-004"]
+  }
+]

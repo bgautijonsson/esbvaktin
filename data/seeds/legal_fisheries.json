@@ -1,0 +1,66 @@
+[
+  {
+    "evidence_id": "FISH-LEGAL-001",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "cfp_rules",
+    "statement": "The EU Common Fisheries Policy (CFP), established by Regulation 1380/2013, sets total allowable catches (TACs) for EU waters. Quotas are allocated among member states based on the principle of 'relative stability', using historical catch records (primarily from 1973–1978) as the baseline for permanent national shares.",
+    "source_name": "EU Regulation 1380/2013 of the European Parliament and of the Council",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A32013R1380",
+    "source_date": "2013-12-11",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The relative stability principle means historical catches determine permanent shares. As a new member, Iceland's share would need to be negotiated, potentially based on its historical catches in its own EEZ. This would be a central negotiation point.",
+    "related_entries": ["FISH-LEGAL-002", "FISH-LEGAL-003"]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-002",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "exclusive_economic_zone",
+    "statement": "Iceland's Exclusive Economic Zone (EEZ) covers approximately 758,000 km², one of the largest in the North Atlantic. Under UNCLOS and Icelandic law, Iceland has sovereign rights over fisheries resources within this zone. EU membership would bring Iceland's EEZ under the Common Fisheries Policy, meaning access and quota decisions would involve all EU member states.",
+    "source_name": "Icelandic Act on the Exclusive Economic Zone No. 41/1979",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The extent to which Iceland's EEZ resources would be 'pooled' under the CFP is a negotiation question. Accession treaties can include transitional arrangements and specific provisions for fisheries.",
+    "related_entries": ["FISH-LEGAL-001", "FISH-LEGAL-003"]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-003",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "itq_system",
+    "statement": "Iceland operates an Individual Transferable Quota (ITQ) system established in 1984 and made permanent in 1990. Under this system, fishing quotas are allocated as permanent shares of the total allowable catch (TAC) that can be bought, sold, and leased. The system has been credited with reducing overcapacity but criticised for concentrating quota ownership.",
+    "source_name": "Icelandic Fisheries Management Act No. 116/2006",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The ITQ system is politically contentious in Iceland. Critics argue it has created a 'quota aristocracy' with concentrated ownership. Supporters argue it has made the fleet economically efficient. This domestic debate intersects with the EU question.",
+    "related_entries": ["FISH-LEGAL-001"]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-004",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "norway_fisheries_model",
+    "statement": "Norway, as a non-EU EEA member, retains full sovereign control over its fisheries. Norway negotiates bilateral fisheries agreements with the EU annually, covering shared stocks in the North Sea and Norwegian Sea. This arrangement allows Norway to manage its fisheries independently while cooperating on shared stocks.",
+    "source_name": "Norwegian Ministry of Trade, Industry and Fisheries — Bilateral fisheries agreements",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Norway's fisheries situation differs from Iceland's in important ways: Norway shares many stocks with the EU (North Sea), while Iceland's key stocks (cod, haddock, capelin) are primarily within its own EEZ.",
+    "related_entries": ["FISH-LEGAL-001", "PREC-HIST-001"]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-005",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "uk_eu_fisheries",
+    "statement": "Under the UK-EU Trade and Cooperation Agreement (2020), the UK regained the status of an independent coastal state with sovereign rights over its EEZ. The agreement included a 5.5-year transition period (2021–2026) with EU fishing access gradually reduced by 25%. Post-transition, annual negotiations determine mutual access and quota sharing.",
+    "source_name": "UK-EU Trade and Cooperation Agreement, Part Two, Heading Five",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A22021A0430%2801%29",
+    "source_date": "2020-12-30",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The UK fisheries outcome post-Brexit has been controversial, with many UK fishers arguing the 25% reduction in EU access was insufficient. This provides a cautionary precedent for both sides of Iceland's debate.",
+    "related_entries": ["PREC-HIST-003"]
+  }
+]

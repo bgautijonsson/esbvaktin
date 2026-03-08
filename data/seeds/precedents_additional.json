@@ -1,0 +1,42 @@
+[
+  {
+    "evidence_id": "PREC-HIST-008",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "greenland_eec_departure",
+    "statement": "Greenland, an autonomous territory of Denmark, is the only territory to have left the European Community. Following a 1982 referendum (52% in favour of leaving), Greenland withdrew from the EEC on 1 February 1985 under a special treaty amendment. The primary motivation was fisheries policy — Greenland's population of ~56,000 depended heavily on fishing, and the EEC's Common Fisheries Policy was seen as threatening local control. Greenland retained an Overseas Countries and Territories (OCT) association with the EU and negotiated a fisheries partnership agreement granting EU vessels access to Greenlandic waters in exchange for financial compensation.",
+    "source_name": "Treaty amending, with regard to Greenland, the Treaties establishing the European Communities (1984)",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A11985D",
+    "source_date": "1985-02-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Greenland's departure predated the Maastricht Treaty and the modern EU. It left the EEC, not the EU as it exists today. Greenland is an autonomous territory, not a sovereign state, making the precedent imperfect. However, the fisheries-driven motivation is directly relevant to Icelandic concerns. Greenland's OCT status provides a model of partial association.",
+    "related_entries": ["SOV-LEGAL-001", "PREC-HIST-003"]
+  },
+  {
+    "evidence_id": "PREC-HIST-009",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "finland_accession",
+    "statement": "Finland joined the EU on 1 January 1995 alongside Sweden and Austria. The Finnish accession referendum on 16 October 1994 passed with 56.9% in favour. Finland, a Nordic country with a population of 5.6 million, shared several characteristics with Iceland: a strong welfare state, resource-dependent economy (forestry rather than fisheries), and concern about sovereignty. Finland adopted the euro in 1999 and joined the Eurozone in 2002. Finland's post-accession experience included significant agricultural restructuring, increased foreign investment, and integration into European supply chains. Finland joined NATO in April 2023 following Russia's invasion of Ukraine.",
+    "source_name": "European Commission — Finland accession documentation; Statistics Finland",
+    "source_url": "https://ec.europa.eu/neighbourhood-enlargement/countries/detailed-country-information/finland_en",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Finland's geopolitical situation (1,340 km border with Russia) was a major driver of EU accession in a way that does not directly apply to Iceland. Finland's economy is more diversified and industrialised than Iceland's. Finland's early euro adoption removed exchange rate flexibility, which some Finnish economists have retrospectively questioned during the 2008–2012 crisis period.",
+    "related_entries": ["PREC-HIST-001", "SOV-LEGAL-004"]
+  },
+  {
+    "evidence_id": "PREC-HIST-010",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "denmark_opt_outs",
+    "statement": "Denmark initially rejected the Maastricht Treaty by referendum in June 1992 (50.7% No), then approved it in May 1993 (56.7% Yes) after securing four opt-outs under the Edinburgh Agreement: from the euro, defence, justice and home affairs, and EU citizenship. Denmark held a further referendum in September 2000 on joining the euro, which was rejected (53.2% No). In June 2022, Denmark voted to abolish its defence opt-out (66.9% Yes), motivated by Russia's invasion of Ukraine. Denmark remains outside the euro. As a Nordic EU member with opt-outs, Denmark is often cited as a model for how Iceland might manage EU membership while retaining policy flexibility.",
+    "source_name": "Danish Ministry of Foreign Affairs; Edinburgh Agreement 1992; European Council conclusions",
+    "source_url": null,
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Denmark's opt-outs were negotiated in 1992 under exceptional circumstances (treaty ratification crisis). The EU has been reluctant to grant new opt-outs to accession states since the 2004 enlargement. Denmark's experience shows opt-outs can be durable but also that geopolitical shifts (as with the 2022 defence opt-out removal) can change the calculus over time.",
+    "related_entries": ["SOV-LEGAL-006", "SOV-LEGAL-004", "SOV-LEGAL-008"]
+  }
+]

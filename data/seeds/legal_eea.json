@@ -1,0 +1,66 @@
+[
+  {
+    "evidence_id": "EEA-LEGAL-001",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "law_adoption",
+    "statement": "As of 2025, approximately 70% of EU internal market legislation has been incorporated into Icelandic law through the EEA Agreement. This covers free movement of goods, services, capital, and persons, but excludes fisheries, agriculture, and justice/home affairs.",
+    "source_name": "EFTA Surveillance Authority — Internal Market Scoreboard",
+    "source_url": "https://www.eftasurv.int/internal-market/eea-efta-internal-market-scoreboard",
+    "source_date": "2025-06-01",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "The exact percentage depends on the counting methodology. Some estimates range from 60% to 75%. Agriculture, fisheries, and justice/home affairs are largely excluded from the EEA.",
+    "related_entries": ["EEA-LEGAL-002", "EEA-LEGAL-003"]
+  },
+  {
+    "evidence_id": "EEA-LEGAL-002",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "democratic_deficit",
+    "statement": "Under the EEA Agreement, EFTA states (Iceland, Norway, Liechtenstein) must adopt EU internal market legislation but have no voting rights in the EU Council or European Parliament. They participate in 'decision-shaping' through expert committees and consultation, but not 'decision-making'.",
+    "source_name": "EEA Agreement, Articles 99–101",
+    "source_url": "https://www.efta.int/eea/eea-agreement",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "EFTA states do participate in EU expert committees and working groups, giving some influence at the drafting stage. The EFTA Surveillance Authority and EFTA Court mirror EU institutions for enforcement.",
+    "related_entries": ["EEA-LEGAL-001", "EEA-LEGAL-003"]
+  },
+  {
+    "evidence_id": "EEA-LEGAL-003",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "eea_scope",
+    "statement": "The EEA Agreement covers the EU's four freedoms (goods, services, capital, persons) and flanking policies (competition, state aid, public procurement, company law, environment, social policy). It explicitly excludes the Common Agricultural Policy (CAP), Common Fisheries Policy (CFP), customs union, common trade policy, common foreign and security policy, and justice/home affairs.",
+    "source_name": "EEA Agreement, Article 1 and Protocol 47",
+    "source_url": "https://www.efta.int/eea/eea-agreement",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": null,
+    "related_entries": ["EEA-LEGAL-001", "EEA-LEGAL-002"]
+  },
+  {
+    "evidence_id": "EEA-LEGAL-004",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "schengen",
+    "statement": "Iceland has been a member of the Schengen Area since 2001 under a special association agreement, despite not being an EU member. This grants passport-free travel across 27 European countries. EU membership would not change Iceland's Schengen status but would change the legal basis from association to full membership.",
+    "source_name": "Schengen Association Agreement with Iceland and Norway (2001)",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": null,
+    "related_entries": []
+  },
+  {
+    "evidence_id": "EEA-LEGAL-005",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "efta_court",
+    "statement": "Disputes under the EEA Agreement for EFTA states are adjudicated by the EFTA Court (based in Luxembourg), not the European Court of Justice (ECJ). The EFTA Court is required to follow ECJ case law for provisions that are identical in substance to EU law, but is a separate judicial body. EU membership would replace EFTA Court jurisdiction with direct ECJ jurisdiction.",
+    "source_name": "Agreement establishing the EFTA Surveillance Authority and the EFTA Court, Article 3",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "In practice, the EFTA Court has occasionally diverged from ECJ case law, notably in cases involving fundamental rights.",
+    "related_entries": ["EEA-LEGAL-002"]
+  }
+]

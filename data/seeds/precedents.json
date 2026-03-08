@@ -1,0 +1,88 @@
+[
+  {
+    "evidence_id": "PREC-HIST-001",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "norway_referendums",
+    "statement": "Norway held EU membership referendums in 1972 (on EEC membership) and 1994 (on EU membership), both resulting in narrow 'No' votes: 53.5% No in 1972 and 52.2% No in 1994. Key issues included fisheries, agriculture, national sovereignty, and regional policy. Urban areas voted Yes while rural and northern areas voted No.",
+    "source_name": "Norwegian Centre for Research Data — Election Archive",
+    "source_type": "academic_paper",
+    "confidence": "high",
+    "caveats": "Despite rejecting EU membership twice, Norway joined the EEA in 1994, creating the 'best of both worlds' or 'worst of both worlds' arrangement depending on perspective.",
+    "related_entries": ["PREC-HIST-002"]
+  },
+  {
+    "evidence_id": "PREC-HIST-002",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "norway_post_referendum",
+    "statement": "After Norway's 1994 referendum, public opinion on EU membership has remained stable with a consistent majority against joining. As of 2025, polls show approximately 70–75% of Norwegians oppose EU membership. Norway's economic performance outside the EU has been strong, largely driven by petroleum resources.",
+    "source_name": "Sentio Research / Nationen polling series",
+    "source_type": "academic_paper",
+    "confidence": "medium",
+    "caveats": "Norway's economic situation is not directly comparable to Iceland's due to petroleum wealth (Government Pension Fund Global worth ~$1.7 trillion). Norway's success outside the EU does not necessarily predict Iceland's trajectory.",
+    "related_entries": ["PREC-HIST-001"]
+  },
+  {
+    "evidence_id": "PREC-HIST-003",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "brexit",
+    "statement": "The UK voted to leave the EU in June 2016 (51.9% Leave) and formally departed on 31 January 2020. The UK Office for Budget Responsibility estimated in 2023 that Brexit would reduce long-run UK GDP by approximately 4% compared to remaining in the EU, primarily through reduced trade intensity.",
+    "source_name": "UK Office for Budget Responsibility — Fiscal Risks and Sustainability Report 2023",
+    "source_url": "https://obr.uk/frs/fiscal-risks-and-sustainability-july-2023/",
+    "source_date": "2023-07-13",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Brexit's full economic impact is difficult to isolate from COVID-19 effects and other factors. The UK's departure from a large existing trading bloc is a fundamentally different situation from Iceland potentially joining the EU.",
+    "related_entries": ["SOV-LEGAL-001", "FISH-LEGAL-005"]
+  },
+  {
+    "evidence_id": "PREC-HIST-004",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "iceland_negotiations",
+    "statement": "Iceland opened EU accession negotiations in July 2010 under the Social Democrat-led government. Of 33 negotiation chapters, 27 were screened, 11 were formally opened, and none were provisionally closed. The most contentious chapter (13: Fisheries) was never opened. The centre-right government elected in 2013 froze negotiations, and Iceland formally withdrew its application in March 2015.",
+    "source_name": "European Commission — Iceland accession progress reports",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The 2010–2015 negotiations provide a useful starting point, but conditions have changed significantly since then (post-COVID economy, geopolitical shifts, EU reforms).",
+    "related_entries": ["PREC-HIST-005"]
+  },
+  {
+    "evidence_id": "PREC-HIST-005",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "iceland_2009_context",
+    "statement": "Iceland's 2009 EU membership application was submitted in the aftermath of the 2008 financial crisis, when the collapse of Iceland's three largest banks led to a severe economic crisis. Public support for EU membership peaked at approximately 60% in early 2009 but declined as the economy recovered. The application was widely seen as a crisis-driven decision.",
+    "source_name": "Capacent Gallup / Social Science Research Institute, University of Iceland",
+    "source_type": "academic_paper",
+    "confidence": "high",
+    "caveats": "The current referendum context (2026) is different: it is not crisis-driven, and geopolitical factors (Russia-Ukraine war, Arctic security) play a more prominent role than in 2009.",
+    "related_entries": ["PREC-HIST-004"]
+  },
+  {
+    "evidence_id": "PREC-HIST-006",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "croatia_accession",
+    "statement": "Croatia joined the EU on 1 July 2013, the most recent country to accede. Croatia's accession negotiations took over 8 years (2005–2011), covering all 35 chapters. Croatia was required to undertake significant judicial and administrative reforms. No significant opt-outs were granted.",
+    "source_name": "European Commission — Croatia accession monitoring reports",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Croatia's accession process is instructive but not directly comparable: Croatia had far more chapters requiring reform (judiciary, anti-corruption) than Iceland would, given Iceland's existing EEA implementation.",
+    "related_entries": ["PREC-HIST-004"]
+  },
+  {
+    "evidence_id": "PREC-HIST-007",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "swiss_bilaterals",
+    "statement": "Switzerland's relationship with the EU is governed by over 120 bilateral agreements negotiated between 1999 and 2024. After rejecting EEA membership in 1992 (50.3% No), Switzerland chose a bilateral path. The EU has increasingly criticised this approach as cherry-picking and demanded institutional framework agreements to govern the relationship.",
+    "source_name": "Swiss Federal Council — European policy documentation",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The Swiss bilateral model is sometimes cited as an alternative to EU membership, but the EU has signalled it will not extend this model to other countries. Switzerland's situation is also complicated by ongoing institutional framework negotiations.",
+    "related_entries": ["EEA-LEGAL-003"]
+  }
+]

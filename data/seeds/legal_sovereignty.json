@@ -1,0 +1,76 @@
+[
+  {
+    "evidence_id": "SOV-LEGAL-001",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_withdrawal",
+    "statement": "Article 50 of the Treaty on European Union (TEU) provides that any member state may decide to withdraw from the Union in accordance with its own constitutional requirements. The withdrawal process involves a two-year negotiation period, extendable by unanimous agreement of the European Council.",
+    "source_name": "Treaty on European Union, Article 50",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A12016M050",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "While withdrawal is legally possible, the Brexit process (2016–2020) demonstrated significant political, legal, and economic complexity. The UK's withdrawal agreement negotiations took over 4 years from referendum to final departure.",
+    "related_entries": ["PREC-HIST-003"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-002",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "voting_weight",
+    "statement": "In the EU Council, qualified majority voting (QMV) requires 55% of member states representing 65% of the EU population. Iceland, with approximately 390,000 inhabitants, would have the smallest population of any EU member state. For comparison, Malta (540,000) currently holds the smallest population share. Iceland would have minimal blocking power alone but could join coalitions of small states.",
+    "source_name": "Treaty on European Union, Article 16(4)",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Despite small voting weight, every member state has one Commissioner and one seat in the Council. Small states can exert outsized influence through coalition-building, as Luxembourg and Malta have demonstrated.",
+    "related_entries": ["SOV-LEGAL-003"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-003",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_parliament",
+    "statement": "Under the EU Treaties, Iceland would be entitled to a minimum of 6 seats in the European Parliament (the Treaty minimum for any member state). By comparison, Malta has 6 seats, Luxembourg has 6 seats, and Cyprus has 6 seats. The European Parliament has 720 seats total.",
+    "source_name": "Treaty on European Union, Article 14(2)",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The exact number of seats would be determined by the European Council decision on Parliament composition, but the Treaty guarantees a minimum of 6.",
+    "related_entries": ["SOV-LEGAL-002"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-004",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "euro_adoption",
+    "statement": "New EU member states are legally required to adopt the euro upon meeting the convergence criteria (Maastricht criteria): inflation rate within 1.5 percentage points of the three best-performing member states, government deficit below 3% of GDP, government debt below 60% of GDP, exchange rate stability (ERM II for at least 2 years), and long-term interest rate within 2 percentage points of the three best-performing member states.",
+    "source_name": "Treaty on the Functioning of the European Union, Article 140",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "While euro adoption is mandatory in principle, there is no enforcement mechanism or deadline. Sweden has avoided euro adoption since 2003 by deliberately not joining ERM II. Iceland could potentially follow a similar approach.",
+    "related_entries": ["SOV-LEGAL-005"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-005",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "monetary_policy",
+    "statement": "Adopting the euro would transfer monetary policy authority from Seðlabanki Íslands (Central Bank of Iceland) to the European Central Bank (ECB). Iceland would lose the ability to set its own interest rates and manage its exchange rate independently. The Icelandic króna's exchange rate has historically been highly volatile, depreciating sharply during economic crises (by approximately 50% during the 2008 financial crisis).",
+    "source_name": "Central Bank of Iceland — Monetary policy framework",
+    "source_url": "https://www.cb.is/monetary-policy/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Some economists argue that for a small, open economy like Iceland, the benefits of exchange rate stability under the euro could outweigh the loss of independent monetary policy. Others argue the króna's flexibility provides a crucial adjustment mechanism.",
+    "related_entries": ["SOV-LEGAL-004"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-006",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "accession_opt_outs",
+    "statement": "Denmark negotiated opt-outs from the euro, defence, justice/home affairs, and EU citizenship provisions in the 1992 Edinburgh Agreement. Ireland has opt-outs from Schengen and justice/home affairs. Poland and Czech Republic have protocols on the Charter of Fundamental Rights. Whether Iceland could negotiate similar opt-outs during accession is a political question with no guaranteed outcome.",
+    "source_name": "Treaty protocols — Edinburgh Agreement, Lisbon Treaty protocols",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The EU's general position since the 2004 enlargement has been to grant fewer opt-outs to new member states. Croatia (2013) received no significant opt-outs. However, Iceland's unique position (especially on fisheries) could be a basis for negotiation.",
+    "related_entries": ["SOV-LEGAL-001", "SOV-LEGAL-004"]
+  }
+]

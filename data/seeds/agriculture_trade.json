@@ -1,0 +1,77 @@
+[
+  {
+    "evidence_id": "AGRI-DATA-001",
+    "domain": "economic",
+    "topic": "agriculture",
+    "subtopic": "food_prices",
+    "statement": "Food and non-alcoholic beverage prices in Iceland are approximately 50–70% higher than the EU-27 average, according to Eurostat comparative price level indices (2024). This makes Iceland one of the most expensive countries in Europe for food.",
+    "source_name": "Eurostat — Comparative price levels (prc_ppp_ind)",
+    "source_date": "2024-06-01",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "High food prices reflect multiple factors: transport costs, small market, agricultural protection, import tariffs, and VAT. EU membership alone would not eliminate all price differences — Norway, also outside the EU's CAP, has similarly high food prices.",
+    "related_entries": ["AGRI-DATA-002", "AGRI-LEGAL-001"]
+  },
+  {
+    "evidence_id": "AGRI-DATA-002",
+    "domain": "economic",
+    "topic": "agriculture",
+    "subtopic": "agricultural_protection",
+    "statement": "Iceland applies high import tariffs on many agricultural products: up to 80% on dairy products, 55% on meat, and 30–55% on various processed foods. These tariffs protect domestic agriculture but contribute to high consumer food prices.",
+    "source_name": "Icelandic customs tariff schedule — Tollskrá",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Agricultural tariffs are politically sensitive. The farming sector employs a small share of the workforce (~3%) but has significant cultural and political importance, particularly in rural areas.",
+    "related_entries": ["AGRI-DATA-001", "AGRI-LEGAL-001"]
+  },
+  {
+    "evidence_id": "AGRI-LEGAL-001",
+    "domain": "legal",
+    "topic": "agriculture",
+    "subtopic": "cap_overview",
+    "statement": "The EU Common Agricultural Policy (CAP) provides direct payments to farmers, rural development support, and market intervention measures. The CAP budget for 2021–2027 is approximately €387 billion, making it the largest single item in the EU budget (~31%). Iceland's agricultural sector would be eligible for CAP support upon EU membership.",
+    "source_name": "European Commission — CAP at a glance",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The net effect of CAP on Icelandic farmers would depend on how current Icelandic subsidies compare to CAP payments. Icelandic agriculture is heavily subsidised domestically, so the transition could be complex.",
+    "related_entries": ["AGRI-DATA-001", "AGRI-DATA-002"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-001",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "eu_trade_share",
+    "statement": "The European Union is Iceland's largest trading partner. In 2024, approximately 50% of Iceland's goods exports and 60% of goods imports by value were with EU member states. Marine products (primarily fish) constitute the largest single export category to the EU.",
+    "source_name": "Hagstofa Íslands — External trade statistics",
+    "source_url": "https://px.hagstofa.is/pxen/pxweb/en/Efnahagur/Efnahagur__utanrikisverslun/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Trade shares fluctuate with commodity prices and exchange rates. The UK's departure from the EU in 2020 shifted some trade flows.",
+    "related_entries": ["TRADE-DATA-002"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-002",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "eea_market_access",
+    "statement": "Through the EEA Agreement, Iceland already has tariff-free access to the EU single market for most goods (excluding agricultural and fishery products). EU membership would extend this to full customs union membership, eliminating remaining tariffs and customs procedures but requiring Iceland to adopt the EU's common external tariff.",
+    "source_name": "EEA Agreement — Protocol 3 on trade in processed agricultural products",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The EEA already provides extensive market access. The incremental trade benefit of full EU membership would primarily come from agricultural/fisheries trade liberalisation and elimination of rules-of-origin requirements.",
+    "related_entries": ["TRADE-DATA-001", "EEA-LEGAL-003"]
+  },
+  {
+    "evidence_id": "TRADE-COMP-001",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "budget_contribution",
+    "statement": "Iceland currently contributes to the EEA/EFTA Grants mechanism, which provides approximately €180 million per year (shared among Iceland, Norway, and Liechtenstein) to reduce social and economic disparities in the EEA. Norway pays the vast majority. As an EU member, Iceland's estimated net budget contribution would be significantly higher, though the exact amount depends on GDP and negotiated rebates.",
+    "source_name": "EEA Grants — Financial mechanism overview",
+    "source_url": "https://eeagrants.org/",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "Estimating Iceland's net EU budget contribution is complex. As a high-GDP-per-capita country, Iceland would be a net contributor, but the exact amount depends on CAP receipts, structural funds, and other transfers.",
+    "related_entries": ["TRADE-DATA-001"]
+  }
+]
