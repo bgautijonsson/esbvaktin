@@ -237,7 +237,7 @@ evidence. Your job is to identify significant omissions and assess framing.
 ```
 
 - `framing_assessment`: one of `balanced`, `leans_pro_eu`, `leans_anti_eu`,
-  `neutral_but_incomplete`
+  `strongly_pro_eu`, `strongly_anti_eu`, `neutral_but_incomplete`
 - `overall_completeness`: 0.0 (covers nothing) to 1.0 (comprehensive)
 
 ## Critical Principles

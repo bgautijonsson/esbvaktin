@@ -26,6 +26,8 @@ class FramingAssessment(StrEnum):
     BALANCED = "balanced"
     LEANS_PRO_EU = "leans_pro_eu"
     LEANS_ANTI_EU = "leans_anti_eu"
+    STRONGLY_PRO_EU = "strongly_pro_eu"
+    STRONGLY_ANTI_EU = "strongly_anti_eu"
     NEUTRAL_BUT_INCOMPLETE = "neutral_but_incomplete"
 
 

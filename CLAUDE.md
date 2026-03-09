@@ -21,10 +21,10 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 
 | Component | Technology |
 |---|---|
-| Language | Python 3.14 |
+| Language | Python 3.12+ |
 | Package manager | uv |
-| Ground Truth DB | PostgreSQL + pgvector (Supabase or self-hosted) |
-| Embeddings | OpenAI `text-embedding-3-small` or multilingual alternative |
+| Ground Truth DB | PostgreSQL 17 + pgvector (self-hosted via Docker) |
+| Embeddings | BAAI/bge-m3 (local multilingual, 1024-dim) |
 | Article extraction | trafilatura |
 | Analysis pipeline | Claude API (Anthropic SDK) |
 | Icelandic correction | GreynirCorrect |

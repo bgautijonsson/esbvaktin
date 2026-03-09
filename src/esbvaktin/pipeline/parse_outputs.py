@@ -32,18 +32,68 @@ def parse_claims(output_path: Path) -> list[Claim]:
     return [Claim.model_validate(item) for item in raw]
 
 
+def _normalise_assessment(item: dict) -> dict:
+    """Normalise flat subagent output into nested ClaimAssessment format.
+
+    Subagents sometimes write claim fields at the top level instead of
+    nesting them under a 'claim' key. They may also use different field
+    names (e.g. 'evidence_ids' instead of 'supporting_evidence').
+    """
+    if "claim" not in item and "claim_text" in item:
+        # Reconstruct nested claim from flat fields
+        item = dict(item)  # shallow copy
+        item["claim"] = {
+            "claim_text": item.pop("claim_text"),
+            "original_quote": item.pop("quote", item.pop("original_quote", "")),
+            "category": item.pop("category", "other"),
+            "claim_type": item.pop("claim_type", "opinion"),
+            "confidence": item.get("confidence", 0.5),
+        }
+        # Map alternative field names
+        if "evidence_ids" in item and "supporting_evidence" not in item:
+            item["supporting_evidence"] = item.pop("evidence_ids")
+        if "caveats" in item and "missing_context" not in item:
+            item["missing_context"] = item.pop("caveats")
+        # Remove extra fields not in the model
+        item.pop("context", None)
+        item.pop("quote", None)
+    return item
+
+
 def parse_assessments(output_path: Path) -> list[ClaimAssessment]:
     """Parse claim assessment output into ClaimAssessment objects."""
     text = output_path.read_text(encoding="utf-8")
     raw = json.loads(_extract_json(text))
-    return [ClaimAssessment.model_validate(item) for item in raw]
+    return [ClaimAssessment.model_validate(_normalise_assessment(item)) for item in raw]
+
+
+_FRAMING_ALIASES = {
+    "strongly_anti": "strongly_anti_eu",
+    "strongly_pro": "strongly_pro_eu",
+    "leans_anti": "leans_anti_eu",
+    "leans_pro": "leans_pro_eu",
+}
+
+
+def _normalise_omissions(raw: dict) -> dict:
+    """Normalise subagent omission output to match OmissionAnalysis schema."""
+    raw = dict(raw)
+    # Map framing aliases
+    framing = raw.get("framing_assessment", "")
+    raw["framing_assessment"] = _FRAMING_ALIASES.get(framing, framing)
+    # Normalise omission field names
+    for omission in raw.get("omissions", []):
+        if "evidence_ids" in omission and "relevant_evidence" not in omission:
+            omission["relevant_evidence"] = omission.pop("evidence_ids")
+        omission.pop("impact", None)
+    return raw
 
 
 def parse_omissions(output_path: Path) -> OmissionAnalysis:
     """Parse omission analysis output into OmissionAnalysis."""
     text = output_path.read_text(encoding="utf-8")
     raw = json.loads(_extract_json(text))
-    return OmissionAnalysis.model_validate(raw)
+    return OmissionAnalysis.model_validate(_normalise_omissions(raw))
 
 
 def parse_translation(output_path: Path) -> str:
