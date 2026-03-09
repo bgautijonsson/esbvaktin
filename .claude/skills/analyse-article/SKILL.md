@@ -245,6 +245,17 @@ Then launch a subagent to translate Icelandic → English:
 
 **Subagent task:** Read `$WORK_DIR/_context_translation.md` and translate to English. Write to `$WORK_DIR/_report_en.md`.
 
+### Step 8: Export to Obsidian
+
+Always export the final report to the ESB Obsidian vault using the MCP `write_note` tool:
+
+- **Path:** `Reports/YYYY-MM-DD — Article Title.md`
+- **Frontmatter:** Include `type: article-analysis`, `date`, `source`, `author`, `url`, `claims` (count), `verdicts` (breakdown), `framing`, `completeness`, `evidence_used` (count), `analysis_dir`, and `tags`
+- **Formatting:** Add a `> [!tip] Lykilniðurstaða` callout after the summary highlighting the most important finding. Use a `> [!warning]` callout for the omissions section. Add `[[ESBvaktin]]` wikilink in the footer.
+- **Tags:** Include `greining` plus topic-specific tags (e.g. `landbúnaður`, `sjávarútvegur`, `skoðanakannanir`)
+
+Print a brief confirmation to terminal with the vault path.
+
 ## Files Produced
 
 | File | Description |

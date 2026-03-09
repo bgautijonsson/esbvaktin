@@ -83,7 +83,7 @@ Route structured output (research, analyses, implementation notes) to the ESB va
 | Folder | Content |
 |---|---|
 | `Knowledge/<Topic>/` | Implementation notes, next-actions |
-| `Reports/` | Article analysis reports (one per article, named `YYYY-MM-DD — Title`) |
+| `Reports/` | Article analysis reports from `/analyse-article` (named `YYYY-MM-DD — Title`). Include frontmatter with verdict breakdown, framing, completeness, and tags. |
 | `Sessions/` | Session logs |
 
 Use `_MOC.md` as entry points. See vault's `Vault Guide.md` for full conventions.
