@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 
 import psycopg
+from dotenv import load_dotenv
 from pgvector.psycopg import register_vector
 
 from .models import EvidenceEntry, SearchResult
@@ -15,6 +16,7 @@ SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 
 
 def get_connection(autocommit: bool = False) -> psycopg.Connection:
+    load_dotenv()
     conn = psycopg.connect(os.environ["DATABASE_URL"], autocommit=autocommit)
     try:
         register_vector(conn)
