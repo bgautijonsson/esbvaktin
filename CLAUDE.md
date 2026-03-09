@@ -43,10 +43,19 @@ src/esbvaktin/          # Main package
   utils/                # Shared utilities (embeddings, Icelandic NLP)
 tests/                  # Tests
 scripts/                # One-off scripts (seeding DB, etc.)
-data/                   # Local data files (not committed if large)
+data/seeds/             # Evidence JSON seed files (committed)
+data/{source}/          # CSV outputs from R scripts (gitignored)
+R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
+.claude/skills/         # analyse-article, fact-check
 ```
 
 ## Conventions
+
+### Evidence Seeds
+- IDs: `{TOPIC}-{TYPE}-{NUMBER}` (e.g., `ENERGY-DATA-001`)
+- Topics: fisheries, trade, eea_eu_law, sovereignty, agriculture, precedents, currency, labour, energy, housing, polling, party_positions, org_positions
+- Valid `source_type` values: `official_statistics`, `legal_text`, `academic_paper`, `expert_analysis`, `international_org`
+- Seed files go in `data/seeds/*.json` (committed); CSVs in `data/{source}/` (gitignored)
 
 - Python code: type hints, f-strings, async where appropriate
 - British/international spelling in English text
@@ -59,6 +68,10 @@ data/                   # Local data files (not committed if large)
 ```bash
 uv run pytest              # Run tests
 uv run python -m esbvaktin # Run pipeline (TBD)
+uv run python scripts/seed_evidence.py status          # Show DB summary
+uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
+docker compose up -d       # Start PostgreSQL
+Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
 
 ## Obsidian Output
