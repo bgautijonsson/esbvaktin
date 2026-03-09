@@ -41,6 +41,7 @@ KNOWN_TOPICS = {
     "precedents",
     "currency",
     "labour",
+    "housing",
     "polling",
     "party_positions",
     "org_positions",
