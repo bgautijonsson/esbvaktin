@@ -45,21 +45,20 @@ safe_pxweb_get <- function(url, query, label) {
 }
 
 # ==============================================================================
-# 1. Fisheries — Total catch by species
+# 1. Fisheries — Total catch by species (monthly)
 # ==============================================================================
-# Table path: Atvinnuvegir/sjavarutvegur/aflagreidslur/UTA02001.px
-# This table contains total catch of Icelandic vessels by species and year.
-# If this exact path fails, we try alternatives.
+# API structure (confirmed 2026-03-09):
+#   Atvinnuvegir/sjavarutvegur/aflatolur/afli_manudir/SJA01101.px
+#   Atvinnuvegir/sjavarutvegur/aflatolur/afli_manudir/SJA01106.px (value)
 message("\n=== Fisheries catch data ===")
 
 fisheries_paths <- c(
-
-  # Total catch by species
-  paste0(API_BASE, "/Atvinnuvegir/sjavarutvegur/aflagreidslur/UTA02001.px"),
-  # Catch by fishing area
-  paste0(API_BASE, "/Atvinnuvegir/sjavarutvegur/afli/UTA01000.px"),
-  # Catch value
-  paste0(API_BASE, "/Atvinnuvegir/sjavarutvegur/aflaverðmæti/UTA03101.px")
+  # Catch by species and place of landing, Jan 2010 – present
+  paste0(API_BASE, "/Atvinnuvegir/sjavarutvegur/aflatolur/afli_manudir/SJA01101.px"),
+  # Total value of catch in fixed prices 2000-2022
+  paste0(API_BASE, "/Atvinnuvegir/sjavarutvegur/aflatolur/afli_manudir/SJA01106.px"),
+  # Catch by species, category of vessel and gear
+  paste0(API_BASE, "/Atvinnuvegir/sjavarutvegur/aflatolur/afli_manudir/SJA01102.px")
 )
 
 # For the first table, request all years and species with a broad query
@@ -102,12 +101,12 @@ if (!is.null(fisheries_df)) {
 message("\n=== Trade flow data ===")
 
 trade_paths <- c(
-  # Trade by country
-  paste0(API_BASE, "/Efnahagur/utanrikisverslun/1_voruvidskipti/UTA06200.px"),
-  # Trade by commodity (SITC)
-  paste0(API_BASE, "/Efnahagur/utanrikisverslun/1_voruvidskipti/UTA06100.px"),
-  # External trade overview
-  paste0(API_BASE, "/Efnahagur/utanrikisverslun/UTA06001.px")
+  # Trade by countries 2015-2026
+  paste0(API_BASE, "/Efnahagur/utanrikisverslun/1_voruvidskipti/01_voruskipti/UTA06003.px"),
+  # Exports and imports and trade balance 2015-2026
+  paste0(API_BASE, "/Efnahagur/utanrikisverslun/1_voruvidskipti/01_voruskipti/UTA06002.px"),
+  # Monthly export/import values (FOB/CIF) 2011-2026
+  paste0(API_BASE, "/Efnahagur/utanrikisverslun/1_voruvidskipti/01_voruskipti/UTA06001.px")
 )
 
 trade_df <- NULL
@@ -138,16 +137,16 @@ if (!is.null(trade_df)) {
 # ==============================================================================
 # 3. Price indices — Consumer prices / food prices
 # ==============================================================================
-# Tables under Verdlag/
+# Tables under Efnahagur/visitolur/1_vnv/
 message("\n=== Price index data ===")
 
 price_paths <- c(
-  # Consumer price index
-  paste0(API_BASE, "/Verdlag/neysluverd/1_neysluverd/VIS01000.px"),
-  # CPI by category
-  paste0(API_BASE, "/Verdlag/neysluverd/1_neysluverd/VIS01001.px"),
-  # Food price index
-  paste0(API_BASE, "/Verdlag/neysluverd/VIS01100.px")
+  # CPI annual averages
+  paste0(API_BASE, "/Efnahagur/visitolur/1_vnv/1_vnv/VIS01005.px"),
+  # CPI and changes, base 1988=100
+  paste0(API_BASE, "/Efnahagur/visitolur/1_vnv/1_vnv/VIS01000.px"),
+  # CPI timeseries for previous bases
+  paste0(API_BASE, "/Efnahagur/visitolur/1_vnv/1_vnv/VIS01002.px")
 )
 
 price_df <- NULL
