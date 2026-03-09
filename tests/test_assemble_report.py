@@ -135,7 +135,8 @@ class TestRenderReportEn:
 
 
 class TestAssembleReport:
-    def test_assembles_complete_report(self):
+    def test_assembles_complete_report_icelandic(self):
+        """Default language is Icelandic — generates report_text_is."""
         claims = [_make_assessment(supporting=["FISH-DATA-001"])]
         omissions = _make_omissions(evidence_ids=["EEA-LEGAL-001"])
         report = assemble_report(
@@ -145,14 +146,27 @@ class TestAssembleReport:
             article_title="Test",
             article_source="Test Source",
             article_date=date(2026, 2, 15),
-            report_text_is="# Próf",
         )
         assert report.article_title == "Test"
         assert report.analysis_date == date.today()
         assert "FISH-DATA-001" in report.evidence_used
         assert "EEA-LEGAL-001" in report.evidence_used
+        assert report.report_text_is != ""
+        assert report.language == "is"
+
+    def test_assembles_complete_report_english(self):
+        """Explicit language='en' generates report_text_en."""
+        claims = [_make_assessment(supporting=["FISH-DATA-001"])]
+        omissions = _make_omissions(evidence_ids=["EEA-LEGAL-001"])
+        report = assemble_report(
+            claims=claims,
+            omissions=omissions,
+            summary="A balanced analysis.",
+            article_title="Test",
+            language="en",
+        )
         assert report.report_text_en != ""
-        assert report.report_text_is == "# Próf"
+        assert report.report_text_is == ""
 
     def test_assembles_minimal_report(self):
         report = assemble_report(
@@ -162,4 +176,5 @@ class TestAssembleReport:
         )
         assert report.article_title is None
         assert report.evidence_used == []
-        assert "No claims found." in report.report_text_en
+        # Default is Icelandic — summary appears in Icelandic report
+        assert "No claims found." in report.report_text_is

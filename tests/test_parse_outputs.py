@@ -5,6 +5,8 @@ from pathlib import Path
 import pytest
 
 from esbvaktin.pipeline.parse_outputs import (
+    _extract_json,
+    _sanitise_icelandic_quotes,
     parse_assessments,
     parse_claims,
     parse_omissions,
@@ -78,6 +80,52 @@ class TestParseOmissions:
     def test_omission_evidence_ids(self):
         omissions = parse_omissions(FIXTURES / "sample_omissions.json")
         assert "TRADE-DATA-001" in omissions.omissions[1].relevant_evidence
+
+
+class TestIcelandicQuoteSanitisation:
+    """Tests for Icelandic/smart quote handling in JSON parsing."""
+
+    def test_sanitise_low9_and_left_double(self):
+        """„ (U+201E) and " (U+201C) — the standard Icelandic pair."""
+        text = '"claim_text": "\u201eÞetta er rangt\u201c"'
+        result = _sanitise_icelandic_quotes(text)
+        assert "\u201e" not in result
+        assert "\u201c" not in result
+        assert '\\"' in result
+
+    def test_sanitise_right_double(self):
+        """\u201d (U+201D) — right double quotation mark."""
+        text = '"value": "said \u201dhello\u201d"'
+        result = _sanitise_icelandic_quotes(text)
+        assert "\u201d" not in result
+
+    def test_parse_claims_with_icelandic_quotes(self, tmp_path):
+        """Full roundtrip: claims JSON with Icelandic quotes parses correctly."""
+        # This simulates LLM output where Icelandic quotes appear in values
+        claims_file = tmp_path / "claims.json"
+        # Use raw string with actual Unicode characters
+        claims_file.write_text(
+            '[\n'
+            '  {\n'
+            '    "claim_text": "R\u00e1\u00f0herra sag\u00f0i \u201e\u00feetta s\u00e9 r\u00e9tt\u201c",\n'
+            '    "original_quote": "R\u00e1\u00f0herra sag\u00f0i \u201e\u00feetta s\u00e9 r\u00e9tt\u201c",\n'
+            '    "category": "sovereignty",\n'
+            '    "claim_type": "opinion",\n'
+            '    "confidence": 0.8\n'
+            '  }\n'
+            ']',
+            encoding="utf-8",
+        )
+        claims = parse_claims(claims_file)
+        assert len(claims) == 1
+        assert "ráðherra" in claims[0].claim_text.lower()
+
+    def test_extract_json_sanitises_in_code_block(self):
+        """Quotes inside ```json blocks are also sanitised."""
+        text = '```json\n{"key": "\u201eval\u201c"}\n```'
+        result = _extract_json(text)
+        assert "\u201e" not in result
+        assert "\u201c" not in result
 
 
 class TestParseTranslation:

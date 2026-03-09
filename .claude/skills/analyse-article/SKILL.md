@@ -62,6 +62,7 @@ The subagent should:
 - Distinguish between claim types: statistic, legal_assertion, comparison, prediction, opinion
 - Preserve exact quotes from the article in `original_quote`
 - Write `claim_text` in clear Icelandic
+- **JSON safety**: escape any quotation marks inside string values. Icelandic „…" quotes must be written as `\"…\"` in JSON. Never use raw `„` or `"` inside JSON strings.
 - Independence: do not favour either side
 
 ### Step 3: Retrieve Evidence and Prepare Assessment Context (Python)
@@ -101,6 +102,7 @@ Launch a subagent to assess each claim against evidence:
 - **Fyrirvarar skipta máli**: always surface caveats from evidence entries — they often contain crucial qualifications
 - **Auðmýkt**: if evidence is insufficient, use "unverifiable" — do not guess
 - Write `explanation` and `missing_context` fields in **Icelandic**
+- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in all JSON string values
 - Write raw JSON, no markdown wrapping
 
 ### Step 5: Analyse Omissions (Subagent — can run in parallel with Step 4)
@@ -114,6 +116,7 @@ Launch a subagent to identify omissions and assess framing:
 - Only flag omissions that would **materially change** a reader's understanding
 - Reference specific evidence_ids for each omission
 - Write `description` fields in **Icelandic**
+- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in all JSON string values
 - Write raw JSON, no markdown wrapping
 
 ### Step 6: Assemble Icelandic Report (Python)

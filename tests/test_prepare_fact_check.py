@@ -33,10 +33,19 @@ def test_context_file_written(tmp_path: Path):
     assert result.exists()
     assert result.name == "_context_fact_check.md"
     content = result.read_text()
-    assert "Fact-Check Assessment" in content
+    # Default is Icelandic — check for Icelandic header
+    assert "Staðreyndakönnun" in content
     assert "Iceland would lose its fisheries" in content
     assert "FISH-DATA-001" in content
     assert "Fiskistofa" in content
+
+
+def test_context_file_written_english(tmp_path: Path):
+    cwe = ClaimWithEvidence(claim=_make_claim(), evidence=[_make_evidence()])
+    result = prepare_fact_check_context([cwe], tmp_path, language="en")
+
+    content = result.read_text()
+    assert "Fact-Check Assessment" in content
 
 
 def test_multiple_claims(tmp_path: Path):
@@ -47,10 +56,11 @@ def test_multiple_claims(tmp_path: Path):
     result = prepare_fact_check_context(claims, tmp_path)
     content = result.read_text()
 
-    assert "Claim 1" in content
-    assert "Claim 2" in content
+    # Icelandic default: "Fullyrðing 1", "Fullyrðing 2"
+    assert "Fullyrðing 1" in content
+    assert "Fullyrðing 2" in content
     assert "TRADE-DATA-001" in content
-    assert "No evidence found" in content
+    assert "Engar heimildir" in content
 
 
 def test_caveats_included(tmp_path: Path):

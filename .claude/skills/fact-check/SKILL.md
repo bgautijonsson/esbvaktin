@@ -60,6 +60,7 @@ Launch a subagent to assess the claims against evidence:
 - **Fyrirvarar skipta máli**: always surface caveats from evidence entries
 - **Auðmýkt**: if evidence is insufficient, use `unverifiable`
 - Write `explanation` and `missing_context` fields in **Icelandic**
+- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in all JSON string values
 - Write raw JSON, no markdown wrapping
 
 ### Step 3: Parse and Display Results (Python)

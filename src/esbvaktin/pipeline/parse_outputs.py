@@ -15,14 +15,38 @@ from .models import (
 )
 
 
+def _sanitise_icelandic_quotes(text: str) -> str:
+    """Replace Icelandic/smart quotation marks that break JSON parsing.
+
+    Icelandic text uses „ (U+201E) and " (U+201C) as quotation marks.
+    When an LLM writes these inside JSON string values they appear as
+    unescaped double-quote characters, causing json.loads() to fail.
+    We also handle " (U+201D, right double) and other smart quotes.
+    """
+    replacements = {
+        "\u201e": '\\"',  # „ — double low-9 quotation mark
+        "\u201c": '\\"',  # " — left double quotation mark
+        "\u201d": '\\"',  # " — right double quotation mark
+        "\u201a": "\\'",  # ‚ — single low-9 quotation mark
+        "\u2018": "\\'",  # ' — left single quotation mark
+        "\u2019": "\\'",  # ' — right single quotation mark
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+
 def _extract_json(text: str) -> str:
     """Extract JSON from a markdown code block, or treat the whole text as JSON."""
     # Try to find a ```json ... ``` block
     match = re.search(r"```(?:json)?\s*\n(.*?)```", text, re.DOTALL)
     if match:
-        return match.group(1).strip()
-    # Fall back to treating the entire text as JSON
-    return text.strip()
+        raw = match.group(1).strip()
+    else:
+        # Fall back to treating the entire text as JSON
+        raw = text.strip()
+    # Sanitise smart/Icelandic quotes before parsing
+    return _sanitise_icelandic_quotes(raw)
 
 
 def parse_claims(output_path: Path) -> list[Claim]:
