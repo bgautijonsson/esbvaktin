@@ -51,3 +51,52 @@ DROP TRIGGER IF EXISTS evidence_updated_at ON evidence;
 CREATE TRIGGER evidence_updated_at
     BEFORE UPDATE ON evidence
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+
+-- ═══════════════════════════════════════════════════════════════════════
+-- Claim Bank: canonical claims with pre-processed assessments
+-- ═══════════════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS claims (
+    id SERIAL PRIMARY KEY,
+    claim_slug TEXT UNIQUE NOT NULL,            -- URL-safe slug for permalink
+    canonical_text_is TEXT NOT NULL,            -- Icelandic canonical text (primary)
+    canonical_text_en TEXT,                     -- English equivalent (optional)
+    category TEXT NOT NULL,                     -- topic (fisheries, trade, etc.)
+    claim_type TEXT NOT NULL,                   -- statistic | legal_assertion | comparison | prediction | opinion
+    verdict TEXT NOT NULL,                      -- supported | partially_supported | unsupported | misleading | unverifiable
+    explanation_is TEXT NOT NULL,               -- Icelandic explanation
+    explanation_en TEXT,                        -- English explanation (optional)
+    missing_context_is TEXT,                    -- Icelandic context/caveats
+    supporting_evidence TEXT[] DEFAULT '{}',    -- evidence IDs that support
+    contradicting_evidence TEXT[] DEFAULT '{}', -- evidence IDs that contradict
+    confidence FLOAT CHECK (confidence >= 0 AND confidence <= 1),
+    embedding vector(1024),                    -- BAAI/bge-m3 for semantic matching
+    version INT DEFAULT 1,                     -- incremented on verdict updates
+    last_verified DATE NOT NULL DEFAULT CURRENT_DATE,
+    published BOOLEAN DEFAULT FALSE,           -- visible on esbvaktin.is
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_claims_slug ON claims(claim_slug);
+CREATE INDEX IF NOT EXISTS idx_claims_category ON claims(category);
+CREATE INDEX IF NOT EXISTS idx_claims_verdict ON claims(verdict);
+CREATE INDEX IF NOT EXISTS idx_claims_published ON claims(published);
+
+DROP TRIGGER IF EXISTS claims_updated_at ON claims;
+CREATE TRIGGER claims_updated_at
+    BEFORE UPDATE ON claims
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- Track which articles reference which canonical claims
+CREATE TABLE IF NOT EXISTS article_claims (
+    id SERIAL PRIMARY KEY,
+    analysis_id TEXT NOT NULL,                  -- e.g. "20260309_123421"
+    claim_id INT NOT NULL REFERENCES claims(id),
+    similarity FLOAT,                          -- how close was the match
+    original_claim_text TEXT,                   -- original extraction for comparison
+    cache_hit BOOLEAN DEFAULT FALSE,           -- was the bank entry reused?
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(analysis_id, claim_id)
+);

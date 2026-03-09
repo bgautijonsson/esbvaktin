@@ -41,3 +41,7 @@ data/analyses/
 # Claude Code (keep skills)
 .claude/*
 !.claude/skills/
+.claude/skills/**/.fuse_hidden*
+
+# MCP config (user-local)
+.mcp.json

@@ -26,7 +26,7 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 | Ground Truth DB | PostgreSQL 17 + pgvector (self-hosted via Docker) |
 | Embeddings | BAAI/bge-m3 (local multilingual, 1024-dim) |
 | Article extraction | trafilatura |
-| Analysis pipeline | Claude API (Anthropic SDK) |
+| Analysis pipeline | Claude Code subagents |
 | Icelandic correction | GreynirCorrect |
 | Email | Mailgun inbound parsing + sending |
 | CMS | Ghost |
@@ -83,9 +83,14 @@ Route structured output (research, analyses, implementation notes) to the ESB va
 | Folder | Content |
 |---|---|
 | `Knowledge/<Topic>/` | Implementation notes, next-actions |
+| `Reports/` | Article analysis reports (one per article, named `YYYY-MM-DD — Title`) |
 | `Sessions/` | Session logs |
 
 Use `_MOC.md` as entry points. See vault's `Vault Guide.md` for full conventions.
+
+## Things 3
+
+Area: **ESB Vaktin** (`7H4fB4Q8heJ9DXCXogup5V`)
 
 ## Important Context
 

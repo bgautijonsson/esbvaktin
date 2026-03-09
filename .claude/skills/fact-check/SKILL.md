@@ -38,12 +38,12 @@ claims_raw = [
 claims = [Claim.model_validate(c) for c in claims_raw]
 print(f'Checking {len(claims)} claim(s)...')
 
-claims_with_evidence = retrieve_evidence_for_claims(claims, top_k=5)
+claims_with_evidence, bank_matches = retrieve_evidence_for_claims(claims, top_k=5)
 for cwe in claims_with_evidence:
     print(f'  {cwe.claim.claim_text[:60]}... — {len(cwe.evidence)} evidence matches')
 
 work_dir = Path('$WORK_DIR')
-ctx_path = prepare_fact_check_context(claims_with_evidence, work_dir)
+ctx_path = prepare_fact_check_context(claims_with_evidence, work_dir, language='is')
 print(f'Context written to {ctx_path}')
 "
 ```
@@ -55,10 +55,11 @@ Launch a subagent to assess the claims against evidence:
 **Subagent task:** Read `$WORK_DIR/_context_fact_check.md` and follow its instructions. Write the output (a JSON array of assessments) to `$WORK_DIR/_assessments.json`.
 
 **Critical principles for the subagent:**
-- **Independence and balance**: assess pro-EU and anti-EU claims with equal rigour
-- **Evidence-based**: every verdict MUST cite specific evidence_ids
-- **Caveats matter**: always surface caveats from evidence entries
-- **Humility**: if evidence is insufficient, use `unverifiable`
+- **Óhlutdrægni**: metið ESB-jákvæðar og ESB-neikvæðar fullyrðingar jafnt
+- **Heimildum háð**: every verdict MUST cite specific evidence_ids
+- **Fyrirvarar skipta máli**: always surface caveats from evidence entries
+- **Auðmýkt**: if evidence is insufficient, use `unverifiable`
+- Write `explanation` and `missing_context` fields in **Icelandic**
 - Write raw JSON, no markdown wrapping
 
 ### Step 3: Parse and Display Results (Python)

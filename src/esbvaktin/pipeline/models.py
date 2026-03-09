@@ -118,11 +118,12 @@ class AnalysisReport(BaseModel):
     article_source: str | None = None
     article_date: date | None = None
     analysis_date: date = Field(default_factory=date.today)
+    language: str = Field(default="is", description="Primary pipeline language")
     summary: str
     claims: list[ClaimAssessment]
     omissions: OmissionAnalysis
     evidence_used: list[str] = Field(
         default_factory=list, description="All evidence IDs referenced"
     )
-    report_text_en: str = ""
-    report_text_is: str = ""
+    report_text_is: str = Field(default="", description="Icelandic report (primary)")
+    report_text_en: str = Field(default="", description="English report (optional)")

@@ -1,6 +1,7 @@
 # Analyse Article
 
 Analyse an article about Iceland's EU membership referendum against the Ground Truth Database.
+Pipeline is **Icelandic-first**: subagents extract, assess, and write in Icelandic. No translation step.
 
 ## Usage
 
@@ -37,8 +38,9 @@ prepare_extraction_context(
     article_text=article,
     output_dir=Path('$WORK_DIR'),
     metadata={'title': None, 'source': None, 'date': None},
+    language='is',
 )
-print('Extraction context prepared.')
+print('Extraction context prepared (Icelandic).')
 "
 ```
 
@@ -49,15 +51,17 @@ Launch a subagent to extract claims from the article:
 **Subagent task:** Read `$WORK_DIR/_context_extraction.md` and follow its instructions. Write the output (a JSON array of claims) to `$WORK_DIR/_claims.json`.
 
 The subagent should:
-1. Read the context file carefully
+1. Read the context file carefully (instructions are in Icelandic)
 2. Extract ALL factual claims from the article
-3. Write a JSON array to `_claims.json` (raw JSON, no markdown wrapping)
+3. Write `claim_text` in Icelandic
+4. Write a JSON array to `_claims.json` (raw JSON, no markdown wrapping)
 
 **Critical principles for the subagent:**
 - Be thorough — extract every factual claim, not just obvious ones
 - Categorise accurately using the known topics: fisheries, trade, sovereignty, eea_eu_law, agriculture, precedents, currency, labour, polling, party_positions, org_positions, other
 - Distinguish between claim types: statistic, legal_assertion, comparison, prediction, opinion
-- Preserve exact quotes from the article
+- Preserve exact quotes from the article in `original_quote`
+- Write `claim_text` in clear Icelandic
 - Independence: do not favour either side
 
 ### Step 3: Retrieve Evidence and Prepare Assessment Context (Python)
@@ -73,13 +77,15 @@ work_dir = Path('$WORK_DIR')
 claims = parse_claims(work_dir / '_claims.json')
 print(f'Parsed {len(claims)} claims.')
 
-claims_with_evidence = retrieve_evidence_for_claims(claims, top_k=5)
+claims_with_evidence, bank_matches = retrieve_evidence_for_claims(claims, top_k=5)
 print(f'Retrieved evidence for {len(claims_with_evidence)} claims.')
+if bank_matches:
+    print(f'Claim bank matches: {len(bank_matches)} (cache hits speed up assessment)')
 
 article_text = (work_dir / '_article.md').read_text()
-prepare_assessment_context(claims_with_evidence, work_dir)
-prepare_omission_context(article_text, claims_with_evidence, work_dir)
-print('Assessment and omission contexts prepared.')
+prepare_assessment_context(claims_with_evidence, work_dir, language='is')
+prepare_omission_context(article_text, claims_with_evidence, work_dir, language='is')
+print('Assessment and omission contexts prepared (Icelandic).')
 "
 ```
 
@@ -90,10 +96,11 @@ Launch a subagent to assess each claim against evidence:
 **Subagent task:** Read `$WORK_DIR/_context_assessment.md` and follow its instructions. Write the output (a JSON array of assessments) to `$WORK_DIR/_assessments.json`.
 
 **Critical principles for the subagent:**
-- **Independence and balance**: assess pro-EU and anti-EU claims with equal rigour. Never take a side.
-- **Evidence-based**: every assessment MUST cite specific evidence_ids from the Ground Truth DB
-- **Caveats matter**: always surface the caveats from evidence entries — they often contain crucial qualifications
-- **Humility**: if evidence is insufficient, use "unverifiable" — do not guess
+- **Óhlutdrægni**: Metið ESB-jákvæðar og ESB-neikvæðar fullyrðingar jafnt. Never take a side.
+- **Heimildum háð**: every assessment MUST cite specific evidence_ids from the Ground Truth DB
+- **Fyrirvarar skipta máli**: always surface caveats from evidence entries — they often contain crucial qualifications
+- **Auðmýkt**: if evidence is insufficient, use "unverifiable" — do not guess
+- Write `explanation` and `missing_context` fields in **Icelandic**
 - Write raw JSON, no markdown wrapping
 
 ### Step 5: Analyse Omissions (Subagent — can run in parallel with Step 4)
@@ -106,9 +113,10 @@ Launch a subagent to identify omissions and assess framing:
 - Balance: an article can legitimately argue one side; omission analysis is about what **relevant facts** are missing
 - Only flag omissions that would **materially change** a reader's understanding
 - Reference specific evidence_ids for each omission
+- Write `description` fields in **Icelandic**
 - Write raw JSON, no markdown wrapping
 
-### Step 6: Assemble English Report (Python)
+### Step 6: Assemble Icelandic Report (Python)
 
 ```bash
 uv run python -c "
@@ -123,57 +131,50 @@ omissions = parse_omissions(work_dir / '_omissions.json')
 
 # Generate summary from assessments
 verdicts = [a.verdict.value for a in assessments]
-summary = f'Analysed {len(assessments)} claims. '
 from collections import Counter
 vc = Counter(verdicts)
-parts = [f'{count} {verdict}' for verdict, count in vc.most_common()]
-summary += 'Verdicts: ' + ', '.join(parts) + '. '
-summary += f'Framing: {omissions.framing_assessment.value}. '
-summary += f'Completeness: {omissions.overall_completeness:.0%}.'
+
+# Icelandic summary
+verdict_names = {
+    'supported': 'stutt af heimildum',
+    'partially_supported': 'stutt að hluta',
+    'unsupported': 'ekki stutt',
+    'misleading': 'villandi',
+    'unverifiable': 'ekki hægt að sannreyna',
+}
+parts = [f'{count} {verdict_names.get(v, v)}' for v, count in vc.most_common()]
+summary = f'Greindar {len(assessments)} fullyrðingar. '
+summary += 'Niðurstöður: ' + ', '.join(parts) + '. '
+
+framing_names = {
+    'balanced': 'jafnvæg',
+    'leans_pro_eu': 'hallar á ESB-jákvæða hlið',
+    'leans_anti_eu': 'hallar á ESB-neikvæða hlið',
+    'strongly_pro_eu': 'mjög ESB-jákvæð',
+    'strongly_anti_eu': 'mjög ESB-neikvæð',
+    'neutral_but_incomplete': 'hlutlaus en ófullnægjandi',
+}
+framing = framing_names.get(omissions.framing_assessment.value, omissions.framing_assessment.value)
+summary += f'Sjónarhorn: {framing}. '
+summary += f'Heildstæðni: {omissions.overall_completeness:.0%}.'
 
 report = assemble_report(
     claims=assessments,
     omissions=omissions,
     summary=summary,
     article_title=None,  # Set from metadata if available
+    language='is',
 )
 
-(work_dir / '_report_en.md').write_text(report.report_text_en)
+(work_dir / '_report_is.md').write_text(report.report_text_is)
 (work_dir / '_report.json').write_text(report.model_dump_json(indent=2))
-print('English report assembled.')
+print('Icelandic report assembled.')
 print()
-print(report.report_text_en[:500])
+print(report.report_text_is[:500])
 "
 ```
 
-### Step 7: Translate to Icelandic (Subagent)
-
-First prepare translation context:
-
-```bash
-uv run python -c "
-from pathlib import Path
-from esbvaktin.pipeline.prepare_context import prepare_translation_context
-
-work_dir = Path('$WORK_DIR')
-report_en = (work_dir / '_report_en.md').read_text()
-prepare_translation_context(report_en, work_dir)
-print('Translation context prepared.')
-"
-```
-
-Then launch a subagent:
-
-**Subagent task:** Read `$WORK_DIR/_context_translation.md` and follow its instructions. Write the translated Icelandic report to `$WORK_DIR/_report_is.md`.
-
-**Translation guidelines:**
-- Use formal but accessible Icelandic
-- Preserve all evidence IDs as-is
-- Follow Icelandic terminology conventions from the context file
-- Translate verdict names with both Icelandic and English: "Stutt af heimildum (supported)"
-- Do NOT translate source names or URLs
-
-### Step 8: Finalise (Python)
+### Step 7: Finalise + GreynirCorrect (Python)
 
 ```bash
 uv run python -c "
@@ -182,21 +183,18 @@ from pathlib import Path
 
 work_dir = Path('$WORK_DIR')
 
-# Read existing report
+# Read report
 report_data = json.loads((work_dir / '_report.json').read_text())
 
-# Add Icelandic translation
-report_is = (work_dir / '_report_is.md').read_text()
-report_data['report_text_is'] = report_is
-
 # Try GreynirCorrect if available
+report_is = report_data.get('report_text_is', '')
 try:
     from reynir_correct import check_single
     # Light correction pass — only fix obvious errors
     lines = report_is.split('\n')
     corrected = []
     for line in lines:
-        if line.startswith('#') or line.startswith('*') or line.startswith('-') or line.startswith('>'):
+        if line.startswith('#') or line.startswith('*') or line.startswith('-') or line.startswith('>') or line.startswith('|'):
             corrected.append(line)
         elif line.strip():
             result = check_single(line)
@@ -204,6 +202,7 @@ try:
         else:
             corrected.append(line)
     report_data['report_text_is'] = '\n'.join(corrected)
+    (work_dir / '_report_is.md').write_text('\n'.join(corrected))
     print('GreynirCorrect applied.')
 except ImportError:
     print('GreynirCorrect not available — skipping correction.')
@@ -214,29 +213,47 @@ print(f'Final report written to {work_dir}/_report_final.json')
 print()
 
 # Print summary
-print('=== ANALYSIS COMPLETE ===')
-print(f'Working directory: {work_dir}')
-print(f'Summary: {report_data[\"summary\"]}')
-print(f'Claims assessed: {len(report_data[\"claims\"])}')
-print(f'Evidence used: {len(report_data[\"evidence_used\"])} entries')
-print(f'English report: {work_dir}/_report_en.md')
-print(f'Icelandic report: {work_dir}/_report_is.md')
+print('=== GREINING LOKIÐ ===')
+print(f'Vinnusvæði: {work_dir}')
+print(f'Yfirlit: {report_data[\"summary\"]}')
+print(f'Fullyrðingar metnar: {len(report_data[\"claims\"])}')
+print(f'Heimildir notaðar: {len(report_data[\"evidence_used\"])} færslur')
+print(f'Íslensk skýrsla: {work_dir}/_report_is.md')
 "
 ```
+
+### Step 7b (Optional): Generate English Report
+
+Only if English report is explicitly requested:
+
+```bash
+uv run python -c "
+from pathlib import Path
+from esbvaktin.pipeline.prepare_context import prepare_translation_context
+
+work_dir = Path('$WORK_DIR')
+report_is = (work_dir / '_report_is.md').read_text()
+prepare_translation_context(report_is, work_dir, direction='is_to_en')
+print('Translation context prepared (IS → EN).')
+"
+```
+
+Then launch a subagent to translate Icelandic → English:
+
+**Subagent task:** Read `$WORK_DIR/_context_translation.md` and translate to English. Write to `$WORK_DIR/_report_en.md`.
 
 ## Files Produced
 
 | File | Description |
 |------|-------------|
 | `_article.md` | Raw article text |
-| `_context_extraction.md` | Context for claim extraction subagent |
-| `_claims.json` | Extracted claims |
-| `_context_assessment.md` | Context for claim assessment subagent |
-| `_context_omissions.md` | Context for omission analysis subagent |
-| `_assessments.json` | Claim assessments |
-| `_omissions.json` | Omission analysis |
-| `_report_en.md` | English report (markdown) |
+| `_context_extraction.md` | Context for claim extraction subagent (Icelandic) |
+| `_claims.json` | Extracted claims (Icelandic claim_text) |
+| `_context_assessment.md` | Context for claim assessment subagent (Icelandic) |
+| `_context_omissions.md` | Context for omission analysis subagent (Icelandic) |
+| `_assessments.json` | Claim assessments (Icelandic explanations) |
+| `_omissions.json` | Omission analysis (Icelandic descriptions) |
+| `_report_is.md` | Icelandic report — primary output |
 | `_report.json` | Structured report (JSON) |
-| `_context_translation.md` | Context for translation subagent |
-| `_report_is.md` | Icelandic report (markdown) |
 | `_report_final.json` | Final complete report (JSON) |
+| `_report_en.md` | English report (optional, Step 7b) |
