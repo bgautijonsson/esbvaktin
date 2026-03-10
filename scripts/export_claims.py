@@ -94,6 +94,35 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
             claim["created_at"] = claim["created_at"].isoformat()
         claims.append(claim)
 
+    # Fetch individual sightings and attach to claims
+    sighting_rows = conn.execute(
+        f"""
+        SELECT
+            c.claim_slug,
+            s.source_url,
+            s.source_title,
+            s.source_date,
+            s.source_type
+        FROM claim_sightings s
+        JOIN claims c ON c.id = s.claim_id
+        {where_clause}
+        ORDER BY s.source_date DESC
+        """
+    ).fetchall()
+
+    sightings_by_slug: dict[str, list[dict]] = {}
+    for slug, url, title, sdate, stype in sighting_rows:
+        sighting = {
+            "source_url": url,
+            "source_title": title,
+            "source_date": sdate.isoformat() if isinstance(sdate, (date, datetime)) else sdate,
+            "source_type": stype,
+        }
+        sightings_by_slug.setdefault(slug, []).append(sighting)
+
+    for claim in claims:
+        claim["sightings"] = sightings_by_slug.get(claim["claim_slug"], [])
+
     conn.close()
     return claims
 
@@ -124,6 +153,10 @@ def _to_parquet(claims: list[dict], path: Path) -> None:
         "sighting_count": pa.array([c["sighting_count"] for c in claims], type=pa.int32()),
         "last_seen": pa.array([c["last_seen"] for c in claims], type=pa.string()),
         "first_seen": pa.array([c["first_seen"] for c in claims], type=pa.string()),
+        "sightings_json": pa.array(
+            [json.dumps(c.get("sightings", []), ensure_ascii=False) for c in claims],
+            type=pa.string(),
+        ),
     }
 
     table = pa.table(columns)
