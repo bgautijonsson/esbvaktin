@@ -195,6 +195,48 @@ Gullstaðalstextar og algeng villumynstur fyrir íslenskar staðreyndaúttektir 
 
 ---
 
+---
+
+## FYRIR/EFTIR TILRAUNARDÆMI
+
+### Fullyrðing: „Undir sameiginlegri sjávarútvegsstefnu gæti árlegur aflaheimild Íslands minnkað um allt að 30%"
+**Úrskurður:** unverifiable — claim_id 13
+
+#### FYRIR (batch 1 — ASCII-útgáfa):
+
+> Fullyrdingin segir ad arleg aflaheimild Islands gaeti minnkad um allt ad 30% undir sameiginlegri sjavarutvegsstefnu (CFP). Engin heimild i gagnagrunninum stadfestir eda hafnar thessari tilteknu tolu. FISH-DATA-023 bendir a ad sjavarutvegskafli hafi verid medal vidkvaeemastu og hafi aldrei verid opnadur til samningavidraedna adur en ferlid var frestadad 2013.
+
+**Vandamál:**
+1. **Allur textinn á ASCII** — "Fullyrdingin", "sjavarutvegsstefnu", "stadfestir", "vidkvaeemastu"
+2. **Byrjar á endurtekningu fullyrðingarinnar** — "Fullyrdingin segir ad..."
+3. **Ensk skammstöfun** — "(CFP)" í íslenskum texta
+4. **Enskt orð í gæsalöppum** — "disputed" í íslensku
+
+#### EFTIR (ascii_fix batch 2 — lagfært):
+
+> Engin heimild í gagnagrunninum staðfestir eða hafnar tilteknu 30% tölunni. FISH-DATA-023 bendir á að sjávarútvegskafli hafi verið meðal viðkvæmustu kaflanna og hafi aldrei verið opnaður til samningaviðræðna áður en ferlið var frestað 2013. Heimildin nefnir sérstaklega að fullyrðingin um 30% sé „disputed" og raunveruleg áhrif ráðist af samningsskilmálum og aðlögunarfyrirkomulagi.
+
+**Bætt:**
+- Unicode rétt
+- Byrjar á matinu, ekki á endurtekningu fullyrðingarinnar
+**Enn vandamál:**
+- Enskt orð „disputed" — ætti að vera „umdeild"
+- Fyrsta setningin er neikvæð („Engin heimild...") — skýrt en vélrænt
+
+#### MARKMIÐSTEXTI (með bættum leiðbeiningum):
+
+> Talan 30% er óstaðfest og umdeild. FISH-DATA-023 bendir á að sjávarútvegskafli hafi verið meðal viðkvæmustu kaflanna í aðildarviðræðunum og hafi aldrei verið opnaður áður en ferlið var frestað 2013 — raunveruleg áhrif myndu ráðast af samningsskilmálum. Kvótakerfi Íslands (metið á um 1.500 milljarða króna) er ósamrýmanlegt grunnreglum sameiginlegu sjávarútvegsstefnunnar samkvæmt EEA-DATA-004 og FISH-DATA-022, en stefnan hefur þróast verulega síðan 2013. Án samningaviðræðna er ómögulegt að meta nákvæm áhrif á aflaheimildir.
+
+**Af hverju þetta er betra:**
+1. **Byrjar á matinu:** „Talan 30% er óstaðfest og umdeild" — bein niðurstaða
+2. **Íslensku eingöngu:** „umdeild" í stað „disputed"
+3. **Fjölbreytt upphöf:** „Talan...", „FISH-DATA-023...", „Kvótakerfi...", „Án..."
+4. **Bandstrik sem vendipunktur:** „— raunveruleg áhrif myndu ráðast af samningsskilmálum"
+5. **Tölulega nákvæmt:** „1.500 milljarða króna" úr heimildum
+6. **Lokasetning bein:** „Ómögulegt að meta" — engin hikvísun
+
+---
+
 ## ANDMYNSTUR (gátlisti)
 
 - **ASCII-umritun** — "thjodar..." fyrir "þjóðar..." — algengasta og alvarlegasta villan
