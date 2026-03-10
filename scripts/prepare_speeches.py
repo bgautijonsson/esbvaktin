@@ -53,6 +53,13 @@ def _issue_filter_sql(alias: str = "s") -> tuple[str, list[str]]:
     return f"({clause})", list(EU_ISSUE_PATTERNS)
 
 
+def _capitalise_first(text: str) -> str:
+    """Capitalise the first character of a string (preserving the rest)."""
+    if not text:
+        return text
+    return text[0].upper() + text[1:]
+
+
 def icelandic_slugify(text: str) -> str:
     """Create a URL-safe slug from Icelandic text."""
     replacements = {
@@ -182,12 +189,14 @@ def build_debate_detail(
     title_slug = icelandic_slugify(debate["issue_title"][:80])
     parties = sorted({s["party"] for s in speakers if s.get("party")})
 
+    title = _capitalise_first(debate["issue_title"])
+
     return {
         "slug": slug,
         "title_slug": title_slug,
         "session": debate["session"],
         "issue_nr": str(debate["issue_nr"]),
-        "issue_title": debate["issue_title"],
+        "issue_title": title,
         "speech_count": debate["speech_count"],
         "speaker_count": debate["speaker_count"],
         "total_words": debate["total_words"],
@@ -241,6 +250,7 @@ def build_listing_entry(detail: dict) -> dict:
             {"name": s["name"], "party": s["party"], "words": s["total_words"]}
             for s in detail["speakers"][:5]
         ],
+        "speaker_names": [s["name"] for s in detail["speakers"]],
     }
 
 

@@ -86,7 +86,7 @@ Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty 
 - `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, etc.)
 - Build: `cd ~/esbvaktin-site && npx @11ty/eleventy`
 - Data pipeline: `export_entities.py` → `prepare_site.py` → `prepare_speeches.py` → build site
-- Þingræður page: `/thingradur/` (listing) + `/thingradur/{session}-{issue_nr}/` (debate detail). Data from `prepare_speeches.py` querying althingi.db.
+- Þingræður page: `/thingraedur/` (listing) + `/thingraedur/{session}-{issue_nr}/` (debate detail). Data from `prepare_speeches.py` querying althingi.db.
 
 ## Obsidian Output
 

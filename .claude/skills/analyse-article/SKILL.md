@@ -84,7 +84,18 @@ if bank_matches:
     print(f'Claim bank matches: {len(bank_matches)} (cache hits speed up assessment)')
 
 article_text = (work_dir / '_article.md').read_text()
-prepare_assessment_context(claims_with_evidence, work_dir, language='is')
+
+# Build parliamentary speech context for MPs mentioned in the article
+speech_ctx = None
+try:
+    from esbvaktin.speeches.context import build_speech_context
+    speech_ctx = build_speech_context(article_text, language='is')
+    if speech_ctx:
+        print(f'Found parliamentary speech context for MPs in article.')
+except Exception as e:
+    print(f'Speech context unavailable: {e}')
+
+prepare_assessment_context(claims_with_evidence, work_dir, language='is', speech_context=speech_ctx)
 prepare_omission_context(article_text, claims_with_evidence, work_dir, language='is')
 print('Assessment and omission contexts prepared (Icelandic).')
 "

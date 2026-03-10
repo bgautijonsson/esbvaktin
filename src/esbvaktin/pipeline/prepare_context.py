@@ -242,8 +242,14 @@ def prepare_assessment_context(
     claims_with_evidence: list[ClaimWithEvidence],
     output_dir: Path,
     language: str = "is",
+    speech_context: str | None = None,
 ) -> Path:
     """Write assessment context for the claim-assessment subagent.
+
+    Args:
+        speech_context: Optional formatted markdown with parliamentary speech
+            excerpts for MPs mentioned in the article. Built by
+            ``esbvaktin.speeches.context.build_speech_context()``.
 
     Returns path to the context file.
     """
@@ -419,6 +425,10 @@ claim fields plus the assessment fields:
 ## Claims and Evidence
 
 {claims_section}"""
+    # Append parliamentary speech context if available
+    if speech_context:
+        context += f"\n\n{speech_context}\n"
+
     # Append full Icelandic quality blocks for assessment
     if language == "is":
         blocks = _load_icelandic_blocks()
