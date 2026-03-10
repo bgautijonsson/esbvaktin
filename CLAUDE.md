@@ -71,6 +71,7 @@ uv run --extra dev python -m pytest  # Run tests (pytest is in dev extras)
 uv run python -m esbvaktin # Run pipeline (TBD)
 uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # Export entities
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # Prepare site data
+uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # Export Alþingi debate data
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 docker compose up -d       # Start PostgreSQL
@@ -80,11 +81,12 @@ Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ## Site Repo
 
 Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty v3 static site.
-- `_data/` — 11ty build data (entities.json, reports/*.json, entity-details/*.json)
-- `assets/data/` — client-side JS data (entities.json, reports.json) — must be kept in sync with `_data/`
+- `_data/` — 11ty build data (entities.json, reports/*.json, entity-details/*.json, debates/*.json)
+- `assets/data/` — client-side JS data (entities.json, reports.json, debates.json) — must be kept in sync with `_data/`
 - `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, etc.)
 - Build: `cd ~/esbvaktin-site && npx @11ty/eleventy`
-- Data pipeline: `export_entities.py` → `prepare_site.py` → copy assets/data/ → build site
+- Data pipeline: `export_entities.py` → `prepare_site.py` → `prepare_speeches.py` → build site
+- Þingræður page: `/thingradur/` (listing) + `/thingradur/{session}-{issue_nr}/` (debate detail). Data from `prepare_speeches.py` querying althingi.db.
 
 ## Obsidian Output
 
