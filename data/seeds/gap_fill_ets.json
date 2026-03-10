@@ -1,0 +1,107 @@
+[
+  {
+    "evidence_id": "ETS-LEGAL-001",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "iceland_ets_legal_basis",
+    "statement": "Iceland participates in the EU Emissions Trading System (EU ETS) through the EEA Agreement, not through a separate bilateral agreement. The EU ETS Directive (2003/87/EC) was incorporated into the EEA Agreement through EEA Joint Committee Decision No 146/2007 of 26 October 2007, which inserted the Directive as point 21al of Annex XX (Environment) to the EEA Agreement. Constitutional requirements were indicated by Iceland, Liechtenstein, and Norway; these were fulfilled by 28 December 2007, and the decision entered into force on 29 December 2007. Iceland, Norway, and Liechtenstein have participated in the EU ETS since 1 January 2008 (the start of Phase II) on the same legal basis as EU Member States. Subsequent amendments to the ETS Directive — including the aviation inclusion (Directive 2008/101/EC), the Phase III reforms, and the Fit for 55 revisions — have also been incorporated into the EEA Agreement through further Joint Committee Decisions amending Annex XX. The EEA Agreement framework means that the EFTA Surveillance Authority (ESA) monitors compliance in the EEA EFTA states, while the EFTA Court has jurisdiction over disputes — as demonstrated by the EFTA Court judgment in Case E-2/25 (November 2025) concerning ETS obligations.",
+    "source_name": "EEA Joint Committee Decision No 146/2007; EUR-Lex; EFTA Court",
+    "source_url": "https://eur-lex.europa.eu/eli/dec/2007/146(2)/oj/eng",
+    "source_date": "2007-10-26",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "While the ETS itself is incorporated through the EEA Agreement (Annex XX), related climate legislation such as the Effort Sharing Decision/Regulation was initially not considered EEA-relevant and was handled through separate arrangements (Protocol 31 of the EEA Agreement from 2019). This distinction between the ETS (Annex XX, EEA-relevant) and effort sharing (Protocol 31, voluntary cooperation) may be the source of confusion about whether Iceland's climate participation is 'bilateral' or 'EEA-based'. For the ETS specifically, the legal basis is unambiguously the EEA Agreement.",
+    "related_entries": [
+      "ETS-LEGAL-002",
+      "ETS-DATA-001"
+    ]
+  },
+  {
+    "evidence_id": "ETS-LEGAL-002",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "eu_ets_aviation_scope",
+    "statement": "International aviation emissions within the European Economic Area fall under the EU Emissions Trading System. Aviation was included in the EU ETS by Directive 2008/101/EC of 19 November 2008, amending Directive 2003/87/EC. The original 2008 legislation was designed to cover CO2 emissions from all flights departing from, arriving at, or within the EEA. However, due to international opposition, the scope was temporarily reduced by Regulation (EU) No 421/2014 to cover only intra-EEA flights (the 'reduced scope' or 'stop the clock' derogation), and this restriction has been repeatedly extended. Following the 2023 revision (Directive (EU) 2023/958), the EU ETS for aviation continues to apply to all intra-EEA flights. The limitation to intra-EEA scope was extended one final time until the start of 2027; by July 2026, the European Commission will assess whether to expand coverage to flights departing the EEA to third countries not participating in ICAO's CORSIA scheme. The aviation ETS cap was initially set at 95% of 2004-2006 average emissions (approximately 221.4 million allowances). Aircraft operators were originally allocated 82% of allowances for free, with 15% auctioned and 3% held as a special reserve for new entrants.",
+    "source_name": "European Commission — Reducing emissions from aviation; Directive 2008/101/EC; Directive (EU) 2023/958",
+    "source_url": "https://climate.ec.europa.eu/eu-action/transport/reducing-emissions-aviation_en",
+    "source_date": "2023-05-10",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The scope of aviation in the EU ETS has changed multiple times since 2008 and may change again after the July 2026 assessment. The characterisation of intra-EEA aviation emissions as falling 'under the ETS trading system' is accurate for flights between and within EEA states, but flights to/from non-EEA third countries are currently excluded (subject to review). CORSIA (Carbon Offsetting and Reduction Scheme for International Aviation) applies to qualifying international flights not covered by the EU ETS.",
+    "related_entries": [
+      "ETS-LEGAL-001",
+      "ETS-DATA-001",
+      "ETS-DATA-002"
+    ]
+  },
+  {
+    "evidence_id": "ETS-DATA-001",
+    "domain": "economic",
+    "topic": "energy",
+    "subtopic": "aviation_free_allocation_phaseout",
+    "statement": "Free allocation of EU ETS allowances to aircraft operators is being phased out under the Fit for 55 reforms adopted in 2023. Under the revised Directive 2003/87/EC, free allocation to aviation is reduced by 25% in 2024, by 50% in 2025, and eliminated entirely from 2026 onwards for EU/EEA operators generally. Correspondingly, the auctioning share increases. From 2024, the aviation cap is also reduced annually by applying a linear reduction factor increased from 2.2% to 4.3% for 2024-2027 (and 4.4% from 2028). The description of free allowances as 'subsidising' airline emissions, while not technically precise (allowances are not a direct subsidy but a regulatory allocation), reflects the economic reality that airlines receiving free allowances avoid purchasing them at market price, reducing their cost of compliance. At ETS carbon prices of EUR 50-80 per tonne (typical 2023-2025 range), free allocation represents a substantial implicit benefit. The phase-out of free allocation is intended to ensure that the aviation sector bears its full carbon cost, in line with the polluter-pays principle.",
+    "source_name": "European Commission — Allocation to the aviation sector; Directive (EU) 2023/958",
+    "source_url": "https://climate.ec.europa.eu/eu-action/carbon-markets/eu-emissions-trading-system-eu-ets/free-allocation/allocation-aviation-sector_en",
+    "source_date": "2023-10-31",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The phase-out schedule applies to the general EU/EEA framework. Iceland negotiated a specific exemption (see ETS-DATA-002). The characterisation of free allowances as a 'subsidy' is debated — the European Commission considers free allocation a transitional measure to address carbon leakage risk, not a subsidy in the state-aid sense. Airlines argue that free allocation compensates for competitive distortion with non-ETS carriers on international routes.",
+    "related_entries": [
+      "ETS-LEGAL-002",
+      "ETS-DATA-002"
+    ]
+  },
+  {
+    "evidence_id": "ETS-DATA-002",
+    "domain": "economic",
+    "topic": "energy",
+    "subtopic": "iceland_aviation_ets_exemption",
+    "statement": "Iceland negotiated a special arrangement to continue receiving free EU ETS aviation allowances beyond the standard phase-out schedule. In May 2023, at the Council of Europe summit in Reykjavik, Iceland and the European Commission reached a preliminary agreement for Icelandic aircraft operators to continue receiving free EU ETS emissions allowances up to and including the year 2026. This is one year beyond the general EU/EEA phase-out (where free allocation drops to zero from 2026). The Icelandic government argued that the standard rules harm the competitive position of Icelandic airlines and fail to account for Iceland's geographical isolation, which makes its citizens more dependent on air transport than other EEA residents. The EU sought to grant the Icelandic aviation sector an extra year of free allowances as a special solution compatible with the EU's broader climate goals. The agreement was subject to approval by EU Member States, the Icelandic government, and the Icelandic parliament (Althingi). Claims that the exemption extends to 'end of 2027' appear to conflate two different things: Iceland's free allocation exemption (through 2026) and the broader EU ETS aviation geographical scope limitation to intra-EEA flights (extended until start of 2027).",
+    "source_name": "Iceland Review; Carbon Pulse; European Commission",
+    "source_url": "https://www.icelandreview.com/news/icelands-free-emissions-allowances-extended-until-2026/",
+    "source_date": "2023-05-17",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "The May 2023 agreement was described as 'preliminary' and subject to formal approval processes. The exact terms may have been modified during ratification. The distinction between the free allocation exemption (through 2026) and the broader intra-EEA scope limitation (until start of 2027) is important but often conflated in public debate. It is possible that further negotiations have occurred since May 2023 to extend or modify the arrangement — the claim about extension to 'end of 2027' may reflect subsequent developments not captured in these sources.",
+    "related_entries": [
+      "ETS-DATA-001",
+      "ETS-LEGAL-001",
+      "ETS-LEGAL-002"
+    ]
+  },
+  {
+    "evidence_id": "ETS-DATA-003",
+    "domain": "economic",
+    "topic": "energy",
+    "subtopic": "iceland_ets_industrial_coverage",
+    "statement": "Iceland's participation in the EU ETS covers both industrial installations and aviation operators. Iceland's energy-intensive industries — most notably its three aluminium smelters (operated by Rio Tinto at Straumsvik, Alcoa/Century at Reydarfjordur, and Norðurál/Century at Grundartangi), which collectively produce approximately 800,000-900,000 tonnes of aluminium annually — are covered by the EU ETS as stationary installations. Iceland's aluminium smelters are among the largest industrial ETS installations in the EEA EFTA states. However, Iceland's unique energy profile (nearly 100% renewable electricity from geothermal and hydropower) means that its industrial ETS emissions come primarily from the electrolytic process itself (anode effects producing perfluorocarbons, and CO2 from carbon anode consumption), not from fossil fuel combustion. As of Phase III of the EU ETS, aluminium production above a 20 MW thermal input threshold is covered. The EU ETS covers over 11,000 installations across 31 countries — the 27 EU Member States plus Iceland, Norway, Liechtenstein, and (until Brexit) the United Kingdom.",
+    "source_name": "European Commission — Scope of the EU ETS; International Carbon Action Partnership (ICAP); Green by Iceland",
+    "source_url": "https://climate.ec.europa.eu/eu-action/carbon-markets/eu-emissions-trading-system-eu-ets/scope-eu-ets_en",
+    "source_date": "2024-01-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Iceland's aluminium smelters use renewable electricity, so their carbon footprint per tonne of aluminium is significantly lower than smelters powered by fossil fuels (e.g., in China or Australia). The ETS emissions from Icelandic smelters are primarily process emissions, not energy emissions. The inclusion of aluminium in the ETS is relevant to Iceland's broader climate policy but is distinct from the aviation-specific debates about free allocation and exemptions.",
+    "related_entries": [
+      "ETS-LEGAL-001",
+      "ENERGY-DATA-001"
+    ]
+  },
+  {
+    "evidence_id": "ETS-LEGAL-003",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "iceland_ets_engagement_timeline",
+    "statement": "Iceland's engagement with the EU ETS has followed the general EEA EFTA timeline rather than involving early or proactive negotiation. Key milestones: The EU ETS Directive (2003/87/EC) was adopted by the EU in October 2003. EEA Joint Committee Decision No 146/2007 incorporating the Directive into the EEA Agreement was adopted on 26 October 2007, entering into force on 29 December 2007 — over four years after the Directive's adoption. Iceland began participating in the EU ETS from 1 January 2008 (Phase II). The aviation amendment (Directive 2008/101/EC) was incorporated into the EEA Agreement through subsequent Joint Committee Decisions. Iceland's negotiations regarding exemptions and special treatment for its aviation sector came primarily in connection with the Fit for 55 package (proposed July 2021, adopted 2023), when Iceland sought and obtained the free allocation extension through 2026. The EEA EFTA states (Iceland, Norway, Liechtenstein) participate in the EEA Joint Committee process for incorporating EU legislation but do not have voting rights in the EU legislative process where the ETS rules are decided. They can raise concerns through the EEA consultation mechanisms but cannot formally amend EU legislation. Whether earlier engagement would have produced better outcomes is a counterfactual question that cannot be definitively answered.",
+    "source_name": "EFTA — Climate policy and the EEA Agreement; EEA Joint Committee records; European Commission",
+    "source_url": "https://www.efta.int/EEA/news/Climate-policy-and-EEA-Agreement-63341",
+    "source_date": "2019-10-25",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The claim that 'earlier Icelandic governments should have engaged earlier in ETS negotiations' is a normative/political judgment rather than a factual claim. The EEA EFTA states have limited formal influence over EU legislation — they can submit comments during the EU legislative process and negotiate adaptations when incorporating legislation into the EEA Agreement, but they cannot vote or formally amend directives. The four-year gap between the EU ETS Directive (2003) and its EEA incorporation (2007) partly reflects the complexity of the EEA decision-shaping process and constitutional requirements in the EFTA states. Whether this constituted a failure of engagement or simply the normal pace of EEA incorporation is a matter of political interpretation.",
+    "related_entries": [
+      "ETS-LEGAL-001",
+      "ETS-DATA-002",
+      "SOV-LEGAL-001"
+    ]
+  }
+]

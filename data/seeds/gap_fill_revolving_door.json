@@ -1,0 +1,74 @@
+[
+  {
+    "evidence_id": "SOV-LEGAL-021",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "icelandic_conflict_of_interest_act",
+    "statement": "Lög um varnir gegn hagsmunaárekstrum nr. 13/2005 (Act on Prevention of Conflicts of Interest no. 13/2005) is Iceland's primary statute governing conflicts of interest for officials in the central government (Stjórnarráðið). The act applies to ministers, permanent secretaries (ráðuneytisstjórar), and other senior officials. Key provisions include: (1) mandatory disclosure of financial interests, board memberships, and secondary employment upon taking office (Article 4); (2) obligation to recuse from decisions where personal financial or other interests create a conflict (Article 5); (3) a prohibition on officials using insider information obtained through their position for personal gain (Article 6). The act was strengthened in 2012 alongside the broader overhaul of the Government Offices Act (lög um Stjórnarráð Íslands nr. 115/2011). Notably, the act does NOT contain any post-employment restrictions or cooling-off periods — once an official leaves office, the act's obligations cease. This gap was flagged in GRECO's Fourth Evaluation Round report on Iceland (GrecoEval4Rep(2017)5), which recommended that Iceland introduce post-employment restrictions for persons with top executive functions. As of early 2026, no such restrictions have been enacted into law.",
+    "source_name": "Lög um varnir gegn hagsmunaárekstrum nr. 13/2005; GRECO Fourth Evaluation Round — Iceland (GrecoEval4Rep(2017)5)",
+    "source_url": "https://www.althingi.is/lagas/nuna/2005013.html",
+    "source_date": "2005-03-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The act covers the central government (Stjórnarráðið) but does not extend to MPs, municipal officials, or officials of independent agencies. Enforcement is largely complaint-driven rather than proactive. GRECO's compliance report noted partial implementation of its recommendation on post-employment restrictions, primarily through soft-law instruments (the ministers' ethics code) rather than binding legislation.",
+    "related_entries": [
+      "SOV-LEGAL-020",
+      "SOV-LEGAL-022",
+      "SOV-LEGAL-007"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-022",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "ministers_ethics_code_iceland",
+    "statement": "Siðareglur ráðherra (Code of Ethics for Ministers) were first adopted by the Icelandic government in 2011 and revised in 2017, partly in response to GRECO recommendations. The code establishes principles of integrity, transparency, and accountability for cabinet ministers. Relevant provisions include: (1) ministers must avoid situations where private interests conflict with their official duties; (2) ministers must publicly disclose their financial interests and those of close family members; (3) ministers should not accept gifts or benefits that could compromise their independence. The 2017 revision added a soft provision on post-employment conduct, recommending that departing ministers exercise prudence when taking new positions that relate to their former portfolio. However, this is a guideline (leiðbeiningar) rather than a binding legal obligation — there is no enforcement mechanism and no specific cooling-off period. The code sits alongside the more general lög um Stjórnarráð Íslands nr. 115/2011 (Government Offices Act), which establishes administrative standards for the executive branch. Separately, the Siðareglur Alþingis (Code of Conduct for MPs, adopted 2016) covers parliamentary conflicts of interest but similarly lacks post-employment provisions.",
+    "source_name": "Siðareglur ráðherra (2017 revision); Forsætisráðuneytið; Siðareglur Alþingis (2016)",
+    "source_url": "https://www.stjornarradid.is/verkefni/allra-raduneyti/sidareglur-radherra/",
+    "source_date": "2017-01-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The ministers' ethics code is not legislation — it is a government policy document adopted by cabinet resolution. It has no independent enforcement body and no sanctions for non-compliance beyond political accountability. The distinction between binding law (lög um varnir gegn hagsmunaárekstrum) and soft-law guidelines (siðareglur) is important: Iceland's binding rules address in-office conflicts, while post-employment conduct is addressed only through non-binding guidance.",
+    "related_entries": [
+      "SOV-LEGAL-021",
+      "SOV-LEGAL-020",
+      "SOV-LEGAL-007"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-023",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_revolving_door_treaty_rules",
+    "statement": "The EU Treaty framework imposes specific post-employment obligations on senior EU officials. Article 245 TFEU (Treaty on the Functioning of the European Union) states that members of the European Commission shall, both during and after their term of office, 'respect the obligations arising therefrom and in particular their duty to behave with integrity and discretion as regards the acceptance, after they have ceased to hold office, of certain appointments or benefits.' The European Commission's Code of Conduct for Commissioners (revised 2018) operationalises this: departing Commissioners face a 2-year cooling-off period (3 years for the Commission President) during which they must notify the Commission of any intended new professional activity and obtain approval. If the activity relates to their former portfolio, it is presumptively prohibited during the cooling-off period. The European Ombudsman has investigated several cases of alleged revolving-door violations, most notably the move of former Commission President José Manuel Barroso to Goldman Sachs in 2016, which led to the strengthening of the code in 2018. Despite these rules, enforcement remains contested — the Commission's own ad hoc ethics committee assesses notifications, but critics argue it lacks independence. The European Parliament has repeatedly called for the establishment of an independent EU ethics body.",
+    "source_name": "Article 245 TFEU; European Commission Code of Conduct for Commissioners (C(2018) 700); European Ombudsman Decision OI/1/2021/KR",
+    "source_url": "https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/stronger-europe-world/ethics-and-integrity/code-conduct-commissioners_en",
+    "source_date": "2018-02-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "EU revolving-door rules apply to Commissioners and senior EU staff, not to member state officials in Council formations or national representatives. If Iceland joined the EU, its Commissioner would be subject to these rules, but Icelandic ministers attending Council meetings would not. The rules have been criticised both as too weak (by transparency NGOs like Transparency International EU) and as too intrusive (by those who argue they deter qualified candidates from serving). The 2018 strengthening was partly a response to the Barroso controversy but has not been tested in a comparable high-profile case since.",
+    "related_entries": [
+      "SOV-LEGAL-020",
+      "SOV-DATA-007",
+      "SOV-LEGAL-007"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-024",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "nordic_revolving_door_comparison",
+    "statement": "The Nordic countries vary considerably in their approach to post-employment restrictions for government officials, but several have stricter frameworks than Iceland. Denmark: The karantænelov (Act on Certain Restrictions on Ministers' and State Secretaries' Transition to the Private Sector, adopted 2019) imposes a mandatory 6-month general cooling-off period for ministers and state secretaries after leaving office, plus additional restrictions of up to 12 months if their new position relates to their former portfolio. An independent advisory board (Karantæneudvalget) assesses each case. Finland: The valtion virkamieslaki (State Civil Servants' Act, 750/1994, amended 2017) allows ministries to include up to 12-month cooling-off clauses in senior officials' employment contracts. The practice is not universal but has become increasingly common for permanent secretaries (kansliapäälliköt) and directors-general. A 2020 government resolution recommends such clauses for all senior positions. Sweden: Sweden does not have a general cooling-off law for ministers, but the Nämnden för prövning av statsråds och statssekreterares övergångsrestriktioner (Board for Review of Transition Restrictions for Ministers and State Secretaries), established in 2018, can impose transition restrictions of up to 12 months when ministers or state secretaries move to the private sector. Norway (non-EU but relevant as an EEA comparator): The karanteneloven (Quarantine Act, 2015) is the strictest in the Nordic region, imposing up to 6 months of quarantine (karantene) plus up to 12 months of restricted activity (saksforbud) for ministers, state secretaries, and political advisors. An independent committee (Karantenenemnda) assesses each transition. By comparison, Iceland has no mandatory cooling-off period, no independent review body, and only non-binding guidance in the ministers' ethics code.",
+    "source_name": "Danish Karantænelov (2019); Finnish Valtion virkamieslaki 750/1994; Swedish SOU 2017:3; Norwegian Karanteneloven (2015); OECD Post-Public Employment report (2022)",
+    "source_url": "https://www.oecd.org/governance/ethics/post-public-employment.htm",
+    "source_date": "2022-01-01",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The effectiveness of Nordic cooling-off regimes varies. Norway's system is considered the most robust due to mandatory application and an active independent committee. Denmark's 2019 law is relatively new and has had limited case law. Finland's approach is contractual rather than statutory, meaning coverage depends on individual employment agreements. Sweden's board can only recommend restrictions, though recommendations have been followed in practice. Direct comparison with Iceland is complicated by Iceland's much smaller government apparatus — the potential revolving-door pool is smaller, but so are the degrees of separation between government and the private sector, which arguably makes the risk higher per capita.",
+    "related_entries": [
+      "SOV-LEGAL-021",
+      "SOV-LEGAL-020",
+      "SOV-DATA-007"
+    ]
+  }
+]
