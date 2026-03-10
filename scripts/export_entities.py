@@ -68,47 +68,91 @@ def _get_claim_slugs(report_path: Path) -> list[str]:
     return slugs
 
 
-def load_all_entities() -> dict[str, dict]:
-    """Load and merge entity data from all analyses.
+def _process_entity_dir(
+    entities: dict[str, dict],
+    entity_dir: Path,
+    report_slug: str,
+    claim_slugs: list[str],
+) -> None:
+    """Process a single directory containing _entities.json."""
+    entities_path = entity_dir / "_entities.json"
+    if not entities_path.exists():
+        return
+
+    with open(entities_path, encoding="utf-8") as f:
+        raw = json.load(f)
+
+    author = raw.get("article_author")
+    if author and author.get("name"):
+        _merge_entity(entities, author, report_slug, claim_slugs)
+
+    for speaker in raw.get("speakers", []):
+        if speaker.get("name"):
+            _merge_entity(entities, speaker, report_slug, claim_slugs)
+
+
+def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
+    """Load and merge entity data from all analyses and optional extra dirs.
+
+    Args:
+        extra_dirs: Additional directories to scan for _entities.json files
+                    (e.g. inbox entity dirs from /process-inbox).
 
     Returns a dict keyed by entity slug with merged data.
     """
     entities: dict[str, dict] = {}
 
+    # Standard analyses
     for analysis_dir in sorted(ANALYSES_DIR.iterdir()):
         if not analysis_dir.is_dir():
             continue
 
-        entities_path = analysis_dir / "_entities.json"
         report_path = analysis_dir / "_report_final.json"
-
-        if not entities_path.exists() or not report_path.exists():
+        if not report_path.exists():
             continue
-
-        with open(entities_path, encoding="utf-8") as f:
-            raw = json.load(f)
 
         report_slug = _get_report_slug(report_path)
         claim_slugs = _get_claim_slugs(report_path)
+        _process_entity_dir(entities, analysis_dir, report_slug, claim_slugs)
 
-        # Process article author
-        author = raw.get("article_author")
-        if author and author.get("name"):
-            _merge_entity(entities, author, report_slug, claim_slugs)
-
-        # Process all speakers
-        for speaker in raw.get("speakers", []):
-            if speaker.get("name"):
-                _merge_entity(entities, speaker, report_slug, claim_slugs)
+    # Extra dirs (inbox entities) — these have _entities.json but no _report_final.json
+    # Use the directory name as slug and extract claims from extracted_claims if available
+    for extra_dir in (extra_dirs or []):
+        if not extra_dir.is_dir():
+            continue
+        for sub_dir in sorted(extra_dir.iterdir()):
+            if not sub_dir.is_dir():
+                continue
+            slug = icelandic_slugify(sub_dir.name)
+            _process_entity_dir(entities, sub_dir, slug, [])
 
     return entities
 
 
 # Known name aliases — map variant names to canonical slugs
+# Icelandic morphology creates definite-suffix and case variants
 _NAME_ALIASES: dict[str, str] = {
+    # Organisations — definite suffixes and common short forms
     "bændasamtökin": "baendasamtok-islands",
     "bændasamtök íslands": "baendasamtok-islands",
+    "samtök iðnaðarins": "samtok-idnadarins",
+    "samtökin": "samtok-idnadarins",
     "ríkisstjórnin": "rikissjornin",
+    "ríkisstjórn íslands": "rikissjornin",
+    "alþingi": "althingi",
+    "rúv": "ruv",
+    "ríkisútvarpið": "ruv",
+    # Parties — with/without definite suffix
+    "miðflokkurinn": "midflokkurinn",
+    "miðflokkur": "midflokkurinn",
+    "sjálfstæðisflokkurinn": "sjalfstaedisflokkurinn",
+    "sjálfstæðisflokkur": "sjalfstaedisflokkurinn",
+    "framsóknarflokkurinn": "framsoknarflokkurinn",
+    "framsóknarflokkur": "framsoknarflokkurinn",
+    "viðreisn": "vidreisn",
+    "samfylkingin": "samfylkingin",
+    "samfylking": "samfylkingin",
+    "flokkur fólksins": "flokkur-folksins",
 }
 
 # Entries that are titles/roles, not actual entities — skip these
@@ -214,9 +258,12 @@ def _generate_descriptions(entities: dict[str, dict]) -> None:
         entity["description"] = " ".join(parts) if parts else ""
 
 
-def export_entities(site_dir: Path | None = None) -> list[dict]:
+def export_entities(
+    site_dir: Path | None = None,
+    extra_dirs: list[Path] | None = None,
+) -> list[dict]:
     """Export merged entities to JSON files."""
-    entities = load_all_entities()
+    entities = load_all_entities(extra_dirs=extra_dirs)
     _generate_descriptions(entities)
 
     # Sort by mention count (descending), then name
@@ -267,7 +314,12 @@ def main() -> None:
         else DEFAULT_SITE_DIR
     )
 
-    export_entities(site_dir)
+    extra_dirs = []
+    if "--inbox-dir" in sys.argv:
+        idx = sys.argv.index("--inbox-dir")
+        extra_dirs.append(Path(sys.argv[idx + 1]))
+
+    export_entities(site_dir, extra_dirs=extra_dirs or None)
 
 
 if __name__ == "__main__":

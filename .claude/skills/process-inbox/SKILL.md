@@ -175,6 +175,53 @@ Skrifaðu JSON á þessu sniði í `$WORK_DIR/_extracted_claims.json`:
 - Independence: both pro-EU and anti-EU claims equally
 - Prefer fewer, higher-quality claims over exhaustive extraction
 
+### Step 2b: Extract Entities (Subagent — per article)
+
+For each article in `$WORK_DIR/`, prepare entity extraction context and launch a subagent. This identifies who said what and their EU stance — feeding the Raddirnar page.
+
+```bash
+uv run python -c "
+import json
+from pathlib import Path
+from esbvaktin.pipeline.models import Claim
+from esbvaktin.pipeline.prepare_context import prepare_entity_context
+
+work_dir = Path('$WORK_DIR')
+extracted = json.loads((work_dir / '_extracted_claims.json').read_text())
+
+for article in extracted:
+    source_file = article['source_file']
+    article_path = work_dir / source_file
+    if not article_path.exists():
+        continue
+
+    article_text = article_path.read_text()
+    claims = [Claim.model_validate(c) for c in article.get('claims', [])]
+
+    # Create per-article entity output dir
+    entity_dir = work_dir / 'entities' / article_path.stem
+    entity_dir.mkdir(parents=True, exist_ok=True)
+
+    metadata = {
+        'title': article.get('source_title'),
+        'source': article.get('source_url'),
+        'date': article.get('source_date'),
+    }
+    prepare_entity_context(article_text, claims, entity_dir, metadata)
+    print(f'  Entity context: {entity_dir.name} ({len(claims)} claims)')
+"
+```
+
+**Subagent task (per article):** Read `$WORK_DIR/entities/{article_stem}/_context_entities.md` and write the output to `$WORK_DIR/entities/{article_stem}/_entities.json`.
+
+This step can run **in parallel** with Step 3 if desired. After all entity subagents complete, re-export entities to the site:
+
+```bash
+uv run python scripts/export_entities.py --inbox-dir "$WORK_DIR/entities"
+```
+
+**Note:** This requires `export_entities.py` to scan both `data/analyses/` and the inbox entity dirs. If the `--inbox-dir` flag is not yet supported, the entity files can be copied to `data/analyses/` directories manually, or the export script can be extended.
+
 ### Step 3: Match Claims Against Claim Bank (Python)
 
 ```bash
@@ -357,6 +404,8 @@ Format the ground truth gaps as a prioritised list, sorted by category, highligh
 | `$WORK_DIR/_context_batch_extraction.md` | Subagent context for claim extraction |
 | `$WORK_DIR/_extracted_claims.json` | Raw extracted claims per article |
 | `$WORK_DIR/_match_results.json` | Matching results + gap analysis |
+| `$WORK_DIR/entities/{stem}/_context_entities.md` | Per-article entity extraction context |
+| `$WORK_DIR/entities/{stem}/_entities.json` | Per-article extracted entities/speakers |
 
 ## Notes
 
