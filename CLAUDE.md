@@ -39,6 +39,8 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 ```
 src/esbvaktin/          # Main package
   pipeline/             # Article analysis pipeline
+    transcript.py       # Panel show transcript parser + entity generation
+    register_sightings.py  # Panel show sighting registration (source_type='panel_show')
   speeches/             # Alþingi speech MCP server (read-only, althingi.db)
     context.py          # Sync speech context for pipeline (MP name detection + excerpts)
     fact_check.py       # Speech selection, loading, work dir setup for fact-checking
