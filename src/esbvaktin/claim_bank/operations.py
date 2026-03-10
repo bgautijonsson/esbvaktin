@@ -251,6 +251,61 @@ def add_claim(
     return claim_id
 
 
+# ── Update ────────────────────────────────────────────────────────────
+
+
+def update_claim_verdict(
+    claim_id: int,
+    *,
+    verdict: str,
+    explanation_is: str,
+    supporting_evidence: list[str],
+    contradicting_evidence: list[str],
+    missing_context_is: str | None = None,
+    confidence: float,
+    conn: psycopg.Connection | None = None,
+) -> None:
+    """Update a claim's verdict and evidence after re-assessment.
+
+    Increments version, updates last_verified to today.
+    """
+    from ..ground_truth.operations import get_connection
+
+    close = False
+    if conn is None:
+        conn = get_connection()
+        close = True
+
+    conn.execute(
+        """
+        UPDATE claims SET
+            verdict = %(verdict)s,
+            explanation_is = %(explanation_is)s,
+            supporting_evidence = %(supporting)s,
+            contradicting_evidence = %(contradicting)s,
+            missing_context_is = %(missing_context_is)s,
+            confidence = %(confidence)s,
+            last_verified = CURRENT_DATE,
+            version = version + 1,
+            updated_at = NOW()
+        WHERE id = %(claim_id)s
+        """,
+        {
+            "claim_id": claim_id,
+            "verdict": verdict,
+            "explanation_is": explanation_is,
+            "supporting": supporting_evidence,
+            "contradicting": contradicting_evidence,
+            "missing_context_is": missing_context_is,
+            "confidence": confidence,
+        },
+    )
+    conn.commit()
+
+    if close:
+        conn.close()
+
+
 # ── Article–claim reference tracking ─────────────────────────────────
 
 
