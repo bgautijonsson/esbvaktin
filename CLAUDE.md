@@ -56,7 +56,7 @@ R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
 ### Evidence Seeds
 - IDs: `{TOPIC}-{TYPE}-{NUMBER}` (e.g., `ENERGY-DATA-001`)
 - Topics: fisheries, trade, eea_eu_law, sovereignty, agriculture, precedents, currency, labour, energy, housing, polling, party_positions, org_positions
-- Valid `source_type` values: `official_statistics`, `legal_text`, `academic_paper`, `expert_analysis`, `international_org`
+- Valid `source_type` values: `official_statistics`, `legal_text`, `academic_paper`, `expert_analysis`, `international_org`, `parliamentary_record`
 - Seed files go in `data/seeds/*.json` (committed); CSVs in `data/{source}/` (gitignored)
 
 - Python code: type hints, f-strings, async where appropriate

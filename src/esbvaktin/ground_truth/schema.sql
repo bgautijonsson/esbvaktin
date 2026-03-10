@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS evidence (
     source_name TEXT NOT NULL,               -- e.g. "Fiskistofa — Aflaheimildir 2025"
     source_url TEXT,
     source_date DATE,
-    source_type TEXT NOT NULL,               -- official_statistics | legal_text | academic_paper | expert_analysis | international_org
+    source_type TEXT NOT NULL,               -- official_statistics | legal_text | academic_paper | expert_analysis | international_org | parliamentary_record
     confidence TEXT NOT NULL DEFAULT 'high', -- high | medium | low
     caveats TEXT,                            -- important qualifications
     related_entries TEXT[],                  -- array of evidence_ids

@@ -20,6 +20,7 @@ class SourceType(str, Enum):
     ACADEMIC_PAPER = "academic_paper"
     EXPERT_ANALYSIS = "expert_analysis"
     INTERNATIONAL_ORG = "international_org"
+    PARLIAMENTARY_RECORD = "parliamentary_record"
 
 
 class Confidence(str, Enum):
