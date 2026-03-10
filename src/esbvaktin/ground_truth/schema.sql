@@ -112,11 +112,12 @@ CREATE TABLE IF NOT EXISTS claim_sightings (
     source_url TEXT NOT NULL,                   -- article URL
     source_title TEXT,                          -- article title (extracted)
     source_date DATE,                           -- publication date if available
-    source_type TEXT,                           -- news | opinion | althingi | interview | other
+    source_type TEXT,                           -- news | opinion | althingi | interview | panel_show | other
     original_text TEXT,                         -- the claim as it appeared in this article
     similarity FLOAT,                           -- cosine similarity to canonical claim
-    speech_verdict TEXT,                        -- verdict specific to this speech occurrence
+    speech_verdict TEXT,                        -- verdict specific to this speech/panel occurrence
     speech_id TEXT,                             -- althingi.db speech_id (for source_type='althingi')
+    speaker_name TEXT,                          -- who said it (panel_show, althingi)
     extracted_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(claim_id, source_url)                -- one sighting per claim per article
 );

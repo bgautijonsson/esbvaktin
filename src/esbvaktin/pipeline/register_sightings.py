@@ -1,0 +1,177 @@
+"""Register claim sightings from panel show analysis.
+
+After assessment, each claim is matched against the claim bank:
+- Match >= 0.70 → insert sighting with verdict + speaker_name
+- No match + non-unverifiable → insert new CanonicalClaim(published=False)
+- No match + unverifiable → discard
+
+Same 3-branch logic as ``speeches.register_sightings`` but with
+``source_type='panel_show'`` and ``speaker_name`` from transcript labels.
+"""
+
+from __future__ import annotations
+
+import logging
+from datetime import date
+
+from esbvaktin.claim_bank.models import CanonicalClaim
+from esbvaktin.claim_bank.operations import add_claim, generate_slug, search_claims
+from esbvaktin.pipeline.models import ClaimAssessment
+
+logger = logging.getLogger(__name__)
+
+SIGHTING_MATCH_THRESHOLD = 0.70
+
+
+def register_panel_sightings(
+    assessments: list[ClaimAssessment],
+    source_url: str,
+    source_title: str,
+    source_date: date | None = None,
+    conn=None,
+) -> dict[str, int]:
+    """Register sightings from assessed panel show claims.
+
+    Each sighting includes ``speaker_name`` from the claim's
+    ``speaker_name`` field (set during extraction from transcript labels).
+
+    Returns counts: {"matched": N, "new_claims": N, "discarded": N}.
+    """
+    from esbvaktin.ground_truth.operations import get_connection
+
+    close = False
+    if conn is None:
+        conn = get_connection()
+        close = True
+
+    counts = {"matched": 0, "new_claims": 0, "discarded": 0}
+
+    for assessment in assessments:
+        claim_text = assessment.claim.claim_text
+        verdict = assessment.verdict.value
+        speaker = assessment.claim.speaker_name
+
+        # Try to match against existing claim bank
+        matches = search_claims(
+            query=claim_text,
+            threshold=SIGHTING_MATCH_THRESHOLD,
+            top_k=1,
+            conn=conn,
+        )
+
+        if matches:
+            match = matches[0]
+            _insert_sighting(
+                conn=conn,
+                claim_id=match.claim_id,
+                source_url=source_url,
+                source_title=source_title,
+                source_date=source_date,
+                source_type="panel_show",
+                original_text=claim_text,
+                similarity=match.similarity,
+                speech_verdict=verdict,
+                speaker_name=speaker,
+            )
+            counts["matched"] += 1
+            logger.info(
+                "Sighting: %.3f match '%s' → claim %s [%s] (%s)",
+                match.similarity,
+                claim_text[:50],
+                match.claim_slug,
+                speaker or "?",
+                verdict,
+            )
+
+        elif verdict != "unverifiable":
+            slug = generate_slug(claim_text[:80])
+            new_claim = CanonicalClaim(
+                claim_slug=slug,
+                canonical_text_is=claim_text,
+                category=assessment.claim.category,
+                claim_type=assessment.claim.claim_type.value,
+                verdict=verdict,
+                explanation_is=assessment.explanation,
+                missing_context_is=assessment.missing_context,
+                supporting_evidence=assessment.supporting_evidence,
+                contradicting_evidence=assessment.contradicting_evidence,
+                confidence=assessment.confidence,
+                published=False,
+            )
+            try:
+                claim_id = add_claim(new_claim, conn=conn)
+                _insert_sighting(
+                    conn=conn,
+                    claim_id=claim_id,
+                    source_url=source_url,
+                    source_title=source_title,
+                    source_date=source_date,
+                    source_type="panel_show",
+                    original_text=claim_text,
+                    similarity=1.0,
+                    speech_verdict=verdict,
+                    speaker_name=speaker,
+                )
+                counts["new_claims"] += 1
+                logger.info(
+                    "New claim: '%s' → %s [%s] (%s)",
+                    claim_text[:50],
+                    slug,
+                    speaker or "?",
+                    verdict,
+                )
+            except Exception as e:
+                logger.warning("Failed to insert claim '%s': %s", slug, e)
+
+        else:
+            counts["discarded"] += 1
+            logger.debug("Discarded unverifiable: '%s' [%s]", claim_text[:50], speaker)
+
+    if close:
+        conn.close()
+
+    return counts
+
+
+def _insert_sighting(
+    conn,
+    claim_id: int,
+    source_url: str,
+    source_title: str,
+    source_date: date | None,
+    source_type: str,
+    original_text: str,
+    similarity: float,
+    speech_verdict: str,
+    speaker_name: str | None = None,
+) -> None:
+    """Insert a claim sighting row with optional speaker_name."""
+    conn.execute(
+        """
+        INSERT INTO claim_sightings (
+            claim_id, source_url, source_title, source_date,
+            source_type, original_text, similarity,
+            speech_verdict, speaker_name
+        ) VALUES (
+            %(claim_id)s, %(source_url)s, %(source_title)s, %(source_date)s,
+            %(source_type)s, %(original_text)s, %(similarity)s,
+            %(speech_verdict)s, %(speaker_name)s
+        ) ON CONFLICT (claim_id, source_url) DO UPDATE SET
+            speech_verdict = EXCLUDED.speech_verdict,
+            similarity = EXCLUDED.similarity,
+            original_text = EXCLUDED.original_text,
+            speaker_name = EXCLUDED.speaker_name
+        """,
+        {
+            "claim_id": claim_id,
+            "source_url": source_url,
+            "source_title": source_title,
+            "source_date": source_date,
+            "source_type": source_type,
+            "original_text": original_text,
+            "similarity": similarity,
+            "speech_verdict": speech_verdict,
+            "speaker_name": speaker_name,
+        },
+    )
+    conn.commit()
