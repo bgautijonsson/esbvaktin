@@ -22,8 +22,33 @@ def _sanitise_icelandic_quotes(text: str) -> str:
     Icelandic text uses „ (U+201E) and " (U+201C) as quotation marks.
     When an LLM writes these inside JSON string values they appear as
     unescaped double-quote characters, causing json.loads() to fail.
-    We also handle " (U+201D, right double) and other smart quotes.
+
+    The trickiest pattern is „word" where the opening „ is U+201E but
+    the closing " is a plain ASCII double-quote — indistinguishable from
+    a JSON delimiter.  We handle this by finding „...ASCII-" pairs and
+    escaping both ends before falling back to blanket replacement.
     """
+    # Phase 1: fix paired „...ASCII " patterns.
+    # Find each „ and its matching closing ASCII " within the same line.
+    result = list(text)
+    i = 0
+    while i < len(result):
+        ch = result[i]
+        if ch == "\u201e":
+            # Find the next ASCII " on the same line
+            j = i + 1
+            while j < len(result) and result[j] != "\n":
+                if result[j] == '"':
+                    # Check it's not already escaped
+                    if j == 0 or result[j - 1] != "\\":
+                        result[j] = '\\"'
+                    break
+                j += 1
+            result[i] = '\\"'
+        i += 1
+    text = "".join(result)
+
+    # Phase 2: blanket-replace any remaining smart quotes
     replacements = {
         "\u201e": '\\"',  # „ — double low-9 quotation mark
         "\u201c": '\\"',  # " — left double quotation mark
@@ -85,11 +110,20 @@ def _normalise_assessment(item: dict) -> dict:
     return item
 
 
+_greynir_available: bool | None = None
+
+
 def _post_process_icelandic(item: dict) -> dict:
     """Run optional Icelandic corrections on explanation/missing_context fields."""
+    global _greynir_available
+    # Check once and cache — avoids noisy ImportError per field per claim
+    if _greynir_available is False:
+        return item
     try:
         from esbvaktin.corrections.greynir import check_with_library, apply_fixes_to_text
+        _greynir_available = True
     except ImportError:
+        _greynir_available = False
         return item
 
     for field in ("explanation", "missing_context"):

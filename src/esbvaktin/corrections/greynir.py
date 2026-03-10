@@ -41,13 +41,21 @@ S004_SUPPRESS = {
 }
 
 
+_reynir_available: bool | None = None
+
+
 def check_with_library(sentences: list[tuple[str, int]]) -> list[dict]:
     """Check sentences using local GreynirCorrect library."""
+    global _reynir_available
+    if _reynir_available is False:
+        return []
     try:
         from reynir_correct import check_single
+        _reynir_available = True
     except ImportError:
+        _reynir_available = False
         print(
-            "ERROR: reynir-correct not installed. Run: uv pip install reynir-correct",
+            "WARNING: reynir-correct not installed. Run: uv pip install reynir-correct",
             file=sys.stderr,
         )
         return []
