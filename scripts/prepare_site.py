@@ -350,41 +350,59 @@ def _load_entities(analysis_dir: Path) -> dict | None:
         return json.load(f)
 
 
+def _resolve_speaker_attributions(speaker: dict) -> list[dict]:
+    """Resolve attributions from raw speaker dict (new or legacy format).
+
+    Returns list of {claim_index, attribution} dicts.
+    """
+    attributions = speaker.get("attributions", [])
+    if attributions:
+        return [
+            {
+                "claim_index": a["claim_index"],
+                "attribution": a.get("attribution", "asserted"),
+            }
+            for a in attributions
+        ]
+    return [
+        {"claim_index": idx, "attribution": "asserted"}
+        for idx in speaker.get("claim_indices", [])
+    ]
+
+
 def _speakers_for_claim(entities_data: dict | None, claim_index: int) -> list[dict]:
     """Get speakers attributed to a claim by index.
 
-    Returns a list of {name, type, role, party, stance} dicts.
+    Returns a list of {name, type, role, party, stance, attribution} dicts.
     """
     if not entities_data:
         return []
 
     speakers = []
 
+    def _check_speaker(speaker: dict) -> None:
+        for attr in _resolve_speaker_attributions(speaker):
+            if attr["claim_index"] == claim_index:
+                speakers.append({
+                    "name": speaker["name"],
+                    "type": speaker.get("type", "individual"),
+                    "role": speaker.get("role"),
+                    "party": speaker.get("party"),
+                    "stance": speaker.get("stance", "neutral"),
+                    "attribution": attr["attribution"],
+                    "stance_score": speaker.get("stance_score"),
+                    "credibility": speaker.get("credibility"),
+                })
+                break  # One entry per speaker per claim
+
     # Check article author
     author = entities_data.get("article_author")
-    if author and claim_index in author.get("claim_indices", []):
-        speakers.append({
-            "name": author["name"],
-            "type": author.get("type", "individual"),
-            "role": author.get("role"),
-            "party": author.get("party"),
-            "stance": author.get("stance", "neutral"),
-            "stance_score": author.get("stance_score"),
-            "credibility": author.get("credibility"),
-        })
+    if author:
+        _check_speaker(author)
 
     # Check all other speakers
     for speaker in entities_data.get("speakers", []):
-        if claim_index in speaker.get("claim_indices", []):
-            speakers.append({
-                "name": speaker["name"],
-                "type": speaker.get("type", "individual"),
-                "role": speaker.get("role"),
-                "party": speaker.get("party"),
-                "stance": speaker.get("stance", "neutral"),
-                "stance_score": speaker.get("stance_score"),
-                "credibility": speaker.get("credibility"),
-            })
+        _check_speaker(speaker)
 
     return speakers
 
@@ -579,6 +597,142 @@ def main() -> None:
 
     sources = set(r.get("article_source") for r in all_reports if r.get("article_source"))
     print(f"Wrote listing JSON: {len(listing)} reports ({len(sources)} sources: {', '.join(sorted(sources))})")
+
+    # Prepare entity detail pages
+    prepare_entity_details(site_dir)
+
+
+# ── Entity detail page preparation ───────────────────────────────────
+
+_ACTIVE_ATTRIBUTIONS = {"asserted", "quoted", "paraphrased"}
+
+_ATTRIBUTION_LABELS = {
+    "asserted": "Fullyrt",
+    "quoted": "Vitnað í",
+    "paraphrased": "Umorðað",
+    "mentioned": "Nefnt",
+}
+
+
+def prepare_entity_details(site_dir: Path) -> None:
+    """Build per-entity detail JSONs by resolving claims through reports.
+
+    For each entity, loads linked report JSONs and finds claims where the
+    entity appears in the speakers[] array (by name match). This bypasses the
+    truncated claim slug problem in entities.json.
+    """
+    entities_path = site_dir / "_data" / "entities.json"
+    reports_dir = site_dir / "_data" / "reports"
+    details_dir = site_dir / "_data" / "entity-details"
+    details_dir.mkdir(parents=True, exist_ok=True)
+
+    if not entities_path.exists():
+        print("No entities.json found — skipping entity details.")
+        return
+
+    with open(entities_path, encoding="utf-8") as f:
+        entities = json.load(f)
+
+    # Load all reports into a slug → data map
+    reports_map: dict[str, dict] = {}
+    for rp in sorted(reports_dir.glob("*.json")):
+        with open(rp, encoding="utf-8") as f:
+            rd = json.load(f)
+        reports_map[rd["slug"]] = rd
+
+    written = 0
+    for entity in entities:
+        detail = _build_entity_detail(entity, reports_map)
+        out_path = details_dir / f"{entity['slug']}.json"
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(detail, f, ensure_ascii=False, indent=2)
+        written += 1
+
+    print(f"\nWrote {written} entity detail pages to {details_dir}")
+
+
+def _build_entity_detail(entity: dict, reports_map: dict[str, dict]) -> dict:
+    """Build a detail JSON for a single entity.
+
+    Resolves claims by scanning the entity's linked articles for speaker matches.
+    """
+    entity_name = entity["name"]
+    article_slugs = entity.get("articles", [])
+
+    resolved_claims = []
+    resolved_articles = []
+    scorecard: dict[str, int] = {}
+
+    for article_slug in article_slugs:
+        report = reports_map.get(article_slug)
+        if not report:
+            continue
+
+        article_claims = []
+        article_attr_types: set[str] = set()
+
+        for claim_item in report.get("claims", []):
+            speakers = claim_item.get("speakers", [])
+            # Find this entity in the claim's speakers
+            match = None
+            for s in speakers:
+                if s["name"] == entity_name:
+                    match = s
+                    break
+            if not match:
+                continue
+
+            attribution = match.get("attribution", "asserted")
+            article_attr_types.add(attribution)
+
+            # Prefer Icelandic claim text
+            claim_text = claim_item.get("claim", {}).get("claim_text", "")
+            verdict = claim_item.get("verdict", "unknown")
+            category = claim_item.get("claim", {}).get("category", "")
+
+            resolved_claims.append({
+                "claim_text": claim_text,
+                "verdict": verdict,
+                "category": category,
+                "attribution": attribution,
+                "article_slug": article_slug,
+                "article_title": report.get("article_title", ""),
+                "article_source": report.get("article_source"),
+                "article_date": report.get("article_date"),
+            })
+
+            # Only active attributions count toward scorecard
+            if attribution in _ACTIVE_ATTRIBUTIONS:
+                scorecard[verdict] = scorecard.get(verdict, 0) + 1
+
+            article_claims.append(attribution)
+
+        claim_count_in_article = len(article_claims)
+        if claim_count_in_article > 0:
+            resolved_articles.append({
+                "slug": article_slug,
+                "title": report.get("article_title", ""),
+                "source": report.get("article_source"),
+                "date": report.get("article_date"),
+                "claim_count": claim_count_in_article,
+                "attribution_types": sorted(article_attr_types),
+            })
+
+    return {
+        "slug": entity["slug"],
+        "name": entity_name,
+        "type": entity.get("type", "individual"),
+        "description": entity.get("description"),
+        "role": entity.get("role"),
+        "party": entity.get("party"),
+        "stance": entity.get("stance"),
+        "stance_score": entity.get("stance_score"),
+        "credibility": entity.get("credibility"),
+        "attribution_counts": entity.get("attribution_counts"),
+        "scorecard": scorecard,
+        "claims": resolved_claims,
+        "articles": resolved_articles,
+    }
 
 
 if __name__ == "__main__":
