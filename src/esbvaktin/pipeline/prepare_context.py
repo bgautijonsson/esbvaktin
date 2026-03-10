@@ -13,6 +13,44 @@ from pathlib import Path
 
 from .models import ClaimWithEvidence
 
+# ── Icelandic quality blocks ────────────────────────────────────────
+
+_BLOCKS_PATH = Path(__file__).resolve().parents[3] / ".claude" / "skills" / "icelandic-shared" / "assessment-blocks.md"
+
+
+def _load_icelandic_blocks() -> str:
+    """Load the shared Icelandic assessment prompt blocks.
+
+    Returns the full content, or an empty string if the file is missing.
+    """
+    if _BLOCKS_PATH.exists():
+        return _BLOCKS_PATH.read_text(encoding="utf-8")
+    return ""
+
+
+def _load_icelandic_blocks_subset(*block_names: str) -> str:
+    """Load specific blocks (by header) from the assessment blocks file.
+
+    block_names: e.g. "Block D", "Block F", "Block H"
+    """
+    full = _load_icelandic_blocks()
+    if not full:
+        return ""
+    sections: list[str] = []
+    current: list[str] = []
+    current_match = False
+    for line in full.split("\n"):
+        if line.startswith("## Block "):
+            if current_match and current:
+                sections.append("\n".join(current))
+            current = [line]
+            current_match = any(bn in line for bn in block_names)
+        else:
+            current.append(line)
+    if current_match and current:
+        sections.append("\n".join(current))
+    return "\n\n".join(sections)
+
 # ── Shared terminology glossary (used in Icelandic contexts) ──────────
 
 _TERMINOLOGY_IS = """
@@ -160,6 +198,12 @@ Write a JSON array inside a code block:
 
 {article_text}
 """
+    # Append subset of Icelandic blocks for extraction (Unicode + terms + self-review)
+    if language == "is":
+        blocks = _load_icelandic_blocks_subset("Block D", "Block F", "Block H")
+        if blocks:
+            context += f"\n\n{blocks}\n"
+
     output_path = output_dir / "_context_extraction.md"
     output_path.write_text(context, encoding="utf-8")
     return output_path
@@ -349,6 +393,12 @@ claim fields plus the assessment fields:
 ## Claims and Evidence
 
 {claims_section}"""
+    # Append full Icelandic quality blocks for assessment
+    if language == "is":
+        blocks = _load_icelandic_blocks()
+        if blocks:
+            context += f"\n\n{blocks}\n"
+
     output_path = output_dir / "_context_assessment.md"
     output_path.write_text(context, encoding="utf-8")
     return output_path
@@ -501,6 +551,12 @@ evidence. Your job is to identify significant omissions and assess framing.
 
 {article_text}
 """
+    # Append full Icelandic quality blocks for omission analysis
+    if language == "is":
+        blocks = _load_icelandic_blocks()
+        if blocks:
+            context += f"\n\n{blocks}\n"
+
     output_path = output_dir / "_context_omissions.md"
     output_path.write_text(context, encoding="utf-8")
     return output_path

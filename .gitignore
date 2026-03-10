@@ -44,9 +44,10 @@ data/analyses/
 # Export (generated, copied to site repo)
 data/export/
 
-# Claude Code (keep skills)
+# Claude Code (keep skills and rules)
 .claude/*
 !.claude/skills/
+!.claude/rules/
 .claude/skills/**/.fuse_hidden*
 
 # MCP config (user-local)

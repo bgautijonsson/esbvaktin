@@ -8,6 +8,7 @@ Default language is Icelandic ("is").
 from pathlib import Path
 
 from .models import ClaimWithEvidence, Verdict
+from .prepare_context import _load_icelandic_blocks
 
 
 def prepare_fact_check_context(
@@ -133,6 +134,13 @@ def prepare_fact_check_context(
         lines.append("- **Caveats matter**: surface the caveats from evidence entries")
         lines.append("- **Humility**: if evidence is insufficient, use `unverifiable`")
         lines.append("- Preserve the original claim fields exactly as given above")
+
+    # Append Icelandic quality blocks for fact-check assessment
+    if language == "is":
+        blocks = _load_icelandic_blocks()
+        if blocks:
+            lines.append("")
+            lines.append(blocks)
 
     output_path.write_text("\n".join(lines), encoding="utf-8")
     return output_path

@@ -26,6 +26,7 @@ import sys
 from pathlib import Path
 
 WORK_DIR = Path("data/reassessment")
+_BLOCKS_PATH = Path(".claude/skills/icelandic-shared/assessment-blocks.md")
 SIMILARITY_THRESHOLD = 0.45
 BATCH_SIZE = 10
 
@@ -151,6 +152,11 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         "- **Tölulegar fullyrðingar**: ef heimildir sýna nálægar en ekki nákvæmlega sömu tölur, notið `partially_supported`",
         '- JSON-\u00f6ryggi: noti\u00f0 \\\\" fyrir g\u00e6salappir \u00ed JSON-strengjum, ekki \u201e\u2026\u201c',
     ])
+
+    # Append Icelandic quality blocks
+    if _BLOCKS_PATH.exists():
+        lines.append("")
+        lines.append(_BLOCKS_PATH.read_text(encoding="utf-8"))
 
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
