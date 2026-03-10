@@ -55,6 +55,7 @@ R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
 
 ### Evidence Seeds
 - IDs: `{TOPIC}-{TYPE}-{NUMBER}` (e.g., `ENERGY-DATA-001`)
+- Parliamentary record IDs use `PARL` type: `{TOPIC}-PARL-{NNN}` (e.g., `SOV-PARL-001`)
 - Topics: fisheries, trade, eea_eu_law, sovereignty, agriculture, precedents, currency, labour, energy, housing, polling, party_positions, org_positions
 - Valid `source_type` values: `official_statistics`, `legal_text`, `academic_paper`, `expert_analysis`, `international_org`, `parliamentary_record`
 - Seed files go in `data/seeds/*.json` (committed); CSVs in `data/{source}/` (gitignored)
@@ -75,6 +76,7 @@ uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # Prepare 
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # Export Alþingi debate data
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
+uv run python scripts/curate_speech_evidence.py list        # Find high-value Alþingi speeches for evidence curation
 docker compose up -d       # Start PostgreSQL
 Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
