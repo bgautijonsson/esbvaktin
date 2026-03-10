@@ -3,10 +3,12 @@
 Analyse an article about Iceland's EU membership referendum against the Ground Truth Database.
 Pipeline is **Icelandic-first**: subagents extract, assess, and write in Icelandic. No translation step.
 
+Supports both **articles** and **panel show transcripts** (e.g. Silfrið). Panel shows are auto-detected from fréttasafn source or transcript format.
+
 ## Usage
 
 ```
-/analyse-article <url|file_path|"pasted text">
+/analyse-article <url|file_path|"pasted text"|fréttasafn_article_id>
 ```
 
 ## Steps
@@ -20,13 +22,44 @@ mkdir -p "$WORK_DIR"
 ```
 
 Get the article text:
+- If a **fréttasafn article ID** is provided: fetch via `get_article` MCP tool
 - If a **URL** is provided: use `uv run python -c "import trafilatura; print(trafilatura.fetch_url('URL'))" | uv run python -c "import trafilatura, sys; print(trafilatura.extract(sys.stdin.read()))"` as a fallback. Prefer fréttasafn MCP if available.
 - If a **file path** is provided: read the file
 - If **pasted text** is provided: use it directly
 
 Write the article text to `$WORK_DIR/_article.md`.
 
-Then run the context preparation:
+### Step 1b: Detect Panel Show and Prepare Extraction Context
+
+Detect if this is a panel show transcript. Check for:
+- Fréttasafn source is `silfrid`, `kastljos`, or similar panel show source
+- Text contains multiple `Speaker Name (role):` patterns with different speakers
+- Text has `**Source:** Silfrið` or similar panel show header
+
+**If panel show detected:**
+
+```bash
+uv run python -c "
+from pathlib import Path
+from esbvaktin.pipeline.transcript import parse_transcript
+from esbvaktin.pipeline.prepare_context import prepare_panel_extraction_context
+
+work_dir = Path('$WORK_DIR')
+article = (work_dir / '_article.md').read_text()
+transcript = parse_transcript(article)
+
+prepare_panel_extraction_context(transcript, work_dir, language='is')
+print(f'Panel show detected: {transcript.show_name}')
+print(f'Participants: {len(transcript.participants)}')
+for p in transcript.participants:
+    print(f'  - {p[\"name\"]} ({p[\"role\"]})')
+print(f'Moderator turns: {sum(1 for t in transcript.turns if t.is_moderator)}')
+print(f'Total word count: {transcript.word_count}')
+print('Panel extraction context prepared (Icelandic).')
+"
+```
+
+**If regular article:**
 
 ```bash
 uv run python -c "
@@ -62,6 +95,7 @@ The subagent should:
 - Distinguish between claim types: statistic, legal_assertion, comparison, prediction, opinion
 - Preserve exact quotes from the article in `original_quote`
 - Write `claim_text` in clear Icelandic
+- **Panel shows only:** include `speaker_name` (exact full name) for every claim
 - **JSON safety**: escape any quotation marks inside string values. Icelandic „…" quotes must be written as `\"…\"` in JSON. Never use raw `„` or `"` inside JSON strings.
 - Independence: do not favour either side
 
@@ -236,9 +270,31 @@ print(f'Íslensk skýrsla: {work_dir}/_report_is.md')
 "
 ```
 
-### Step 7b: Extract Entities (Subagent — can run in parallel with Step 7)
+### Step 7b: Extract Entities
 
-Prepare the entity extraction context and launch a subagent:
+**If panel show:** Generate entities directly from transcript (no subagent needed):
+
+```bash
+uv run python -c "
+import json
+from pathlib import Path
+from esbvaktin.pipeline.transcript import parse_transcript, generate_panel_entities
+from esbvaktin.pipeline.parse_outputs import parse_assessments
+
+work_dir = Path('$WORK_DIR')
+transcript = parse_transcript((work_dir / '_article.md').read_text())
+assessments = parse_assessments(work_dir / '_assessments.json')
+
+entities = generate_panel_entities(transcript, assessments)
+data = entities.model_dump(mode='json')
+(work_dir / '_entities.json').write_text(json.dumps(data, indent=2, ensure_ascii=False))
+print(f'Panel entities generated: {len(entities.speakers)} speakers')
+for s in entities.speakers:
+    print(f'  - {s.name} ({s.party or s.role}) — {len(s.attributions)} claims')
+"
+```
+
+**If regular article:** Prepare the entity extraction context and launch a subagent:
 
 ```bash
 uv run python -c "
@@ -296,14 +352,42 @@ Then launch a subagent to translate Icelandic → English:
 
 **Subagent task:** Read `$WORK_DIR/_context_translation.md` and translate to English. Write to `$WORK_DIR/_report_en.md`.
 
+### Step 7d (Panel shows only): Register Sightings
+
+For panel shows, register claim sightings with speaker attribution:
+
+```bash
+uv run python -c "
+from pathlib import Path
+from datetime import date
+from esbvaktin.pipeline.parse_outputs import parse_assessments
+from esbvaktin.pipeline.register_sightings import register_panel_sightings
+
+work_dir = Path('$WORK_DIR')
+assessments = parse_assessments(work_dir / '_assessments.json')
+
+# Use transcript metadata for source info
+from esbvaktin.pipeline.transcript import parse_transcript
+transcript = parse_transcript((work_dir / '_article.md').read_text())
+
+counts = register_panel_sightings(
+    assessments=assessments,
+    source_url=transcript.url or 'unknown',
+    source_title=transcript.title,
+    source_date=transcript.date,
+)
+print(f'Sightings registered: {counts}')
+"
+```
+
 ### Step 8: Export to Obsidian
 
 Always export the final report to the ESB Obsidian vault using the MCP `write_note` tool:
 
 - **Path:** `Reports/YYYY-MM-DD — Article Title.md`
-- **Frontmatter:** Include `type: article-analysis`, `date`, `source`, `author`, `url`, `claims` (count), `verdicts` (breakdown), `framing`, `completeness`, `evidence_used` (count), `analysis_dir`, and `tags`
+- **Frontmatter:** Include `type: article-analysis`, `date`, `source`, `author`, `url`, `claims` (count), `verdicts` (breakdown), `framing`, `completeness`, `evidence_used` (count), `analysis_dir`, and `tags`. For panel shows, add `type: panel-analysis` and `participants` (list).
 - **Formatting:** Add a `> [!tip] Lykilniðurstaða` callout after the summary highlighting the most important finding. Use a `> [!warning]` callout for the omissions section. Add `[[ESBvaktin]]` wikilink in the footer.
-- **Tags:** Include `greining` plus topic-specific tags (e.g. `landbúnaður`, `sjávarútvegur`, `skoðanakannanir`)
+- **Tags:** Include `greining` plus topic-specific tags (e.g. `landbúnaður`, `sjávarútvegur`, `skoðanakannanir`). For panel shows, add `umraeduþáttur` tag.
 
 Print a brief confirmation to terminal with the vault path.
 
@@ -311,9 +395,9 @@ Print a brief confirmation to terminal with the vault path.
 
 | File | Description |
 |------|-------------|
-| `_article.md` | Raw article text |
+| `_article.md` | Raw article/transcript text |
 | `_context_extraction.md` | Context for claim extraction subagent (Icelandic) |
-| `_claims.json` | Extracted claims (Icelandic claim_text) |
+| `_claims.json` | Extracted claims (Icelandic claim_text, +speaker_name for panels) |
 | `_context_assessment.md` | Context for claim assessment subagent (Icelandic) |
 | `_context_omissions.md` | Context for omission analysis subagent (Icelandic) |
 | `_assessments.json` | Claim assessments (Icelandic explanations) |
@@ -321,6 +405,6 @@ Print a brief confirmation to terminal with the vault path.
 | `_report_is.md` | Icelandic report — primary output |
 | `_report.json` | Structured report (JSON) |
 | `_report_final.json` | Final complete report (JSON) |
-| `_context_entities.md` | Context for entity extraction subagent |
-| `_entities.json` | Extracted entities/speakers (Step 7b) |
+| `_context_entities.md` | Context for entity extraction subagent (articles only) |
+| `_entities.json` | Extracted entities/speakers (subagent for articles, generated for panels) |
 | `_report_en.md` | English report (optional, Step 7c) |
