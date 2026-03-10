@@ -115,6 +115,8 @@ CREATE TABLE IF NOT EXISTS claim_sightings (
     source_type TEXT,                           -- news | opinion | althingi | interview | other
     original_text TEXT,                         -- the claim as it appeared in this article
     similarity FLOAT,                           -- cosine similarity to canonical claim
+    speech_verdict TEXT,                        -- verdict specific to this speech occurrence
+    speech_id TEXT,                             -- althingi.db speech_id (for source_type='althingi')
     extracted_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(claim_id, source_url)                -- one sighting per claim per article
 );
@@ -122,6 +124,7 @@ CREATE TABLE IF NOT EXISTS claim_sightings (
 CREATE INDEX IF NOT EXISTS idx_sightings_claim ON claim_sightings(claim_id);
 CREATE INDEX IF NOT EXISTS idx_sightings_date ON claim_sightings(source_date);
 CREATE INDEX IF NOT EXISTS idx_sightings_url ON claim_sightings(source_url);
+CREATE INDEX IF NOT EXISTS idx_sightings_speech_id ON claim_sightings(speech_id);
 
 -- View: claim frequency for prioritisation
 CREATE OR REPLACE VIEW claim_frequency AS

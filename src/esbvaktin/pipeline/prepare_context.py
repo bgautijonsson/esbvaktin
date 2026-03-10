@@ -9,6 +9,8 @@ Default language is Icelandic ("is"). English ("en") is available
 as a fallback but the primary pipeline is Icelandic-first.
 """
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from .models import Claim, ClaimWithEvidence
@@ -802,5 +804,192 @@ Write raw JSON (no markdown code block wrapping):
 {article_text}
 """
     output_path = output_dir / "_context_entities.md"
+    output_path.write_text(context, encoding="utf-8")
+    return output_path
+
+
+# ── Speech extraction context ───────────────────────────────────────
+
+
+def prepare_speech_extraction_context(
+    speech_text: str,
+    speaker_metadata: dict,
+    output_dir: Path,
+    language: str = "is",
+) -> Path:
+    """Write extraction context for claims from an Alþingi speech.
+
+    Like the article extraction context but with speech-specific
+    guardrails (filtering parliamentary rhetoric) and speaker metadata.
+
+    Args:
+        speech_text: Full speech text from althingi.db.
+        speaker_metadata: Dict with name, party, speech_type, issue_title,
+            date, session.
+        output_dir: Work directory for this speech check.
+        language: Output language (default "is").
+
+    Returns path to the context file.
+    """
+    meta_block = f"""## Bakgrunnur ræðumanns
+
+- Ræðumaður: {speaker_metadata.get('name', '?')}, {speaker_metadata.get('party', '?')}
+- Tegund ræðu: {speaker_metadata.get('speech_type', '?')}
+- Þingfundarheiti: {speaker_metadata.get('issue_title', '?')}
+- Dagsetning: {speaker_metadata.get('date', '?')}, {speaker_metadata.get('session', '?')}. löggjafarþing
+"""
+
+    if language == "is":
+        context = f"""# Fullyrðingagreining — Útdráttur úr þingræðu
+
+Þú ert að greina ræðu frá Alþingi sem tengist þjóðaratkvæðagreiðslu Íslands um
+ESB-aðild (29. ágúst 2026). Verkefni þitt er að draga út allar **staðreyndalegar
+fullyrðingar** sem hægt er að bera saman við heimildir.
+
+{meta_block}
+
+## Leiðbeiningar
+
+1. Lestu ræðuna vandlega
+2. Finndu allar staðreyndalegar fullyrðingar (tölfræði, lagalegar fullyrðingar,
+   samanburði, spár). Slepptu hreinum skoðunum nema þær feli í sér óbeinar
+   staðreyndalegar fullyrðingar.
+3. Fyrir hverja fullyrðingu, skráðu:
+   - `claim_text`: Fullyrðingin sett fram á skýru íslensku
+   - `original_quote`: Nákvæm tilvitnun úr ræðunni
+   - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
+     precedents, currency, labour, polling, party_positions, org_positions, other
+   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, prediction, opinion
+   - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
+
+## Mikilvægt
+
+- Vertu ítarleg/ur — dragðu út ALLAR staðreyndalegar fullyrðingar, ekki bara augljósar
+- Haltu tilvitnunum á upprunalegu tungumáli ræðunnar
+- Flokkaðu rétt — flokkun ákvarðar hvaða heimildir eru sóttar
+- Merktu **afstöðulýsingar flokks** (t.d. "við í flokknum munum aldrei...")
+  sem `claim_type: "opinion"` með `confidence` ≤ 0.6
+- Skrifaðu `claim_text` á íslensku — þetta er íslenskt verkefni
+
+## Slepptu eftirfarandi — þetta eru EKKI fullyrðingar
+
+### Almenn útilokun (sama og greinagerð)
+
+- **Æviágrip og titlar**: „X er ráðherra/þingmaður" — bakgrunnsupplýsingar
+- **Efni sem tengist ekki ESB**: Hjúkrunarrými, raforkuúnútur og annað sem
+  snertir ekki beint ESB-aðild, viðræður eða þjóðaratkvæðagreiðsluna
+- **Almenn þekking**: Óumdeildar staðreyndir sem tengist ekki ESB-efninu beint
+
+### Slepptu þingræðumálefnum — sérstakt fyrir ræður
+
+- **Viljayfirlýsingar**: „Við munum...", „Við höfnum þessu", „Við krefjumst..." —
+  pólitísk fyrirheit eru ekki fullyrðingar um staðreyndir
+- **Þingskápur**: Tillögur, þingsályktanir, dagskráratriði, „ég legg til..." —
+  málsmeðferð er ekki fullyrðing
+- **Fyrirspurnir í eftirlitshlutverki**: Spurningar sem ráðherra er beint —
+  spurningin sjálf er ekki fullyrðing
+- **Dæmisögur og myndlíkingar**: Sögur og samlíkingar án tölugagna — ef engin
+  staðreynd er í dæmisögunni, slepptu henni
+- **Tilvísanir í aðra ræðumenn**: „Eins og þingmaðurinn X sagði..." —
+  lýsing á afstöðu annarra er ekki fullyrðing frá þessum ræðumanni
+
+{_TERMINOLOGY_IS}
+
+## Úttakssnið / Output Format
+
+Skrifaðu JSON-fylki innan kóðablokkar:
+
+```json
+[
+  {{{{
+    "claim_text": "...",
+    "original_quote": "...",
+    "category": "...",
+    "claim_type": "...",
+    "confidence": 0.9
+  }}}}
+]
+```
+
+## Ræðan / Speech Text
+
+{speech_text}
+"""
+    else:
+        context = f"""# Claim Extraction — Parliamentary Speech
+
+You are analysing an Alþingi speech related to Iceland's EU membership referendum
+(29 August 2026). Extract all **factual claims** that can be checked against evidence.
+
+{meta_block}
+
+## Instructions
+
+1. Read the speech carefully
+2. Identify every factual claim (statistics, legal assertions, comparisons,
+   predictions). Skip pure opinions unless they contain implicit factual claims.
+3. For each claim, provide:
+   - `claim_text`: The factual claim restated clearly
+   - `original_quote`: The exact quote from the speech
+   - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
+     precedents, currency, labour, polling, party_positions, org_positions, other
+   - `claim_type`: One of: statistic, legal_assertion, comparison, prediction, opinion
+   - `confidence`: How confident you are this is a factual claim (0-1)
+
+## Important
+
+- Be thorough — extract ALL factual claims
+- Mark **party-position declarations** (e.g. "we will never accept...")
+  as `claim_type: "opinion"` with `confidence` ≤ 0.6
+- Preserve the original language of quotes
+
+## Do NOT extract the following
+
+### General exclusions (same as article analysis)
+
+- **Biographical/title statements**: job titles are background info
+- **Non-EU content**: anything not about EU membership, negotiations, or referendum
+- **Common knowledge**: undisputed facts unrelated to the EU question
+
+### Skip parliamentary rhetoric — specific to speeches
+
+- **Intent expressions**: "við munum...", "við höfnum þessu", "við krefjumst..." —
+  political pledges are not factual claims
+- **Procedural language**: tillögur, þingsályktanir, dagskráratriði, "ég legg til..." —
+  procedure is not a claim
+- **Ministerial questions**: questions directed at a minister — the question itself
+  is not a claim
+- **Anecdotes without data**: stories and metaphors without numerical data
+- **References to other speakers**: "eins og þingmaðurinn X sagði..." —
+  descriptions of others' positions are not claims by this speaker
+
+## Output Format
+
+Write a JSON array inside a code block:
+
+```json
+[
+  {{{{
+    "claim_text": "...",
+    "original_quote": "...",
+    "category": "...",
+    "claim_type": "...",
+    "confidence": 0.9
+  }}}}
+]
+```
+
+## Speech Text
+
+{speech_text}
+"""
+
+    # Append Icelandic quality blocks for extraction
+    if language == "is":
+        blocks = _load_icelandic_blocks_subset("Block D", "Block F", "Block H")
+        if blocks:
+            context += f"\n\n{blocks}\n"
+
+    output_path = output_dir / "_context_extraction.md"
     output_path.write_text(context, encoding="utf-8")
     return output_path
