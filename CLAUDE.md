@@ -41,6 +41,8 @@ src/esbvaktin/          # Main package
   pipeline/             # Article analysis pipeline
   speeches/             # Alþingi speech MCP server (read-only, althingi.db)
     context.py          # Sync speech context for pipeline (MP name detection + excerpts)
+    fact_check.py       # Speech selection, loading, work dir setup for fact-checking
+    register_sightings.py  # Post-assessment: match→sighting, new→unpublished claim
   ground_truth/         # Evidence database operations
   utils/                # Shared utilities (embeddings, Icelandic NLP)
 tests/                  # Tests
@@ -77,6 +79,9 @@ uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # Export A
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 uv run python scripts/curate_speech_evidence.py list        # Find high-value Alþingi speeches for evidence curation
+uv run python scripts/fact_check_speeches.py select --limit 5  # Rank speeches for fact-checking
+uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a single speech (run outside Claude Code session)
+uv run python scripts/fact_check_speeches.py status            # Show fact-check progress
 docker compose up -d       # Start PostgreSQL
 Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
