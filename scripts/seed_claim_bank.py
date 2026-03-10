@@ -40,8 +40,46 @@ def load_analyses(base_dir: Path) -> list[dict]:
     return reports
 
 
+def _parse_icelandic_claims(report_text_is: str) -> list[dict]:
+    """Parse per-claim Icelandic text from report_text_is markdown."""
+    import re
+
+    claims = []
+    if not report_text_is:
+        return claims
+
+    sections = re.split(r"### Fullyrðing \d+:", report_text_is)
+    for section in sections[1:]:
+        data: dict = {}
+        claim_match = re.search(
+            r"\*\*Fullyrðing:\*\*\s*(.+?)(?=\n\n|\n\*\*)", section, re.DOTALL
+        )
+        if claim_match:
+            data["claim_text_is"] = claim_match.group(1).strip()
+
+        mat_match = re.search(
+            r"\*\*Mat:\*\*\s*(.+?)(?=\n\*\*|\n\n---|\Z)", section, re.DOTALL
+        )
+        if mat_match:
+            data["explanation_is"] = mat_match.group(1).strip()
+
+        context_match = re.search(
+            r"\*\*(?:Vantar samhengi|Samhengi sem vantar):\*\*\s*(.+?)(?=\n\*\*|\n\n---|\Z)",
+            section,
+            re.DOTALL,
+        )
+        if context_match:
+            data["missing_context_is"] = context_match.group(1).strip()
+
+        claims.append(data)
+    return claims
+
+
 def seed_from_report(report: dict, conn, dry_run: bool = False) -> int:
     """Extract claims from one analysis report and add to claim bank.
+
+    Uses Icelandic text from report_text_is when available, falling back
+    to the structured English fields. Stores English in _en fields.
 
     Returns the number of claims added.
     """
@@ -49,25 +87,36 @@ def seed_from_report(report: dict, conn, dry_run: bool = False) -> int:
     source_dir = report.get("_source_dir", "unknown")
     added = 0
 
-    for ca in claims:
+    # Parse Icelandic translations from report_text_is
+    claims_is = _parse_icelandic_claims(report.get("report_text_is", ""))
+
+    for i, ca in enumerate(claims):
         claim = ca.get("claim", {})
-        claim_text = claim.get("claim_text", "")
-        if not claim_text:
+        claim_text_en = claim.get("claim_text", "")
+        if not claim_text_en:
             continue
 
         verdict = ca.get("verdict", "")
-        explanation = ca.get("explanation", "")
-        if not verdict or not explanation:
+        explanation_en = ca.get("explanation", "")
+        if not verdict or not explanation_en:
             continue
 
-        # Generate slug
-        slug = generate_slug(claim_text)
+        # Get Icelandic text if available
+        is_data = claims_is[i] if i < len(claims_is) else {}
+        claim_text_is = is_data.get("claim_text_is", claim_text_en)
+        explanation_is = is_data.get("explanation_is", explanation_en)
+        missing_context_is = is_data.get("missing_context_is", ca.get("missing_context"))
+
+        # Generate slug from Icelandic text
+        slug = generate_slug(claim_text_is)
         if not slug or len(slug) < 3:
-            slug = generate_slug(claim_text[:80])
+            slug = generate_slug(claim_text_en)
+        if not slug or len(slug) < 3:
+            slug = generate_slug(claim_text_en[:80])
 
         # Check for existing similar claim (avoid duplicates)
         try:
-            existing = search_claims(claim_text, threshold=0.85, top_k=1, conn=conn)
+            existing = search_claims(claim_text_is, threshold=0.85, top_k=1, conn=conn)
             if existing:
                 print(f"  ≈ Similar claim exists: {existing[0].claim_slug} "
                       f"(similarity: {existing[0].similarity:.3f}), skipping")
@@ -77,13 +126,13 @@ def seed_from_report(report: dict, conn, dry_run: bool = False) -> int:
 
         canonical = CanonicalClaim(
             claim_slug=slug,
-            canonical_text_is=claim_text,
-            canonical_text_en=None,
+            canonical_text_is=claim_text_is,
+            canonical_text_en=claim_text_en if claim_text_en != claim_text_is else None,
             category=claim.get("category", "other"),
             claim_type=claim.get("claim_type", "opinion"),
             verdict=verdict,
-            explanation_is=explanation,
-            missing_context_is=ca.get("missing_context"),
+            explanation_is=explanation_is,
+            missing_context_is=missing_context_is,
             supporting_evidence=ca.get("supporting_evidence", []),
             contradicting_evidence=ca.get("contradicting_evidence", []),
             confidence=ca.get("confidence", 0.5),

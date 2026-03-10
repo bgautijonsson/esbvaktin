@@ -65,6 +65,7 @@ class EvidenceMatch(BaseModel):
     statement: str
     similarity: float
     source_name: str
+    source_url: str | None = None
     caveats: str | None = None
 
 
