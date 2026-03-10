@@ -7,9 +7,17 @@ from esbvaktin.pipeline.transcript import (
     ParsedTranscript,
     TranscriptTurn,
     parse_transcript,
+    generate_panel_entities,
     _parse_header,
     _parse_name_role,
     _detect_moderator,
+    _infer_party,
+)
+from esbvaktin.pipeline.models import (
+    Claim,
+    ClaimAssessment,
+    ClaimType,
+    Verdict,
 )
 
 
@@ -279,3 +287,92 @@ def test_mælandi_pattern_skips_auto_detect():
     moderators = [t for t in result.turns if t.is_moderator]
     assert len(moderators) == 2
     assert all("Mælandi" in t.speaker_name for t in moderators)
+
+
+# ── Party inference ───────────────────────────────────────────────
+
+
+@pytest.mark.parametrize(
+    "role, expected_party",
+    [
+        ("formaður Miðflokksins", "Miðflokkurinn"),
+        ("formaður Sjálfstæðisflokksins", "Sjálfstæðisflokkurinn"),
+        ("formaður Framsóknarflokksins", "Framsóknarflokkurinn"),
+        ("þingflokksformaður Samfylkingarinnar", "Samfylkingin"),
+        ("þingflokksformaður Flokks fólksins", "Flokkur fólksins"),
+        ("utanríkisráðherra", None),
+        (None, None),
+    ],
+)
+def test_infer_party(role, expected_party):
+    assert _infer_party(role) == expected_party
+
+
+# ── Panel entity generation ────────────────────────────────────────
+
+
+def _make_assessment(claim_text: str, speaker_name: str, verdict: Verdict = Verdict.SUPPORTED) -> ClaimAssessment:
+    """Helper to build a ClaimAssessment for testing."""
+    return ClaimAssessment(
+        claim=Claim(
+            claim_text=claim_text,
+            original_quote=claim_text,
+            category="other",
+            claim_type=ClaimType.OPINION,
+            confidence=0.8,
+            speaker_name=speaker_name,
+        ),
+        verdict=verdict,
+        explanation="Test explanation",
+        supporting_evidence=[],
+        contradicting_evidence=[],
+        confidence=0.8,
+    )
+
+
+def test_generate_panel_entities_from_transcript():
+    transcript = parse_transcript(MINIMAL_TRANSCRIPT)
+    assessments = [
+        _make_assessment("Claim A", "Þorgerður Katrín Gunnarsdóttir"),
+        _make_assessment("Claim B", "Þorgerður Katrín Gunnarsdóttir"),
+        _make_assessment("Claim C", "Sigmundur Davíð Gunnlaugsson"),
+    ]
+    entities = generate_panel_entities(transcript, assessments)
+    assert entities.article_author is None
+    assert len(entities.speakers) == 2
+
+    tk = next(s for s in entities.speakers if "Þorgerður" in s.name)
+    assert len(tk.attributions) == 2
+    assert all(a.attribution.value == "asserted" for a in tk.attributions)
+
+    sd = next(s for s in entities.speakers if "Sigmundur" in s.name)
+    assert len(sd.attributions) == 1
+    assert sd.party == "Miðflokkurinn"
+
+
+def test_generate_panel_entities_no_assessments():
+    """Speakers with no claims still appear (0 attributions)."""
+    transcript = parse_transcript(MINIMAL_TRANSCRIPT)
+    entities = generate_panel_entities(transcript, [])
+    assert len(entities.speakers) == 2
+    for speaker in entities.speakers:
+        assert len(speaker.attributions) == 0
+
+
+def test_generate_panel_entities_all_asserted():
+    """All panel show attributions should be 'asserted'."""
+    transcript = parse_transcript(MINIMAL_TRANSCRIPT)
+    assessments = [
+        _make_assessment("Claim X", "Sigmundur Davíð Gunnlaugsson"),
+    ]
+    entities = generate_panel_entities(transcript, assessments)
+    sd = next(s for s in entities.speakers if "Sigmundur" in s.name)
+    assert sd.attributions[0].attribution.value == "asserted"
+
+
+def test_generate_panel_entities_moderator_excluded():
+    """Moderator should not appear in generated entities."""
+    transcript = parse_transcript(MINIMAL_TRANSCRIPT)
+    entities = generate_panel_entities(transcript, [])
+    names = [s.name for s in entities.speakers]
+    assert "Mælandi 1" not in names

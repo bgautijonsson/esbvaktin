@@ -14,6 +14,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from datetime import date, datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .models import ArticleEntities, ClaimAssessment
 
 # Speaker label at the start of a line: "Name (role):" or "Mælandi N:"
 # Must start with an uppercase letter (including Icelandic characters).
@@ -260,4 +264,98 @@ def parse_transcript(
         broadcaster=meta.get("broadcaster"),
         word_count=meta.get("word_count", sum(len(t.text.split()) for t in turns)),
         turns=turns,
+    )
+
+
+# ── Simplified entity extraction for panel shows ────────────────────
+
+
+# Map common Icelandic role patterns to party names
+_ROLE_TO_PARTY: dict[str, str] = {
+    "miðflokksins": "Miðflokkurinn",
+    "miðflokks": "Miðflokkurinn",
+    "sjálfstæðisflokksins": "Sjálfstæðisflokkurinn",
+    "sjálfstæðisflokks": "Sjálfstæðisflokkurinn",
+    "framsóknarflokksins": "Framsóknarflokkurinn",
+    "framsóknar": "Framsóknarflokkurinn",
+    "samfylkingarinnar": "Samfylkingin",
+    "samfylkingar": "Samfylkingin",
+    "flokks fólksins": "Flokkur fólksins",
+    "viðreisnar": "Viðreisn",
+    "vg": "Vinstrihreyfingin – grænt framboð",
+    "vinstrihreyfingarinnar": "Vinstrihreyfingin – grænt framboð",
+    "pírata": "Píratar",
+    "sósíalistaflokksins": "Sósíalistaflokkur Íslands",
+}
+
+
+def _infer_party(role: str | None) -> str | None:
+    """Infer party name from a speaker's role label."""
+    if not role:
+        return None
+    lower = role.lower()
+    for pattern, party in _ROLE_TO_PARTY.items():
+        if pattern in lower:
+            return party
+    return None
+
+
+def generate_panel_entities(
+    transcript: ParsedTranscript,
+    assessments: list[ClaimAssessment],
+) -> ArticleEntities:
+    """Generate entities from a parsed panel show transcript + assessments.
+
+    In panel shows, speakers are already labelled with names and roles.
+    Every claim is attributed as ``asserted`` since speakers directly
+    state their positions in a debate. This replaces the entity extraction
+    subagent for panel shows.
+
+    Args:
+        transcript: Parsed panel show transcript.
+        assessments: Assessed claims (with ``speaker_name`` on each claim).
+
+    Returns:
+        ArticleEntities with no article_author and all panellists as speakers.
+    """
+    from .models import (
+        ArticleEntities,
+        Attribution,
+        ClaimAttribution,
+        EntityType,
+        Speaker,
+        Stance,
+    )
+
+    # Build a map of speaker_name → list of (claim_index, assessment)
+    speaker_claims: dict[str, list[int]] = {}
+    for i, assessment in enumerate(assessments):
+        name = assessment.claim.speaker_name
+        if name:
+            speaker_claims.setdefault(name, []).append(i)
+
+    speakers: list[Speaker] = []
+    for participant in transcript.participants:
+        name = participant["name"]
+        role = participant["role"]
+        party = _infer_party(role)
+        claim_indices = speaker_claims.get(name, [])
+
+        attributions = [
+            ClaimAttribution(claim_index=idx, attribution=Attribution.ASSERTED)
+            for idx in claim_indices
+        ]
+
+        speakers.append(Speaker(
+            name=name,
+            type=EntityType.INDIVIDUAL,
+            role=role,
+            party=party,
+            stance=Stance.NEUTRAL,  # determined by export pipeline from claim content
+            attributions=attributions,
+        ))
+
+    return ArticleEntities(
+        article_author=None,
+        speakers=speakers,
     )
