@@ -168,18 +168,66 @@ def _build_evidence_sources(
 # ── Report preparation ───────────────────────────────────────────────
 
 
+def _load_entities(analysis_dir: Path) -> dict | None:
+    """Load entity data from _entities.json if it exists."""
+    entities_path = analysis_dir / "_entities.json"
+    if not entities_path.exists():
+        return None
+    with open(entities_path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _speakers_for_claim(entities_data: dict | None, claim_index: int) -> list[dict]:
+    """Get speakers attributed to a claim by index.
+
+    Returns a list of {name, type, role, party, stance} dicts.
+    """
+    if not entities_data:
+        return []
+
+    speakers = []
+
+    # Check article author
+    author = entities_data.get("article_author")
+    if author and claim_index in author.get("claim_indices", []):
+        speakers.append({
+            "name": author["name"],
+            "type": author.get("type", "individual"),
+            "role": author.get("role"),
+            "party": author.get("party"),
+            "stance": author.get("stance", "neutral"),
+        })
+
+    # Check all other speakers
+    for speaker in entities_data.get("speakers", []):
+        if claim_index in speaker.get("claim_indices", []):
+            speakers.append({
+                "name": speaker["name"],
+                "type": speaker.get("type", "individual"),
+                "role": speaker.get("role"),
+                "party": speaker.get("party"),
+                "stance": speaker.get("stance", "neutral"),
+            })
+
+    return speakers
+
+
 def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
     """Extract site-ready fields from a _report_final.json file.
 
     Enriches with:
     - Icelandic text parsed from report_text_is
     - Evidence source metadata (names + URLs) for linking
+    - Speaker attributions from entity extraction
     """
     with open(report_path, encoding="utf-8") as f:
         report = json.load(f)
 
     analysis_id = report_path.parent.name
     slug = icelandic_slugify(report["article_title"])
+
+    # Load entity data if available
+    entities_data = _load_entities(report_path.parent)
 
     # Parse Icelandic report text
     is_data = _parse_icelandic_report(report.get("report_text_is", ""))
@@ -230,6 +278,7 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
             "contradicting_evidence": contradicting,
             "missing_context": missing_context_is,
             "confidence": item.get("confidence", 0),
+            "speakers": _speakers_for_claim(entities_data, i),
         })
 
     # Use Icelandic summary or generate one

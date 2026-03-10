@@ -112,6 +112,41 @@ class OmissionAnalysis(BaseModel):
     )
 
 
+class EntityType(StrEnum):
+    INDIVIDUAL = "individual"
+    PARTY = "party"
+    INSTITUTION = "institution"
+    UNION = "union"
+
+
+class Stance(StrEnum):
+    PRO_EU = "pro_eu"
+    ANTI_EU = "anti_eu"
+    MIXED = "mixed"
+    NEUTRAL = "neutral"
+
+
+class Speaker(BaseModel):
+    """A person, party, or organisation quoted or attributed in an article."""
+
+    name: str = Field(..., description="Full name in Icelandic")
+    type: EntityType
+    role: str | None = Field(None, description="e.g. 'þingmaður', 'framkvæmdastjóri'")
+    party: str | None = Field(None, description="Political party (for individuals)")
+    stance: Stance = Field(default=Stance.NEUTRAL, description="EU membership stance")
+    claim_indices: list[int] = Field(
+        default_factory=list,
+        description="0-based indices of claims this speaker made/is attributed to",
+    )
+
+
+class ArticleEntities(BaseModel):
+    """Extracted entity/speaker data for an article."""
+
+    article_author: Speaker | None = None
+    speakers: list[Speaker] = Field(default_factory=list)
+
+
 class AnalysisReport(BaseModel):
     """Complete analysis report for an article."""
 

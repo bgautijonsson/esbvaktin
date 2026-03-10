@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 from .models import (
+    ArticleEntities,
     Claim,
     ClaimAssessment,
     OmissionAnalysis,
@@ -139,6 +140,13 @@ def parse_omissions(output_path: Path) -> OmissionAnalysis:
     text = output_path.read_text(encoding="utf-8")
     raw = json.loads(_extract_json(text))
     return OmissionAnalysis.model_validate(_normalise_omissions(raw))
+
+
+def parse_entities(output_path: Path) -> ArticleEntities:
+    """Parse entity extraction output into ArticleEntities."""
+    text = output_path.read_text(encoding="utf-8")
+    raw = json.loads(_extract_json(text))
+    return ArticleEntities.model_validate(raw)
 
 
 def parse_translation(output_path: Path) -> str:

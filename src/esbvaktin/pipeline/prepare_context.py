@@ -11,7 +11,7 @@ as a fallback but the primary pipeline is Icelandic-first.
 
 from pathlib import Path
 
-from .models import ClaimWithEvidence
+from .models import Claim, ClaimWithEvidence
 
 # ── Icelandic quality blocks ────────────────────────────────────────
 
@@ -636,5 +636,104 @@ just the translated markdown text.
 {report_text}
 """
     output_path = output_dir / "_context_translation.md"
+    output_path.write_text(context, encoding="utf-8")
+    return output_path
+
+
+# ── Entity extraction context ─────────────────────────────────────────
+
+
+def prepare_entity_context(
+    article_text: str,
+    claims: list[Claim],
+    output_dir: Path,
+    metadata: dict | None = None,
+) -> Path:
+    """Write entity extraction context for the subagent.
+
+    The subagent identifies who is quoted, who wrote the article,
+    and which claims are attributed to each speaker.
+
+    Returns path to the context file.
+    """
+    meta_section = ""
+    if metadata:
+        lines = [f"- **{k}**: {v}" for k, v in metadata.items() if v]
+        if lines:
+            meta_section = "## Lýsigögn greinar / Article Metadata\n\n" + "\n".join(lines) + "\n\n"
+
+    # Build claims list for the subagent
+    claims_section = ""
+    for i, claim in enumerate(claims):
+        quote = claim.original_quote
+        claims_section += f"**Fullyrðing {i}**: {claim.claim_text}\n"
+        claims_section += f"  Tilvitnun: {quote}\n\n"
+
+    context = f"""# Aðilagreining — Entity/Speaker Extraction
+
+You are extracting **entities** (people, parties, organisations) from an article
+about Iceland's EU membership referendum. For each entity, identify their role,
+affiliation, EU stance, and which claims they made or are attributed to.
+
+## Instructions
+
+1. Read the article carefully
+2. Identify the **article author** — the person who wrote the article
+3. Identify all **speakers** — people, parties, unions, or institutions that are
+   quoted, paraphrased, or whose positions are described
+4. For each speaker, determine:
+   - `name`: Full name in Icelandic (use the form that appears in the article)
+   - `type`: One of `individual`, `party`, `institution`, `union`
+   - `role`: Their role/title (e.g. "þingmaður", "framkvæmdastjóri", "sérfræðingur")
+   - `party`: Political party affiliation (for individuals, if known from the article)
+   - `stance`: Their EU membership stance: `pro_eu`, `anti_eu`, `mixed`, or `neutral`
+   - `claim_indices`: Which claims (by 0-based index) they made or are attributed to
+
+## Important
+
+- **Author**: The article author gets `claim_indices` for ALL claims they directly
+  assert (not claims they report others as making)
+- **Quoted speakers**: If the article quotes someone, attribute the relevant claims
+  to that speaker
+- **Organisations**: If claims are attributed to an organisation (e.g. "Samtök iðnaðarins"),
+  list the organisation as a speaker
+- **Stance inference**: Infer stance from the article content — what position does
+  the speaker take on EU membership?
+- A single claim can be attributed to multiple speakers
+- Only include entities that are relevant to the EU debate
+- **JSON safety**: Escape Icelandic quotation marks „…" as `\\"…\\"` in JSON strings
+
+## Output Format
+
+Write raw JSON (no markdown code block wrapping):
+
+{{
+  "article_author": {{
+    "name": "...",
+    "type": "individual",
+    "role": "...",
+    "party": "..." or null,
+    "stance": "anti_eu",
+    "claim_indices": [0, 1, 3]
+  }},
+  "speakers": [
+    {{
+      "name": "...",
+      "type": "individual",
+      "role": "...",
+      "party": "..." or null,
+      "stance": "pro_eu",
+      "claim_indices": [2, 4]
+    }}
+  ]
+}}
+
+{meta_section}## Fullyrðingar / Claims (0-indexed)
+
+{claims_section}## Greinin / Article Text
+
+{article_text}
+"""
+    output_path = output_dir / "_context_entities.md"
     output_path.write_text(context, encoding="utf-8")
     return output_path

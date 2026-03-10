@@ -225,7 +225,47 @@ print(f'Íslensk skýrsla: {work_dir}/_report_is.md')
 "
 ```
 
-### Step 7b (Optional): Generate English Report
+### Step 7b: Extract Entities (Subagent — can run in parallel with Step 7)
+
+Prepare the entity extraction context and launch a subagent:
+
+```bash
+uv run python -c "
+from pathlib import Path
+from esbvaktin.pipeline.models import Claim
+from esbvaktin.pipeline.prepare_context import prepare_entity_context
+import json
+
+work_dir = Path('$WORK_DIR')
+article_text = (work_dir / '_article.md').read_text()
+
+# Load claims from the final report
+report = json.loads((work_dir / '_report_final.json').read_text())
+claims = []
+for item in report.get('claims', []):
+    c = item.get('claim', item)
+    claims.append(Claim.model_validate(c))
+
+metadata = {
+    'title': report.get('article_title'),
+    'source': report.get('article_source'),
+    'date': report.get('article_date'),
+}
+prepare_entity_context(article_text, claims, work_dir, metadata)
+print(f'Entity context prepared ({len(claims)} claims).')
+"
+```
+
+**Subagent task:** Read `$WORK_DIR/_context_entities.md` and follow its instructions. Write the output (a JSON object with `article_author` and `speakers`) to `$WORK_DIR/_entities.json`.
+
+**Critical principles for the subagent:**
+- Identify the article author and all quoted/attributed speakers
+- For each speaker, determine their EU stance from context
+- Map `claim_indices` to 0-based claim numbers
+- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in JSON strings
+- Write raw JSON, no markdown wrapping
+
+### Step 7c (Optional): Generate English Report
 
 Only if English report is explicitly requested:
 
@@ -270,4 +310,6 @@ Print a brief confirmation to terminal with the vault path.
 | `_report_is.md` | Icelandic report — primary output |
 | `_report.json` | Structured report (JSON) |
 | `_report_final.json` | Final complete report (JSON) |
-| `_report_en.md` | English report (optional, Step 7b) |
+| `_context_entities.md` | Context for entity extraction subagent |
+| `_entities.json` | Extracted entities/speakers (Step 7b) |
+| `_report_en.md` | English report (optional, Step 7c) |
