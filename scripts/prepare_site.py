@@ -134,6 +134,22 @@ def _parse_article_meta(analysis_dir: Path) -> dict:
             meta["article_url"] = url_match.group(1).strip()
         return meta
 
+    # ── Format 2b: English pipe-separated (fréttasafn transcripts) ─
+    # **Source:** X | **Date:** Y | **URL:** Z
+    pipe_en = re.search(
+        r"\*\*Source:\*\*\s*(.+?)\s*\|\s*\*\*Date:\*\*\s*(\S+)",
+        text,
+    )
+    if pipe_en:
+        meta["article_source"] = pipe_en.group(1).strip()
+        date_str = pipe_en.group(2).strip()
+        # Handle ISO datetime (2026-03-10T12:38:51) → date only
+        meta["article_date"] = date_str[:10] if len(date_str) >= 10 else date_str
+        url_match = re.search(r"\*\*URL:\*\*\s*(https?://\S+)", text)
+        if url_match:
+            meta["article_url"] = url_match.group(1).strip()
+        return meta
+
     # ── Format 3: Key-value lines (bold or plain) ────────────────
     # **Heimild:** X  or  Heimild: X  (colon required to avoid matching body text)
     heimild = re.search(r"\*?\*?Heimild:\*?\*?\s*(.+)", text)
@@ -338,6 +354,54 @@ def _build_evidence_sources(
     return sources
 
 
+# ── Panel show detection + participants ───────────────────────────────
+
+
+def _is_panel_show(analysis_dir: Path) -> bool:
+    """Detect panel show analyses by directory name prefix."""
+    return analysis_dir.name.startswith("panel_")
+
+
+def _build_participants(
+    entities_data: dict | None, claims: list[dict],
+) -> list[dict]:
+    """Build participant list with per-speaker verdict breakdown.
+
+    Returns list of dicts: {name, role, party, claim_count, verdicts}.
+    Only includes speakers from _entities.json (excludes article_author).
+    """
+    if not entities_data:
+        return []
+
+    participants = []
+    for speaker in entities_data.get("speakers", []):
+        attrs = speaker.get("attributions", [])
+        if not attrs:
+            # Legacy format
+            attrs = [
+                {"claim_index": idx} for idx in speaker.get("claim_indices", [])
+            ]
+
+        verdicts: dict[str, int] = {}
+        for attr in attrs:
+            idx = attr["claim_index"]
+            if idx < len(claims):
+                v = claims[idx].get("verdict", "unknown")
+                verdicts[v] = verdicts.get(v, 0) + 1
+
+        participants.append({
+            "name": speaker["name"],
+            "role": speaker.get("role"),
+            "party": speaker.get("party"),
+            "claim_count": len(attrs),
+            "verdicts": verdicts,
+        })
+
+    # Sort by claim count descending
+    participants.sort(key=lambda p: p["claim_count"], reverse=True)
+    return participants
+
+
 # ── Report preparation ───────────────────────────────────────────────
 
 
@@ -498,7 +562,11 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
     # Use Icelandic summary or generate one
     summary_is = is_data.get("summary_is") or report.get("summary", "")
 
-    return {
+    # Detect panel show and build participant data
+    panel_show = _is_panel_show(report_path.parent)
+    participants = _build_participants(entities_data, claims) if panel_show else []
+
+    result = {
         "analysis_id": analysis_id,
         "slug": slug,
         "article_title": report["article_title"],
@@ -514,6 +582,12 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
         "categories": categories,
         "claims": enriched_claims,
     }
+
+    if panel_show:
+        result["source_type"] = "panel_show"
+        result["participants"] = participants
+
+    return result
 
 
 def _listing_entry(report_data: dict) -> dict:
@@ -531,7 +605,7 @@ def _listing_entry(report_data: dict) -> dict:
                     "stance": s.get("stance"),
                 })
 
-    return {
+    entry = {
         "slug": report_data["slug"],
         "article_title": report_data["article_title"],
         "article_source": report_data.get("article_source"),
@@ -546,6 +620,12 @@ def _listing_entry(report_data: dict) -> dict:
         "categories": report_data.get("categories", []),
         "speakers": speakers,
     }
+
+    if report_data.get("source_type") == "panel_show":
+        entry["source_type"] = "panel_show"
+        entry["participants"] = report_data.get("participants", [])
+
+    return entry
 
 
 def main() -> None:
