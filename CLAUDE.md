@@ -40,6 +40,7 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 src/esbvaktin/          # Main package
   pipeline/             # Article analysis pipeline
   speeches/             # Alþingi speech MCP server (read-only, althingi.db)
+    context.py          # Sync speech context for pipeline (MP name detection + excerpts)
   ground_truth/         # Evidence database operations
   utils/                # Shared utilities (embeddings, Icelandic NLP)
 tests/                  # Tests
@@ -87,6 +88,8 @@ Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty 
 - Build: `cd ~/esbvaktin-site && npx @11ty/eleventy`
 - Data pipeline: `export_entities.py` → `prepare_site.py` → `prepare_speeches.py` → build site
 - Þingræður page: `/thingraedur/` (listing) + `/thingraedur/{session}-{issue_nr}/` (debate detail). Data from `prepare_speeches.py` querying althingi.db.
+- Nunjucks `capitalize` filter lowercases the rest of the string — don't use it for titles with proper nouns. Capitalise in Python data export instead.
+- Speeches module has two DB access patterns: async aiosqlite (MCP server in `search.py`) and sync sqlite3 (pipeline in `context.py`, export scripts). Same althingi.db.
 
 ## Obsidian Output
 
