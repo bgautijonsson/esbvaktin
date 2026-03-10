@@ -4,6 +4,9 @@ Reads each data/analyses/*/_report_final.json, extracts key fields,
 enriches with Icelandic text from report_text_is, and attaches evidence
 source metadata (names + URLs) for rendering as hyperlinks.
 
+Also parses _article.md to extract article metadata (source, URL, author,
+date) and generates a lightweight listing JSON for client-side filtering.
+
 Usage:
     uv run python scripts/prepare_site.py
     uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site
@@ -15,7 +18,9 @@ import json
 import re
 import sys
 import unicodedata
+from collections import Counter
 from pathlib import Path
+from urllib.parse import urlparse
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ANALYSES_DIR = PROJECT_ROOT / "data" / "analyses"
@@ -24,6 +29,174 @@ DEFAULT_SITE_DIR = PROJECT_ROOT.parent / "esbvaktin-site"
 
 # Evidence ID pattern: e.g. FISH-DATA-001, SOV-LEGAL-006
 _EVIDENCE_ID_RE = re.compile(r"\b([A-Z]+-[A-Z]+-\d{3})\b")
+
+# ── Article metadata extraction ──────────────────────────────────────
+
+_SOURCE_FROM_DOMAIN: dict[str, str] = {
+    "visir.is": "Vísir",
+    "mbl.is": "Morgunblaðið",
+    "ruv.is": "RÚV",
+    "heimildin.is": "Heimildin",
+    "kjarninn.is": "Kjarninn",
+    "stundin.is": "Stundin",
+    "frettabladid.is": "Fréttablaðið",
+}
+
+_IS_MONTHS: dict[str, int] = {
+    "janúar": 1, "febrúar": 2, "mars": 3, "apríl": 4,
+    "maí": 5, "júní": 6, "júlí": 7, "ágúst": 8,
+    "september": 9, "október": 10, "nóvember": 11, "desember": 12,
+}
+
+
+def _source_from_url(url: str) -> str | None:
+    """Derive media outlet name from article URL domain."""
+    try:
+        host = urlparse(url).hostname or ""
+        for domain, name in _SOURCE_FROM_DOMAIN.items():
+            if host.endswith(domain):
+                return name
+    except Exception:
+        pass
+    return None
+
+
+def _parse_is_date(text: str) -> str | None:
+    """Parse Icelandic date like '9. mars 2026' to ISO 'YYYY-MM-DD'."""
+    m = re.search(r"(\d{1,2})\.\s*(\w+)\s+(\d{4})", text)
+    if m:
+        day, month_name, year = int(m.group(1)), m.group(2).lower(), int(m.group(3))
+        month = _IS_MONTHS.get(month_name)
+        if month:
+            return f"{year:04d}-{month:02d}-{day:02d}"
+    # Already ISO?
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", text)
+    if m:
+        return m.group(1)
+    return None
+
+
+def _parse_article_meta(analysis_dir: Path) -> dict:
+    """Extract article metadata from _article.md.
+
+    Returns dict with keys: article_source, article_url, article_author, article_date.
+    All values may be None if not found.
+    """
+    meta: dict[str, str | None] = {
+        "article_source": None,
+        "article_url": None,
+        "article_author": None,
+        "article_date": None,
+    }
+
+    article_path = analysis_dir / "_article.md"
+    if not article_path.exists():
+        return meta
+
+    text = article_path.read_text(encoding="utf-8")
+
+    # ── Format 1: YAML frontmatter ───────────────────────────────
+    yaml_match = re.match(r"^---\n(.+?)\n---", text, re.DOTALL)
+    if yaml_match:
+        block = yaml_match.group(1)
+        for line in block.splitlines():
+            if ":" not in line:
+                continue
+            key, _, val = line.partition(":")
+            key = key.strip().lower()
+            val = val.strip().strip('"').strip("'")
+            if key == "url" and val:
+                meta["article_url"] = val
+            elif key == "date" and val:
+                meta["article_date"] = _parse_is_date(val)
+            elif key == "title" and val:
+                pass  # title comes from report JSON
+            elif key == "author" and val:
+                meta["article_author"] = val
+        # Derive source from URL domain
+        if meta["article_url"]:
+            meta["article_source"] = _source_from_url(meta["article_url"])
+        return meta
+
+    # ── Format 2: Pipe-separated metadata line ───────────────────
+    # **Heimild:** X | **Dagsetning:** Y | **Höfundur:** Z
+    pipe_match = re.search(
+        r"\*\*Heimild:\*\*\s*(.+?)\s*\|\s*\*\*Dagsetning:\*\*\s*(.+?)\s*\|\s*\*\*Höfundur:\*\*\s*(.+)",
+        text,
+    )
+    if pipe_match:
+        meta["article_source"] = pipe_match.group(1).strip()
+        meta["article_date"] = _parse_is_date(pipe_match.group(2).strip())
+        meta["article_author"] = pipe_match.group(3).strip()
+        # URL on a separate line
+        url_match = re.search(r"\*\*URL:\*\*\s*(https?://\S+)", text)
+        if url_match:
+            meta["article_url"] = url_match.group(1).strip()
+        return meta
+
+    # ── Format 3: Key-value lines (bold or plain) ────────────────
+    # **Heimild:** X  or  Heimild: X  (colon required to avoid matching body text)
+    heimild = re.search(r"\*?\*?Heimild:\*?\*?\s*(.+)", text)
+    if heimild:
+        meta["article_source"] = heimild.group(1).strip()
+    hofundur = re.search(r"\*?\*?Höfundur:\*?\*?\s*(.+)", text)
+    if hofundur:
+        meta["article_author"] = hofundur.group(1).strip()
+    dagsetning = re.search(r"\*?\*?Dagsetning:\*?\*?\s*(.+)", text)
+    if dagsetning:
+        meta["article_date"] = _parse_is_date(dagsetning.group(1).strip())
+    url_match = re.search(r"\*?\*?URL:\*?\*?\s*(https?://\S+)", text)
+    if url_match:
+        meta["article_url"] = url_match.group(1).strip()
+
+    # If we found structured keys, return
+    if meta["article_source"] or meta["article_url"]:
+        # Try to derive source from URL if not found
+        if not meta["article_source"] and meta["article_url"]:
+            meta["article_source"] = _source_from_url(meta["article_url"])
+        return meta
+
+    # ── Format 4: Inline byline "Author skrifar — date — Source" ─
+    byline = re.search(
+        r"(.+?)\s+skrifar\s*[—–-]\s*(.+?)\s*[—–-]\s*(\S+)", text
+    )
+    if byline:
+        meta["article_author"] = byline.group(1).strip().lstrip("*")
+        meta["article_date"] = _parse_is_date(byline.group(2).strip())
+        meta["article_source"] = byline.group(3).strip().rstrip("*")
+        return meta
+
+    # ── Format 5: Detect source from content clues ───────────────
+    if "Viltu birta grein á Vísi" in text or "visir.is" in text or "Vísir/" in text:
+        meta["article_source"] = "Vísir"
+    elif "mbl.is" in text or "Morgunblaðið" in text[:500]:
+        meta["article_source"] = "Morgunblaðið"
+    elif "ruv.is" in text or "RÚV" in text[:500]:
+        meta["article_source"] = "RÚV"
+
+    # Try to extract author from "Author skrifar" in first 300 chars only
+    header = text[:300]
+    author_match = re.search(r"^(.+?)\s+skrifar\b", header, re.MULTILINE)
+    if author_match and not meta["article_author"]:
+        candidate = author_match.group(1).strip().lstrip("#").strip()
+        # Reject if it looks like a title+author combo — extract capitalised name
+        if len(candidate.split()) > 4:
+            # "Title words Author Name skrifar" — take trailing capitalised words
+            words = candidate.split()
+            name_words = []
+            for w in reversed(words):
+                if w[0].isupper():
+                    name_words.insert(0, w)
+                else:
+                    break
+            candidate = " ".join(name_words) if name_words else " ".join(words[-2:])
+        meta["article_author"] = candidate
+
+    # Try to extract date from Icelandic date pattern anywhere
+    if not meta["article_date"]:
+        meta["article_date"] = _parse_is_date(text[:500])
+
+    return meta
 
 
 def icelandic_slugify(text: str) -> str:
@@ -196,6 +369,8 @@ def _speakers_for_claim(entities_data: dict | None, claim_index: int) -> list[di
             "role": author.get("role"),
             "party": author.get("party"),
             "stance": author.get("stance", "neutral"),
+            "stance_score": author.get("stance_score"),
+            "credibility": author.get("credibility"),
         })
 
     # Check all other speakers
@@ -207,6 +382,8 @@ def _speakers_for_claim(entities_data: dict | None, claim_index: int) -> list[di
                 "role": speaker.get("role"),
                 "party": speaker.get("party"),
                 "stance": speaker.get("stance", "neutral"),
+                "stance_score": speaker.get("stance_score"),
+                "credibility": speaker.get("credibility"),
             })
 
     return speakers
@@ -216,6 +393,7 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
     """Extract site-ready fields from a _report_final.json file.
 
     Enriches with:
+    - Article metadata parsed from _article.md (source, URL, author, date)
     - Icelandic text parsed from report_text_is
     - Evidence source metadata (names + URLs) for linking
     - Speaker attributions from entity extraction
@@ -225,6 +403,15 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
 
     analysis_id = report_path.parent.name
     slug = icelandic_slugify(report["article_title"])
+
+    # Extract article metadata from _article.md
+    article_meta = _parse_article_meta(report_path.parent)
+
+    # Use article_meta, falling back to report JSON fields
+    article_source = article_meta["article_source"] or report.get("article_source")
+    article_url = article_meta["article_url"] or report.get("article_url")
+    article_author = article_meta["article_author"] or report.get("article_author")
+    article_date = article_meta["article_date"] or report.get("article_date")
 
     # Load entity data if available
     entities_data = _load_entities(report_path.parent)
@@ -237,6 +424,15 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
     for item in report.get("claims", []):
         v = item.get("verdict", "unknown")
         verdict_counts[v] = verdict_counts.get(v, 0) + 1
+
+    # Compute dominant category from claims
+    category_counts = Counter(
+        item.get("claim", {}).get("category", "")
+        for item in report.get("claims", [])
+        if item.get("claim", {}).get("category")
+    )
+    dominant_category = category_counts.most_common(1)[0][0] if category_counts else None
+    categories = sorted(set(category_counts.keys()))
 
     # Enrich claims with Icelandic text and evidence links
     claims = report.get("claims", [])
@@ -288,13 +484,49 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
         "analysis_id": analysis_id,
         "slug": slug,
         "article_title": report["article_title"],
-        "article_source": report.get("article_source"),
-        "article_date": report.get("article_date"),
+        "article_source": article_source,
+        "article_url": article_url,
+        "article_author": article_author,
+        "article_date": article_date,
         "analysis_date": report.get("analysis_date"),
         "summary": summary_is,
         "verdict_counts": verdict_counts,
         "claim_count": len(claims),
+        "dominant_category": dominant_category,
+        "categories": categories,
         "claims": enriched_claims,
+    }
+
+
+def _listing_entry(report_data: dict) -> dict:
+    """Create a lightweight listing entry (no full claims array)."""
+    # Collect unique speakers across all claims
+    seen_speakers: set[str] = set()
+    speakers = []
+    for item in report_data.get("claims", []):
+        for s in item.get("speakers", []):
+            if s["name"] not in seen_speakers:
+                seen_speakers.add(s["name"])
+                speakers.append({
+                    "name": s["name"],
+                    "party": s.get("party"),
+                    "stance": s.get("stance"),
+                })
+
+    return {
+        "slug": report_data["slug"],
+        "article_title": report_data["article_title"],
+        "article_source": report_data.get("article_source"),
+        "article_url": report_data.get("article_url"),
+        "article_author": report_data.get("article_author"),
+        "article_date": report_data.get("article_date"),
+        "analysis_date": report_data.get("analysis_date"),
+        "summary": report_data.get("summary", ""),
+        "claim_count": report_data.get("claim_count", 0),
+        "verdict_counts": report_data.get("verdict_counts", {}),
+        "dominant_category": report_data.get("dominant_category"),
+        "categories": report_data.get("categories", []),
+        "speakers": speakers,
     }
 
 
@@ -321,6 +553,7 @@ def main() -> None:
         print("No analysis reports found.")
         return
 
+    all_reports = []
     written = 0
     for report_path in report_files:
         report_data = prepare_report(report_path, evidence_meta)
@@ -329,10 +562,23 @@ def main() -> None:
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, ensure_ascii=False, indent=2)
 
+        all_reports.append(report_data)
         print(f"  {report_data['analysis_id']} → {out_path.name} ({report_data['claim_count']} claims)")
         written += 1
 
     print(f"\nWrote {written} reports to {reports_dir}")
+
+    # Generate lightweight listing JSON for client-side filtering
+    listing_dir = site_dir / "assets" / "data"
+    listing_dir.mkdir(parents=True, exist_ok=True)
+    listing_path = listing_dir / "reports.json"
+
+    listing = [_listing_entry(r) for r in all_reports]
+    with open(listing_path, "w", encoding="utf-8") as f:
+        json.dump(listing, f, ensure_ascii=False, indent=2)
+
+    sources = set(r.get("article_source") for r in all_reports if r.get("article_source"))
+    print(f"Wrote listing JSON: {len(listing)} reports ({len(sources)} sources: {', '.join(sorted(sources))})")
 
 
 if __name__ == "__main__":
