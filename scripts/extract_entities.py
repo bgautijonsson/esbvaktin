@@ -115,6 +115,86 @@ def prepare_all() -> None:
         print("Each subagent reads _context_entities.md and writes _entities.json")
 
 
+def migrate_all(*, dry_run: bool = False) -> None:
+    """Re-prepare entity contexts for analyses that have legacy _entities.json.
+
+    Legacy files use bare claim_indices; the new prompt asks for attribution types
+    (asserted, quoted, paraphrased, mentioned). This function:
+    1. Backs up existing _entities.json → _entities_legacy.json
+    2. Writes new _context_entities.md with the attribution-aware prompt
+    3. Prints instructions for batch re-extraction via subagents
+    """
+    from esbvaktin.pipeline.models import Claim
+    from esbvaktin.pipeline.prepare_context import prepare_entity_context
+
+    analysis_dirs = sorted(ANALYSES_DIR.iterdir())
+    to_migrate = 0
+    already_migrated = 0
+
+    for analysis_dir in analysis_dirs:
+        if not analysis_dir.is_dir():
+            continue
+
+        report_path = analysis_dir / "_report_final.json"
+        article_path = analysis_dir / "_article.md"
+        entities_path = analysis_dir / "_entities.json"
+        legacy_path = analysis_dir / "_entities_legacy.json"
+
+        if not report_path.exists() or not article_path.exists():
+            continue
+        if not entities_path.exists():
+            continue
+
+        # Check if already migrated (has attributions field in any speaker)
+        with open(entities_path, encoding="utf-8") as f:
+            raw = json.load(f)
+        speakers = raw.get("speakers", [])
+        author = raw.get("article_author")
+        all_speakers = ([author] if author else []) + speakers
+        has_attributions = any(s.get("attributions") for s in all_speakers)
+        if has_attributions:
+            already_migrated += 1
+            print(f"  {analysis_dir.name}: already has attributions — skipping")
+            continue
+
+        to_migrate += 1
+
+        if dry_run:
+            with open(report_path, encoding="utf-8") as f:
+                title = json.load(f).get("article_title", "?")
+            n_speakers = len(all_speakers)
+            print(f"  {analysis_dir.name}: {n_speakers} speakers — {title}")
+            continue
+
+        # Back up old entities
+        if not legacy_path.exists():
+            entities_path.rename(legacy_path)
+            print(f"  {analysis_dir.name}: backed up → _entities_legacy.json")
+        else:
+            entities_path.unlink()
+            print(f"  {analysis_dir.name}: legacy backup already exists, removed old _entities.json")
+
+        # Prepare new context with attribution-aware prompt
+        article_text = article_path.read_text(encoding="utf-8")
+        raw_claims = _load_claims_from_report(report_path)
+        claims = [Claim.model_validate(c) for c in raw_claims]
+        metadata = _extract_metadata(article_path)
+
+        prepare_entity_context(
+            article_text=article_text,
+            claims=claims,
+            output_dir=analysis_dir,
+            metadata=metadata,
+        )
+
+    print(f"\n{'Would migrate' if dry_run else 'Migrated'}: {to_migrate}, "
+          f"already migrated: {already_migrated}")
+    if to_migrate > 0 and not dry_run:
+        print("\nNext: launch subagents to process each _context_entities.md")
+        print("Each subagent reads _context_entities.md and writes _entities.json")
+        print("Then run: uv run python scripts/export_entities.py")
+
+
 def show_status() -> None:
     """Show entity extraction status for all analyses."""
     analysis_dirs = sorted(ANALYSES_DIR.iterdir())
@@ -154,14 +234,20 @@ def show_status() -> None:
 
 
 def main() -> None:
-    if len(sys.argv) < 2 or sys.argv[1] not in ("prepare", "status"):
-        print("Usage: uv run python scripts/extract_entities.py <prepare|status>")
+    commands = ("prepare", "status", "migrate", "migrate-dry-run")
+    if len(sys.argv) < 2 or sys.argv[1] not in commands:
+        print(f"Usage: uv run python scripts/extract_entities.py <{'|'.join(commands)}>")
         sys.exit(1)
 
-    if sys.argv[1] == "prepare":
+    cmd = sys.argv[1]
+    if cmd == "prepare":
         prepare_all()
-    elif sys.argv[1] == "status":
+    elif cmd == "status":
         show_status()
+    elif cmd == "migrate":
+        migrate_all(dry_run=False)
+    elif cmd == "migrate-dry-run":
+        migrate_all(dry_run=True)
 
 
 if __name__ == "__main__":

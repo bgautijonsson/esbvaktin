@@ -128,6 +128,19 @@ sem hægt er að bera saman við heimildir.
   og lægra `confidence`
 - Skrifaðu `claim_text` á íslensku — þetta er íslenskt verkefni
 
+## Slepptu eftirfarandi — þetta eru EKKI fullyrðingar
+
+- **Æviágrip og titlar**: „X er ráðherra/þingmaður/fréttamaður/sérfræðingur" —
+  starfsheitin eru bakgrunnsupplýsingar, ekki fullyrðingar um ESB-málið
+- **Aðferðafræði kannana**: Dagsetningar, úrtaksstærðir, þátttökuhlutföll og
+  aðrar tæknilegar upplýsingar um kannanir — slepptu nema talan sjálf sé umdeild
+- **Efni sem tengist ekki ESB**: Hjúkrunarrými, raforkuúnútur, Grænlandsmál og
+  annað sem snertir ekki beint ESB-aðild, viðræður eða þjóðaratkvæðagreiðsluna
+- **Heimildatilvísanir**: „Altinget.no birti grein", „RÚV greindi frá" —
+  fréttatilvísanir eru ekki fullyrðingar
+- **Almenn þekking**: „Vigdís var forseti 1980–1996" eða önnur staðreynd sem
+  enginn deilir um og tengist ekki ESB-efninu beint
+
 {_TERMINOLOGY_IS}
 
 ## Úttakssnið / Output Format
@@ -177,6 +190,19 @@ article that can be checked against evidence.
 - Categorise accurately — this determines which evidence is retrieved
 - Mark opinions that contain implicit factual claims as claims with
   `claim_type: "opinion"` and lower confidence
+
+## Do NOT extract the following — these are NOT claims
+
+- **Biographical/title statements**: "X is a minister/MP/journalist/expert" —
+  job titles are background info, not claims about the EU question
+- **Poll methodology**: Dates, sample sizes, response rates, and other
+  technical survey details — skip unless the figure itself is contested
+- **Non-EU content**: Nursing homes, energy grid, Greenland affairs, and
+  anything not directly about EU membership, negotiations, or the referendum
+- **Source attributions**: "Altinget.no published an article", "RÚV reported" —
+  news references are not claims
+- **Common knowledge**: "Vigdís was president 1980–1996" or other undisputed
+  facts that do not directly relate to the EU question
 
 ## Output Format
 
@@ -673,7 +699,7 @@ def prepare_entity_context(
 
 You are extracting **entities** (people, parties, organisations) from an article
 about Iceland's EU membership referendum. For each entity, identify their role,
-affiliation, EU stance, and which claims they made or are attributed to.
+affiliation, EU stance, and which claims they made — **and how**.
 
 ## Instructions
 
@@ -687,20 +713,35 @@ affiliation, EU stance, and which claims they made or are attributed to.
    - `role`: Their role/title (e.g. "þingmaður", "framkvæmdastjóri", "sérfræðingur")
    - `party`: Political party affiliation (for individuals, if known from the article)
    - `stance`: Their EU membership stance: `pro_eu`, `anti_eu`, `mixed`, or `neutral`
-   - `claim_indices`: Which claims (by 0-based index) they made or are attributed to
+   - `attributions`: Array linking the speaker to specific claims **with attribution type**
+
+## Attribution Types
+
+Each claim-speaker link must have one of these types:
+
+| Type | Meaning | Example |
+|------|---------|---------|
+| `asserted` | Speaker directly states the claim as their own position | An opinion author writing "ESB-aðild myndi..." |
+| `quoted` | Speaker is directly quoted (quotation marks in article) | „Við munum aldrei samþykkja þetta," sagði X |
+| `paraphrased` | Article restates the speaker's position without a direct quote | Samkvæmt X þá sé þetta... |
+| `mentioned` | Speaker is referenced in context of the claim but didn't make it | Fullyrðingin vísar til stefnu X |
+
+### Attribution Guidelines
+
+- **Journalists / fréttaritarar**: Usually get `asserted` only for editorial framing claims.
+  Claims they *report* others making should be attributed to the original speaker, not the journalist.
+- **Opinion authors / pistlahöfundar**: Get `asserted` for claims they present as their own view.
+- **Direct quotes**: Always use `quoted` when the article uses quotation marks.
+- **Paraphrased positions**: Use `paraphrased` when the article describes someone's view
+  without a direct quote (e.g. "samkvæmt X", "að mati Y", "X telur að").
+- **Mentioned in context**: Use `mentioned` when a speaker/org is referenced as context
+  but isn't the one making the claim (e.g. "ESB hefur sett reglur um..." — the EU is
+  mentioned but isn't actively making a claim in the article).
+- A single claim can have multiple speakers with different attribution types.
+- Only include entities that are relevant to the EU debate.
 
 ## Important
 
-- **Author**: The article author gets `claim_indices` for ALL claims they directly
-  assert (not claims they report others as making)
-- **Quoted speakers**: If the article quotes someone, attribute the relevant claims
-  to that speaker
-- **Organisations**: If claims are attributed to an organisation (e.g. "Samtök iðnaðarins"),
-  list the organisation as a speaker
-- **Stance inference**: Infer stance from the article content — what position does
-  the speaker take on EU membership?
-- A single claim can be attributed to multiple speakers
-- Only include entities that are relevant to the EU debate
 - **JSON safety**: Escape Icelandic quotation marks „…" as `\\"…\\"` in JSON strings
 
 ## Output Format
@@ -713,8 +754,11 @@ Write raw JSON (no markdown code block wrapping):
     "type": "individual",
     "role": "...",
     "party": "..." or null,
-    "stance": "anti_eu",
-    "claim_indices": [0, 1, 3]
+    "stance": "neutral",
+    "attributions": [
+      {{"claim_index": 0, "attribution": "asserted"}},
+      {{"claim_index": 5, "attribution": "asserted"}}
+    ]
   }},
   "speakers": [
     {{
@@ -723,7 +767,20 @@ Write raw JSON (no markdown code block wrapping):
       "role": "...",
       "party": "..." or null,
       "stance": "pro_eu",
-      "claim_indices": [2, 4]
+      "attributions": [
+        {{"claim_index": 2, "attribution": "quoted"}},
+        {{"claim_index": 4, "attribution": "paraphrased"}}
+      ]
+    }},
+    {{
+      "name": "...",
+      "type": "institution",
+      "role": "...",
+      "party": null,
+      "stance": "neutral",
+      "attributions": [
+        {{"claim_index": 3, "attribution": "mentioned"}}
+      ]
     }}
   ]
 }}

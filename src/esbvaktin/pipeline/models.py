@@ -126,6 +126,25 @@ class Stance(StrEnum):
     NEUTRAL = "neutral"
 
 
+class Attribution(StrEnum):
+    """How a speaker is connected to a claim."""
+
+    ASSERTED = "asserted"  # Speaker directly states the claim as their own position
+    QUOTED = "quoted"  # Speaker is directly quoted making the claim
+    PARAPHRASED = "paraphrased"  # Article paraphrases the speaker's position
+    MENTIONED = "mentioned"  # Speaker is referenced in context but didn't make the claim
+
+
+class ClaimAttribution(BaseModel):
+    """Links a speaker to a specific claim with attribution type."""
+
+    claim_index: int = Field(..., description="0-based index into the claims list")
+    attribution: Attribution = Field(
+        default=Attribution.ASSERTED,
+        description="How the speaker is connected to this claim",
+    )
+
+
 class Speaker(BaseModel):
     """A person, party, or organisation quoted or attributed in an article."""
 
@@ -134,10 +153,32 @@ class Speaker(BaseModel):
     role: str | None = Field(None, description="e.g. 'þingmaður', 'framkvæmdastjóri'")
     party: str | None = Field(None, description="Political party (for individuals)")
     stance: Stance = Field(default=Stance.NEUTRAL, description="EU membership stance")
+    attributions: list[ClaimAttribution] = Field(
+        default_factory=list,
+        description="Claims attributed to this speaker, with attribution type",
+    )
+    # Legacy field — kept for backward compatibility with existing _entities.json
     claim_indices: list[int] = Field(
         default_factory=list,
-        description="0-based indices of claims this speaker made/is attributed to",
+        description="Deprecated: use attributions instead. Bare indices default to 'asserted'.",
     )
+
+    def resolved_attributions(self) -> list[ClaimAttribution]:
+        """Return attributions, falling back to claim_indices for legacy data.
+
+        If `attributions` is populated, return it directly.
+        Otherwise, convert bare `claim_indices` to attributions with type 'asserted'.
+        """
+        if self.attributions:
+            return self.attributions
+        return [
+            ClaimAttribution(claim_index=idx, attribution=Attribution.ASSERTED)
+            for idx in self.claim_indices
+        ]
+
+    def claim_index_set(self) -> set[int]:
+        """Return all claim indices this speaker is linked to."""
+        return {a.claim_index for a in self.resolved_attributions()}
 
 
 class ArticleEntities(BaseModel):
