@@ -993,3 +993,206 @@ Write a JSON array inside a code block:
     output_path = output_dir / "_context_extraction.md"
     output_path.write_text(context, encoding="utf-8")
     return output_path
+
+
+# ── Panel show extraction context ─────────────────────────────────
+
+
+def prepare_panel_extraction_context(
+    transcript: "ParsedTranscript",  # noqa: F821
+    output_dir: Path,
+    language: str = "is",
+) -> Path:
+    """Write extraction context for claims from a panel show transcript.
+
+    Like article/speech extraction but with multi-speaker awareness:
+    - Transcript formatted with speaker labels so the subagent sees who said what
+    - Output includes ``speaker_name`` per claim for natural attribution
+    - Debate-specific guardrails filter moderator procedural text and rhetoric
+
+    Args:
+        transcript: Parsed panel show transcript (from ``transcript.py``).
+        output_dir: Work directory for this analysis.
+        language: Output language (default "is").
+
+    Returns path to the context file.
+    """
+    # Format participant list
+    participants_block = "## Þátttakendur\n\n"
+    for p in transcript.participants:
+        role = p["role"] or "—"
+        participants_block += f"- **{p['name']}** — {role}\n"
+
+    # Format the debate as speaker-labelled segments (moderator excluded)
+    debate_block = "## Umræðan / Debate Text\n\n"
+    for turn in transcript.turns:
+        if turn.is_moderator:
+            continue
+        role_hint = f" ({turn.speaker_role})" if turn.speaker_role else ""
+        debate_block += f"### {turn.speaker_name}{role_hint}\n\n{turn.text}\n\n"
+
+    meta_block = f"""## Lýsigögn þáttar
+
+- **Þáttur**: {transcript.title}
+- **Þáttaröð**: {transcript.show_name}
+- **Dagsetning**: {transcript.date or '?'}
+- **Útvarpsstöð**: {transcript.broadcaster or '?'}
+- **Orðafjöldi**: {transcript.word_count}
+- **Heimild**: {transcript.url or '?'}
+"""
+
+    if language == "is":
+        context = f"""# Fullyrðingagreining — Útdráttur úr umræðuþætti
+
+Þú ert að greina umræðuþátt þar sem fulltrúar stjórnmálaflokka ræða
+þjóðaratkvæðagreiðslu Íslands um ESB-aðild (29. ágúst 2026). Verkefni þitt
+er að draga út allar **staðreyndalegar fullyrðingar** sem hægt er að bera
+saman við heimildir.
+
+{meta_block}
+
+{participants_block}
+
+## Leiðbeiningar
+
+1. Lestu umræðuna vandlega — athugaðu hver segir hvað
+2. Finndu allar staðreyndalegar fullyrðingar (tölfræði, lagalegar fullyrðingar,
+   samanburði, spár). Slepptu hreinum skoðunum nema þær feli í sér óbeinar
+   staðreyndalegar fullyrðingar.
+3. Fyrir hverja fullyrðingu, skráðu:
+   - `claim_text`: Fullyrðingin sett fram á skýru íslensku
+   - `original_quote`: Nákvæm tilvitnun úr umræðunni
+   - `speaker_name`: **Nafn þess sem sagði þetta** — nákvæmt fullt nafn
+   - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
+     precedents, currency, labour, polling, party_positions, org_positions, other
+   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, prediction, opinion
+   - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
+
+## Mikilvægt
+
+- Vertu ítarleg/ur — dragðu út ALLAR staðreyndalegar fullyrðingar, ekki bara augljósar
+- **`speaker_name` er nauðsynlegt** — tilgreindu alltaf hver sagði fullyrðinguna
+- Haltu tilvitnunum á upprunalegu tungumáli umræðunnar
+- Flokkaðu rétt — flokkun ákvarðar hvaða heimildir eru sóttar
+- Merktu skoðanir sem innihalda óbeinar fullyrðingar með `claim_type: "opinion"`
+  og lægra `confidence`
+- Skrifaðu `claim_text` á íslensku — þetta er íslenskt verkefni
+
+## Slepptu eftirfarandi — þetta eru EKKI fullyrðingar
+
+### Almenn útilokun
+
+- **Æviágrip og titlar**: „X er ráðherra/þingmaður" — bakgrunnsupplýsingar
+- **Efni sem tengist ekki ESB**: Allt sem snertir ekki beint ESB-aðild,
+  viðræður eða þjóðaratkvæðagreiðsluna
+- **Almenn þekking**: Óumdeildar staðreyndir sem tengist ekki ESB-efninu beint
+
+### Slepptu umræðustílbragðum — sérstakt fyrir umræðuþætti
+
+- **Spurningar umsjónarmanns**: Spurningar og inngangssetningar frá umsjónarmanni —
+  spurningin sjálf er ekki fullyrðing
+- **Samþykki/ósamþykki án efnis**: „Ég er sammála/ósammála" án staðreyndalegrar
+  fullyrðingar
+- **Viljayfirlýsingar**: „Við munum...", „Við höfnum þessu" — pólitísk fyrirheit
+  eru ekki fullyrðingar um staðreyndir
+- **Tilvísanir í orð annarra**: „Eins og [nafn] sagði áðan..." — slepptu nema nýtt
+  staðreyndalegt efni bætist við
+- **Herferðarklisjur og málsháttir**: Slagorð og ómerk orðalag án efnis
+
+{_TERMINOLOGY_IS}
+
+## Úttakssnið / Output Format
+
+Skrifaðu JSON-fylki innan kóðablokkar. **Athugið: `speaker_name` er skyldureitur.**
+
+```json
+[
+  {{{{
+    "claim_text": "...",
+    "original_quote": "...",
+    "speaker_name": "Fullt nafn ræðumanns",
+    "category": "...",
+    "claim_type": "...",
+    "confidence": 0.9
+  }}}}
+]
+```
+
+{debate_block}"""
+    else:
+        context = f"""# Claim Extraction — Panel Show Debate
+
+You are analysing a panel show debate where political party representatives discuss
+Iceland's EU membership referendum (29 August 2026). Extract all **factual claims**
+that can be checked against evidence.
+
+{meta_block}
+
+{participants_block}
+
+## Instructions
+
+1. Read the debate carefully — note who says what
+2. Identify every factual claim (statistics, legal assertions, comparisons,
+   predictions). Skip pure opinions unless they contain implicit factual claims.
+3. For each claim, provide:
+   - `claim_text`: The factual claim restated clearly
+   - `original_quote`: The exact quote from the debate
+   - `speaker_name`: **Name of the person who made this claim** — exact full name
+   - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
+     precedents, currency, labour, polling, party_positions, org_positions, other
+   - `claim_type`: One of: statistic, legal_assertion, comparison, prediction, opinion
+   - `confidence`: How confident you are this is a factual claim (0-1)
+
+## Important
+
+- Be thorough — extract ALL factual claims
+- **`speaker_name` is required** — always specify who made the claim
+- Preserve the original language of quotes
+- Mark opinions with implicit factual claims as `claim_type: "opinion"` with lower confidence
+
+## Do NOT extract the following
+
+### General exclusions
+
+- **Biographical/title statements**: job titles are background info
+- **Non-EU content**: anything not about EU membership, negotiations, or referendum
+- **Common knowledge**: undisputed facts unrelated to the EU question
+
+### Skip debate rhetoric — specific to panel shows
+
+- **Moderator questions**: questions and introductions from the host
+- **Agreement/disagreement without substance**: "I agree/disagree" without a factual claim
+- **Intent expressions**: "we will...", "we reject this" — political pledges, not factual claims
+- **References to what others just said**: "as [name] said..." — skip unless new factual
+  content is added
+- **Campaign clichés and slogans**: empty rhetoric without factual substance
+
+## Output Format
+
+Write a JSON array inside a code block. **Note: `speaker_name` is a required field.**
+
+```json
+[
+  {{{{
+    "claim_text": "...",
+    "original_quote": "...",
+    "speaker_name": "Full name of speaker",
+    "category": "...",
+    "claim_type": "...",
+    "confidence": 0.9
+  }}}}
+]
+```
+
+{debate_block}"""
+
+    # Append Icelandic quality blocks for extraction
+    if language == "is":
+        blocks = _load_icelandic_blocks_subset("Block D", "Block F", "Block H")
+        if blocks:
+            context += f"\n\n{blocks}\n"
+
+    output_path = output_dir / "_context_extraction.md"
+    output_path.write_text(context, encoding="utf-8")
+    return output_path

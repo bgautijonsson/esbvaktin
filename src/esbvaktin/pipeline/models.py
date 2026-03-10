@@ -56,6 +56,9 @@ class Claim(BaseModel):
     category: str = Field(..., description="Topic category (e.g. fisheries, trade)")
     claim_type: ClaimType
     confidence: float = Field(..., ge=0, le=1, description="Extraction confidence")
+    speaker_name: str | None = Field(
+        None, description="Speaker who made the claim (panel shows / transcripts)"
+    )
 
 
 class EvidenceMatch(BaseModel):

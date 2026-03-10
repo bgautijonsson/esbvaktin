@@ -63,7 +63,11 @@ def _sanitise_icelandic_quotes(text: str) -> str:
 
 
 def _extract_json(text: str) -> str:
-    """Extract JSON from a markdown code block, or treat the whole text as JSON."""
+    """Extract JSON from a markdown code block, or treat the whole text as JSON.
+
+    Tries to parse without sanitisation first; only applies Icelandic
+    quote sanitisation if the initial parse would fail.
+    """
     # Try to find a ```json ... ``` block
     match = re.search(r"```(?:json)?\s*\n(.*?)```", text, re.DOTALL)
     if match:
@@ -71,6 +75,12 @@ def _extract_json(text: str) -> str:
     else:
         # Fall back to treating the entire text as JSON
         raw = text.strip()
+    # Try parsing as-is first — sanitisation can corrupt valid Unicode quotes
+    try:
+        json.loads(raw)
+        return raw
+    except (json.JSONDecodeError, ValueError):
+        pass
     # Sanitise smart/Icelandic quotes before parsing
     return _sanitise_icelandic_quotes(raw)
 
@@ -92,13 +102,17 @@ def _normalise_assessment(item: dict) -> dict:
     if "claim" not in item and "claim_text" in item:
         # Reconstruct nested claim from flat fields
         item = dict(item)  # shallow copy
-        item["claim"] = {
+        claim_dict = {
             "claim_text": item.pop("claim_text"),
             "original_quote": item.pop("quote", item.pop("original_quote", "")),
             "category": item.pop("category", "other"),
             "claim_type": item.pop("claim_type", "opinion"),
             "confidence": item.get("confidence", 0.5),
         }
+        # Preserve speaker_name for panel show / transcript claims
+        if "speaker_name" in item:
+            claim_dict["speaker_name"] = item.pop("speaker_name")
+        item["claim"] = claim_dict
         # Map alternative field names
         if "evidence_ids" in item and "supporting_evidence" not in item:
             item["supporting_evidence"] = item.pop("evidence_ids")

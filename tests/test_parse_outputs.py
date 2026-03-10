@@ -120,12 +120,23 @@ class TestIcelandicQuoteSanitisation:
         assert len(claims) == 1
         assert "ráðherra" in claims[0].claim_text.lower()
 
-    def test_extract_json_sanitises_in_code_block(self):
-        """Quotes inside ```json blocks are also sanitised."""
+    def test_extract_json_valid_unicode_quotes_preserved(self):
+        """Valid JSON with Unicode quotes is returned as-is (no corruption)."""
         text = '```json\n{"key": "\u201eval\u201c"}\n```'
         result = _extract_json(text)
-        assert "\u201e" not in result
-        assert "\u201c" not in result
+        # Unicode quotes are valid JSON — should parse without sanitisation
+        import json
+        parsed = json.loads(result)
+        assert parsed["key"] == "\u201eval\u201c"
+
+    def test_extract_json_sanitises_broken_quotes(self):
+        """Broken JSON with „...ASCII-" pairs is sanitised to parse."""
+        # „ followed by ASCII " (real delimiter) — this WOULD break json.loads
+        text = '```json\n[{"key": "\u201eval""}]\n```'
+        result = _extract_json(text)
+        import json
+        parsed = json.loads(result)
+        assert len(parsed) == 1
 
 
 class TestParseTranslation:
