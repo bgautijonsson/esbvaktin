@@ -362,17 +362,30 @@ def _is_panel_show(analysis_dir: Path) -> bool:
     return analysis_dir.name.startswith("panel_")
 
 
+def _load_site_entities(site_dir: Path) -> dict[str, dict]:
+    """Load site-wide entities.json as a name → entity lookup."""
+    entities_path = site_dir / "_data" / "entities.json"
+    if not entities_path.exists():
+        return {}
+    with open(entities_path, encoding="utf-8") as f:
+        entities = json.load(f)
+    return {e["name"]: e for e in entities}
+
+
 def _build_participants(
-    entities_data: dict | None, claims: list[dict],
+    entities_data: dict | None,
+    claims: list[dict],
+    site_entities: dict[str, dict] | None = None,
 ) -> list[dict]:
     """Build participant list with per-speaker verdict breakdown.
 
-    Returns list of dicts: {name, role, party, claim_count, verdicts}.
-    Only includes speakers from _entities.json (excludes article_author).
+    Enriches with site-wide entity data (slug, credibility, mention_count,
+    althingi speech count) when available.
     """
     if not entities_data:
         return []
 
+    site_entities = site_entities or {}
     participants = []
     for speaker in entities_data.get("speakers", []):
         attrs = speaker.get("attributions", [])
@@ -389,13 +402,25 @@ def _build_participants(
                 v = claims[idx].get("verdict", "unknown")
                 verdicts[v] = verdicts.get(v, 0) + 1
 
-        participants.append({
+        p: dict = {
             "name": speaker["name"],
             "role": speaker.get("role"),
             "party": speaker.get("party"),
             "claim_count": len(attrs),
             "verdicts": verdicts,
-        })
+        }
+
+        # Enrich from site-wide entity data
+        entity = site_entities.get(speaker["name"])
+        if entity:
+            p["slug"] = entity.get("slug")
+            p["mention_count"] = entity.get("mention_count")
+            p["credibility"] = entity.get("credibility")
+            stats = entity.get("althingi_stats")
+            if stats:
+                p["speech_count"] = stats.get("speech_count")
+
+        participants.append(p)
 
     # Sort by claim count descending
     participants.sort(key=lambda p: p["claim_count"], reverse=True)
@@ -471,7 +496,11 @@ def _speakers_for_claim(entities_data: dict | None, claim_index: int) -> list[di
     return speakers
 
 
-def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
+def prepare_report(
+    report_path: Path,
+    evidence_meta: dict[str, dict],
+    site_entities: dict[str, dict] | None = None,
+) -> dict:
     """Extract site-ready fields from a _report_final.json file.
 
     Enriches with:
@@ -564,7 +593,10 @@ def prepare_report(report_path: Path, evidence_meta: dict[str, dict]) -> dict:
 
     # Detect panel show and build participant data
     panel_show = _is_panel_show(report_path.parent)
-    participants = _build_participants(entities_data, claims) if panel_show else []
+    participants = (
+        _build_participants(entities_data, claims, site_entities)
+        if panel_show else []
+    )
 
     result = {
         "analysis_id": analysis_id,
@@ -644,6 +676,11 @@ def main() -> None:
         with_url = sum(1 for v in evidence_meta.values() if v.get("source_url"))
         print(f"Evidence metadata: {len(evidence_meta)} entries ({with_url} with URLs)")
 
+    # Load site-wide entities for panel show participant enrichment
+    site_entities = _load_site_entities(site_dir)
+    if site_entities:
+        print(f"Site entities: {len(site_entities)} loaded for participant enrichment")
+
     # Find all completed analysis reports
     report_files = sorted(ANALYSES_DIR.glob("*/_report_final.json"))
 
@@ -654,7 +691,7 @@ def main() -> None:
     all_reports = []
     written = 0
     for report_path in report_files:
-        report_data = prepare_report(report_path, evidence_meta)
+        report_data = prepare_report(report_path, evidence_meta, site_entities)
         out_path = reports_dir / f"{report_data['slug']}.json"
 
         with open(out_path, "w", encoding="utf-8") as f:
