@@ -96,6 +96,51 @@ Gullstaðalstextar og algeng villumynstur fyrir íslenskar staðreyndaúttektir 
 - Fordæmi (Írland, Austurríki, Malta) styrkja röksemdafærsluna
 - Stutt og beint — lesandinn fær efnið hratt
 
+### Dæmi 11: misleading — stækkunarpakki (úr raungreiningarskýrslu)
+
+> Fullyrðingin gefur til kynna að ESB hafi virkan áhuga á aðild Íslands sem hluta af stækkunarpakka og að Ísland sé efnahagslega eftirsóknarvert. TRADE-DATA-022 sýnir hins vegar að Ísland er efnahagslega mjög lítið (VLF um 25 milljarðar evra) og aðild þess hefði óveruleg áhrif á efnahag ESB. Sama heimild bendir á að engin skjalfest ESB-stefna sé til um að sækjast eftir aðild Íslands sem hluta af stækkunarpakka, og forgangsröð ESB í stækkun er nú á Vestur-Balkanskaga, Úkraínu og Moldóvu. ESB myndi taka vel á móti Íslandi en leitar ekki virkt eftir aðild landsins.
+
+**Af hverju þetta virkar:**
+- Greinir aðalatriðið strax: "efnahagslega mjög lítið" — tölur, ekki álit
+- Samhengið víkkar: forgangsröð ESB sett á móti fullyrðingunni
+- Lokasetningin er nákvæm: "myndi taka vel á móti" — ekki algert neitun
+
+### Dæmi 12: supported — þjóðaratkvæðagreiðsla 2012 (úr raungreiningarskýrslu)
+
+> Fullyrðingin er staðfest af heimildum. SOV-DATA-005 sýnir að 66,9% kusu já við fyrstu spurningu þjóðaratkvæðagreiðslunnar 20. október 2012 (fullyrðingin segir 67%, sem er nákvæm sléttun). SOV-HIST-001 staðfestir að enginn síðari Alþingur hefur innleitt tillögur Stjórnlagaráðs í lög, þrátt fyrir skýran meirihluta. Bæði meginefnisatriði fullyrðingarinnar eru þannig staðfest: hlutfall samþykktar og vanefnd Alþingis.
+
+**Af hverju þetta virkar:**
+- Tölulega nákvæmt: "66,9%" og skýrt hvernig "67%" er sléttun
+- Skipulagt: greinir tvo þætti fullyrðingarinnar aðskilt
+- Beint mat án hikvísunar: "staðfest af heimildum"
+
+### Dæmi 13: partially_supported — samningsstaða (úr raungreiningarskýrslu)
+
+> Framkvæmdastjórn ESB mat Ísland sem „auðveldan" umsækjanda árið 2010 vegna EES-aðildar, sterkra stofnana og virkrar markaðshagkerfis (TRADE-DATA-022). Samningsstaðan styrkist af háu samræmi við regluverkið í gegnum EES. Hins vegar eru erfiðustu málaflokkar — sjávarútvegur, landbúnaður og gjaldmiðill — alveg utan EES og krefjast nýrra viðræðna, og ESB hefur ekki veitt nýjum aðildarríkjum varanlegar undanþágur síðan Króatía gekk inn 2013 (SOV-LEGAL-006, EEA-LEGAL-012).
+
+**Af hverju þetta virkar:**
+- Byrjar á jákvæðu: "auðveldan" — viðurkennir styrkleikann
+- Bandstrikið skapar skýra vendingu: "— sjávarútvegur, landbúnaður og gjaldmiðill —"
+- Greinir „hvar" samningsstaðan er sterk og „hvar" hún er veik
+
+### Dæmi 14: supported — alþjóðabreytingar (úr raungreiningarskýrslu)
+
+> Heimildir staðfesta að bæði efnahagsleg og hernaðarleg umskipti hafa breytt forsendum ESB-umræðunnar. Innrás Rússlands í Úkraínu 2022 jók verulega hernaðarlegt mikilvægi Íslands og leiddi til nýrrar öryggisstefnu ESB (SOV-HIST-003). Stuðningur við ESB-aðild tengist efnahagslegum sveiflum — hann jókst í kreppunni 2008–2010 og aftur í verðbólgubyljunni 2022–2023 (POLL-DATA-009). Auk þess hefur regluverk ESB stækkað umtalsvert á efnahagssviðum (EEA-LEGAL-018).
+
+**Af hverju þetta virkar:**
+- Fjölbreytilegar heimildir: hernaður, könnunargögn, reglugerðir
+- Fjölbreytilegar setningarupphöf: „Heimildir", „Innrás", „Stuðningur", „Auk þess"
+- Enginn uppblástur — staðreyndir sagðar rólega
+
+### Dæmi 15: partially_supported — skoðanakannanir og kynjamunur (úr raungreiningarskýrslu)
+
+> POLL-DATA-015 sýnir skýran kynjamun: 39% karla eru andvígir áframhaldandi viðræðum samanborið við 22% kvenna. POLL-DATA-008 og POLL-DATA-018 staðfesta einnig að konur eru hlynntari viðræðum en karlar. Þessi kynjamunur er í samræmi við sögulegt mynstur í ESB-könnunum á Íslandi.
+
+**Af hverju þetta virkar:**
+- Tölur beint í byrjun: "39% karla ... 22% kvenna"
+- Samanburður staðfestur af þremur aðskildum heimildum
+- Lokasetning setur í sögulegt samhengi án uppblásturs
+
 ---
 
 ## ANDFORDÆMI
@@ -130,14 +175,35 @@ Gullstaðalstextar og algeng villumynstur fyrir íslenskar staðreyndaúttektir 
 
 **Vandamál:** Ensk hugtök í íslenskum texta. **Rétt:** "Samkvæmt sameiginlegri landbúnaðarstefnu verða öll aðildarríki að taka þátt í byggðasjóðakerfinu. Reglur innri markaðarins ná einnig yfir sjávarútveg."
 
+### Andfordæmi 6: ASCII-umritun í öllu textasvæðinu (raunverulegt dæmi úr batch 1)
+
+> Margar heimildir stadreyna thetta. POLITICAL-DATA-004 segir ad Vidreisn se leidd af Thorgerddur Katrin Gunnarsdottir sem gegni stodu utanrikisradherra. POLITICAL-DATA-012 stadferir ad Thordis Kolbrun Reykfjord Gylfadottir, formadur Vidreisnar siddan 2022, gegni embatti utanrikisradherra. Tho ad heimildir hafi misvikdandi upplysingar um nafn formannsins seu thaer samhalja um meginatridid: formadur Vidreisnar er noverandi utanrikisradherra Islands.
+
+**Vandamál:** Hvert einasta séríslenskt orð gallað: "stadreyna" → "staðreyna", "Thorgerddur" → "Þorgerður", "utanrikisradherra" → "utanríkisráðherra", "meginatridid" → "meginatriðið", "noverandi" → "núverandi". Þetta er raunverulegt dæmi úr fyrstu lotu endurmatskeyrslu. **Sérstaklega slæmt:** Nöfn einstaklinga gallað — "Thorgerddur" í stað "Þorgerður".
+
+### Andfordæmi 7: ASCII-umritun í missing_context_is (raunverulegt dæmi úr batch 1)
+
+> Fullyrdingin er poltisk/vidhorfskennd en ekki hreint stadreyndamat. Heimildir stadfesta ad Island tok ekki frumkvaedi i ETS-samningavidraedum, en hvort thad telst ekki naeg er politskt mat. EES/EFTA-rikjum skortir atkvadisrett sem takmarkar moeguleika theirra a adild ad loggjafarvinnunni, oafhaett vilja.
+
+**Vandamál:** Allur textinn á ASCII — "poltisk" → "pólitísk", "vidhorfskennd" → "viðhorfskennd", "stadreyndamat" → "staðreyndamat", "atkvadisrett" → "atkvæðisrétt", "moeguleika" → "möguleika", "loggjafarvinnunni" → "löggjafarvinnnunni". Jafnvel orð sem eru sjaldgæfari fá ASCII-meðferð: "oafhaett" → "óháð" (rangt orð auk þess). Þetta er **missing_context_is** svæði — sama vandamálið á við öll íslensk svæði.
+
+### Andfordæmi 8: Einhæf „Heimildir staðfesta" upphöf
+
+> Heimildir staðfesta að landbúnaður sé mikilvægur. Heimildir staðfesta einnig að sjávarútvegur sé umdeildur. Heimildir sýna að viðskiptamál eru flókin. Heimildir benda til þess að þjóðaratkvæðagreiðslan fari fram í ágúst.
+
+**Vandamál:** Fjórar setningar í röð byrja á „Heimildir" — einhæft og vélrænt. Þetta er algengari villa en „Samkvæmt..."-mynstrið vegna þess að matshlutverk hvetur LLM til að vísa stöðugt í heimildir. **Rétt:** Fjölbreyttu: „Landbúnaður er mikilvægur samkvæmt AGRI-DATA-009. Sjávarútvegur reyndist umdeildasti kaflinn (EEA-DATA-004). Viðskiptamálin flækjast af EES-forskoti en vöntun á frjálsum fjármagnsflæði. Þjóðaratkvæðagreiðslan er áformuð 29. ágúst."
+
 ---
 
 ## ANDMYNSTUR (gátlisti)
 
 - **ASCII-umritun** — "thjodar..." fyrir "þjóðar..." — algengasta og alvarlegasta villan
+- **ASCII í nöfnum** — "Thorgerddur" fyrir "Þorgerður", "Ossur" fyrir "Össur" — sérstaklega slæmt
 - **Hikvísun** — "virðist benda til" þegar heimildir staðfesta beint
 - **Einhæf "Samkvæmt..." upphöf** — þrjár setningar í röð
+- **Einhæf "Heimildir..." upphöf** — „Heimildir staðfesta...", „Heimildir sýna...", „Heimildir benda..." í röð
 - **Ensk ESB-hugtök** — "Common Agricultural Policy" í íslenskum texta
 - **Vantar fyrirvara** — sleppa caveats úr heimildum
 - **Sjálftilvísun** — "eins og áður segir", "sem fyrr greinir"
 - **Uppblástur** — "Þessi fullyrðing er gríðarlega mikilvæg" — lát gögnin tala
+- **Endurtekin fullyrðing** — endurtaka fullyrðinguna áður en mat er sett fram — byrjaðu á matinu
