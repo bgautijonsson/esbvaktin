@@ -84,11 +84,32 @@ def _normalise_assessment(item: dict) -> dict:
     return item
 
 
+def _post_process_icelandic(item: dict) -> dict:
+    """Run optional Icelandic corrections on explanation/missing_context fields."""
+    try:
+        from esbvaktin.corrections.greynir import check_with_library, apply_fixes_to_text
+    except ImportError:
+        return item
+
+    for field in ("explanation", "missing_context"):
+        text = item.get(field)
+        if text and isinstance(text, str) and len(text) > 10:
+            sents = [(text, 1)]
+            results = check_with_library(sents)
+            if results:
+                fixed, _ = apply_fixes_to_text(text, results)
+                item[field] = fixed
+    return item
+
+
 def parse_assessments(output_path: Path) -> list[ClaimAssessment]:
     """Parse claim assessment output into ClaimAssessment objects."""
     text = output_path.read_text(encoding="utf-8")
     raw = json.loads(_extract_json(text))
-    return [ClaimAssessment.model_validate(_normalise_assessment(item)) for item in raw]
+    normalised = [_normalise_assessment(item) for item in raw]
+    # Optional: post-process Icelandic text fields
+    normalised = [_post_process_icelandic(item) for item in normalised]
+    return [ClaimAssessment.model_validate(item) for item in normalised]
 
 
 _FRAMING_ALIASES = {

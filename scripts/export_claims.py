@@ -13,6 +13,7 @@ Output:
 from __future__ import annotations
 
 import json
+import re
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -135,6 +136,23 @@ def _to_json(claims: list[dict], path: Path) -> None:
         json.dump(claims, f, ensure_ascii=False, indent=2)
 
 
+_ICE_CHARS = re.compile(r"[þðáéíóúýæöÞÐÁÉÍÓÚÝÆÖ]")
+_ICELANDIC_FIELDS = ["explanation_is", "missing_context_is"]
+
+
+def _validate_icelandic(claims: list[dict]) -> int:
+    """Check for ASCII-only Icelandic text. Prints warnings, returns count."""
+    flagged = 0
+    for c in claims:
+        for field in _ICELANDIC_FIELDS:
+            text = c.get(field, "") or ""
+            if len(text) > 50 and not _ICE_CHARS.search(text):
+                slug = c.get("claim_slug", "?")
+                print(f"  WARNING: ASCII-only {field} in {slug}")
+                flagged += 1
+    return flagged
+
+
 def _show_status(claims: list[dict]) -> None:
     """Print export summary stats."""
     print(f"Total claims: {len(claims)}")
@@ -175,6 +193,11 @@ def main() -> None:
 
     parquet_path = EXPORT_DIR / "claims.parquet"
     json_path = EXPORT_DIR / "claims.json"
+
+    # Validate Icelandic text before export
+    ascii_count = _validate_icelandic(claims)
+    if ascii_count > 0:
+        print(f"\n  {ascii_count} field(s) with ASCII-only Icelandic text (see warnings above)\n")
 
     _to_parquet(claims, parquet_path)
     _to_json(claims, json_path)

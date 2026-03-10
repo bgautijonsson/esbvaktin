@@ -273,14 +273,41 @@ def update():
                 skipped += 1
                 continue
 
+            # Post-process Icelandic text if corrections package is available
+            explanation_is = item.get("explanation_is", "")
+            missing_context_is = item.get("missing_context_is")
+            try:
+                from esbvaktin.corrections.greynir import (
+                    check_with_library,
+                    apply_fixes_to_text,
+                )
+
+                for field_name, field_val in [
+                    ("explanation_is", explanation_is),
+                    ("missing_context_is", missing_context_is),
+                ]:
+                    if field_val and len(field_val) > 10:
+                        sents = [(field_val, 1)]
+                        results = check_with_library(sents)
+                        if results:
+                            fixed, count = apply_fixes_to_text(field_val, results)
+                            if count > 0:
+                                print(f"    GreynirCorrect: {count} fix(es) for {field_name} (claim {claim_id})")
+                                if field_name == "explanation_is":
+                                    explanation_is = fixed
+                                else:
+                                    missing_context_is = fixed
+            except ImportError:
+                pass  # corrections package not installed — skip
+
             try:
                 update_claim_verdict(
                     claim_id=claim_id,
                     verdict=verdict,
-                    explanation_is=item.get("explanation_is", ""),
+                    explanation_is=explanation_is,
                     supporting_evidence=item.get("supporting_evidence", []),
                     contradicting_evidence=item.get("contradicting_evidence", []),
-                    missing_context_is=item.get("missing_context_is"),
+                    missing_context_is=missing_context_is,
                     confidence=item.get("confidence", 0.5),
                     conn=conn,
                 )
