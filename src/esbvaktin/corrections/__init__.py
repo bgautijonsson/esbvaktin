@@ -26,6 +26,12 @@ from esbvaktin.corrections.greynir import (  # noqa: F401
 from esbvaktin.corrections.naturalness import (  # noqa: F401
     score_naturalness,
     format_naturalness_results,
+    run_heuristic_checks,
+    format_heuristic_results,
+    check_monotonous_openings,
+    check_hedging,
+    check_missing_icelandic_chars,
+    check_overformal_register,
     _HAS_ICEGRAMS,
 )
 from esbvaktin.corrections.inflections import (  # noqa: F401
