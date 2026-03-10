@@ -1,0 +1,71 @@
+{
+  "article_author": {
+    "name": "Silja Rún Sigurbjörnsdóttir",
+    "type": "individual",
+    "role": "fréttaritari",
+    "party": null,
+    "stance": "neutral",
+    "attributions": [
+      {"claim_index": 1, "attribution": "asserted"},
+      {"claim_index": 2, "attribution": "asserted"},
+      {"claim_index": 3, "attribution": "asserted"},
+      {"claim_index": 4, "attribution": "asserted"},
+      {"claim_index": 5, "attribution": "asserted"},
+      {"claim_index": 8, "attribution": "asserted"}
+    ]
+  },
+  "speakers": [
+    {
+      "name": "Þorgerður Katrín Gunnarsdóttir",
+      "type": "individual",
+      "role": "formaður Viðreisnar og utanríkisráðherra",
+      "party": "Viðreisn",
+      "stance": "pro_eu",
+      "attributions": [
+        {"claim_index": 0, "attribution": "paraphrased"},
+        {"claim_index": 6, "attribution": "paraphrased"},
+        {"claim_index": 7, "attribution": "paraphrased"},
+        {"claim_index": 9, "attribution": "quoted"},
+        {"claim_index": 10, "attribution": "quoted"},
+        {"claim_index": 11, "attribution": "paraphrased"},
+        {"claim_index": 12, "attribution": "quoted"},
+        {"claim_index": 13, "attribution": "quoted"},
+        {"claim_index": 14, "attribution": "quoted"},
+        {"claim_index": 15, "attribution": "quoted"},
+        {"claim_index": 16, "attribution": "quoted"}
+      ]
+    },
+    {
+      "name": "Formenn ríkisstjórnarflokkanna",
+      "type": "institution",
+      "role": "ríkisstjórnarformenn",
+      "party": null,
+      "stance": "pro_eu",
+      "attributions": [
+        {"claim_index": 8, "attribution": "paraphrased"}
+      ]
+    },
+    {
+      "name": "Evrópusambandið",
+      "type": "institution",
+      "role": "alþjóðastofnun",
+      "party": null,
+      "stance": "neutral",
+      "attributions": [
+        {"claim_index": 1, "attribution": "mentioned"},
+        {"claim_index": 15, "attribution": "mentioned"},
+        {"claim_index": 16, "attribution": "mentioned"}
+      ]
+    },
+    {
+      "name": "Icelandair",
+      "type": "institution",
+      "role": "flugfélag",
+      "party": null,
+      "stance": "neutral",
+      "attributions": [
+        {"claim_index": 4, "attribution": "mentioned"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "article_author": {
+    "name": "Samúel Karl Ólason",
+    "type": "individual",
+    "role": "fréttaritari",
+    "party": null,
+    "stance": "neutral",
+    "attributions": []
+  },
+  "speakers": [
+    {
+      "name": "Ríkisstjórn Donalds Trump",
+      "type": "institution",
+      "role": "ríkisstjórn Bandaríkjanna",
+      "party": null,
+      "stance": "anti_eu",
+      "attributions": [
+        {"claim_index": 0, "attribution": "paraphrased"},
+        {"claim_index": 1, "attribution": "paraphrased"},
+        {"claim_index": 2, "attribution": "paraphrased"},
+        {"claim_index": 11, "attribution": "paraphrased"},
+        {"claim_index": 14, "attribution": "paraphrased"},
+        {"claim_index": 15, "attribution": "paraphrased"}
+      ]
+    },
+    {
+      "name": "Donald Trump",
+      "type": "individual",
+      "role": "forseti Bandaríkjanna",
+      "party": null,
+      "stance": "anti_eu",
+      "attributions": [
+        {"claim_index": 12, "attribution": "paraphrased"},
+        {"claim_index": 13, "attribution": "paraphrased"},
+        {"claim_index": 16, "attribution": "mentioned"}
+      ]
+    },
+    {
+      "name": "Nigel Farage",
+      "type": "individual",
+      "role": "formaður Reform-flokksins",
+      "party": "Reform",
+      "stance": "anti_eu",
+      "attributions": [
+        {"claim_index": 3, "attribution": "mentioned"},
+        {"claim_index": 4, "attribution": "mentioned"},
+        {"claim_index": 5, "attribution": "mentioned"}
+      ]
+    },
+    {
+      "name": "Billy Long",
+      "type": "individual",
+      "role": "fyrirhugaður sendiherra Bandaríkjanna á Íslandi",
+      "party": null,
+      "stance": "neutral",
+      "attributions": [
+        {"claim_index": 6, "attribution": "mentioned"},
+        {"claim_index": 7, "attribution": "mentioned"}
+      ]
+    },
+    {
+      "name": "Katrín Jakobsdóttir",
+      "type": "individual",
+      "role": "fyrrverandi forsætisráðherra",
+      "party": "Vinstrihreyfingin - grænt framboð",
+      "stance": "pro_eu",
+      "attributions": [
+        {"claim_index": 9, "attribution": "paraphrased"},
+        {"claim_index": 10, "attribution": "paraphrased"}
+      ]
+    },
+    {
+      "name": "Þorgerður Katrín Gunnarsdóttir",
+      "type": "individual",
+      "role": "utanríkisráðherra",
+      "party": "Viðreisn",
+      "stance": "neutral",
+      "attributions": [
+        {"claim_index": 17, "attribution": "paraphrased"},
+        {"claim_index": 18, "attribution": "mentioned"},
+        {"claim_index": 19, "attribution": "quoted"},
+        {"claim_index": 20, "attribution": "mentioned"}
+      ]
+    },
+    {
+      "name": "Altinget.no",
+      "type": "institution",
+      "role": "norskur fréttavefur",
+      "party": null,
+      "stance": "neutral",
+      "attributions": [
+        {"claim_index": 0, "attribution": "paraphrased"},
+        {"claim_index": 3, "attribution": "paraphrased"},
+        {"claim_index": 4, "attribution": "paraphrased"},
+        {"claim_index": 6, "attribution": "mentioned"},
+        {"claim_index": 8, "attribution": "paraphrased"},
+        {"claim_index": 14, "attribution": "paraphrased"},
+        {"claim_index": 15, "attribution": "paraphrased"},
+        {"claim_index": 16, "attribution": "paraphrased"}
+      ]
+    },
+    {
+      "name": "Miðflokkurinn",
+      "type": "party",
+      "role": "stjórnmálaflokkur",
+      "party": null,
+      "stance": "anti_eu",
+      "attributions": [
+        {"claim_index": 4, "attribution": "mentioned"}
+      ]
+    },
+    {
+      "name": "Sjálfstæðisflokkurinn",
+      "type": "party",
+      "role": "stjórnmálaflokkur",
+      "party": null,
+      "stance": "mixed",
+      "attributions": [
+        {"claim_index": 4, "attribution": "mentioned"}
+      ]
+    },
+    {
+      "name": "Evrópusambandið",
+      "type": "institution",
+      "role": "þjóðasamtök",
+      "party": null,
+      "stance": "neutral",
+      "attributions": [
+        {"claim_index": 19, "attribution": "mentioned"}
+      ]
+    }
+  ]
+}

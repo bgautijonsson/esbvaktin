@@ -1,0 +1,349 @@
+{
+  "article_author": null,
+  "speakers": [
+    {
+      "name": "Þorgerður Katrín Gunnarsdóttir",
+      "type": "individual",
+      "role": "formaður Viðreisnar og utanríkisráðherra",
+      "party": "Viðreisn",
+      "stance": "pro_eu",
+      "attributions": [
+        {
+          "claim_index": 0,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 1,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 2,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 3,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 26,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 27,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 28,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 29,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 48,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 49,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 50,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 51,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 52,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 53,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 54,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 55,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 56,
+          "attribution": "asserted"
+        }
+      ],
+      "claim_indices": []
+    },
+    {
+      "name": "Sigmundur Davíð Gunnlaugsson",
+      "type": "individual",
+      "role": "formaður Miðflokksins",
+      "party": "Miðflokkurinn",
+      "stance": "neutral",
+      "attributions": [
+        {
+          "claim_index": 4,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 5,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 6,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 7,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 8,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 9,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 10,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 22,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 39,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 40,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 41,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 42,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 43,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 44,
+          "attribution": "asserted"
+        }
+      ],
+      "claim_indices": []
+    },
+    {
+      "name": "Ásthildur Lóa Þórsdóttir",
+      "type": "individual",
+      "role": "þingflokksformaður Flokks fólksins",
+      "party": "Flokkur fólksins",
+      "stance": "neutral",
+      "attributions": [
+        {
+          "claim_index": 11,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 70,
+          "attribution": "asserted"
+        }
+      ],
+      "claim_indices": []
+    },
+    {
+      "name": "Lilja Dögg Alfreðsdóttir",
+      "type": "individual",
+      "role": "formaður Framsóknarflokksins",
+      "party": "Framsóknarflokkurinn",
+      "stance": "neutral",
+      "attributions": [
+        {
+          "claim_index": 12,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 13,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 14,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 15,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 16,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 17,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 18,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 19,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 35,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 36,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 37,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 38,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 45,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 46,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 47,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 57,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 58,
+          "attribution": "asserted"
+        }
+      ],
+      "claim_indices": []
+    },
+    {
+      "name": "Guðmundur Ari Sigurjónsson",
+      "type": "individual",
+      "role": "þingflokksformaður Samfylkingarinnar",
+      "party": "Samfylkingin",
+      "stance": "neutral",
+      "attributions": [
+        {
+          "claim_index": 20,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 21,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 23,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 24,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 25,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 64,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 65,
+          "attribution": "asserted"
+        }
+      ],
+      "claim_indices": []
+    },
+    {
+      "name": "Guðrún Hafsteinsdóttir",
+      "type": "individual",
+      "role": "formaður Sjálfstæðisflokksins",
+      "party": "Sjálfstæðisflokkurinn",
+      "stance": "neutral",
+      "attributions": [
+        {
+          "claim_index": 30,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 31,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 32,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 33,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 34,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 59,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 60,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 61,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 62,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 63,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 66,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 67,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 68,
+          "attribution": "asserted"
+        },
+        {
+          "claim_index": 69,
+          "attribution": "asserted"
+        }
+      ],
+      "claim_indices": []
+    }
+  ]
+}
