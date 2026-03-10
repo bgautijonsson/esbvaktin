@@ -1,0 +1,38 @@
+{{!--
+  ESBvaktin Claim Tracker — Ghost Custom Page Template
+
+  Usage:
+    1. Copy this file to your Ghost theme root (alongside post.hbs, page.hbs)
+    2. Copy claim-tracker.css to assets/css/
+    3. Copy claim-tracker.js to assets/js/
+    4. Upload claims.parquet + claims.json to assets/data/
+    5. Create a Ghost page, select "claim-tracker" as the template
+
+  The page content from Ghost is rendered above the tracker (use it for
+  an introductory paragraph if desired).
+--}}
+
+{{!< default}}
+
+<main class="ct-page">
+  <article class="{{post_class}}">
+    {{#post}}
+    <header class="ct-page-header">
+      <h1>{{title}}</h1>
+    </header>
+
+    {{#if html}}
+    <section class="ct-page-intro">
+      {{{html}}}
+    </section>
+    {{/if}}
+    {{/post}}
+
+    <section class="ct-tracker-section">
+      <div id="claim-tracker"></div>
+    </section>
+  </article>
+</main>
+
+<link rel="stylesheet" href="{{asset "css/claim-tracker.css"}}" />
+<script type="module" data-base="{{asset "data"}}" src="{{asset "js/claim-tracker.js"}}"></script>
