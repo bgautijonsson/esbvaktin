@@ -35,8 +35,14 @@ data/**/*.parquet
 !data/seeds/**
 data/seeds/generated/
 
+# Inbox (processed ephemeral data)
+data/inbox/
+
 # Analysis working directories
 data/analyses/
+
+# Export (generated, copied to site repo)
+data/export/
 
 # Claude Code (keep skills)
 .claude/*

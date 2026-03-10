@@ -1,0 +1,30 @@
+[
+  {
+    "evidence_id": "POLL-DATA-017",
+    "domain": "political",
+    "topic": "polling",
+    "subtopic": "gallup_march2026_methodology",
+    "statement": "The Gallup Þjóðarpúls survey on the EU referendum was conducted online from 19 February to 4 March 2026 with a total sample size of 1,898 respondents randomly selected from Gallup's opinion panel. The response rate was 42.7%. The survey asked two main questions: whether respondents support holding a referendum on continuing EU accession negotiations, and how they would likely vote. Key headline findings: 57% support holding the referendum, approximately 30% oppose, and roughly 12% are neutral or undecided. On voting intention if a referendum were held: support for resuming negotiations leads, but when asked about actual EU membership (as opposed to negotiations), the split is closer to 42%–42% with 16% undecided. The gap between support for negotiations and support for membership is a significant methodological distinction in interpreting the results.",
+    "source_name": "Gallup Iceland / Þjóðarpúls",
+    "source_url": null,
+    "source_date": "2026-03-04",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The 42.7% response rate is reasonable for an online panel survey but introduces potential non-response bias. Online panel surveys may under-represent older and rural populations. The distinction between support for holding a referendum, support for resuming negotiations, and support for EU membership yields substantially different numbers and must be carefully distinguished.",
+    "related_entries": ["POLL-DATA-008", "POLL-DATA-001", "POLL-DATA-002"]
+  },
+  {
+    "evidence_id": "POLL-DATA-018",
+    "domain": "political",
+    "topic": "polling",
+    "subtopic": "gallup_march2026_demographics",
+    "statement": "The Gallup Þjóðarpúls March 2026 survey found notable demographic patterns in EU referendum attitudes. Women were more supportive of continuing negotiations than men. Residents of the capital area (Höfuðborgarsvæðið) were more supportive than those in rural areas. University-educated respondents were more supportive than those with less formal education. By party affiliation, voters of Viðreisn and Samfylkingin were most supportive of resuming negotiations; Miðflokkurinn and Sjálfstæðisflokkurinn voters were most opposed. A notable finding was that nearly all respondents who oppose holding the referendum would vote to stop negotiations if one were held, but a significant minority who support holding the referendum would also vote against continuing negotiations — indicating that support for democratic process does not equate to support for the policy outcome.",
+    "source_name": "Gallup Iceland / Þjóðarpúls",
+    "source_url": null,
+    "source_date": "2026-03-04",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Specific percentage breakdowns by demographic group are not included here as they were not available in the public summary. The demographic patterns (gender, education, urban/rural) are consistent with EU attitude surveys across Nordic countries and may reflect underlying structural factors rather than campaign effects. Party-affiliation breakdowns should be interpreted cautiously as some parties have small voter bases in the sample.",
+    "related_entries": ["POLL-DATA-007", "POLITICAL-DATA-001", "PARTY-DATA-012"]
+  }
+]

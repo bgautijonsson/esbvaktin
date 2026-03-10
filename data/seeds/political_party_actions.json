@@ -1,0 +1,58 @@
+[
+  {
+    "evidence_id": "PARTY-DATA-011",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "eu_application_withdrawal",
+    "statement": "After the 2013 Icelandic parliamentary elections, the new coalition government of the Progressive Party and Independence Party sought to withdraw Iceland's EU membership application. In February 2015, the governing parties submitted a bill to Althingi seeking approval to formally withdraw, but the bill failed due to vigorous opposition obstruction and was never put to a final vote. Foreign Minister Gunnar Bragi Sveinsson then unilaterally sent a letter to the EU on 12 March 2015, stating that Iceland should no longer be regarded as a candidate country. The EU's response was ambiguous — the European Commission's spokesperson stated that Sveinsson's letter did not constitute a formal withdrawal of the application. The Latvian EU presidency replied on behalf of the Council. The decision to bypass parliament provoked significant public protests outside the Althingi. The EU has continued to regard Iceland's 2009 application as technically still valid, a point that became relevant again in the lead-up to the 2026 referendum.",
+    "source_name": "Icelandic Ministry for Foreign Affairs; EU Council of Ministers; Reykjavik Grapevine; IceNews",
+    "source_url": "https://grapevine.is/news/2015/03/19/eu-foreign-ministers-letter-doesnt-count/",
+    "source_date": "2015-03-12",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The legal status of Iceland's application remains disputed. The EU has never formally acknowledged the withdrawal, and the European Commission stated in March 2026 that the application is still valid. Icelandic legal scholars disagree on whether a foreign minister's letter can override a parliamentary process.",
+    "related_entries": ["POLITICAL-DATA-002", "POLITICAL-DATA-001", "PARTY-DATA-013"]
+  },
+  {
+    "evidence_id": "PARTY-DATA-012",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "international_conservative_ties",
+    "statement": "Miðflokkurinn (Centre Party), led by Sigmundur Davíð Gunnlaugsson, is aligned with the European Conservatives and Reformists (ECR) grouping and is strongly opposed to EU integration. In the context of the 2026 EU referendum campaign, Norwegian outlet Altinget.no reported that Miðflokkurinn representatives had met with US Republican Party contacts, and that a political advisor linked to Nigel Farage visited Iceland twice in early 2026. Heimildin also reported on these international connections. Sigmundur Davíð has cultivated ties with international conservative and Eurosceptic movements since founding the party in 2017 after splitting from the Progressive Party. The party holds 8 seats in Althingi as of session 157.",
+    "source_name": "Altinget.no; Heimildin; Europe Elects party classification",
+    "source_url": null,
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The specific nature and extent of Miðflokkurinn's international contacts are based on media reporting and have not been independently verified in full. The party has not published a formal statement confirming or denying all reported meetings. The ECR alignment is informal as Iceland is not an EU member.",
+    "related_entries": ["POLITICAL-DATA-001", "POLITICAL-DATA-005"]
+  },
+  {
+    "evidence_id": "PARTY-DATA-013",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "coalition_referendum_agreement",
+    "statement": "The coalition government formed in late 2024, comprising Samfylkingin (Social Democrats, 13 seats), Viðreisn (Reform Party, 11 seats), and Flokkur fólksins (People's Party, 8 seats), agreed in their coalition agreement to hold a referendum on whether to resume EU accession negotiations by 2027. The referendum was subsequently scheduled for 29 August 2026. The question asks whether Iceland should resume accession negotiations with the EU — not whether to join. This is the first Icelandic government since Jóhanna Sigurðardóttir's government (2009–2013) to actively pursue EU-related policy. Prime Minister Kristrún Frostadóttir (Samfylkingin) and Foreign Minister Þorgerður Katrín Gunnarsdóttir (Viðreisn) have been the primary government figures advancing the referendum. Previous governments, including those led by Sigmundur Davíð Gunnlaugsson (2013–2016) and Katrín Jakobsdóttir (2017–2024), did not pursue EU accession despite intermittent public calls for a referendum.",
+    "source_name": "Government of Iceland; Euronews; France24; coalition agreement",
+    "source_url": "https://www.government.is/topics/foreign-affairs/iceland-in-europe/referendum",
+    "source_date": "2026-03-06",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Flokkur fólksins is EU-sceptic despite being in the coalition. Their agreement to hold a referendum does not imply support for EU membership or resuming negotiations. The coalition holds a slim five-seat majority (32 of 63 seats).",
+    "related_entries": ["POLITICAL-DATA-002", "POLITICAL-DATA-003", "PARTY-DATA-011"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-007",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "revolving_door_legislation",
+    "statement": "Sjálfstæðisflokkurinn (Independence Party) introduced a bill in Althingi proposing an 18-month cooling-off period that would prevent senior officials and ministerial advisors involved in negotiations with international organisations from accepting positions with those organisations after leaving office. The bill was introduced in the context of potential EU accession negotiations, framed as a safeguard against conflicts of interest. Similar 'revolving door' regulations exist at the EU institutional level: EU Commissioners face an 18-month cooling-off period (extended to 24 months for the Commission President), and the European Ombudsman has called for stricter enforcement. Several EU member states, including France and Germany, have analogous rules for senior civil servants.",
+    "source_name": "Alþingi bill database; EU Staff Regulations Art. 16; European Ombudsman recommendations",
+    "source_url": "https://www.althingi.is/",
+    "source_date": "2026-03-01",
+    "source_type": "legal_text",
+    "confidence": "medium",
+    "caveats": "The bill's exact status in Althingi (whether it has been debated, referred to committee, or voted on) requires verification from the Althingi bill database. The comparison with EU-level cooling-off periods is contextual — the Icelandic bill's scope and enforcement mechanisms may differ substantially.",
+    "related_entries": ["POLITICAL-DATA-001", "PARTY-DATA-013", "SOV-LEGAL-001"]
+  }
+]

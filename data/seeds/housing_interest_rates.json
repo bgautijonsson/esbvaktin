@@ -1,0 +1,58 @@
+[
+  {
+    "evidence_id": "HOUS-DATA-005",
+    "domain": "economic",
+    "topic": "housing",
+    "subtopic": "mortgage_rate_comparison_iceland_eu",
+    "statement": "Mortgage interest rates in Iceland are significantly higher than in the eurozone. As of early 2026, non-indexed variable mortgage rates in Iceland start at approximately 8–9%, while indexed (CPI-linked) mortgage rates are around 3.5–4.5% but carry inflation risk. In contrast, the average eurozone mortgage rate was approximately 3.4% in late 2025 (ECB data), down from a peak of ~4.1% in late 2023. The gap is primarily driven by Iceland's small, closed capital market, higher policy rates (Seðlabanki base rate at 8.5% as of March 2026 vs ECB deposit rate at 2.75%), and the króna's vulnerability to external shocks. Euro adoption would, in theory, give Icelandic borrowers access to the deeper European capital market, but euro adoption would only occur years after EU accession and would require meeting the Maastricht convergence criteria.",
+    "source_name": "Seðlabanki Íslands — Financial Stability Report; ECB Statistical Data Warehouse — Bank interest rates on new loans to households for house purchase",
+    "source_url": "https://www.ecb.europa.eu/stats/financial_markets_and_interest_rates/bank_interest_rates/html/index.en.html",
+    "source_date": "2025-12-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Iceland's indexed mortgage system (verðtryggð lán) complicates direct comparison — the nominal rate is lower but the principal adjusts with CPI. The ECB rate is an average across diverse eurozone markets. Iceland could not adopt the euro immediately upon EU accession; a multi-year ERM II period is required.",
+    "related_entries": ["CURR-DATA-001", "HOUS-DATA-001"]
+  },
+  {
+    "evidence_id": "HOUS-DATA-006",
+    "domain": "economic",
+    "topic": "housing",
+    "subtopic": "interest_rates_vs_house_prices_economics",
+    "statement": "The relationship between interest rates and house prices is well-studied but complex. Standard economic theory suggests that lower interest rates increase housing demand (by reducing monthly payment costs for a given loan amount), which in a supply-constrained market pushes prices upward. This is known as the 'capitalisation effect.' Empirical evidence from multiple countries supports this: when interest rates fall, house prices tend to rise, especially in markets with inelastic housing supply. A widely-cited estimate is that a 1 percentage point reduction in real mortgage rates is associated with a 5–8% increase in real house prices in supply-constrained markets (Glaeser et al. 2008, Himmelberg et al. 2005). Iceland's housing supply is relatively inelastic due to its small construction sector, planning constraints, and high building costs. Therefore, the claim that lower interest rates would simply make housing cheaper is economically questionable — lower rates may increase affordability in terms of monthly payments but tend to be capitalised into higher house prices.",
+    "source_name": "Glaeser, E., Gyourko, J., & Saiz, A. (2008). Housing supply and housing bubbles. Journal of Urban Economics; Himmelberg, C., Mayer, C., & Sinai, T. (2005). Assessing high house prices. Journal of Economic Perspectives; IMF Working Paper WP/19/73 — House Prices and Interest Rates",
+    "source_url": null,
+    "source_date": "2019-03-01",
+    "source_type": "academic_paper",
+    "confidence": "high",
+    "caveats": "The capitalisation effect depends on supply elasticity. In markets with responsive housing supply, lower rates lead to more construction rather than higher prices. Iceland could potentially increase housing supply if regulatory barriers were reduced. The net effect on affordability depends on both the price and the payment channel.",
+    "related_entries": ["HOUS-DATA-005", "CURR-DATA-001"]
+  },
+  {
+    "evidence_id": "HOUS-DATA-007",
+    "domain": "economic",
+    "topic": "housing",
+    "subtopic": "eurozone_housing_market_experience",
+    "statement": "The experience of eurozone accession countries provides mixed evidence on housing outcomes. Ireland, Spain, and the Baltic states experienced dramatic house price booms after euro adoption, fuelled partly by lower interest rates and easier access to capital. Irish house prices roughly tripled between 1997 and 2007; Spanish prices doubled. Both experienced devastating crashes in 2008-2012. The 'one-size-fits-all' ECB monetary policy meant interest rates were too low for Ireland and Spain's booming economies, contributing to credit-fuelled bubbles. Conversely, Germany and Finland had more stable housing markets after euro adoption. The lesson for Iceland: lower interest rates from euro adoption could trigger a housing boom rather than making housing permanently more affordable. Iceland's experience with its own housing bubble (2004-2008, followed by the 2008 crash) demonstrates vulnerability to credit-driven price dynamics.",
+    "source_name": "ECB Financial Stability Review; Ahearne, A. et al. (2005). 'House Prices and Monetary Policy: A Cross-Country Study.' BIS; Lane, P. (2012). 'The European Sovereign Debt Crisis.' Journal of Economic Perspectives",
+    "source_url": null,
+    "source_date": "2012-06-01",
+    "source_type": "academic_paper",
+    "confidence": "high",
+    "caveats": "The eurozone housing experience varies enormously by country. Germany had stable prices for decades after euro adoption. The 2008 crisis was also caused by factors beyond monetary policy (lax bank regulation, global credit conditions). Modern EU banking regulation (Banking Union, macroprudential tools) is designed to prevent repetition.",
+    "related_entries": ["HOUS-DATA-005", "HOUS-DATA-006", "PREC-ECON-001"]
+  },
+  {
+    "evidence_id": "HOUS-DATA-008",
+    "domain": "economic",
+    "topic": "housing",
+    "subtopic": "iceland_housing_supply_constraints",
+    "statement": "Iceland's housing market is characterised by chronic supply constraints. The country builds approximately 1,500–2,500 housing units per year for a population of ~390,000, with construction costs among the highest in Europe due to small market scale, expensive materials (most imported), high labour costs, and a short building season. The Reykjavík capital area, home to ~65% of the population, has limited developable land. Housing prices in the capital area have risen by approximately 80-100% in real terms since 2010. The government's 2026 housing package ('húsnæðispakkinn') aims to increase supply, but structural constraints — small construction sector, planning bottlenecks, high costs — are likely to persist regardless of EU membership status. Lower interest rates without increased supply would primarily bid up existing housing stock prices.",
+    "source_name": "Hagstofa Íslands — Housing Statistics; Seðlabanki Íslands — Financial Stability Report 2025",
+    "source_url": "https://hagstofa.is/talnaefni/samfelag/husnaedi/",
+    "source_date": "2025-06-01",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Construction numbers vary significantly year to year. The 2026 housing package may increase supply if effective. EU structural funds could theoretically support housing infrastructure, though this is not a standard use of such funds.",
+    "related_entries": ["HOUS-DATA-005", "HOUS-DATA-006", "HOUS-DATA-007"]
+  }
+]
