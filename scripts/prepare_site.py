@@ -729,6 +729,7 @@ def _build_entity_detail(entity: dict, reports_map: dict[str, dict]) -> dict:
         "stance_score": entity.get("stance_score"),
         "credibility": entity.get("credibility"),
         "attribution_counts": entity.get("attribution_counts"),
+        "althingi_stats": entity.get("althingi_stats"),
         "scorecard": scorecard,
         "claims": resolved_claims,
         "articles": resolved_articles,

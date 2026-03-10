@@ -39,6 +39,7 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 ```
 src/esbvaktin/          # Main package
   pipeline/             # Article analysis pipeline
+  speeches/             # Alþingi speech MCP server (read-only, althingi.db)
   ground_truth/         # Evidence database operations
   utils/                # Shared utilities (embeddings, Icelandic NLP)
 tests/                  # Tests
@@ -66,13 +67,24 @@ R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
 ## Key Commands
 
 ```bash
-uv run pytest              # Run tests
+uv run --extra dev python -m pytest  # Run tests (pytest is in dev extras)
 uv run python -m esbvaktin # Run pipeline (TBD)
+uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # Export entities
+uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # Prepare site data
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 docker compose up -d       # Start PostgreSQL
 Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
+
+## Site Repo
+
+Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty v3 static site.
+- `_data/` — 11ty build data (entities.json, reports/*.json, entity-details/*.json)
+- `assets/data/` — client-side JS data (entities.json, reports.json) — must be kept in sync with `_data/`
+- `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, etc.)
+- Build: `cd ~/esbvaktin-site && npx @11ty/eleventy`
+- Data pipeline: `export_entities.py` → `prepare_site.py` → copy assets/data/ → build site
 
 ## Obsidian Output
 

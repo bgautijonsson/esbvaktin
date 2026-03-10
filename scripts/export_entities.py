@@ -12,7 +12,9 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import re
+import sqlite3
 import sys
 import unicodedata
 from pathlib import Path
@@ -56,23 +58,29 @@ def _get_report_slug(report_path: Path) -> str:
     return icelandic_slugify(title)
 
 
-def _get_claim_slugs(report_path: Path) -> list[str]:
-    """Get claim slugs from a report (using claim_text as identifier)."""
+def _get_claim_data(report_path: Path) -> list[dict]:
+    """Get claim slugs and verdicts from a report.
+
+    Returns a list of {slug, verdict} dicts, one per claim.
+    """
     with open(report_path, encoding="utf-8") as f:
         report = json.load(f)
-    slugs = []
+    claims = []
     for item in report.get("claims", []):
         claim = item.get("claim", item)
         text = claim.get("claim_text", "")
-        slugs.append(icelandic_slugify(text[:80]))
-    return slugs
+        claims.append({
+            "slug": icelandic_slugify(text[:80]),
+            "verdict": item.get("verdict", "unknown"),
+        })
+    return claims
 
 
 def _process_entity_dir(
     entities: dict[str, dict],
     entity_dir: Path,
     report_slug: str,
-    claim_slugs: list[str],
+    claim_data: list[dict],
 ) -> None:
     """Process a single directory containing _entities.json."""
     entities_path = entity_dir / "_entities.json"
@@ -84,11 +92,11 @@ def _process_entity_dir(
 
     author = raw.get("article_author")
     if author and author.get("name"):
-        _merge_entity(entities, author, report_slug, claim_slugs)
+        _merge_entity(entities, author, report_slug, claim_data)
 
     for speaker in raw.get("speakers", []):
         if speaker.get("name"):
-            _merge_entity(entities, speaker, report_slug, claim_slugs)
+            _merge_entity(entities, speaker, report_slug, claim_data)
 
 
 def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
@@ -112,8 +120,8 @@ def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
             continue
 
         report_slug = _get_report_slug(report_path)
-        claim_slugs = _get_claim_slugs(report_path)
-        _process_entity_dir(entities, analysis_dir, report_slug, claim_slugs)
+        claim_data = _get_claim_data(report_path)
+        _process_entity_dir(entities, analysis_dir, report_slug, claim_data)
 
     # Extra dirs (inbox entities) — these have _entities.json but no _report_final.json
     # Use the directory name as slug and extract claims from extracted_claims if available
@@ -164,11 +172,140 @@ _SKIP_NAMES = {
 }
 
 
+# ── Alþingi speech enrichment ────────────────────────────────────────
+
+_ALTHINGI_DB_DEFAULT = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
+
+_EU_ISSUE_PATTERNS = [
+    "%Evróp%", "%ESB%", "%aðild%Evrópu%", "%aðildarviðræð%",
+    "%aðildarumsókn%", "%þjóðaratkvæðagreiðsl%", "%Evrópumál%",
+]
+
+
+def _load_althingi_speakers() -> dict[str, dict]:
+    """Load EU speaker summaries from althingi.db (sync, read-only).
+
+    Returns a dict keyed by lowercased speaker name → stats dict.
+    Returns empty dict if the DB is unavailable.
+    """
+    db_path = Path(os.environ.get("ALTHINGI_DB_PATH", str(_ALTHINGI_DB_DEFAULT)))
+    if not db_path.exists():
+        return {}
+
+    issue_filter = " OR ".join(
+        "s.issue_title LIKE ?" for _ in _EU_ISSUE_PATTERNS
+    )
+    sql = f"""
+        SELECT s.name AS speaker,
+               COUNT(*) AS speech_count,
+               SUM(COALESCE(t.word_count, 0)) AS total_words,
+               COUNT(DISTINCT s.issue_nr) AS issues,
+               MIN(s.date) AS first_speech,
+               MAX(s.date) AS last_speech
+        FROM speeches s
+        LEFT JOIN speech_texts t ON s.speech_id = t.speech_id
+        WHERE ({issue_filter})
+        GROUP BY s.name
+        ORDER BY total_words DESC
+    """
+    try:
+        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(sql, _EU_ISSUE_PATTERNS).fetchall()
+        conn.close()
+    except Exception:
+        return {}
+
+    return {
+        row["speaker"].lower(): {
+            "speech_count": row["speech_count"],
+            "total_words": row["total_words"],
+            "issues": row["issues"],
+            "first_speech": row["first_speech"][:10] if row["first_speech"] else None,
+            "last_speech": row["last_speech"][:10] if row["last_speech"] else None,
+        }
+        for row in rows
+    }
+
+
+def _name_matches(entity_name: str, althingi_name: str) -> bool:
+    """Check if an entity name matches an Alþingi speaker name.
+
+    Handles exact match and partial match (all words of the shorter name
+    appear in the longer name, with at least 2 words to prevent false positives).
+    """
+    en = entity_name.lower().strip()
+    an = althingi_name.lower().strip()
+    if en == an:
+        return True
+    short, long_ = (en, an) if len(en) <= len(an) else (an, en)
+    short_words = set(short.split())
+    long_words = set(long_.split())
+    return len(short_words) >= 2 and short_words.issubset(long_words)
+
+
+def _enrich_althingi_stats(entities: dict[str, dict]) -> int:
+    """Add althingi_stats to entities that match Alþingi EU speakers.
+
+    Returns the number of entities enriched.
+    """
+    speakers = _load_althingi_speakers()
+    if not speakers:
+        return 0
+
+    enriched = 0
+    for entity in entities.values():
+        if entity["type"] != "individual":
+            continue
+
+        name = entity["name"]
+        # Exact match first
+        stats = speakers.get(name.lower())
+        if not stats:
+            # Fuzzy: all words of one name appear in the other
+            for speaker_name, s in speakers.items():
+                if _name_matches(name, speaker_name):
+                    stats = s
+                    break
+
+        if stats:
+            entity["althingi_stats"] = stats
+            enriched += 1
+
+    return enriched
+
+
+def _resolve_attributions(speaker: dict) -> list[dict]:
+    """Resolve attributions from a raw speaker dict.
+
+    Supports both new format (attributions list) and legacy (bare claim_indices).
+    Returns list of {claim_index, attribution} dicts.
+    """
+    attributions = speaker.get("attributions", [])
+    if attributions:
+        return [
+            {
+                "claim_index": a["claim_index"],
+                "attribution": a.get("attribution", "asserted"),
+            }
+            for a in attributions
+        ]
+    # Legacy fallback: bare claim_indices default to 'asserted'
+    return [
+        {"claim_index": idx, "attribution": "asserted"}
+        for idx in speaker.get("claim_indices", [])
+    ]
+
+
+# Attribution types that imply the entity *made* the claim (vs merely being referenced)
+_ACTIVE_ATTRIBUTIONS = {"asserted", "quoted", "paraphrased"}
+
+
 def _merge_entity(
     entities: dict[str, dict],
     speaker: dict,
     report_slug: str,
-    claim_slugs: list[str],
+    claim_data: list[dict],
 ) -> None:
     """Merge a speaker into the entities dict, deduplicating by slug."""
     name = speaker["name"]
@@ -186,12 +323,16 @@ def _merge_entity(
             "name": name,
             "type": speaker.get("type", "individual"),
             "description": "",
-            "stance": speaker.get("stance", "neutral"),
             "role": speaker.get("role"),
             "party": speaker.get("party"),
             "mention_count": 0,
             "articles": [],
             "claims": [],
+            # Intermediate tracking — finalised by _compute_scores()
+            "_stances": [],
+            "_verdicts": [],
+            # Attribution breakdown — how many of each type across all articles
+            "_attribution_counts": {"asserted": 0, "quoted": 0, "paraphrased": 0, "mentioned": 0},
         }
 
     entity = entities[slug]
@@ -202,19 +343,91 @@ def _merge_entity(
     if speaker.get("party") and not entity.get("party"):
         entity["party"] = speaker["party"]
 
+    # Track this per-article stance for averaging
+    entity["_stances"].append(speaker.get("stance", "neutral"))
+
     # Add article reference
     if report_slug not in entity["articles"]:
         entity["articles"].append(report_slug)
 
-    # Map claim_indices to claim slugs
-    for idx in speaker.get("claim_indices", []):
-        if 0 <= idx < len(claim_slugs):
-            cs = claim_slugs[idx]
-            if cs not in entity["claims"]:
-                entity["claims"].append(cs)
+    # Map attributions to claim slugs, collect verdicts, and count types
+    for attr in _resolve_attributions(speaker):
+        idx = attr["claim_index"]
+        attr_type = attr["attribution"]
+
+        # Count attribution types
+        if attr_type in entity["_attribution_counts"]:
+            entity["_attribution_counts"][attr_type] += 1
+
+        if 0 <= idx < len(claim_data):
+            cd = claim_data[idx]
+            if cd["slug"] not in entity["claims"]:
+                entity["claims"].append(cd["slug"])
+            # Only count verdicts for active attributions (not 'mentioned')
+            if attr_type in _ACTIVE_ATTRIBUTIONS:
+                entity["_verdicts"].append(cd["verdict"])
 
     # Update mention count (count of articles)
     entity["mention_count"] = len(entity["articles"])
+
+
+_STANCE_SCORES = {
+    "pro_eu": 1.0,
+    "anti_eu": -1.0,
+    "mixed": 0.0,
+    "neutral": 0.0,
+}
+
+_VERDICT_SCORES = {
+    "supported": 1.0,
+    "partially_supported": 0.5,
+    "unsupported": 0.0,
+    "misleading": 0.0,
+}
+
+
+def _stance_label(score: float) -> str:
+    """Derive a categorical stance label from a continuous score."""
+    if score >= 0.5:
+        return "pro_eu"
+    elif score <= -0.5:
+        return "anti_eu"
+    elif abs(score) < 0.1:
+        return "neutral"
+    else:
+        return "mixed"
+
+
+def _compute_scores(entities: dict[str, dict]) -> None:
+    """Compute stance_score, credibility, and attribution_counts from accumulated data.
+
+    stance_score: average of per-article categorical stances mapped to [-1, 1].
+    credibility: proportion of verifiable claims that are supported/partially supported.
+                 Only counts active attributions (asserted, quoted, paraphrased) — not 'mentioned'.
+    attribution_counts: breakdown of how claims are attributed to this entity.
+    """
+    for entity in entities.values():
+        # Stance score — average of all per-article stances
+        stances = entity.pop("_stances")
+        if stances:
+            numeric = [_STANCE_SCORES.get(s, 0.0) for s in stances]
+            entity["stance_score"] = round(sum(numeric) / len(numeric), 2)
+        else:
+            entity["stance_score"] = 0.0
+        entity["stance"] = _stance_label(entity["stance_score"])
+
+        # Credibility — from claim verdicts (unverifiable excluded, 'mentioned' excluded)
+        verdicts = entity.pop("_verdicts")
+        verifiable = [v for v in verdicts if v in _VERDICT_SCORES]
+        if verifiable:
+            scores = [_VERDICT_SCORES[v] for v in verifiable]
+            entity["credibility"] = round(sum(scores) / len(scores), 2)
+        else:
+            entity["credibility"] = None
+
+        # Promote attribution counts to output (drop zero counts for compactness)
+        raw_counts = entity.pop("_attribution_counts")
+        entity["attribution_counts"] = {k: v for k, v in raw_counts.items() if v > 0}
 
 
 def _generate_descriptions(entities: dict[str, dict]) -> None:
@@ -264,6 +477,8 @@ def export_entities(
 ) -> list[dict]:
     """Export merged entities to JSON files."""
     entities = load_all_entities(extra_dirs=extra_dirs)
+    _compute_scores(entities)
+    althingi_count = _enrich_althingi_stats(entities)
     _generate_descriptions(entities)
 
     # Sort by mention count (descending), then name
@@ -289,13 +504,21 @@ def export_entities(
     # Print summary
     by_type: dict[str, int] = {}
     by_stance: dict[str, int] = {}
+    cred_values = []
     for e in sorted_entities:
         by_type[e["type"]] = by_type.get(e["type"], 0) + 1
         by_stance[e["stance"]] = by_stance.get(e["stance"], 0) + 1
+        if e.get("credibility") is not None:
+            cred_values.append(e["credibility"])
 
     print(f"\nBy type: {by_type}")
     print(f"By stance: {by_stance}")
     print(f"Total articles covered: {len({a for e in sorted_entities for a in e['articles']})}")
+    if cred_values:
+        avg_cred = sum(cred_values) / len(cred_values)
+        print(f"Credibility: {len(cred_values)} entities scored, avg={avg_cred:.2f}")
+    if althingi_count:
+        print(f"Alþingi stats: {althingi_count} entities enriched with parliamentary data")
 
     return sorted_entities
 
@@ -303,9 +526,11 @@ def export_entities(
 def main() -> None:
     if "--status" in sys.argv:
         entities = load_all_entities()
+        _compute_scores(entities)
         print(f"Found {len(entities)} unique entities across analyses")
         for slug, e in sorted(entities.items(), key=lambda x: -x[1]["mention_count"]):
-            print(f"  {e['name']} ({e['type']}, {e['stance']}) — {e['mention_count']} articles")
+            cred = f", cred={e['credibility']:.2f}" if e.get("credibility") is not None else ""
+            print(f"  {e['name']} ({e['type']}, stance={e['stance_score']:+.2f}{cred}) — {e['mention_count']} articles")
         return
 
     site_dir = (
