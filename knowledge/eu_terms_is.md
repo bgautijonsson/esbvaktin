@@ -43,6 +43,25 @@ Samræmd íslensk hugtakanotkun í staðreyndaúttektum ESBvaktarinnar. Notaðu 
 | Sovereignty | Fullveldi | "sjálfstæði" (þrengri merking) | "fullveldi Íslands" |
 | Relative stability | Hlutfallslegur stöðugleiki | | Kvótaúthlutunarregla í CFP |
 | Maximum sustainable yield | Hámarkssjálfbær nýting | | MSY |
+| Emission allowances | Losunarheimildir | | "ókeypis losunarheimildir" |
+| Carbon leakage | Kolefnisleki | | "vernd gegn kolefnisleka" |
+| Direct payments (CAP) | Beingreiðslur | | "beingreiðslur til bænda" |
+| State aid | Ríkisaðstoð | "ríkisstyrkir" (of almennt) | Lagahugtak ESB |
+| Decision-shaping | Ákvörðunarmótun | | EES-ríki hafa ákvörðunarmótun en ekki atkvæðisrétt |
+| Enlargement | Stækkun | | "stækkun ESB", "stækkunarstefna" |
+| Western Balkans | Vestur-Balkanskagi | | Forgangsmál í stækkun ESB |
+| EU Emissions Trading System | ETS-kerfið | "viðskiptakerfi losunarheimilda" (of langt) | Bandstrik: ETS-kerfið |
+| Fit for 55 | Fit for 55 | | Óþýtt — ESB-loftslagspakki; nota enska heitið |
+
+## Nýleg löggjöf ESB
+
+| Enskt | Íslenskt | Algeng villa | Athugasemd |
+|-------|----------|--------------|------------|
+| European Green Deal | Evrópski græni sáttmálinn | "Green Deal" í íslensku | |
+| Digital Services Act | Lög um stafræna þjónustu | "Digital Services Act" í íslensku | DSA |
+| AI Act | Gervigreindarreglugerð | "AI Act" í íslensku | |
+| CBAM (Carbon Border Adjustment) | Kolefnistollur | "CBAM" án skýringar | "kolefnistollur ESB" |
+| GDPR | Persónuverndarreglugerðin | | Þegar innleidd í gegnum EES |
 
 ## Lögfræðileg hugtök
 
@@ -71,6 +90,16 @@ Bandstrik á milli skammstöfunar/erlends heitis og íslensks orðs:
 - **ETS-kerfið**
 
 Undantekningar (fara saman): Evrópusambandið, Evrópuþingið (samsett orð, ekki bandstrik).
+
+## Ensk hugtök sem nota má óþýdd
+
+Sum ESB-hugtök eru svona rótgróin í alþjóðlegri umræðu að íslensku útgáfurnar eru sjaldnar notaðar. Nota má enska heitið ef íslenskt hugtak er gefið í fyrsta skipti:
+
+- **Fit for 55** — ESB-loftslagspakki (nota enska heitið)
+- **CORSIA** — alþjóðlegt kolefnisbótakerfi í flugi
+- **acquis** — ásamt "regluverkið" í sviga eða öfugt: "regluverkið (acquis)"
+
+Öll önnur ESB-hugtök á íslensku — aldrei "Common Agricultural Policy" eða "Single Market" í íslenskum texta.
 
 ## Algengustu villurnar
 
