@@ -1,0 +1,30 @@
+[
+  {
+    "evidence_id": "POLL-DATA-019",
+    "domain": "political",
+    "topic": "polling",
+    "subtopic": "thjodarpuls_methodology_feb_mar_2026",
+    "statement": "The Gallup Þjóðarpúls (National Pulse) EU referendum survey conducted from 19 February to 4 March 2026 used an online self-completion methodology. The survey was distributed to a sample of 1,898 individuals from the Gallup online panel, drawn from the national register (Þjóðskrá Íslands). A total of approximately 810 respondents completed the survey, yielding a response rate of 42.7%. Gallup applies post-stratification weighting by age, gender, region, and education to ensure the sample is representative of the Icelandic population aged 18 and over. The margin of error for a completed sample of approximately 800 at the 95% confidence level is approximately ±3.5 percentage points for national-level estimates. For subgroup analyses (e.g., by party affiliation), the margins of error are larger due to smaller effective sample sizes. The survey was published in collaboration with Vísir media.",
+    "source_name": "Gallup hf. — Þjóðarpúls; Vísir",
+    "source_url": "https://www.gallup.is/",
+    "source_date": "2026-03-04",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The 42.7% response rate, while acceptable by current survey standards, is lower than historically typical for Icelandic surveys. Online-only methodology may underrepresent older populations less comfortable with digital surveys, though weighting adjustments aim to correct for this. The sample size of approximately 810 is sufficient for national estimates but produces wider confidence intervals for subgroup breakdowns (e.g., voters of smaller parties). Gallup's online panel is an opt-in panel, which introduces potential self-selection bias despite weighting corrections.",
+    "related_entries": ["POLL-DATA-007", "POLL-DATA-014", "POLL-DATA-017"]
+  },
+  {
+    "evidence_id": "POLL-DATA-020",
+    "domain": "political",
+    "topic": "polling",
+    "subtopic": "thjodarpuls_referendum_support_results",
+    "statement": "The Gallup Þjóðarpúls survey (19 February – 4 March 2026, n≈810) found that a majority of Icelandic respondents supported holding a national referendum on resuming EU accession negotiations. According to the published results, roughly 60% of respondents supported the referendum, approximately 30% opposed it, and approximately 10% were undecided or did not respond. The survey found sharp party-based divisions: voters of Viðreisn (Reform Party) and Samfylkingin (Social Democrats) were the most strongly supportive, while voters of Miðflokkurinn (Centre Party) and Sjálfstæðisflokkurinn (Independence Party) were the most strongly opposed. The survey measured support for holding a referendum on resuming negotiations — not support for EU membership itself, which typically polls lower. This distinction is important: a voter may support giving people the chance to vote on the question while personally opposing EU membership.",
+    "source_name": "Gallup hf. — Þjóðarpúls; Vísir",
+    "source_url": "https://www.gallup.is/",
+    "source_date": "2026-03-04",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Pre-referendum polling can diverge significantly from actual voting outcomes. Iceland's small population means that campaign dynamics, events, and high-profile endorsements can shift opinion rapidly. The distinction between 'support for a referendum' and 'support for EU membership' is crucial — historically, support for holding a vote runs higher than support for the substantive position. Poll results are also sensitive to question wording and ordering effects.",
+    "related_entries": ["POLL-DATA-019", "POLL-DATA-011", "POLL-DATA-016"]
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "evidence_id": "SOV-LEGAL-019",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "althingi_article_24_foreign_affairs_committee",
+    "statement": "Article 24 of the Icelandic Parliamentary Rules of Procedure (lög um þingsköp Alþingis, nr. 55/1991, with subsequent amendments) establishes that the government shall always consult the Althingi Foreign Affairs Committee (utanríkismálanefnd) on important foreign affairs matters before making decisions. The article states: 'Ríkisstjórnin skal ávallt bera meiri háttar utanríkismál fyrir fram undir nefndina' (The government shall always bring important foreign affairs matters before the committee in advance). The committee consists of members from all parliamentary parties and serves as the primary parliamentary oversight mechanism for foreign policy. The provision is designed to prevent unilateral executive decisions on foreign affairs without parliamentary consultation. Whether a specific matter qualifies as 'meiri háttar utanríkismál' (important foreign affairs matter) is subject to interpretation, and disagreements between government and opposition on this classification have been a recurring feature of Icelandic parliamentary politics.",
+    "source_name": "Lög um þingsköp Alþingis nr. 55/1991; Alþingi official website",
+    "source_url": "https://www.althingi.is/lagas/nuna/1991055.html",
+    "source_date": "1991-03-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The article establishes a consultation requirement, not a veto power for the committee. The government retains decision-making authority on foreign affairs — the committee must be consulted but its approval is not legally required. Whether submitting a parliamentary resolution (þingsályktunartillaga) to hold a referendum constitutes an 'important foreign affairs matter' requiring prior committee consultation is a matter of legal interpretation on which reasonable lawyers disagree.",
+    "related_entries": ["SOV-LEGAL-012", "POLITICAL-DATA-002", "POLITICAL-DATA-004"]
+  },
+  {
+    "evidence_id": "SOV-DATA-006",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "referendum_date_29_august_2026",
+    "statement": "The Icelandic government announced in early 2026 that a national referendum on resuming EU accession negotiations would be held on 29 August 2026. The referendum is based on a parliamentary resolution (þingsályktunartillaga) submitted by the Foreign Minister. The three coalition parties — Samfylkingin (Social Democrats), Viðreisn (Reform Party), and Flokkur fólksins (People's Party) — support holding the referendum. The referendum question concerns whether Iceland should resume the accession negotiations that were suspended in 2013, not whether Iceland should join the EU outright. This is an advisory referendum (ráðgefandi þjóðaratkvæðagreiðsla), as Icelandic constitutional law does not provide for binding referenda on policy questions (the only binding referendum mechanism is under Article 26 for presidential vetoes of legislation).",
+    "source_name": "Government of Iceland announcement; Althingi parliamentary records",
+    "source_url": "https://www.stjornarradid.is/",
+    "source_date": "2026-02-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The referendum is advisory, meaning the Althingi is not legally bound by the result. However, Icelandic political convention gives strong weight to referendum outcomes — the 2012 constitutional referendum's non-implementation is considered an exception that has been widely criticised. The date of 29 August was chosen by the government and has been criticised by opposition parties as too soon for adequate public debate.",
+    "related_entries": ["SOV-DATA-005", "POLITICAL-DATA-002", "POL-DATA-021"]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-020",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "iceland_conflict_of_interest_rules",
+    "statement": "Iceland has an established legal framework for managing conflicts of interest in government. Key instruments include: (1) Lög um varnir gegn hagsmunaárekstrum í Stjórnarráðinu (Act on Prevention of Conflicts of Interest in Government Offices), which requires disclosure of financial interests and imposes restrictions on officials' participation in decisions where they have personal interests; (2) Siðareglur ráðherra (Code of Ethics for Ministers), which establishes standards of conduct for cabinet members; (3) General administrative law principles on disqualification (vanhæfi) under the Administrative Procedures Act (stjórnsýslulög nr. 37/1993). However, Iceland does not have a post-employment cooling-off period requirement for ministers or senior officials — there is no mandatory waiting period before former officials can take positions in the private sector or with international organisations. This gap has been highlighted in international assessments, including GRECO (Group of States against Corruption) evaluation reports.",
+    "source_name": "Lög um varnir gegn hagsmunaárekstrum í Stjórnarráðinu; GRECO Fourth Round Evaluation Report on Iceland",
+    "source_url": "https://www.stjornarradid.is/",
+    "source_date": "2024-01-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "While the legal framework exists, enforcement and coverage have been criticised as insufficient by both domestic commentators and international assessment bodies. The absence of a mandatory cooling-off period is the most commonly cited gap. The Sjálfstæðisflokkurinn's proposed 18-month ban bill (SOV-LEGAL-007) is a response to this gap.",
+    "related_entries": ["SOV-LEGAL-007", "SOV-DATA-007"]
+  },
+  {
+    "evidence_id": "SOV-DATA-007",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "revolving_door_international_comparison",
+    "statement": "Many Western democracies have stricter post-employment (revolving door) restrictions than Iceland for senior government officials. Examples include: France requires a 3-year cooling-off period for senior officials before joining companies they supervised, enforced by the Haute Autorité pour la Transparence de la Vie Publique (HATVP); Canada imposes a 2-year post-employment restriction for ministers and 1 year for senior officials, enforced by the Office of the Conflict of Interest and Ethics Commissioner; the European Commission imposes a 2-year cooling-off period for departing Commissioners (extended to 3 years for the Commission President), during which they must notify and receive approval for any new professional activities; the United Kingdom has an Advisory Committee on Business Appointments (ACOBA) that reviews post-employment moves by ministers and senior officials, typically recommending 6–24 month waiting periods (though compliance is voluntary). By contrast, Iceland has no mandatory cooling-off period for ministers or senior officials, a gap highlighted in GRECO evaluations.",
+    "source_name": "OECD — Managing Conflict of Interest in the Public Sector; GRECO evaluation reports; European Commission Staff Regulations",
+    "source_url": "https://www.oecd.org/governance/ethics/managingconflictofinterestinthepublicsector.htm",
+    "source_date": "2023-01-01",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The effectiveness of cooling-off periods varies widely. France's HATVP is considered among the most robust enforcement mechanisms, while the UK's ACOBA has been criticised as toothless (its recommendations are advisory). The EU Commission's own rules have been criticised as insufficient after several former Commissioners moved to private sector roles in related areas. Stricter rules do not guarantee compliance — enforcement capacity is often as important as the rules themselves.",
+    "related_entries": ["SOV-LEGAL-020", "SOV-LEGAL-007"]
+  },
+  {
+    "evidence_id": "SOV-DATA-008",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "us_strategic_interests_iceland",
+    "statement": "The United States has historically maintained strategic interests in Iceland due to Iceland's location in the North Atlantic (controlling the GIUK gap — Greenland-Iceland-UK passage — which is critical for monitoring submarine activity) and through the 1951 bilateral defence agreement. The US maintained a permanent military presence at Naval Air Station Keflavík from 1951 until its closure in 2006. After the closure, bilateral defence cooperation continued through periodic deployments and the 2016 Iceland-US Security Cooperation Agreement, which provided US funding for upgrading military infrastructure at Keflavík. Some analysts and political commentators have argued that the US may prefer Iceland to remain outside the EU to maintain uncomplicated bilateral defence and trade relations. However, there is no documented evidence of direct US government opposition to Icelandic EU membership — the official US position has been that EU membership is Iceland's sovereign decision. The US has close EU allies (France, Germany, the Netherlands) and also has NATO allies outside the EU (Norway, Turkey), suggesting that EU membership status does not inherently conflict with US alliance interests.",
+    "source_name": "1951 US-Iceland Defence Agreement; 2016 Iceland-US Security Cooperation Agreement; US Department of State bilateral relations factsheet",
+    "source_url": "https://www.state.gov/u-s-relations-with-iceland/",
+    "source_date": "2024-01-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Geopolitical analysis of US preferences regarding Iceland's EU membership is speculative. The US has publicly stated it is Iceland's sovereign choice. Some Icelandic commentators from both pro- and anti-EU perspectives have projected US preferences onto the debate without citing direct evidence. The strategic calculus may have shifted since Russia's 2022 invasion of Ukraine, which has made transatlantic unity (including EU-NATO cooperation) a higher US priority.",
+    "related_entries": ["SOV-HIST-002", "SOV-HIST-003", "SOV-LEGAL-014"]
+  }
+]

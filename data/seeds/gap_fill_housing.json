@@ -1,0 +1,30 @@
+[
+  {
+    "evidence_id": "HOUSING-DATA-008",
+    "domain": "economic",
+    "topic": "housing",
+    "subtopic": "ecb_vs_iceland_mortgage_rates",
+    "statement": "There is a significant structural difference between mortgage interest rates in Iceland and the euro area. The European Central Bank's MFI interest rate statistics show that the average interest rate on new housing loans in the euro area ranged from approximately 3.2% to 3.8% in late 2025/early 2026, depending on the fixation period and member state. In contrast, Seðlabanki Íslands data shows average interest rates on new indexed housing loans (verðtryggð lán) in Iceland at approximately 7.5–8.5% in the same period. However, this comparison is structurally misleading without context: Icelandic indexed mortgages adjust the principal for inflation (CPI-linked), meaning the effective real interest rate is lower than the nominal rate — a borrower pays, say, 4% real plus inflation adjustment, rather than 8% nominal. Euro area mortgages are predominantly nominal (not inflation-indexed). The appropriate comparison is between the real rates or between total cost of borrowing over the loan lifetime, not between nominal figures from structurally different systems.",
+    "source_name": "European Central Bank — Statistical Data Warehouse: MFI interest rate statistics; Seðlabanki Íslands — Financial Stability report",
+    "source_url": "https://www.ecb.europa.eu/stats/financial_markets_and_interest_rates/bank_interest_rates/html/index.en.html",
+    "source_date": "2026-01-15",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Joining the euro would not automatically bring Icelandic mortgage rates to euro area levels. Domestic risk premia, bank funding costs, housing market conditions, and credit risk assessments would still affect rates. Nordic countries (Finland) that use the euro have had mortgage rates slightly higher than the euro area average. Iceland's small banking sector and concentrated housing market could maintain higher spreads even with euro adoption. Non-indexed Icelandic variable-rate mortgages exist at lower nominal rates but carry different risk profiles.",
+    "related_entries": ["HOUSING-DATA-001", "HOUSING-DATA-003", "CURRENCY-DATA-006"]
+  },
+  {
+    "evidence_id": "HOUSING-DATA-009",
+    "domain": "economic",
+    "topic": "housing",
+    "subtopic": "interest_rates_and_housing_prices_research",
+    "statement": "Extensive academic research demonstrates that lower interest rates are associated with higher, not lower, housing prices. When interest rates fall, mortgage affordability increases (borrowers can service larger loans for the same monthly payment), which tends to increase demand and push up property prices. Key findings include: Glaeser, Gottlieb and Gyourko (2012) found that a 1 percentage point decrease in real interest rates is associated with a 6–8% increase in housing prices in markets with inelastic supply. The European Systemic Risk Board (ESRB) warned in 2019 and 2022 about housing price vulnerabilities in euro area countries driven partly by prolonged low interest rates. The ECB's Financial Stability Review (2023) documented that the 2014–2022 period of ultra-low interest rates contributed to housing price increases of 30–60% across many euro area countries. Iceland's own experience confirms this: Íbúðalánasjóður (Housing Financing Fund) documented that lower-rate periods coincided with faster house price growth. Therefore, the argument that EU/euro membership would lower housing costs through lower interest rates is economically counterintuitive without a corresponding increase in housing supply.",
+    "source_name": "Glaeser, Gottlieb & Gyourko (2012) 'Can Cheap Credit Explain the Housing Boom?', NBER Working Paper; ESRB Risk Dashboard; ECB Financial Stability Review 2023",
+    "source_url": "https://www.ecb.europa.eu/pub/financial-stability/html/index.en.html",
+    "source_date": "2023-11-01",
+    "source_type": "academic_paper",
+    "confidence": "high",
+    "caveats": "The relationship between interest rates and housing prices depends crucially on supply elasticity. In markets where housing supply responds quickly to demand (elastic supply), lower rates may lead to more construction rather than higher prices. Iceland's housing supply is relatively inelastic due to construction constraints, planning restrictions, high material costs, and a small labour market — making it particularly vulnerable to demand-driven price inflation from lower rates. Some economists argue that stable, predictable rates (even if higher) produce better housing market outcomes than volatile rates.",
+    "related_entries": ["HOUSING-DATA-008", "HOUSING-DATA-001", "HOUSING-ANALYSIS-001"]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "evidence_id": "FISH-DATA-023",
+    "domain": "economic",
+    "topic": "fisheries",
+    "subtopic": "iceland_negotiations_fisheries_chapter_status",
+    "statement": "During Iceland's EU accession negotiations (2010–2013), Chapter 13 (Fisheries) was among the most politically sensitive chapters and was never opened for negotiations before the process was suspended in May 2013. The European Commission completed the analytical screening of Iceland's fisheries sector in 2011, identifying the fundamental incompatibility between Iceland's national fisheries management system (based on the Individual Transferable Quota system, ITQ, managed by Fiskistofa) and the EU's Common Fisheries Policy (CFP). Key issues identified included: Iceland's ITQ system allocates fishing rights as private property-like entitlements, while the CFP allocates quotas to member states based on 'relative stability' (fixed historical shares); Iceland's 200-nautical-mile Exclusive Economic Zone would come under CFP management; shared stocks (e.g., mackerel, herring) would be subject to EU-level allocation decisions; and Iceland's processing sector would face EU market access rules. Chapter 13 was not opened alongside Chapter 11 (Agriculture) and Chapter 17 (Economic and Monetary Policy), as these were the chapters where EEA alignment provided no head start.",
+    "source_name": "European Commission — Iceland screening report Chapter 13; Progress reports on Iceland 2011–2013",
+    "source_url": "https://enlargement.ec.europa.eu/enlargement-policy/negotiations-status/iceland_en",
+    "source_date": "2013-05-01",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The fisheries chapter was not the sole reason negotiations were suspended — the change of government in 2013 led to a political decision to suspend the entire process. However, fisheries was widely acknowledged as the single most difficult chapter for Iceland. The claim that Iceland's annual catch could be reduced by 'up to 30%' under the CFP is disputed — actual impact would depend on negotiated terms, transitional arrangements, and the CFP's relative stability shares.",
+    "related_entries": ["FISH-LEGAL-001", "FISH-DATA-001", "AGRI-DATA-018"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-022",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "eu_interest_in_iceland_enlargement",
+    "statement": "The European Union's interest in Iceland as a potential member state reflects several strategic considerations, though Iceland's accession has never been a top EU priority. During the 2010–2013 negotiations, the EU welcomed Iceland's application partly because it was a 'easy' candidate — already highly aligned with the acquis through the EEA, with strong democratic institutions and a functioning market economy. The European Commission's 2010 Opinion on Iceland's application was overwhelmingly positive. However, Iceland is economically very small (GDP approximately EUR 25 billion, population approximately 390,000), meaning its accession would have minimal impact on the EU's aggregate economy. Strategic factors that make Iceland of interest to the EU include: its North Atlantic/Arctic location (relevant for EU Arctic policy and maritime resources), its substantial fisheries resources (which would come under the CFP), and the political signal of expanding the Union to include a prosperous Nordic democracy. Some analysts have suggested that Iceland could be part of a broader Nordic/EEA enlargement 'package' (alongside potential Norwegian reconsideration), but there is no documented EU policy to pursue this.",
+    "source_name": "European Commission — Opinion on Iceland's application (SEC(2010) 153); EU Arctic Policy Communications",
+    "source_url": "https://enlargement.ec.europa.eu/enlargement-policy/negotiations-status/iceland_en",
+    "source_date": "2024-01-01",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "EU enlargement priorities have shifted substantially since Iceland's 2010 application. Current EU enlargement focus is on the Western Balkans (Montenegro, Serbia, Albania, North Macedonia, Bosnia and Herzegovina, Kosovo) and recently Ukraine, Moldova, and Georgia. Iceland would not be starting from scratch if it reapplied — the 2010–2013 negotiation progress would likely be recognised — but the EU's institutional bandwidth for enlargement is currently focused elsewhere. The characterisation that the EU actively 'wants' Iceland in the EU overstates the case — the EU would welcome Iceland but is not actively pursuing Icelandic accession.",
+    "related_entries": ["EEA-LEGAL-020", "AGRI-DATA-018", "FISH-DATA-023"]
+  },
+  {
+    "evidence_id": "EEA-DATA-010",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "eea_coverage_of_eu_acquis",
+    "statement": "The EEA Agreement gives Iceland, Liechtenstein, and Norway access to the EU's single market by incorporating relevant EU legislation into their national law. The EEA covers approximately 70–75% of the EU acquis by volume (measured by number of legal acts), focusing on the 'four freedoms': free movement of goods, persons, services, and capital. However, major policy areas are excluded from the EEA: the Common Agricultural Policy (CAP), the Common Fisheries Policy (CFP), the Customs Union (Iceland maintains its own customs tariff), the Common Foreign and Security Policy (CFSP), Justice and Home Affairs (partially — Schengen is separate), Economic and Monetary Union (euro), and the EU's common trade policy (Iceland conducts its own trade agreements with non-EU countries). The EFTA Surveillance Authority (ESA) and EFTA Court provide institutional oversight for EEA EFTA states, mirroring the European Commission and CJEU respectively. As of 2025, over 13,000 EU legal acts had been incorporated into the EEA Agreement since 1994, with approximately 200–400 new acts incorporated annually through EEA Joint Committee decisions.",
+    "source_name": "EFTA Secretariat — The EEA Agreement; ESA Internal Market Scoreboard; EEA Joint Committee",
+    "source_url": "https://www.efta.int/eea/eea-agreement",
+    "source_date": "2025-01-01",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The '70–75%' figure is an approximation that depends on how one measures acquis coverage (number of acts, pages, or policy areas). By number of policy areas, the EEA covers a smaller proportion because entire domains (agriculture, fisheries, monetary policy, foreign policy, defence) are excluded. By volume of individual legal acts, the coverage is higher because single market legislation is extensive. Some commentators say Icelanders 'already implement most EU rules' — this is true in the narrow sense of single market regulation but misses the substantial areas of EU policy that fall entirely outside the EEA.",
+    "related_entries": ["EEA-LEGAL-001", "EEA-DATA-001", "SOV-LEGAL-009"]
+  },
+  {
+    "evidence_id": "EEA-LEGAL-021",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "eu_information_booklet_acquis_non_negotiable",
+    "statement": "The European Commission's official enlargement materials explicitly state that accession negotiations are about 'the conditions and timing for the candidate's adoption, implementation and enforcement of all current EU rules (the acquis)' — not about whether to adopt the rules. The Commission's factsheet 'EU Accession Process: Steps towards Joining' (updated 2022) makes clear that 'the candidate accepts the acquis as it stands at the time of accession.' The EU Council's negotiating frameworks for all current candidates contain the standard clause to this effect. The commonly cited figure that '95% of the acquis is non-negotiable' reflects the distinction between the rules themselves (non-negotiable) and the implementation timeline (negotiable). In practice, candidates can negotiate: transition periods (time-limited derogations, typically 3–12 years); technical adaptations (translating institutional references); and financial arrangements (budget contributions, access to structural funds). This framework applied to Iceland's 2010–2013 negotiations and would apply to any resumed negotiations.",
+    "source_name": "European Commission — 'EU Accession Process: Steps towards Joining'; Council negotiating frameworks",
+    "source_url": "https://enlargement.ec.europa.eu/enlargement-policy/steps-towards-joining_en",
+    "source_date": "2022-10-01",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "While technically accurate, this framing can understate the genuine flexibility within transition arrangements. Poland's 12-year land purchase derogation, for example, was a significant concession. Some legal scholars argue that Article 49 TEU technically allows any negotiated outcome. The political distinction between 'negotiating the rules' and 'negotiating when to apply the rules' is real but can be overdrawn — a sufficiently long transition period may function similarly to an exemption in practice.",
+    "related_entries": ["EEA-LEGAL-016", "EEA-LEGAL-017", "EEA-LEGAL-014"]
+  }
+]
