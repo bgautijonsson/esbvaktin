@@ -44,6 +44,11 @@ data/analyses/
 # Export (generated, copied to site repo)
 data/export/
 
+# Pipeline working files (agent context/output, not source data)
+data/reassessment/
+data/evidence_is/
+data/speech_checks/
+
 # Claude Code (keep skills, rules, and agents)
 .claude/*
 !.claude/skills/

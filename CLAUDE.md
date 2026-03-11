@@ -96,9 +96,11 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 uv run --extra dev python -m pytest  # Run tests (pytest is in dev extras)
 uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # 1. Export entities
 uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site  # 2. Export evidence for /heimildir/
-uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site    # 3. Export claims (tracker + homepage)
-uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # 4. Prepare site data (overlays DB verdicts)
-uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # 5. Export Alþingi debate data
+uv run python scripts/export_topics.py --site-dir ~/esbvaktin-site    # 3. Export topics (per-topic aggregations)
+uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site    # 4. Export claims (tracker + homepage)
+uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # 5. Prepare site data (overlays DB verdicts)
+uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # 6. Export Alþingi debate data
+uv run python scripts/export_topics.py --status        # Show topic distribution
 uv run python scripts/export_evidence.py --status        # Show evidence DB summary
 uv run python scripts/generate_evidence_is.py prepare     # Prepare IS summary batches (12 batches × 30)
 uv run python scripts/generate_evidence_is.py write       # Parse subagent output → update DB
@@ -125,7 +127,7 @@ Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty 
 - `assets/data/` — client-side JS data (entities.json, reports.json, claims.json, evidence.json, sources.json, debates.json) — **must be kept in sync** (export scripts write to both)
 - `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.), watches `assets/data`
 - Build: `cd ~/esbvaktin-site && npm run build` (or `npm run serve` for dev)
-- Data pipeline: `export_entities.py` → `export_evidence.py` → `export_claims.py` → `prepare_site.py` (overlays DB verdicts) → `prepare_speeches.py` → build site
+- Data pipeline: `export_entities.py` → `export_evidence.py` → `export_topics.py` → `export_claims.py` → `prepare_site.py` (overlays DB verdicts) → `prepare_speeches.py` → build site
 - `prepare_site.py` overlays DB verdicts onto `_report_final.json` snapshots — report files are immutable pipeline output, DB is source of truth for verdicts
 - Homepage: server-rendered from `_data/home.js` which reads `assets/data/*.json` (countdown, signal cards, verdict distribution, recent reports, featured voices)
 - Tracker JS architecture: `site-taxonomy.js` → `tracker-utils.js` → `tracker-renderer.js` → `tracker-controller.js` → page-specific tracker. Controller owns boot flow; page scripts keep only domain logic.

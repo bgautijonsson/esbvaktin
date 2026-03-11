@@ -47,6 +47,22 @@ KNOWN_TOPICS = {
     "org_positions",
 }
 
+# Icelandic display labels for each topic
+TOPIC_LABELS_IS: dict[str, str] = {
+    "fisheries": "Sjávarútvegur",
+    "trade": "Viðskipti og verslun",
+    "sovereignty": "Fullveldi",
+    "eea_eu_law": "EES og löggjöf ESB",
+    "agriculture": "Landbúnaður",
+    "precedents": "Fordæmi annarra ríkja",
+    "currency": "Gjaldmiðill og peningamál",
+    "labour": "Vinnumarkaður",
+    "housing": "Húsnæðismál",
+    "polling": "Könnanir og þjóðarvilji",
+    "party_positions": "Afstaða stjórnmálaflokka",
+    "org_positions": "Afstaða stofnana og samtaka",
+}
+
 
 class Claim(BaseModel):
     """A factual claim extracted from an article."""
