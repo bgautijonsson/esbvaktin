@@ -1,0 +1,155 @@
+[
+  {
+    "evidence_id": "CURRENCY-DATA-017",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "cbi_rate_cuts_2024_2026",
+    "statement": "Seðlabanki Íslands hóf lækkun stýrivaxta haustið 2024 eftir að hafa haldið þeim í 9,25% frá maí 2023. Fimm lækkanir í röð færðu vextina úr 9,25% niður í 7,50% í maí 2025. Hlé var gert í ágúst 2025, en vextir voru lækkaðir aftur í 7,25% í nóvember 2025 og hélst þar í febrúar 2026. Samanlagt nam lækkunin 2,0 prósentustigum og voru vextirnir í 7,25% í mars 2026 — lægstu vextir frá febrúar 2023. Seðlabankinn vísaði til hægari verðbólgu og betri verðbólguhorfna sem rökstuðnings fyrir lækkunum, en varaði við áframhaldandi óvissu, meðal annars vegna launahækkana og húsnæðisverðs. Spár bentu til frekari lækkana niður í ~5% árið 2027.",
+    "source_name": "Seðlabanki Íslands — Vaxtaákvarðanir peningastefnunefndar",
+    "source_url": "https://www.sedlabanki.is/peningastefna/vaxtaakvardir/",
+    "source_date": "2026-03-05",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Samanlagðar lækkanir voru 2,0 prósentustig (úr 9,25% í 7,25%) í mars 2026. Fullyrðingin 'vextir hafa lækkað um 2%' er því rétt. Frekari lækkanir gætu hafa orðið eftir mars 2026. Nákvæmar dagsetningar hvers skrefs þarf að staðfesta við yfirlýsingar peningastefnunefndar.",
+    "related_entries": [
+      "CURR-DATA-004",
+      "CURRENCY-DATA-015"
+    ]
+  },
+  {
+    "evidence_id": "ENERGY-DATA-007",
+    "domain": "economic",
+    "topic": "energy",
+    "subtopic": "electricity_supply_balance_shortage",
+    "statement": "Á árunum 2022–2026 jókst umræða um orkuskort á Íslandi eftir áratuga orkuafgangs. Orkustofnun varaði við í skýrslu sinni um orkuspá (2023) að auka þyrfti orkuframleiðslu til að mæta vaxandi eftirspurn frá gagnamiðstöðvum og annarri nýrri starfsemi. Landsvirkjun tilkynnti 2024 að hún gæti ekki tekið við nýjum stórum viðskiptavinum til skamms tíma vegna takmarkaðra orkubirgða. Hugtakið 'raforkuúnútur' — þar sem Ísland hafði meiri orkuframleiðslu en eftirspurn — var talið vera á undanhaldi. Þrátt fyrir þetta er Ísland enn með nánast 100% endurnýjanlega raforku og mikla virkjunarmöguleika, en ný virkjun tekur 5–10 ár frá áformun til framleiðslu vegna leyfisveitingaferla og umhverfismats.",
+    "source_name": "Orkustofnun — Orkuspá og raforkuáætlun",
+    "source_url": "https://orkustofnun.is/raforkumal/raforkuspa/",
+    "source_date": "2024-12-01",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Orkuskortur á Íslandi er afstæður — landið hefur enn yfirgnæfandi orkuauðlindir en virkjun tekur tíma. Gagnamiðstöðvar og stóriðja hafa aukið eftirspurn. Fullyrðingin um að 'búið sé að höggva á raforkuúnútinn' er einföldun — réttara er að segja að framboð og eftirspurn séu nú nær jafnvægi.",
+    "related_entries": [
+      "ENERGY-DATA-001",
+      "ENERGY-DATA-002"
+    ]
+  },
+  {
+    "evidence_id": "FISH-DATA-027",
+    "domain": "economic",
+    "topic": "fisheries",
+    "subtopic": "export_settlement_currencies",
+    "statement": "Íslensk sjávarútvegsfyrirtæki selja vörur sínar að stórum hluta á erlendum mörkuðum og gera upp í erlendum gjaldmiðlum, einkum evrum og Bandaríkjadölum. Samkvæmt gögnum Seðlabankans og Hagstofu Íslands eru um 90% af sjávarafurðum fluttar út, og meirihluti útflutnings fer til ESB-landa (um 60–65% af sjávarafurðaútflutningi). Uppgjör í evrum er algengast fyrir sölu til Evrópu, en Bandaríkjadalir eru notaðir í viðskiptum við Asíu og Ameríku. Þetta þýðir að tekjur útvegsfyrirtækja eru að stórum hluta í erlendum gjaldmiðlum á meðan kostnaður (laun, olía, hafnargjöld) er að mestu í íslenskum krónum.",
+    "source_name": "Hagstofa Íslands — Utanríkisverslun; Seðlabanki Íslands — Greiðslujöfnuður",
+    "source_url": "https://hagstofa.is/talnaefni/efnahagsmal/utanrikisverslun/",
+    "source_date": "2025-12-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Hlutfall útflutnings til ESB-landa sveiflast eftir árum og afurðategundum. Tilvitnun í að 'útgerðin gerir upp í evrum' er rétt um evrópska markaðinn en einföldun — hluti uppgjörs er í dollurum og öðrum gjaldmiðlum. Innlent uppgjör (til dæmis fiskmarkaðir) er í krónum.",
+    "related_entries": [
+      "FISH-DATA-002",
+      "TRADE-DATA-001"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-014",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "iceland_2008_emergency_legislation",
+    "statement": "Alþingi samþykkti neyðarlög (lög nr. 125/2008) þann 6. október 2008 sem heimiluðu Fjármálaeftirlitinu víðtækar heimildir til að taka yfir rekstur fjármálafyrirtækja. Lögin voru sett á einum degi, þremur dögum áður en Ísland leitaði formlega til Alþjóðagjaldeyrissjóðsins (AGS/IMF) um aðstoð þann 24. október 2008. Neyðarlögin skiptu sköpum með því að gera íslenskum yfirvöldum kleift að aðgreina innlenda starfsemi bankanna frá erlendum skuldbindingum — ný bönkum (Nýi Landsbanki, Nýi Kaupþing, Íslandsbanki) var komið á fót með innlendum eignum og skuldbindingum á meðan gömlu bankarnir fóru í slitameðferð. Þetta fyrirkomulag var forsenda þess að hægt var að vernda innlánseigendur og halda uppi grunnfjármálaþjónustu.",
+    "source_name": "Alþingi — Lög nr. 125/2008 um heimild til fjárveitingar úr ríkissjóði vegna sérstakra aðstæðna á fjármálamarkaði o.fl.",
+    "source_url": "https://www.althingi.is/lagas/150a/2008125.html",
+    "source_date": "2008-10-06",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Neyðarlögin voru umdeild — Bretland beitti antihryðjulöggjöf sinni (Anti-Terrorism, Crime and Security Act 2001) gegn Landsbanka Íslands/Icesave, og Icesave-deilurnar drógu úr alþjóðlegu samstarfi. Fullyrðingin um að Ísland hefði ekki getað brugðist við án neyðarlaganna er rökstudd en óvíst — önnur lögleg úrræði gætu hafa verið möguleg, þótt tíminn hefði verið þröngur.",
+    "related_entries": [
+      "SOV-DATA-012",
+      "CURRENCY-DATA-016"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-015",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "billy_long_ambassador_nomination",
+    "statement": "Donald Trump tilnefndi Billy Long, fyrrverandi þingmann frá Missouri (þjónaði 2011–2023), sem sendiherra Bandaríkjanna á Íslandi. Tilnefningin var tilkynnt árið 2025. Long þjónaði sem þingmaður í bandaríska fulltrúaráðinu í sex kjörtímabil og var þekktur stuðningsmaður Trump. Sendiherra Bandaríkjanna á Íslandi gegnir hlutverki sem tengiliður milli ríkisstjórnanna tveggja og hefur áhrif á varnar- og öryggismál, viðskipti og alþjóðlegt samstarf á norðurslóðum.",
+    "source_name": "White House — Presidential Nominations",
+    "source_url": "https://www.whitehouse.gov/presidential-actions/nominations/",
+    "source_date": "2025-03-01",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "Tilnefning þýðir ekki sjálfkrafa staðfestingu — bandaríski öldungadeildin verður að staðfesta tilnefninguna. Dagsetning staðfestingar og hvort Long hafi hafið störf á Íslandi þarf nánari athugun. Nákvæm dagsetning tilnefningar þarf staðfestingu.",
+    "related_entries": [
+      "SOV-DATA-008",
+      "SOV-DATA-011"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-016",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "arctic_circle_rome_forum_2026",
+    "statement": "Arctic Circle Rome Forum — Polar Dialogue var haldið 3.–4. mars 2026 hjá Rannsóknaráði Ítalíu (CNR) í Róm, í samstarfi við ítalskt háskóla- og rannsóknaráðuneyti. Þetta var í fyrsta skipti sem Arctic Circle-ráðstefna var haldin á Ítalíu. Yfir 500 þátttakendur frá meira en 40 löndum mættu. Umræðuefnin náðu yfir vísindi, diplómatíu, öryggismál, menntun og rannsóknir á norðurslóðum. Arctic Circle samtökin voru stofnuð af Ólafi Ragnari Grímssyni, fyrrverandi forseta Íslands, og halda árlega aðalráðstefnu í Reykjavík auk svæðisbundinna ráðstefna. Ráðstefnan í Róm undirstrikaði aukna pólitíska og hernaðarlega þýðingu norðurslóða í alþjóðamálum.",
+    "source_name": "Arctic Circle — Rome Forum 2026",
+    "source_url": "https://www.arcticcircle.org/forums/arctic-circle-rome-forum",
+    "source_date": "2026-03-04",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Ráðstefnan var almenn norðurslóðaráðstefna, ekki sérstaklega um ESB-aðild Íslands. Fullyrðingar um að Katrín Jakobsdóttir hafi leitt sérstaka umræðu um fullveldi á ráðstefnunni eða að Kínaverjar hafi valdið deilum hafa ekki verið staðfestar frá opinberum heimildum. Staða Íslands í norðurslóðamálum er mikilvæg en tengingin við ESB-þjóðaratkvæðagreiðsluna er óbein.",
+    "related_entries": [
+      "SOV-DATA-001",
+      "SOV-DATA-008"
+    ]
+  },
+  {
+    "evidence_id": "EEA-DATA-015",
+    "domain": "political",
+    "topic": "eea_eu_law",
+    "subtopic": "iceland_eu_commission_meetings_2025",
+    "statement": "Forsætisráðherra Íslands, Kristrún Frostadóttir, hitti Ursulu von der Leyen, forseta framkvæmdastjórnar ESB, á tveimur fundum árið 2025. Fyrri fundurinn var í Brussel 9. apríl 2025, þar sem Frostadóttir hitti einnig António Costa, forseta leiðtogaráðs ESB. Seinni fundurinn var í Reykjavík 16.–18. júlí 2025, þegar von der Leyen heimsótti Ísland — þær skoðuðu jökla úr þyrlu (áhersla á loftslagsbreytingar) og heimsóttu Keflavíkurflugvöll og Landhelgisgæsluna. Helsta niðurstaða heimsóknarinnar var tilkynning um viðræður um öryggis- og varnarsamstarfssamning milli Íslands og ESB (Security and Defence Partnership Agreement). Opinber umgjörð fundanna var öryggissamstarf, ekki bein ESB-aðild, en umfang samskiptanna (heimsókn forseta framkvæmdastjórnar, þyrluferðir, varnarviðræður) gaf til kynna hlýrri samskipti en verið höfðu.",
+    "source_name": "European Commission — Press Corner; EEAS",
+    "source_url": "https://ec.europa.eu/commission/presscorner/detail/en/ac_25_1887",
+    "source_date": "2025-07-18",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Fundirnir voru ekki formlega um ESB-aðild Íslands heldur um öryggis- og varnarsamstarf. Fullyrðingin um að 'samskiptin hafi verið jákvæð gagnvart ESB-aðild' er túlkun á andrúmslofti, ekki opinber afstaða. Einnig var vinnufundur í janúar 2026 en takmarkaðar upplýsingar liggja fyrir um efni hans.",
+    "related_entries": [
+      "SOV-DATA-008",
+      "SOV-LEGAL-007"
+    ]
+  },
+  {
+    "evidence_id": "TRADE-DATA-027",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "norway_trump_tariffs_2025_2026",
+    "statement": "Bandaríkin lögðu 15% gagnkvæma tolla á flestar norska vöru í apríl 2025, auk 50% álags á stál og ál frá Noregi. Jarðefnaeldsneyti (olía og gas) var undanþegið. Sjávarafurðir, einkum lax, urðu verst úti — Noregur flutti út lax fyrir um 10 milljarða norskra króna til Bandaríkjanna árið 2024. Noregur semdi drög að tollasamningi sumarið 2025 en ekkert var endanlega undirritað — viðskiptaráðherra Cecilie Myrseth sagði í febrúar 2026 að samningurinn væri enn 'á borðinu' en ófrágengin. Í janúar 2026 hótaði Trump 10% viðbótartolli á Noreg og önnur Norðurlönd, sem áttu að hækka í 25% í júní 2026, tengdum kröfum um Grænland. Þessum tollum var frestað eftir rammasamning um Grænland 21. janúar 2026. Noregur semur eitt og sér — það getur ekki nýtt sér sameiginlegan samningsstyrk ESB (svokallaðan 'trade bazooka' gagnaðgerða). Aðeins ~8% af norskum útflutningi fer beint til Bandaríkjanna en 80% fer til ESB, sem gerir Noreg viðkvæmt fyrir afleiddum áhrifum viðskiptastríðs ESB og Bandaríkjanna.",
+    "source_name": "Reuters, NRK, Financial Times — viðskipti Noregs og Bandaríkjanna 2025–2026",
+    "source_url": "https://www.reuters.com/world/europe/norway-tariffs-trump-2025/",
+    "source_date": "2026-02-15",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Tollastefna Trump-stjórnarinnar breyttist hratt og gat breyst eftir mars 2026. Samningastaðan gat hafa þróast. Fullyrðingin um 'mjög slæmt viðskiptasamkomulag' er mat — ekki vísað í lokasamning heldur viðvarandi tollaálagningu og óvissu. Noregur er mun stærra hagkerfi en Ísland og niðurstöður gefa ekki sjálfkrafa vísbendingu um hvað Ísland myndi upplifa. Heimild-URL er dæmigerð og þarf nánari staðfestingu.",
+    "related_entries": [
+      "TRADE-DATA-017",
+      "TRADE-COMP-005"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-016",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "kristrun_frostadottir_eu_stance_shift",
+    "statement": "Kristrún Frostadóttir, formaður Samfylkingarinnar, sagði skýrt fyrir alþingiskosningarnar í nóvember 2024 að ESB-aðild yrði ekki á dagskrá á næsta kjörtímabili ef hún næði að mynda ríkisstjórn. Hún sagði forgangsverkefnin vera efnahagsmál, ríkisfjármál og heilbrigðismál — ekki aðildarviðræður. Eftir kosningarnar og myndun ríkisstjórnar í desember 2024 snerist afstaðan hratt. Ríkisstjórnin tilkynnti um áform um þjóðaratkvæðagreiðslu um ESB-aðild, sem var fyrst ráðgerð árið 2027 en hraðað í 29. ágúst 2026. Í ræðu á Alþingi í febrúar 2026 sagðist Kristrún 'ekki reiðubúin að ganga í ESB á hvaða skilmálum sem er' — tilraun til að draga úr tilfinningu um stefnubreytingu. Andstæðingar hafa sakað hana um svikræði gagnvart kjósendum.",
+    "source_name": "Útvarp Saga — Hvað sagði Kristrún um ESB; Alþingi — ræða forsætisráðherra 2026-02-16",
+    "source_url": "https://utvarpsaga.is/hvad-sagdi-kristrun-um-esb-fyrir-sidustu-althingiskosningar/",
+    "source_date": "2026-02-16",
+    "source_type": "parliamentary_record",
+    "confidence": "high",
+    "caveats": "Útvarp Saga er gagnrýnið fjölmiðlaverkefni sem oft tekur afstöðu gegn ESB-aðild. Þeirra úrdráttur á forsögu Kristrúnar er þó byggður á opinberum yfirlýsingum. Kristrún hefur rökstutt stefnubreytinguna með breyttum alþjóðlegum aðstæðum (stríðið í Úkraínu, Trump-stjórnin, öryggisumhverfi). Hvort þetta sé 'svik' eða 'eðlileg viðbrögð við nýjum aðstæðum' er pólitískt mat.",
+    "related_entries": [
+      "PARTY-DATA-013",
+      "POL-DATA-021"
+    ]
+  }
+]

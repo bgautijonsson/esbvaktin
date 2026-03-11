@@ -1,0 +1,70 @@
+[
+  {
+    "evidence_id": "POLL-DATA-025",
+    "domain": "political",
+    "topic": "polling",
+    "subtopic": "media_consumption_news_avoidance",
+    "statement": "Samkvæmt könnun Fjölmiðlanefndar og Maskínu í aðdraganda alþingiskosninga 2024 sögðust 15,4% þátttakenda reyna að forðast fréttir (10,3% að nokkru og 5,1% mjög sammála). Þá upplifðu 38,3% fréttaþreytu. Ríflega helmingur (62,1%) kvaðst hafa séð rangar eða villandi upplýsingar sem ætlað var að hafa áhrif á kosningarnar, samanborið við 46,6% árið 2021. Facebook var algengasti vettvangurinn (65,2%), næst TikTok (31,2%), sjónvarp (24,7%) og fréttavefir (24,3%). Aðeins 51,9% treystu fjölmiðlum til nákvæmrar og hlutlægrar kosningaumfjöllunar.",
+    "source_name": "Fjölmiðlanefnd/Maskína — Falsfréttir og upplýsingaóreiða í aðdraganda alþingiskosninga 2024",
+    "source_url": "https://fjolmidlanefnd.is/2025/05/26/ny-skyrsla-falsfrettir-og-upplysingaoreida-i-addraganda-althingiskosninga-2024/",
+    "source_date": "2025-05-26",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Könnunin var gerð í aðdraganda alþingiskosninga 2024 og endurspeglar þá tilteknu atburðarrás. Fréttaforðun er sjálfmat (self-reported) og getur verið vanáætluð. Tölur um misinformation-upplifun fela ekki í sér mat á því hvort fréttir voru raunverulega rangar.",
+    "related_entries": [
+      "POLL-DATA-014",
+      "POLL-DATA-015"
+    ]
+  },
+  {
+    "evidence_id": "POLL-DATA-026",
+    "domain": "political",
+    "topic": "polling",
+    "subtopic": "media_polarisation_echo_chambers",
+    "statement": "Rannsókn Fjölmiðlanefndar á fjölmiðlaneyslu Íslendinga (birt 2023) sýndi verulega skautun í fréttavenjum. Sextíu prósent þeirra sem skoða fréttir eru ekki að skoða fréttir frá mörgum miðlum — aðeins 14% neyta frétta frá fjölbreyttum heimildum. Einungis 36% skoðuðu miðla með sitthvort sjónarmiðið en tæpur fjórðungur (~25%) skoðaði einungis miðla sem ríma við þeirra eigin skoðanir og eru þannig í svokölluðum bergmálshelli. Skýrslan 'Upplýsingaóreiða og skautun í íslensku samfélagi' sýndi einnig að upplifun af hatursummælum, einelti eða áreitni og ofbeldishótunum á netinu jókst á milli mælinga.",
+    "source_name": "Fjölmiðlanefnd — Upplýsingaóreiða og skautun í íslensku samfélagi",
+    "source_url": "https://fjolmidlanefnd.is/2023/02/16/ny-skyrsla-upplysingaoreida-og-skautun-i-islensku-samfelagi/",
+    "source_date": "2023-02-16",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Tölurnar um fjölmiðlaneyslu (60%, 14%, 36%, ~25%) eru þær sem Birgir Guðmundsson prófessor nefndi í viðtali á Bylgjunni 10. mars 2026 og vísaði til rannsóknar Fjölmiðlanefndar. Nákvæm heimild og aðferðafræði könnunarinnar þarf nánari staðfestingu — prófessorinn hefur hugsanlega sameinað niðurstöður úr fleiri en einni Fjölmiðlanefndarskýrslu.",
+    "related_entries": [
+      "POLL-DATA-025",
+      "POLL-DATA-014"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-025",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "foreign_campaign_finance_ban",
+    "statement": "Lög nr. 162/2006 um starfsemi stjórnmálasamtaka (síðar breytt, m.a. með lögum nr. 126/2011) kveða á um að óheimilt sé að veita viðtöku framlögum frá erlendum ríkisborgurum, fyrirtækjum eða öðrum aðilum sem skráðir eru í öðrum löndum (6. gr. 5. mgr.). Undantekning er gerð fyrir erlenda ríkisborgara sem hafa kosningarétt á Íslandi skv. lögum um sveitarstjórnarkosningar (lög nr. 5/1998). Hámarksframlag frá einstaklingum og lögaðilum er 400.000 kr. á ári. Brot varða fangelsi allt að 2 árum eða sektum (12. gr.). Lögin taka þó ekki til óbeinna áhrifa eins og ráðgjafarstarfsemi eða óformlega samskipta — bannið nær eingöngu til fjárframlaga.",
+    "source_name": "Alþingi — Lög nr. 162/2006 um starfsemi stjórnmálasamtaka",
+    "source_url": "https://www.althingi.is/lagas/140a/2006162.html",
+    "source_date": "2011-09-30",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Lögin banna fjárframlög frá erlendum aðilum en taka ekki á óbeinum áhrifum eins og ráðgjafarstarfsemi, málefnavinnu eða óformlegum samskiptum. Fullyrðing Dags B. Eggertssonar á Alþingi um að það sé 'bannað að þiggja fé frá erlendum hagsmunaöflum' er rétt um fjárframlög en nær ekki til annarra áhrifaforma sem greindin fjallar um.",
+    "related_entries": [
+      "SOV-LEGAL-021",
+      "SOV-DATA-006"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-015",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "ecr_iceland_relations",
+    "statement": "Flokkahópur íhaldsmanna og endurbótasinna á Evrópuþinginu (ECR) er sjötti stærsti flokkahópurinn á þinginu með um 64 þingmenn úr 15 löndum. Sjálfstæðisflokkurinn gerðist aðili að ECR-flokknum (European Conservatives and Reformists Party) í nóvember 2011 — fyrsti flokkurinn utan ESB til aðildar. Adam Bielan (Pólland, PiS/Lög og Réttlæti) er samhæfingarmaður ECR í utanríkismálanefnd Evrópuþingsins og hefur setið á þinginu frá 2004. PiS-flokkurinn átti í langvarandi deilum við ESB um réttarríkiskröfur sem skiptir máli fyrir samhengi ECR-stuðnings. Miðflokkurinn á Íslandi er ekki formlega aðili að ECR en Bielan staðfesti 'góð tengsl' og sameiginlegar skoðanir á mikilvægi lýðræðislegrar ákvarðanatöku innan einstakra þjóða.",
+    "source_name": "ECR Group — Adam Bielan MEP profile; Wikipedia — European Conservatives and Reformists Party",
+    "source_url": "https://ecrgroup.eu/ecr/mep/adam_bielan",
+    "source_date": "2026-03-10",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Stærð ECR-hópsins breytist eftir þingsetu og flokkaskipti. Sjálfstæðisflokkurinn er aðili að ECR-flokknum en hefur ekki sæti á Evrópuþinginu þar sem Ísland er utan ESB. Tengsl Miðflokksins við ECR eru óformleg og ekki staðfest af Miðflokknum sjálfum.",
+    "related_entries": [
+      "POLITICAL-DATA-013",
+      "PARTY-DATA-012"
+    ]
+  }
+]
