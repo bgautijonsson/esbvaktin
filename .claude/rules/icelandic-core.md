@@ -1,3 +1,14 @@
+---
+paths:
+  - "**/*_is.*"
+  - "data/reassessment/**"
+  - "data/analyses/**"
+  - "data/evidence_is/**"
+  - "knowledge/*_is*"
+  - "knowledge/exemplars*"
+  - "ICELANDIC.md"
+---
+
 # Icelandic Language: Core Principles
 
 These rules apply to ALL Icelandic text generation in the project.

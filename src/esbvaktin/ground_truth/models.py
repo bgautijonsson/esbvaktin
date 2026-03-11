@@ -4,7 +4,10 @@ from datetime import date
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+import warnings
+from urllib.parse import urlparse
+
+from pydantic import BaseModel, Field, model_validator
 
 
 class Domain(str, Enum):
@@ -47,6 +50,22 @@ class EvidenceEntry(BaseModel):
     source_description_is: Optional[str] = None
     related_entries: list[str] = Field(default_factory=list)
     last_verified: date = Field(default_factory=date.today)
+
+    @model_validator(mode="after")
+    def _warn_generic_url(self) -> "EvidenceEntry":
+        """Warn if source_url is missing or just a domain root."""
+        if not self.source_url:
+            warnings.warn(
+                f"{self.evidence_id}: missing source_url", stacklevel=2
+            )
+        else:
+            parsed = urlparse(self.source_url)
+            if parsed.path in ("", "/") and not parsed.query:
+                warnings.warn(
+                    f"{self.evidence_id}: generic root URL '{self.source_url}'",
+                    stacklevel=2,
+                )
+        return self
 
 
 class SearchResult(BaseModel):

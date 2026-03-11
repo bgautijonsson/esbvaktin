@@ -161,6 +161,19 @@ _NAME_ALIASES: dict[str, str] = {
     "samfylkingin": "samfylkingin",
     "samfylking": "samfylkingin",
     "flokkur fólksins": "flokkur-folksins",
+    # Individual name variants
+    "bjorn levi gunnarsson": "bjorn-levi-gunnarsson",
+    "björn leví gunnarson": "bjorn-levi-gunnarsson",
+    "björn leví gunnarsson": "bjorn-levi-gunnarsson",
+    "lilja alfreðsdóttir": "lilja-dogg-alfredsdottir",
+    # Media — short vs full name
+    "heimildin fréttastofa": "heimildin",
+}
+
+# Override display names for aliases where heuristic may pick wrong variant
+_CANONICAL_NAMES: dict[str, str] = {
+    "bjorn-levi-gunnarsson": "Björn Leví Gunnarsson",
+    "heimildin": "Heimildin",
 }
 
 # Entries that are titles/roles, not actual entities — skip these
@@ -316,6 +329,17 @@ def _merge_entity(
 
     # Apply name aliases
     slug = _NAME_ALIASES.get(name.lower(), icelandic_slugify(name))
+
+    # Prefer the "best" name variant: most Icelandic chars, then longest
+    # This picks "Björn Leví Gunnarsson" over "Bjorn Levi Gunnarsson"
+    # and "Lilja Dögg Alfreðsdóttir" over "Lilja Alfreðsdóttir"
+    def _name_score(n: str) -> tuple[int, int]:
+        icelandic = sum(1 for c in n if c in "áðéíóúýþæöÁÐÉÍÓÚÝÞÆÖ")
+        return (icelandic, len(n))
+
+    if slug in entities:
+        if _name_score(name) > _name_score(entities[slug]["name"]):
+            entities[slug]["name"] = name
 
     if slug not in entities:
         entities[slug] = {
@@ -481,6 +505,11 @@ def export_entities(
     althingi_count = _enrich_althingi_stats(entities)
     _generate_descriptions(entities)
 
+    # Apply canonical name overrides
+    for slug, canonical in _CANONICAL_NAMES.items():
+        if slug in entities:
+            entities[slug]["name"] = canonical
+
     # Sort by mention count (descending), then name
     sorted_entities = sorted(
         entities.values(),
@@ -500,6 +529,13 @@ def export_entities(
         with open(site_path, "w", encoding="utf-8") as f:
             json.dump(sorted_entities, f, ensure_ascii=False, indent=2)
         print(f"Copied to {site_path}")
+
+        # Also write to assets/data/ for client-side JS (Raddirnar page)
+        assets_path = site_dir / "assets" / "data" / "entities.json"
+        assets_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(assets_path, "w", encoding="utf-8") as f:
+            json.dump(sorted_entities, f, ensure_ascii=False, indent=2)
+        print(f"Copied to {assets_path}")
 
     # Print summary
     by_type: dict[str, int] = {}
