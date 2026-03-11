@@ -26,10 +26,9 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 | Ground Truth DB | PostgreSQL 17 + pgvector (self-hosted via Docker) |
 | Embeddings | BAAI/bge-m3 (local multilingual, 1024-dim) |
 | Article extraction | trafilatura |
-| Analysis pipeline | Claude Code subagents |
+| Analysis pipeline | Claude Code custom agents (`.claude/agents/`) |
 | Icelandic correction | GreynirCorrect |
 | Email | Mailgun inbound parsing + sending |
-| CMS | Ghost |
 | Polling model | Stan via cmdstanr (later, R) |
 | Data viz | R + ggplot2 + plotly (later) |
 | CI/CD | GitHub Actions |
@@ -52,8 +51,28 @@ scripts/                # One-off scripts (seeding DB, etc.)
 data/seeds/             # Evidence JSON seed files (committed)
 data/{source}/          # CSV outputs from R scripts (gitignored)
 R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
-.claude/skills/         # analyse-article, fact-check
+.claude/skills/         # analyse-article, fact-check, process-inbox, plan-verification
+.claude/agents/         # Custom agents: claim-extractor, claim-assessor, omissions-analyst, entity-extractor, site-exporter, evidence-summariser
 ```
+
+## Custom Agents
+
+Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.) handle user interaction and Python orchestration. Agents handle the isolated LLM work units with restricted tools and model-appropriate tiers.
+
+| Agent | Model | Tools | Purpose |
+|---|---|---|---|
+| `claim-extractor` | sonnet | Read, Write, Glob | Extract factual claims from articles/speeches/panels |
+| `claim-assessor` | opus | Read, Write, Glob | Assess claims against Ground Truth evidence (hardest reasoning) |
+| `omissions-analyst` | sonnet | Read, Write, Glob | Identify omissions, assess framing and completeness |
+| `entity-extractor` | haiku | Read, Write, Glob | Extract speakers, authors, organisations with attribution |
+| `site-exporter` | sonnet | Bash, Read, Glob, Grep | Run the 4-script site data export chain |
+| `evidence-summariser` | sonnet | Read, Write, Glob | Write Icelandic summaries for Ground Truth evidence batches |
+
+**Parallelisation:** `claim-assessor` + `omissions-analyst` always run in parallel (independent tasks). Multiple `evidence-summariser` instances can run in parallel across batches.
+
+**Context flow:** Python `prepare_context.py` writes `_context_*.md` files with full instructions + data → agent reads context file → agent writes JSON output → Python parses output.
+
+**Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
 
 ## Conventions
 
@@ -74,7 +93,6 @@ R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
 
 ```bash
 uv run --extra dev python -m pytest  # Run tests (pytest is in dev extras)
-uv run python -m esbvaktin # Run pipeline (TBD)
 uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # Export entities
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # Prepare site data
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # Export Alþingi debate data
@@ -95,14 +113,15 @@ Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 
 ## Site Repo
 
-Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty v3 static site.
+Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty v3 static site. Has its own `CLAUDE.md` with full site conventions.
 - `_data/` — 11ty build data (entities.json, reports/*.json, entity-details/*.json, evidence-details/*.json, debates/*.json)
-- `assets/data/` — client-side JS data (entities.json, reports.json, evidence.json, sources.json, debates.json) — must be kept in sync with `_data/`
-- `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.)
-- Build: `cd ~/esbvaktin-site && npx @11ty/eleventy`
+- `assets/data/` — client-side JS data (entities.json, reports.json, claims.json, evidence.json, sources.json, debates.json) — **must be kept in sync** (export scripts write to both)
+- `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.), watches `assets/data`
+- Build: `cd ~/esbvaktin-site && npm run build` (or `npm run serve` for dev)
 - Data pipeline: `export_entities.py` → `export_evidence.py` → `prepare_site.py` → `prepare_speeches.py` → build site
-- Heimildir page: `/heimildir/` (listing) + `/heimildir/{slug}/` (evidence detail, 338 pages). Data from `export_evidence.py` + `prepare_site.py`.
-- Þingræður page: `/thingraedur/` (listing) + `/thingraedur/{session}-{issue_nr}/` (debate detail). Data from `prepare_speeches.py` querying althingi.db.
+- Homepage: server-rendered from `_data/home.js` which reads `assets/data/*.json` (countdown, signal cards, verdict distribution, recent reports, featured voices)
+- Tracker JS architecture: `site-taxonomy.js` → `tracker-utils.js` → `tracker-renderer.js` → `tracker-controller.js` → page-specific tracker. Controller owns boot flow; page scripts keep only domain logic.
+- Pages: `/umraedan/` (reports), `/fullyrdingar/` (claims), `/raddirnar/` (entities), `/heimildir/` (evidence, 338 detail pages), `/thingraedur/` (debates). `/greiningar/` redirects to `/umraedan/`.
 - Nunjucks `capitalize` filter lowercases the rest of the string — don't use it for titles with proper nouns. Capitalise in Python data export instead.
 - Speeches module has two DB access patterns: async aiosqlite (MCP server in `search.py`) and sync sqlite3 (pipeline in `context.py`, export scripts). Same althingi.db.
 

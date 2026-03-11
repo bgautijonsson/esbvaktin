@@ -166,14 +166,13 @@ Skrifaðu JSON á þessu sniði í `$WORK_DIR/_extracted_claims.json`:
 ```
 ```
 
-**Subagent task:** Read `$WORK_DIR/_context_batch_extraction.md` and extract claims from all articles. Write JSON output to `$WORK_DIR/_extracted_claims.json`.
+Use the **claim-extractor** agent:
 
-**Critical principles:**
-- Extract substantive, verifiable claims about EU membership consequences — not biographical facts, procedural details, or pure opinion
-- The test: "would this claim belong on a public claim tracker?" If not, skip it
-- One article may contain 0 relevant claims if it's not about the referendum
-- Independence: both pro-EU and anti-EU claims equally
-- Prefer fewer, higher-quality claims over exhaustive extraction
+```
+Agent: claim-extractor
+Prompt: Read $WORK_DIR/_context_batch_extraction.md and extract claims from all articles.
+        Write the JSON output to $WORK_DIR/_extracted_claims.json.
+```
 
 ### Step 2b: Extract Entities (Subagent — per article)
 
@@ -212,7 +211,13 @@ for article in extracted:
 "
 ```
 
-**Subagent task (per article):** Read `$WORK_DIR/entities/{article_stem}/_context_entities.md` and write the output to `$WORK_DIR/entities/{article_stem}/_entities.json`.
+Use the **entity-extractor** agent (per article):
+
+```
+Agent: entity-extractor
+Prompt: Read $WORK_DIR/entities/{article_stem}/_context_entities.md and extract entities.
+        Write the JSON object to $WORK_DIR/entities/{article_stem}/_entities.json.
+```
 
 This step can run **in parallel** with Step 3 if desired. After all entity subagents complete, re-export entities to the site:
 

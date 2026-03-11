@@ -13,6 +13,17 @@ Supports both **articles** and **panel show transcripts** (e.g. Silfrið). Panel
 
 ## Steps
 
+### Step 0: Dedup Check
+
+Before creating a working directory, check if this article has already been analysed:
+
+```bash
+# Check by URL, title, or fréttasafn ID (whichever is available)
+uv run python scripts/check_duplicate.py --url "ARTICLE_URL" --title "ARTICLE_TITLE"
+```
+
+If the script exits with code 0 (duplicate found), **stop and inform the user**. Show which analysis directory already contains this article. Only proceed if the user explicitly requests re-analysis.
+
 ### Step 1: Prepare Working Directory
 
 ```bash
@@ -77,27 +88,15 @@ print('Extraction context prepared (Icelandic).')
 "
 ```
 
-### Step 2: Extract Claims (Subagent)
+### Step 2: Extract Claims (Agent: `claim-extractor`)
 
-Launch a subagent to extract claims from the article:
+Use the **claim-extractor** agent to extract claims from the article:
 
-**Subagent task:** Read `$WORK_DIR/_context_extraction.md` and follow its instructions. Write the output (a JSON array of claims) to `$WORK_DIR/_claims.json`.
-
-The subagent should:
-1. Read the context file carefully (instructions are in Icelandic)
-2. Extract ALL factual claims from the article
-3. Write `claim_text` in Icelandic
-4. Write a JSON array to `_claims.json` (raw JSON, no markdown wrapping)
-
-**Critical principles for the subagent:**
-- Be thorough — extract every factual claim, not just obvious ones
-- Categorise accurately using the known topics: fisheries, trade, sovereignty, eea_eu_law, agriculture, precedents, currency, labour, polling, party_positions, org_positions, other
-- Distinguish between claim types: statistic, legal_assertion, comparison, prediction, opinion
-- Preserve exact quotes from the article in `original_quote`
-- Write `claim_text` in clear Icelandic
-- **Panel shows only:** include `speaker_name` (exact full name) for every claim
-- **JSON safety**: escape any quotation marks inside string values. Icelandic „…" quotes must be written as `\"…\"` in JSON. Never use raw `„` or `"` inside JSON strings.
-- Independence: do not favour either side
+```
+Agent: claim-extractor
+Prompt: Read $WORK_DIR/_context_extraction.md and extract all factual claims.
+        Write the JSON array to $WORK_DIR/_claims.json.
+```
 
 ### Step 3: Retrieve Evidence and Prepare Assessment Context (Python)
 
@@ -135,34 +134,21 @@ print('Assessment and omission contexts prepared (Icelandic).')
 "
 ```
 
-### Step 4: Assess Claims (Subagent)
+### Step 4 + 5: Assess Claims and Analyse Omissions (Parallel Agents)
 
-Launch a subagent to assess each claim against evidence:
+Launch **both agents in parallel** — they are independent and can run simultaneously:
 
-**Subagent task:** Read `$WORK_DIR/_context_assessment.md` and follow its instructions. Write the output (a JSON array of assessments) to `$WORK_DIR/_assessments.json`.
+```
+Agent: claim-assessor
+Prompt: Read $WORK_DIR/_context_assessment.md and assess all claims against evidence.
+        Write the flat JSON array to $WORK_DIR/_assessments.json.
 
-**Critical principles for the subagent:**
-- **Óhlutdrægni**: Metið ESB-jákvæðar og ESB-neikvæðar fullyrðingar jafnt. Never take a side.
-- **Heimildum háð**: every assessment MUST cite specific evidence_ids from the Ground Truth DB
-- **Fyrirvarar skipta máli**: always surface caveats from evidence entries — they often contain crucial qualifications
-- **Auðmýkt**: if evidence is insufficient, use "unverifiable" — do not guess
-- Write `explanation` and `missing_context` fields in **Icelandic**
-- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in all JSON string values
-- Write raw JSON, no markdown wrapping
+Agent: omissions-analyst  (run in parallel with claim-assessor)
+Prompt: Read $WORK_DIR/_context_omissions.md and analyse omissions and framing.
+        Write the JSON object to $WORK_DIR/_omissions.json.
+```
 
-### Step 5: Analyse Omissions (Subagent — can run in parallel with Step 4)
-
-Launch a subagent to identify omissions and assess framing:
-
-**Subagent task:** Read `$WORK_DIR/_context_omissions.md` and follow its instructions. Write the output (a JSON object) to `$WORK_DIR/_omissions.json`.
-
-**Critical principles for the subagent:**
-- Balance: an article can legitimately argue one side; omission analysis is about what **relevant facts** are missing
-- Only flag omissions that would **materially change** a reader's understanding
-- Reference specific evidence_ids for each omission
-- Write `description` fields in **Icelandic**
-- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in all JSON string values
-- Write raw JSON, no markdown wrapping
+Wait for both agents to complete before proceeding to Step 6.
 
 ### Step 6: Assemble Icelandic Report (Python)
 
@@ -323,14 +309,13 @@ print(f'Entity context prepared ({len(claims)} claims).')
 "
 ```
 
-**Subagent task:** Read `$WORK_DIR/_context_entities.md` and follow its instructions. Write the output (a JSON object with `article_author` and `speakers`) to `$WORK_DIR/_entities.json`.
+Use the **entity-extractor** agent:
 
-**Critical principles for the subagent:**
-- Identify the article author and all quoted/attributed speakers
-- For each speaker, determine their EU stance from context
-- Map `claim_indices` to 0-based claim numbers
-- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in JSON strings
-- Write raw JSON, no markdown wrapping
+```
+Agent: entity-extractor
+Prompt: Read $WORK_DIR/_context_entities.md and extract all entities/speakers.
+        Write the JSON object to $WORK_DIR/_entities.json.
+```
 
 ### Step 7c (Optional): Generate English Report
 

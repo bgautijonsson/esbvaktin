@@ -48,20 +48,15 @@ print(f'Context written to {ctx_path}')
 "
 ```
 
-### Step 2: Assess Claims (Subagent)
+### Step 2: Assess Claims (Agent: `claim-assessor`)
 
-Launch a subagent to assess the claims against evidence:
+Use the **claim-assessor** agent:
 
-**Subagent task:** Read `$WORK_DIR/_context_fact_check.md` and follow its instructions. Write the output (a JSON array of assessments) to `$WORK_DIR/_assessments.json`.
-
-**Critical principles for the subagent:**
-- **Óhlutdrægni**: metið ESB-jákvæðar og ESB-neikvæðar fullyrðingar jafnt
-- **Heimildum háð**: every verdict MUST cite specific evidence_ids
-- **Fyrirvarar skipta máli**: always surface caveats from evidence entries
-- **Auðmýkt**: if evidence is insufficient, use `unverifiable`
-- Write `explanation` and `missing_context` fields in **Icelandic**
-- **JSON safety**: escape Icelandic quotation marks „…" as `\"…\"` in all JSON string values
-- Write raw JSON, no markdown wrapping
+```
+Agent: claim-assessor
+Prompt: Read $WORK_DIR/_context_fact_check.md and assess all claims against evidence.
+        Write the flat JSON array to $WORK_DIR/_assessments.json.
+```
 
 ### Step 3: Parse and Display Results (Python)
 
