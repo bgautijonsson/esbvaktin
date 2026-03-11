@@ -80,6 +80,9 @@ uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # Prepare 
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # Export Alþingi debate data
 uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site  # Export evidence for /heimildir/
 uv run python scripts/export_evidence.py --status        # Show evidence DB summary
+uv run python scripts/generate_evidence_is.py prepare     # Prepare IS summary batches (12 batches × 30)
+uv run python scripts/generate_evidence_is.py write       # Parse subagent output → update DB
+uv run python scripts/generate_evidence_is.py status      # Show IS coverage
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 uv run python scripts/curate_speech_evidence.py list        # Find high-value Alþingi speeches for evidence curation
