@@ -1,0 +1,3 @@
+# URLs seen during article discovery that are not relevant to the EU referendum.
+# One URL per line. Lines starting with # are comments.
+# Append new URLs when /find-articles flags false positives.

@@ -51,7 +51,7 @@ scripts/                # One-off scripts (seeding DB, etc.)
 data/seeds/             # Evidence JSON seed files (committed)
 data/{source}/          # CSV outputs from R scripts (gitignored)
 R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
-.claude/skills/         # analyse-article, fact-check, process-inbox, plan-verification
+.claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification
 .claude/agents/         # Custom agents: claim-extractor, claim-assessor, omissions-analyst, entity-extractor, site-exporter, evidence-summariser
 ```
 
@@ -107,6 +107,8 @@ uv run python scripts/curate_speech_evidence.py list        # Find high-value Al
 uv run python scripts/fact_check_speeches.py select --limit 5  # Rank speeches for fact-checking
 uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a single speech (run outside Claude Code session)
 uv run python scripts/fact_check_speeches.py status            # Show fact-check progress
+uv run python scripts/build_article_registry.py --status  # Show processed article registry
+uv run python scripts/check_duplicate.py --url URL        # Check if article already processed
 docker compose up -d       # Start PostgreSQL
 Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
