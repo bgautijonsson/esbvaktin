@@ -30,6 +30,47 @@ DEFAULT_SITE_DIR = PROJECT_ROOT.parent / "esbvaktin-site"
 # Evidence ID pattern: e.g. FISH-DATA-001, SOV-LEGAL-006
 _EVIDENCE_ID_RE = re.compile(r"\b([A-Z]+-[A-Z]+-\d{3})\b")
 
+
+# ── DB verdict overlay ──────────────────────────────────────────────
+
+
+def _load_db_verdicts() -> dict[str, dict]:
+    """Load current verdicts from the DB, keyed by claim text (IS and EN).
+
+    Returns a dict mapping claim text → {verdict, explanation_is,
+    confidence, supporting_evidence, contradicting_evidence, missing_context_is}.
+    Used to overlay reassessed verdicts on top of _report_final.json snapshots.
+    """
+    try:
+        from esbvaktin.ground_truth.operations import get_connection
+
+        conn = get_connection()
+        rows = conn.execute(
+            "SELECT canonical_text_is, canonical_text_en, verdict, "
+            "explanation_is, confidence, supporting_evidence, "
+            "contradicting_evidence, missing_context_is "
+            "FROM claims"
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return {}
+
+    lookup: dict[str, dict] = {}
+    for text_is, text_en, verdict, expl_is, conf, sup, contra, missing in rows:
+        entry = {
+            "verdict": verdict,
+            "explanation_is": expl_is,
+            "confidence": conf,
+            "supporting_evidence": sup or [],
+            "contradicting_evidence": contra or [],
+            "missing_context_is": missing,
+        }
+        if text_is:
+            lookup[text_is] = entry
+        if text_en:
+            lookup[text_en] = entry
+    return lookup
+
 # ── Article metadata extraction ──────────────────────────────────────
 
 _SOURCE_FROM_DOMAIN: dict[str, str] = {
@@ -500,6 +541,7 @@ def prepare_report(
     report_path: Path,
     evidence_meta: dict[str, dict],
     site_entities: dict[str, dict] | None = None,
+    db_verdicts: dict[str, dict] | None = None,
 ) -> dict:
     """Extract site-ready fields from a _report_final.json file.
 
@@ -508,6 +550,8 @@ def prepare_report(
     - Icelandic text parsed from report_text_is
     - Evidence source metadata (names + URLs) for linking
     - Speaker attributions from entity extraction
+    - DB verdict overlay (if db_verdicts provided, reassessed verdicts
+      replace the pipeline snapshot verdicts)
     """
     with open(report_path, encoding="utf-8") as f:
         report = json.load(f)
@@ -529,12 +573,6 @@ def prepare_report(
 
     # Parse Icelandic report text
     is_data = _parse_icelandic_report(report.get("report_text_is", ""))
-
-    # Count verdicts for summary stats
-    verdict_counts: dict[str, int] = {}
-    for item in report.get("claims", []):
-        v = item.get("verdict", "unknown")
-        verdict_counts[v] = verdict_counts.get(v, 0) + 1
 
     # Compute dominant category from claims
     category_counts = Counter(
@@ -558,18 +596,33 @@ def prepare_report(
         missing_context_is = is_claim.get("missing_context_is") or item.get("missing_context")
         claim_text_is = is_claim.get("claim_text_is") or item.get("claim", {}).get("claim_text", "")
 
+        # Overlay DB verdict if available (catches reassessments)
+        claim_text_raw = item.get("claim", {}).get("claim_text", "")
+        verdict = item.get("verdict", "unknown")
+        confidence = item.get("confidence", 0)
+        sup_evidence = item.get("supporting_evidence", [])
+        contra_evidence = item.get("contradicting_evidence", [])
+
+        if db_verdicts:
+            db_entry = db_verdicts.get(claim_text_raw) or db_verdicts.get(claim_text_is)
+            if db_entry:
+                verdict = db_entry["verdict"]
+                confidence = db_entry["confidence"] or confidence
+                sup_evidence = db_entry["supporting_evidence"]
+                contra_evidence = db_entry["contradicting_evidence"]
+                if db_entry["explanation_is"]:
+                    explanation_is = db_entry["explanation_is"]
+                if db_entry["missing_context_is"]:
+                    missing_context_is = db_entry["missing_context_is"]
+
         # Linkify evidence IDs in text fields
         explanation_is = _linkify_evidence_ids(explanation_is, evidence_meta)
         if missing_context_is:
             missing_context_is = _linkify_evidence_ids(missing_context_is, evidence_meta)
 
         # Build evidence source lists with metadata
-        supporting = _build_evidence_sources(
-            item.get("supporting_evidence", []), evidence_meta
-        )
-        contradicting = _build_evidence_sources(
-            item.get("contradicting_evidence", []), evidence_meta
-        )
+        supporting = _build_evidence_sources(sup_evidence, evidence_meta)
+        contradicting = _build_evidence_sources(contra_evidence, evidence_meta)
 
         enriched_claims.append({
             "claim": {
@@ -579,14 +632,20 @@ def prepare_report(
                 "claim_type": item.get("claim", {}).get("claim_type", ""),
                 "confidence": item.get("claim", {}).get("confidence", 0),
             },
-            "verdict": item.get("verdict", "unknown"),
+            "verdict": verdict,
             "explanation": explanation_is,
             "supporting_evidence": supporting,
             "contradicting_evidence": contradicting,
             "missing_context": missing_context_is,
-            "confidence": item.get("confidence", 0),
+            "confidence": confidence,
             "speakers": _speakers_for_claim(entities_data, i),
         })
+
+    # Count verdicts from enriched claims (reflects DB reassessments)
+    verdict_counts: dict[str, int] = {}
+    for ec in enriched_claims:
+        v = ec.get("verdict", "unknown")
+        verdict_counts[v] = verdict_counts.get(v, 0) + 1
 
     # Use Icelandic summary or generate one
     summary_is = is_data.get("summary_is") or report.get("summary", "")
@@ -681,6 +740,11 @@ def main() -> None:
     if site_entities:
         print(f"Site entities: {len(site_entities)} loaded for participant enrichment")
 
+    # Load DB verdicts for overlay (catches reassessments)
+    db_verdicts = _load_db_verdicts()
+    if db_verdicts:
+        print(f"DB verdict overlay: {len(db_verdicts)} claim texts loaded")
+
     # Find all completed analysis reports
     report_files = sorted(ANALYSES_DIR.glob("*/_report_final.json"))
 
@@ -691,7 +755,7 @@ def main() -> None:
     all_reports = []
     written = 0
     for report_path in report_files:
-        report_data = prepare_report(report_path, evidence_meta, site_entities)
+        report_data = prepare_report(report_path, evidence_meta, site_entities, db_verdicts)
         out_path = reports_dir / f"{report_data['slug']}.json"
 
         with open(out_path, "w", encoding="utf-8") as f:

@@ -93,10 +93,11 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 
 ```bash
 uv run --extra dev python -m pytest  # Run tests (pytest is in dev extras)
-uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # Export entities
-uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # Prepare site data
-uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # Export Alþingi debate data
-uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site  # Export evidence for /heimildir/
+uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # 1. Export entities
+uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site  # 2. Export evidence for /heimildir/
+uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site    # 3. Export claims (tracker + homepage)
+uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # 4. Prepare site data (overlays DB verdicts)
+uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # 5. Export Alþingi debate data
 uv run python scripts/export_evidence.py --status        # Show evidence DB summary
 uv run python scripts/generate_evidence_is.py prepare     # Prepare IS summary batches (12 batches × 30)
 uv run python scripts/generate_evidence_is.py write       # Parse subagent output → update DB
@@ -107,6 +108,9 @@ uv run python scripts/curate_speech_evidence.py list        # Find high-value Al
 uv run python scripts/fact_check_speeches.py select --limit 5  # Rank speeches for fact-checking
 uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a single speech (run outside Claude Code session)
 uv run python scripts/fact_check_speeches.py status            # Show fact-check progress
+uv run python scripts/reassess_claims.py prepare           # Prepare reassessment batches (unverifiable + partial)
+uv run python scripts/reassess_claims.py update            # Apply subagent reassessments to DB
+uv run python scripts/reassess_claims.py status            # Show verdict distribution
 uv run python scripts/build_article_registry.py --status  # Show processed article registry
 uv run python scripts/check_duplicate.py --url URL        # Check if article already processed
 docker compose up -d       # Start PostgreSQL
@@ -120,7 +124,7 @@ Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty 
 - `assets/data/` — client-side JS data (entities.json, reports.json, claims.json, evidence.json, sources.json, debates.json) — **must be kept in sync** (export scripts write to both)
 - `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.), watches `assets/data`
 - Build: `cd ~/esbvaktin-site && npm run build` (or `npm run serve` for dev)
-- Data pipeline: `export_entities.py` → `export_evidence.py` → `prepare_site.py` → `prepare_speeches.py` → build site
+- Data pipeline: `export_entities.py` → `export_evidence.py` → `export_claims.py` → `prepare_site.py` (overlays DB verdicts) → `prepare_speeches.py` → build site
 - Homepage: server-rendered from `_data/home.js` which reads `assets/data/*.json` (countdown, signal cards, verdict distribution, recent reports, featured voices)
 - Tracker JS architecture: `site-taxonomy.js` → `tracker-utils.js` → `tracker-renderer.js` → `tracker-controller.js` → page-specific tracker. Controller owns boot flow; page scripts keep only domain logic.
 - Pages: `/umraedan/` (reports), `/fullyrdingar/` (claims), `/raddirnar/` (entities), `/heimildir/` (evidence, 338 detail pages), `/thingraedur/` (debates). `/greiningar/` redirects to `/umraedan/`.

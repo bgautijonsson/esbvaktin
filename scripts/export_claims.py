@@ -1,13 +1,15 @@
 """Export claims from PostgreSQL to Parquet + JSON for the client-side claim tracker.
 
 Usage:
-    uv run python scripts/export_claims.py              # Export published claims
+    uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site  # Export + copy to site
+    uv run python scripts/export_claims.py              # Export to data/export/ only
     uv run python scripts/export_claims.py --all        # Export all claims (including unpublished)
     uv run python scripts/export_claims.py --status     # Show export stats
 
 Output:
     data/export/claims.parquet   — for DuckDB-WASM in the browser
     data/export/claims.json      — fallback for non-WASM browsers
+    {site-dir}/assets/data/claims.json  — if --site-dir provided
 """
 
 from __future__ import annotations
@@ -212,9 +214,19 @@ def _show_status(claims: list[dict]) -> None:
     print(f"\nTotal sightings: {total_sightings}")
 
 
+def _parse_site_dir() -> Path | None:
+    """Parse --site-dir argument."""
+    if "--site-dir" in sys.argv:
+        idx = sys.argv.index("--site-dir")
+        if idx + 1 < len(sys.argv):
+            return Path(sys.argv[idx + 1]).expanduser()
+    return None
+
+
 def main() -> None:
     include_all = "--all" in sys.argv
     status_only = "--status" in sys.argv
+    site_dir = _parse_site_dir()
 
     claims = _fetch_claims(include_unpublished=include_all or status_only)
 
@@ -234,6 +246,15 @@ def main() -> None:
 
     _to_parquet(claims, parquet_path)
     _to_json(claims, json_path)
+
+    # Copy to site repo if --site-dir provided
+    if site_dir:
+        import shutil
+
+        site_claims = site_dir / "assets" / "data" / "claims.json"
+        site_claims.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(json_path, site_claims)
+        print(f"  {site_claims}")
 
     label = "all" if include_all else "published"
     print(f"Exported {len(claims)} {label} claims:")

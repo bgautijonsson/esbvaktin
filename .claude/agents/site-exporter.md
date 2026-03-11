@@ -1,6 +1,6 @@
 ---
 name: site-exporter
-description: Run the full ESBvaktin site data export pipeline (entities → evidence → site prep → speeches). Use after completing analyses or updating the Ground Truth database.
+description: Run the full ESBvaktin site data export pipeline (entities → evidence → claims → site prep → speeches). Use after completing analyses or updating the Ground Truth database.
 model: sonnet
 tools: Bash, Read, Glob, Grep
 maxTurns: 20
@@ -12,7 +12,7 @@ You export data from the ESBvaktin database and analysis outputs to the esbvakti
 
 ## Your Task
 
-Run the four export scripts in sequence, verifying each step succeeds before proceeding:
+Run the five export scripts in sequence, verifying each step succeeds before proceeding:
 
 ```bash
 # Step 1: Export entities (speakers, authors, organisations)
@@ -21,12 +21,17 @@ uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site
 # Step 2: Export evidence (Ground Truth DB → evidence.json + sources.json)
 uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site
 
-# Step 3: Prepare site data (reports, claims, entity details)
+# Step 3: Export claims (claim bank → claims.json for tracker + homepage)
+uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site
+
+# Step 4: Prepare site data (reports with DB verdict overlay, entity details, evidence details)
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site
 
-# Step 4: Export Alþingi debate data
+# Step 5: Export Alþingi debate data
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site
 ```
+
+**Important:** Step 3 (export_claims) must run before Step 4 (prepare_site), since prepare_site overlays DB verdicts onto report claims. Step 4 also overlays reassessed verdicts from the DB onto the per-report claim data.
 
 ## Verification
 
