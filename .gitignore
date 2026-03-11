@@ -48,6 +48,7 @@ data/export/
 data/reassessment/
 data/evidence_is/
 data/speech_checks/
+data/overviews/
 
 # Claude Code (keep skills, rules, and agents)
 .claude/*
