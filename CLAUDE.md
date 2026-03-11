@@ -86,6 +86,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 - Python code: type hints, f-strings, async where appropriate
 - British/international spelling in English text
 - Icelandic output uses GreynirCorrect for quality
+- Subagent JSON output: always parse with `_extract_json()` (sanitises `„"` quotes, strips markdown fences). Subagent field names may vary (e.g. `verdict` vs `new_verdict`) — handle both.
 - Environment variables for secrets (`.env`, never committed)
 - Tests with pytest
 
@@ -125,6 +126,7 @@ Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty 
 - `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.), watches `assets/data`
 - Build: `cd ~/esbvaktin-site && npm run build` (or `npm run serve` for dev)
 - Data pipeline: `export_entities.py` → `export_evidence.py` → `export_claims.py` → `prepare_site.py` (overlays DB verdicts) → `prepare_speeches.py` → build site
+- `prepare_site.py` overlays DB verdicts onto `_report_final.json` snapshots — report files are immutable pipeline output, DB is source of truth for verdicts
 - Homepage: server-rendered from `_data/home.js` which reads `assets/data/*.json` (countdown, signal cards, verdict distribution, recent reports, featured voices)
 - Tracker JS architecture: `site-taxonomy.js` → `tracker-utils.js` → `tracker-renderer.js` → `tracker-controller.js` → page-specific tracker. Controller owns boot flow; page scripts keep only domain logic.
 - Pages: `/umraedan/` (reports), `/fullyrdingar/` (claims), `/raddirnar/` (entities), `/heimildir/` (evidence, 338 detail pages), `/thingraedur/` (debates). `/greiningar/` redirects to `/umraedan/`.
