@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Check which unverifiable claims now have matching evidence.
+"""Check which unverifiable claims now have matching evidence (read-only scout).
 
 Queries each unverifiable claim against the evidence DB via semantic search
 and reports which ones now have strong enough matches to be re-assessed.
+This is a diagnostic tool — to actually run reassessment, use reassess_claims.py.
 
 Usage:
     uv run python scripts/reassess_unverifiable.py           # Report only
-    uv run python scripts/reassess_unverifiable.py --update   # Update verdicts to 'needs_reassessment'
+
+See also:
+    uv run python scripts/reassess_claims.py prepare         # Prepare full reassessment (unverifiable + partial)
 """
 
 import sys
