@@ -65,7 +65,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 | `claim-assessor` | opus | Read, Write, Glob | Assess claims against Ground Truth evidence (hardest reasoning) |
 | `omissions-analyst` | sonnet | Read, Write, Glob | Identify omissions, assess framing and completeness |
 | `entity-extractor` | haiku | Read, Write, Glob | Extract speakers, authors, organisations with attribution |
-| `site-exporter` | sonnet | Bash, Read, Glob, Grep | Run the 6-script site data export chain |
+| `site-exporter` | sonnet | Bash, Read, Glob, Grep | Run the 7-script site data export chain |
 | `evidence-summariser` | sonnet | Read, Write, Glob | Write Icelandic summaries for Ground Truth evidence batches |
 | `editorial-writer` | sonnet | Read, Write, Glob | Write Icelandic weekly editorial from overview context |
 
@@ -103,10 +103,12 @@ uv run python scripts/export_topics.py --site-dir ~/esbvaktin-site    # 3. Expor
 uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site    # 4. Export claims (tracker + homepage)
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # 5. Prepare site data (overlays DB verdicts)
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # 6. Export Alþingi debate data
+uv run python scripts/export_overviews.py --site-dir ~/esbvaktin-site # 7. Export weekly overviews
 uv run python scripts/export_topics.py --status        # Show topic distribution
 uv run python scripts/generate_overview.py --week 2026-W11  # Generate weekly overview data
 uv run python scripts/generate_overview.py --status         # Show overview coverage
 uv run python scripts/prepare_overview_context.py 2026-W11  # Prepare editorial context (Icelandic)
+uv run python scripts/export_overviews.py --status         # Show overview export coverage
 uv run python scripts/export_evidence.py --status        # Show evidence DB summary
 uv run python scripts/generate_evidence_is.py prepare     # Prepare IS summary batches (12 batches × 30)
 uv run python scripts/generate_evidence_is.py write       # Parse subagent output → update DB
@@ -133,7 +135,7 @@ Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty 
 - `assets/data/` — client-side JS data (entities.json, reports.json, claims.json, evidence.json, sources.json, debates.json) — **must be kept in sync** (export scripts write to both)
 - `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.), watches `assets/data`
 - Build: `cd ~/esbvaktin-site && npm run build` (or `npm run serve` for dev)
-- Data pipeline: `export_entities.py` → `export_evidence.py` → `export_topics.py` → `export_claims.py` → `prepare_site.py` (overlays DB verdicts) → `prepare_speeches.py` → build site
+- Data pipeline: `export_entities.py` → `export_evidence.py` → `export_topics.py` → `export_claims.py` → `prepare_site.py` (overlays DB verdicts) → `prepare_speeches.py` → `export_overviews.py` → build site
 - `prepare_site.py` overlays DB verdicts onto `_report_final.json` snapshots — report files are immutable pipeline output, DB is source of truth for verdicts
 - Homepage: server-rendered from `_data/home.js` which reads `assets/data/*.json` (countdown, signal cards, verdict distribution, recent reports, featured voices)
 - Tracker JS architecture: `site-taxonomy.js` → `tracker-utils.js` → `tracker-renderer.js` → `tracker-controller.js` → page-specific tracker. Controller owns boot flow; page scripts keep only domain logic.

@@ -1,6 +1,6 @@
 ---
 name: site-exporter
-description: Run the full ESBvaktin site data export pipeline (entities → evidence → topics → claims → site prep → speeches). Use after completing analyses or updating the Ground Truth database.
+description: Run the full ESBvaktin site data export pipeline (entities → evidence → topics → claims → site prep → speeches → overviews). Use after completing analyses or updating the Ground Truth database.
 model: sonnet
 tools: Bash, Read, Glob, Grep
 maxTurns: 20
@@ -12,7 +12,7 @@ You export data from the ESBvaktin database and analysis outputs to the esbvakti
 
 ## Your Task
 
-Run the six export scripts in sequence, verifying each step succeeds before proceeding:
+Run the seven export scripts in sequence, verifying each step succeeds before proceeding:
 
 ```bash
 # Step 1: Export entities (speakers, authors, organisations)
@@ -32,9 +32,12 @@ uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site
 
 # Step 6: Export Alþingi debate data
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site
+
+# Step 7: Export weekly overviews (data + editorials → overviews.json + per-overview details)
+uv run python scripts/export_overviews.py --site-dir ~/esbvaktin-site
 ```
 
-**Important:** Step 4 (export_claims) must run before Step 5 (prepare_site), since prepare_site overlays DB verdicts onto report claims. Step 5 also overlays reassessed verdicts from the DB onto the per-report claim data.
+**Important:** Step 4 (export_claims) must run before Step 5 (prepare_site), since prepare_site overlays DB verdicts onto report claims. Step 5 also overlays reassessed verdicts from the DB onto the per-report claim data. Step 7 (export_overviews) is independent of the DB — it reads from pre-generated files in data/overviews/.
 
 ## Verification
 
@@ -44,7 +47,7 @@ After each script:
 
 After all scripts complete:
 1. Verify key output files exist in `~/esbvaktin-site/_data/` and `~/esbvaktin-site/assets/data/`
-2. Report a summary: how many entities, evidence entries, topics, reports, and debates were exported
+2. Report a summary: how many entities, evidence entries, topics, reports, debates, and overviews were exported
 
 ## Important
 
