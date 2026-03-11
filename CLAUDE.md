@@ -65,14 +65,17 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 | `claim-assessor` | opus | Read, Write, Glob | Assess claims against Ground Truth evidence (hardest reasoning) |
 | `omissions-analyst` | sonnet | Read, Write, Glob | Identify omissions, assess framing and completeness |
 | `entity-extractor` | haiku | Read, Write, Glob | Extract speakers, authors, organisations with attribution |
-| `site-exporter` | sonnet | Bash, Read, Glob, Grep | Run the 4-script site data export chain |
+| `site-exporter` | sonnet | Bash, Read, Glob, Grep | Run the 6-script site data export chain |
 | `evidence-summariser` | sonnet | Read, Write, Glob | Write Icelandic summaries for Ground Truth evidence batches |
+| `editorial-writer` | sonnet | Read, Write, Glob | Write Icelandic weekly editorial from overview context |
 
 **Parallelisation:** `claim-assessor` + `omissions-analyst` always run in parallel (independent tasks). Multiple `evidence-summariser` instances can run in parallel across batches.
 
 **Context flow:** Python `prepare_context.py` writes `_context_*.md` files with full instructions + data → agent reads context file → agent writes JSON output → Python parses output.
 
-**Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
+**Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser, editorial-writer) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
+
+**Overview pipeline:** `generate_overview.py` (SQL → data.json) → `prepare_overview_context.py` (→ _context_is.md) → `editorial-writer` agent (→ editorial.md). Export to site via `export_overviews.py` (Phase D, not yet built).
 
 ## Conventions
 
@@ -101,6 +104,9 @@ uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site    # 4. Expor
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # 5. Prepare site data (overlays DB verdicts)
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # 6. Export Alþingi debate data
 uv run python scripts/export_topics.py --status        # Show topic distribution
+uv run python scripts/generate_overview.py --week 2026-W11  # Generate weekly overview data
+uv run python scripts/generate_overview.py --status         # Show overview coverage
+uv run python scripts/prepare_overview_context.py 2026-W11  # Prepare editorial context (Icelandic)
 uv run python scripts/export_evidence.py --status        # Show evidence DB summary
 uv run python scripts/generate_evidence_is.py prepare     # Prepare IS summary batches (12 batches × 30)
 uv run python scripts/generate_evidence_is.py write       # Parse subagent output → update DB
