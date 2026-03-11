@@ -718,6 +718,9 @@ def main() -> None:
     # Prepare entity detail pages
     prepare_entity_details(site_dir)
 
+    # Prepare evidence detail pages
+    prepare_evidence_details(site_dir)
+
 
 # ── Entity detail page preparation ───────────────────────────────────
 
@@ -850,6 +853,169 @@ def _build_entity_detail(entity: dict, reports_map: dict[str, dict]) -> dict:
         "scorecard": scorecard,
         "claims": resolved_claims,
         "articles": resolved_articles,
+    }
+
+
+# ── Evidence detail page preparation ─────────────────────────────────
+
+EVIDENCE_FULL_PATH = PROJECT_ROOT / "data" / "export" / "evidence_full.json"
+
+
+def prepare_evidence_details(site_dir: Path) -> None:
+    """Build per-evidence detail JSONs with cited-by reverse index.
+
+    For each evidence entry, scans all report JSONs to find claims where
+    this evidence_id appears in supporting_evidence or contradicting_evidence.
+    Also resolves related_entries IDs to {slug, evidence_id, statement_is}.
+    """
+    details_dir = site_dir / "_data" / "evidence-details"
+    details_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir = site_dir / "_data" / "reports"
+
+    if not EVIDENCE_FULL_PATH.exists():
+        print("No evidence_full.json found — run export_evidence.py first. Skipping evidence details.")
+        return
+
+    with open(EVIDENCE_FULL_PATH, encoding="utf-8") as f:
+        entries = json.load(f)
+
+    # Build evidence lookup for resolving related_entries
+    evidence_lookup: dict[str, dict] = {}
+    for e in entries:
+        evidence_lookup[e["evidence_id"]] = e
+
+    # Build cited-by reverse index from all reports
+    cited_by = _build_cited_by_index(reports_dir)
+
+    written = 0
+    for entry in entries:
+        detail = _build_evidence_detail(entry, evidence_lookup, cited_by)
+        out_path = details_dir / f"{entry['slug']}.json"
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(detail, f, ensure_ascii=False, indent=2)
+        written += 1
+
+    cited_count = sum(1 for e in entries if e["evidence_id"] in cited_by)
+    print(f"\nWrote {written} evidence detail pages to {details_dir}")
+    print(f"  {cited_count}/{len(entries)} entries cited by at least one report")
+
+
+def _build_cited_by_index(reports_dir: Path) -> dict[str, list[dict]]:
+    """Scan all report JSONs and build evidence_id → [citation] reverse index.
+
+    Each citation includes the report slug, claim text, verdict, and whether
+    the evidence was supporting or contradicting.
+    """
+    cited_by: dict[str, list[dict]] = {}
+
+    if not reports_dir.exists():
+        return cited_by
+
+    for rp in sorted(reports_dir.glob("*.json")):
+        with open(rp, encoding="utf-8") as f:
+            report = json.load(f)
+
+        report_slug = report.get("slug", "")
+        report_title = report.get("article_title", "")
+        report_source = report.get("article_source")
+        report_date = report.get("article_date")
+
+        for claim_item in report.get("claims", []):
+            claim_text = claim_item.get("claim", {}).get("claim_text", "")
+            verdict = claim_item.get("verdict", "unknown")
+
+            # Check supporting_evidence
+            for ev in claim_item.get("supporting_evidence", []):
+                ev_id = ev.get("id") if isinstance(ev, dict) else ev
+                if ev_id:
+                    cited_by.setdefault(ev_id, []).append({
+                        "report_slug": report_slug,
+                        "report_title": report_title,
+                        "report_source": report_source,
+                        "report_date": report_date,
+                        "claim_text": claim_text,
+                        "verdict": verdict,
+                        "role": "supporting",
+                    })
+
+            # Check contradicting_evidence
+            for ev in claim_item.get("contradicting_evidence", []):
+                ev_id = ev.get("id") if isinstance(ev, dict) else ev
+                if ev_id:
+                    cited_by.setdefault(ev_id, []).append({
+                        "report_slug": report_slug,
+                        "report_title": report_title,
+                        "report_source": report_source,
+                        "report_date": report_date,
+                        "claim_text": claim_text,
+                        "verdict": verdict,
+                        "role": "contradicting",
+                    })
+
+    return cited_by
+
+
+def _build_evidence_detail(
+    entry: dict,
+    evidence_lookup: dict[str, dict],
+    cited_by: dict[str, list[dict]],
+) -> dict:
+    """Build a detail JSON for a single evidence entry."""
+    eid = entry["evidence_id"]
+
+    # Resolve related_entries to mini objects
+    related = []
+    for rel_id in entry.get("related_entries", []):
+        rel = evidence_lookup.get(rel_id)
+        if rel:
+            related.append({
+                "slug": rel["slug"],
+                "evidence_id": rel_id,
+                "statement": rel.get("statement_is") or rel["statement"],
+                "topic": rel.get("topic"),
+            })
+
+    # Get citations for this entry
+    citations = cited_by.get(eid, [])
+    citation_count = len(citations)
+
+    # Group citations by report for display
+    reports_citing: dict[str, dict] = {}
+    for cit in citations:
+        rs = cit["report_slug"]
+        if rs not in reports_citing:
+            reports_citing[rs] = {
+                "report_slug": rs,
+                "report_title": cit["report_title"],
+                "report_source": cit.get("report_source"),
+                "report_date": cit.get("report_date"),
+                "claims": [],
+            }
+        reports_citing[rs]["claims"].append({
+            "claim_text": cit["claim_text"],
+            "verdict": cit["verdict"],
+            "role": cit["role"],
+        })
+
+    return {
+        "slug": entry["slug"],
+        "evidence_id": eid,
+        "domain": entry["domain"],
+        "topic": entry["topic"],
+        "subtopic": entry.get("subtopic"),
+        "statement": entry["statement"],
+        "statement_is": entry.get("statement_is"),
+        "source_name": entry["source_name"],
+        "source_url": entry.get("source_url"),
+        "source_date": entry.get("source_date"),
+        "source_type": entry["source_type"],
+        "source_description_is": entry.get("source_description_is"),
+        "confidence": entry["confidence"],
+        "caveats": entry.get("caveats"),
+        "last_verified": entry.get("last_verified"),
+        "related_entries": related,
+        "citations": list(reports_citing.values()),
+        "citation_count": citation_count,
     }
 
 

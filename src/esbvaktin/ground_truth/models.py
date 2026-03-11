@@ -43,6 +43,8 @@ class EvidenceEntry(BaseModel):
     source_type: SourceType
     confidence: Confidence = Confidence.HIGH
     caveats: Optional[str] = None
+    statement_is: Optional[str] = None
+    source_description_is: Optional[str] = None
     related_entries: list[str] = Field(default_factory=list)
     last_verified: date = Field(default_factory=date.today)
 

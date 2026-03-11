@@ -54,6 +54,14 @@ CREATE TRIGGER evidence_updated_at
 
 
 -- ═══════════════════════════════════════════════════════════════════════
+-- Migration: Icelandic summary fields for /heimildir/ pages
+-- ═══════════════════════════════════════════════════════════════════════
+
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS statement_is TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS source_description_is TEXT;
+
+
+-- ═══════════════════════════════════════════════════════════════════════
 -- Claim Bank: canonical claims with pre-processed assessments
 -- ═══════════════════════════════════════════════════════════════════════
 

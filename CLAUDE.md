@@ -78,6 +78,8 @@ uv run python -m esbvaktin # Run pipeline (TBD)
 uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # Export entities
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # Prepare site data
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # Export Alþingi debate data
+uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site  # Export evidence for /heimildir/
+uv run python scripts/export_evidence.py --status        # Show evidence DB summary
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 uv run python scripts/curate_speech_evidence.py list        # Find high-value Alþingi speeches for evidence curation
@@ -91,11 +93,12 @@ Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ## Site Repo
 
 Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty v3 static site.
-- `_data/` — 11ty build data (entities.json, reports/*.json, entity-details/*.json, debates/*.json)
-- `assets/data/` — client-side JS data (entities.json, reports.json, debates.json) — must be kept in sync with `_data/`
-- `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, etc.)
+- `_data/` — 11ty build data (entities.json, reports/*.json, entity-details/*.json, evidence-details/*.json, debates/*.json)
+- `assets/data/` — client-side JS data (entities.json, reports.json, evidence.json, sources.json, debates.json) — must be kept in sync with `_data/`
+- `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.)
 - Build: `cd ~/esbvaktin-site && npx @11ty/eleventy`
-- Data pipeline: `export_entities.py` → `prepare_site.py` → `prepare_speeches.py` → build site
+- Data pipeline: `export_entities.py` → `export_evidence.py` → `prepare_site.py` → `prepare_speeches.py` → build site
+- Heimildir page: `/heimildir/` (listing) + `/heimildir/{slug}/` (evidence detail, 338 pages). Data from `export_evidence.py` + `prepare_site.py`.
 - Þingræður page: `/thingraedur/` (listing) + `/thingraedur/{session}-{issue_nr}/` (debate detail). Data from `prepare_speeches.py` querying althingi.db.
 - Nunjucks `capitalize` filter lowercases the rest of the string — don't use it for titles with proper nouns. Capitalise in Python data export instead.
 - Speeches module has two DB access patterns: async aiosqlite (MCP server in `search.py`) and sync sqlite3 (pipeline in `context.py`, export scripts). Same althingi.db.
