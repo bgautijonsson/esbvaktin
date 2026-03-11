@@ -6,6 +6,7 @@ checks JSON fields (explanation_is, missing_context_is) rather than markdown fil
 Input modes:
   check <path>           — if JSON, extract Icelandic fields; if directory, find all JSON
   check-claims <file>    — check exported claims file (data/export/claims.json)
+  check-editorial <file> — check markdown editorial file (data/overviews/*/editorial.md)
 
 Layer ordering (same as Þingfréttir):
   1. GreynirCorrect (auto-fix with --fix)
@@ -95,6 +96,32 @@ def _extract_icelandic_from_json(filepath: Path) -> list[tuple[str, int]]:
     return sentences
 
 
+def _extract_icelandic_from_markdown(filepath: Path) -> list[tuple[str, int]]:
+    """Extract Icelandic sentences from a markdown file.
+
+    Skips heading lines (starting with #) and extracts paragraph text,
+    splitting into sentences for the correction pipeline.
+
+    Returns (text, line_number) pairs.
+    """
+    lines = filepath.read_text(encoding="utf-8").splitlines()
+    sentences: list[tuple[str, int]] = []
+
+    for line_num, line in enumerate(lines, 1):
+        stripped = line.strip()
+        # Skip headings, empty lines, and metadata
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        # Split into sentences
+        for sent in re.split(r"(?<=[.!?])\s+", stripped):
+            sent = sent.strip()
+            if sent and len(sent) > 5:
+                sentences.append((sent, line_num))
+
+    return sentences
+
+
 def _check_unicode(sentences: list[tuple[str, int]], filename: str) -> int:
     """Check for ASCII-only Icelandic text (the #1 problem).
 
@@ -149,6 +176,20 @@ def main():
         help="Naturalness threshold in σ (default: 2.0)"
     )
 
+    # check-editorial command
+    editorial_parser = subparsers.add_parser(
+        "check-editorial", help="Check markdown editorial file"
+    )
+    editorial_parser.add_argument("path", type=Path, help="Markdown file to check")
+    editorial_parser.add_argument("--fix", action="store_true", help="Auto-apply safe fixes")
+    editorial_parser.add_argument(
+        "--no-deep", action="store_true", help="Skip GreynirEngine deep parsing"
+    )
+    editorial_parser.add_argument(
+        "--threshold", type=float, default=2.0,
+        help="Naturalness threshold in σ (default: 2.0)"
+    )
+
     # check-claims command
     claims_parser = subparsers.add_parser(
         "check-claims", help="Check exported claims file"
@@ -163,6 +204,10 @@ def main():
 
     if args.command == "check-claims":
         _run_claims_check(args.path)
+        return
+
+    if args.command == "check-editorial":
+        _run_editorial_check(args.path, args)
         return
 
     # check command
@@ -303,6 +348,154 @@ def main():
         sys.exit(2)
     elif total_errors > 0 or total_confusables > 0 or total_eu_terms > 0:
         sys.exit(1)
+
+
+def _run_editorial_check(path: Path, args) -> None:
+    """Run full correction pipeline on a markdown editorial file."""
+    if not path.exists():
+        print(f"ERROR: {path} not found", file=sys.stderr)
+        sys.exit(1)
+
+    if not path.suffix == ".md":
+        print(f"ERROR: Expected .md file, got {path.suffix}", file=sys.stderr)
+        sys.exit(1)
+
+    sentences = _extract_icelandic_from_markdown(path)
+    if not sentences:
+        print(f"  {path.name}: No Icelandic text found")
+        return
+
+    filename = path.name
+    run_deep = not args.no_deep and _HAS_GREYNIR
+
+    # Print available layers
+    layers = ["Unicode", "GreynirCorrect"]
+    if _HAS_ICEGRAMS:
+        layers.append("Icegrams")
+    if _HAS_ISLENSKA:
+        layers.append("BÍN")
+    layers.extend(["Confusables", "EU Terms"])
+    if run_deep:
+        layers.append("GreynirEngine")
+    print(f"Layers: {', '.join(layers)}")
+    print(f"\n  === {filename} ({len(sentences)} sentences) ===")
+
+    total_fixes = 0
+
+    # Layer 0: Unicode check
+    print("  ── Unicode Check ──")
+    unicode_flags = _check_unicode(sentences, filename)
+    print()
+
+    # Layer 1: GreynirCorrect
+    try:
+        results = check_with_library(sentences)
+        print("  ── GreynirCorrect ──")
+        errors, warnings, auto_fixable = format_results(results, filename)
+
+        if args.fix and auto_fixable > 0:
+            # Apply fixes to the markdown file
+            total_fixes = _apply_fixes_markdown(path, results)
+            print(f"  → Applied {total_fixes} auto-fix(es)")
+        print()
+    except Exception:
+        errors, warnings = 0, 0
+        print("  ── GreynirCorrect ── (skipped, not installed)")
+        print()
+
+    # Layer 2: Icegrams naturalness
+    total_naturalness = 0
+    if _HAS_ICEGRAMS:
+        nat_flagged = score_naturalness(sentences, threshold_sigma=args.threshold)
+        print("  ── Naturalness (Icegrams) ──")
+        total_naturalness = format_naturalness_results(nat_flagged, filename)
+        print()
+
+    # Layer 3: BÍN inflection check
+    total_inflections = 0
+    if _HAS_ISLENSKA:
+        inf_flagged = check_inflections(sentences)
+        print("  ── Inflection Check (BÍN) ──")
+        total_inflections = format_inflection_results(inf_flagged, filename)
+        print()
+
+    # Layer 4: Confusable-word scanner
+    full_text = "\n".join(s[0] for s in sentences)
+    conf_warnings = check_confusables(full_text)
+    print("  ── Confusable Words ──")
+    total_confusables = format_confusable_results(conf_warnings, filename)
+    print()
+
+    # Layer 5: EU terminology checker
+    eu_warnings = check_eu_terms(full_text)
+    print("  ── EU Terminology ──")
+    total_eu_terms = format_eu_term_results(eu_warnings, filename)
+    print()
+
+    # Layer 6: GreynirEngine deep parse
+    total_parse_failures = 0
+    if run_deep:
+        parse_flagged = deep_parse(sentences)
+        print("  ── Deep Parse (GreynirEngine) ──")
+        total_parse_failures = format_deep_parse_results(parse_flagged, filename)
+        print()
+
+    # Summary
+    print("=" * 60)
+    print(f"Unicode:        {unicode_flags} ASCII-only sentence(s)")
+    print(f"GreynirCorrect: {errors} errors, {warnings} warnings", end="")
+    if args.fix:
+        print(f", {total_fixes} auto-fixed")
+    else:
+        print()
+    if _HAS_ICEGRAMS:
+        print(f"Naturalness:    {total_naturalness} flagged")
+    if _HAS_ISLENSKA:
+        print(f"Inflections:    {total_inflections} not in BÍN")
+    print(f"Confusables:    {total_confusables} pattern(s)")
+    print(f"EU Terms:       {total_eu_terms} issue(s)")
+    if run_deep:
+        print(f"Deep Parse:     {total_parse_failures} unparseable")
+    print("=" * 60)
+
+    if unicode_flags > 0:
+        sys.exit(2)
+    elif errors > 0 or total_confusables > 0 or total_eu_terms > 0:
+        sys.exit(1)
+
+
+def _apply_fixes_markdown(filepath: Path, results: list) -> int:
+    """Apply GreynirCorrect auto-fixes to a markdown file.
+
+    Uses corrected sentence text from GreynirCorrect to replace the
+    original sentence in the markdown. Groups by original sentence to
+    avoid double-replacement.
+    """
+    text = filepath.read_text(encoding="utf-8")
+    applied = 0
+
+    # Group by original sentence — apply each correction once
+    seen_originals: set[str] = set()
+    for item in results:
+        if not item.get("auto_fixable"):
+            continue
+        original = item.get("original", "")
+        corrected = item.get("corrected", "")
+        if (
+            original
+            and corrected
+            and original != corrected
+            and original not in seen_originals
+            and original in text
+        ):
+            text = text.replace(original, corrected, 1)
+            seen_originals.add(original)
+            applied += 1
+
+    if applied > 0:
+        filepath.write_text(text, encoding="utf-8")
+
+    return applied
 
 
 def _run_claims_check(path: Path):

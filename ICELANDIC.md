@@ -46,9 +46,13 @@ Subagents must check their output against a self-review checklist before writing
 
 All Icelandic output passes through `correct_icelandic.py` before it reaches the database or the site. This catches what the LLM misses.
 
-## Register: Analytical Icelandic
+## Registers
 
-ESBvaktin's register differs from Þingfréttir's editorial voice. We write **clear, authoritative fact-check assessments** — not opinion journalism.
+ESBvaktin has two distinct Icelandic registers — one for assessments, one for editorials.
+
+### Assessment Register (claim-assessor, evidence-summariser)
+
+ESBvaktin's assessment register differs from Þingfréttir's editorial voice. We write **clear, authoritative fact-check assessments** — not opinion journalism.
 
 **Target register:** Kastljós (RÚV) explainer segments, Kjarninn fact-checks, Morgunblaðið analysis pieces. Informed, direct, accessible.
 
@@ -63,6 +67,23 @@ ESBvaktin's register differs from Þingfréttir's editorial voice. We write **cl
 - Over-explain concepts Icelanders know (what Alþingi is, what a þjóðaratkvæðagreiðsla is)
 - Use English abbreviations when Icelandic exists (ESB is fine — it's the standard Icelandic abbreviation; but use "sameiginleg landbúnaðarstefna" not "Common Agricultural Policy" in Icelandic text)
 - Stack multiple subordinate clauses — break into shorter sentences
+
+### Editorial Register (editorial-writer)
+
+The weekly overview editorial is **narrative civic journalism** — closer to Þingfréttir's editorial voice but adapted for general public audience.
+
+**Target register:** Kjarninn analysis pieces, best Morgunblaðið editorials, Kastljós explainer segments. Informed, direct, accessible.
+
+**Key differences from assessment register:**
+- Narrative prose, not structured evidence citations
+- Names individuals, tells stories, draws connections
+- Short punches and sentence rhythm variation
+- Balance framework: symmetric scrutiny of pro-EU and anti-EU claims
+- ESBvaktin does NOT take a position on EU membership
+
+**Exemplars:** `knowledge/exemplars_editorial_is.md` (distinct from assessment exemplars)
+
+**Post-processing:** `uv run python scripts/correct_icelandic.py check-editorial data/overviews/{slug}/editorial.md --fix`
 
 ## EU Terminology (Íslensk hugtök)
 
@@ -195,6 +216,7 @@ uv run python scripts/correct_icelandic.py check data/reassessment/ --fix
 | `.claude/rules/icelandic-core.md` | Auto-loaded rules for all Icelandic generation |
 | `.claude/skills/icelandic-shared/` | Shared prompt blocks for subagents |
 | `knowledge/exemplars_is.md` | Gold-standard Icelandic assessment exemplars |
+| `knowledge/exemplars_editorial_is.md` | Gold-standard Icelandic editorial exemplars |
 | `knowledge/eu_terms_is.md` | EU terminology glossary (Icelandic) |
 | `scripts/correct_icelandic.py` | Post-processing pipeline entry point |
 | `src/esbvaktin/corrections/` | Correction layer modules |

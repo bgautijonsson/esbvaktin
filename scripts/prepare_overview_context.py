@@ -51,6 +51,44 @@ def _delta_arrow(current: float | int, previous: float | int) -> str:
     return f"— (óbreytt)"
 
 
+def _find_previous_editorial(current_slug: str) -> str | None:
+    """Find the previous week's editorial opening (first 2 paragraphs).
+
+    This lets the agent avoid repeating transition patterns.
+    """
+    # List all overview directories, sorted
+    overview_dirs = sorted(
+        d.name for d in OVERVIEWS_DIR.iterdir()
+        if d.is_dir() and (d / "editorial.md").exists()
+    )
+
+    # Find the one before current_slug
+    try:
+        idx = overview_dirs.index(current_slug)
+    except ValueError:
+        # Current slug not yet generated — use the last one
+        idx = len(overview_dirs)
+
+    if idx <= 0:
+        return None
+
+    prev_slug = overview_dirs[idx - 1]
+    editorial_path = OVERVIEWS_DIR / prev_slug / "editorial.md"
+    text = editorial_path.read_text(encoding="utf-8").strip()
+
+    # Extract first 2 paragraphs (skip heading)
+    paragraphs = []
+    for para in text.split("\n\n"):
+        para = para.strip()
+        if not para or para.startswith("#"):
+            continue
+        paragraphs.append(para)
+        if len(paragraphs) >= 2:
+            break
+
+    return "\n\n".join(paragraphs) if paragraphs else None
+
+
 def prepare_context(slug: str) -> str:
     """Assemble all-Icelandic context markdown from data.json."""
     data_path = OVERVIEWS_DIR / slug / "data.json"
@@ -163,13 +201,25 @@ def prepare_context(slug: str) -> str:
             lines.append(f"- {domain}: {count} greining(ar)")
         lines.append("")
 
+    # Previous editorial opening (for variety tracking)
+    prev_editorial = _find_previous_editorial(slug)
+    if prev_editorial:
+        lines.append("## Síðasta vikuyfirlit (upphaf)")
+        lines.append("> Forðastu sömu setningargerð í opnun og vendipunktum.")
+        lines.append("")
+        lines.append(prev_editorial)
+        lines.append("")
+
     # Writing instructions
     lines.append("## Leiðbeiningar")
+    lines.append("- Lestu knowledge/exemplars_editorial_is.md áður en þú byrjar að skrifa")
     lines.append("- Byrjaðu á áhrifamestu staðreyndinni")
     lines.append("- Nefndu einstaklinga og tölur — ekki skrifa almennt")
     lines.append("- Leggðu mat á hvort umræðan var fjölbreytt eða einsleit")
     lines.append("- Ef villandi fullyrðingar voru áberandi, nefndu þær sérstaklega")
+    lines.append("- Gættu jafnvægis — ef villandi fullyrðing frá ESB-andstæðingi er nefnd, nefndu einnig villandi frá ESB-sinni (ef gögnin gefa tilefni)")
     lines.append('- Notaðu ekki orðalag eins og „Þessi vika var áhugaverð" eða „Umræðan var fjörleg"')
+    lines.append('- BANNAÐAR opnanir: „Einnig var...", „Í vikunni sem leið...", „Hvað X varðar..."')
     lines.append("- Engin emoji, engin upphrópunarmerki")
     lines.append("- Skrifaðu eins og blaðamaður á fréttastofu — ekki eins og gervigreind")
     lines.append("- Textinn á að vera 400–600 orð")
