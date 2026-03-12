@@ -49,6 +49,12 @@ from esbvaktin.corrections.eu_terms import (  # noqa: F401
     check_eu_terms,
     format_eu_term_results,
 )
+from esbvaktin.corrections.malfridur import (  # noqa: F401
+    check_with_malfridur,
+    apply_malfridur_fixes,
+    apply_malfridur_fixes_to_file,
+    format_malfridur_results,
+)
 from esbvaktin.corrections.parsing import (  # noqa: F401
     deep_parse,
     format_deep_parse_results,

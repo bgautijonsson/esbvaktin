@@ -29,6 +29,12 @@ from esbvaktin.corrections.greynir import (
     apply_fixes,
     format_results,
 )
+from esbvaktin.corrections.malfridur import (
+    check_with_malfridur,
+    apply_malfridur_fixes,
+    apply_malfridur_fixes_to_file,
+    format_malfridur_results,
+)
 from esbvaktin.corrections.naturalness import (
     score_naturalness,
     format_naturalness_results,
@@ -169,6 +175,10 @@ def main():
         "--api", action="store_true", help="Use yfirlestur.is REST API"
     )
     check_parser.add_argument(
+        "--malfridur", action="store_true",
+        help="Use Málstaður API (requires MALSTADUR_API_KEY)"
+    )
+    check_parser.add_argument(
         "--no-deep", action="store_true", help="Skip GreynirEngine deep parsing"
     )
     check_parser.add_argument(
@@ -182,6 +192,10 @@ def main():
     )
     editorial_parser.add_argument("path", type=Path, help="Markdown file to check")
     editorial_parser.add_argument("--fix", action="store_true", help="Auto-apply safe fixes")
+    editorial_parser.add_argument(
+        "--malfridur", action="store_true",
+        help="Use Málstaður API (requires MALSTADUR_API_KEY)"
+    )
     editorial_parser.add_argument(
         "--no-deep", action="store_true", help="Skip GreynirEngine deep parsing"
     )
@@ -218,9 +232,13 @@ def main():
 
     check_fn = check_with_api if args.api else check_with_library
     run_deep = not args.no_deep and _HAS_GREYNIR
+    use_malfridur = getattr(args, "malfridur", False)
 
     # Print available layers
-    layers = ["Unicode", "GreynirCorrect"]
+    layers = ["Unicode"]
+    if use_malfridur:
+        layers.append("Málstaður")
+    layers.append("GreynirCorrect")
     if _HAS_ICEGRAMS:
         layers.append("Icegrams")
     if _HAS_ISLENSKA:
@@ -232,6 +250,7 @@ def main():
     print()
 
     total_unicode = 0
+    total_malfridur = 0
     total_errors = 0
     total_warnings = 0
     total_fixes = 0
@@ -260,6 +279,26 @@ def main():
         total_unicode += unicode_flags
         file_results["unicode"] = unicode_flags
         print()
+
+        # Layer 0.5: Málstaður API (if enabled)
+        if use_malfridur:
+            try:
+                mf_results = check_with_malfridur(sentences)
+                file_results["malfridur"] = mf_results
+                print("  ── Málstaður ──")
+                mf_corrections, _ = format_malfridur_results(mf_results, filename)
+                total_malfridur += mf_corrections
+
+                if args.fix and mf_corrections > 0 and filepath.suffix == ".json":
+                    applied = apply_malfridur_fixes_to_file(filepath, mf_results)
+                    total_fixes += applied
+                    print(f"  → Applied {applied} Málstaður fix(es)")
+                    # Re-extract sentences after fixes for downstream layers
+                    sentences = _extract_icelandic_from_json(filepath)
+                print()
+            except Exception as e:
+                print(f"  ── Málstaður ── (error: {e})")
+                print()
 
         # Layer 1: GreynirCorrect
         try:
@@ -328,6 +367,8 @@ def main():
     # Summary
     print("=" * 60)
     print(f"Unicode:        {total_unicode} ASCII-only sentence(s)")
+    if use_malfridur:
+        print(f"Málstaður:      {total_malfridur} correction(s)")
     print(f"GreynirCorrect: {total_errors} errors, {total_warnings} warnings", end="")
     if args.fix:
         print(f", {total_fixes} auto-fixed")
@@ -367,9 +408,13 @@ def _run_editorial_check(path: Path, args) -> None:
 
     filename = path.name
     run_deep = not args.no_deep and _HAS_GREYNIR
+    use_malfridur = getattr(args, "malfridur", False)
 
     # Print available layers
-    layers = ["Unicode", "GreynirCorrect"]
+    layers = ["Unicode"]
+    if use_malfridur:
+        layers.append("Málstaður")
+    layers.append("GreynirCorrect")
     if _HAS_ICEGRAMS:
         layers.append("Icegrams")
     if _HAS_ISLENSKA:
@@ -381,11 +426,34 @@ def _run_editorial_check(path: Path, args) -> None:
     print(f"\n  === {filename} ({len(sentences)} sentences) ===")
 
     total_fixes = 0
+    total_malfridur = 0
 
     # Layer 0: Unicode check
     print("  ── Unicode Check ──")
     unicode_flags = _check_unicode(sentences, filename)
     print()
+
+    # Layer 0.5: Málstaður API (if enabled)
+    if use_malfridur:
+        try:
+            mf_results = check_with_malfridur(sentences)
+            print("  ── Málstaður ──")
+            mf_corrections, _ = format_malfridur_results(mf_results, filename)
+            total_malfridur = mf_corrections
+
+            if args.fix and mf_corrections > 0:
+                text = path.read_text(encoding="utf-8")
+                text, applied = apply_malfridur_fixes(text, mf_results)
+                if applied > 0:
+                    path.write_text(text, encoding="utf-8")
+                    total_fixes += applied
+                    print(f"  → Applied {applied} Málstaður fix(es)")
+                    # Re-extract sentences after fixes for downstream layers
+                    sentences = _extract_icelandic_from_markdown(path)
+            print()
+        except Exception as e:
+            print(f"  ── Málstaður ── (error: {e})")
+            print()
 
     # Layer 1: GreynirCorrect
     try:
@@ -395,7 +463,7 @@ def _run_editorial_check(path: Path, args) -> None:
 
         if args.fix and auto_fixable > 0:
             # Apply fixes to the markdown file
-            total_fixes = _apply_fixes_markdown(path, results)
+            total_fixes += _apply_fixes_markdown(path, results)
             print(f"  → Applied {total_fixes} auto-fix(es)")
         print()
     except Exception:
@@ -443,6 +511,8 @@ def _run_editorial_check(path: Path, args) -> None:
     # Summary
     print("=" * 60)
     print(f"Unicode:        {unicode_flags} ASCII-only sentence(s)")
+    if use_malfridur:
+        print(f"Málstaður:      {total_malfridur} correction(s)")
     print(f"GreynirCorrect: {errors} errors, {warnings} warnings", end="")
     if args.fix:
         print(f", {total_fixes} auto-fixed")
