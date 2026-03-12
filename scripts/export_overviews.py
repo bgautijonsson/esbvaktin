@@ -93,8 +93,66 @@ def _build_listing_entry(data: dict) -> dict:
     }
 
 
-def _build_detail(data: dict) -> dict:
+def _load_entity_names() -> set[str]:
+    """Load known entity names from the entities export (if available)."""
+    entities_path = EXPORT_DIR / "entities.json"
+    if not entities_path.exists():
+        return set()
+    with open(entities_path, encoding="utf-8") as f:
+        entities = json.load(f)
+    return {e["name"] for e in entities if "name" in e}
+
+
+def _enrich_notable_quotes(
+    quotes: list[dict], known_entities: set[str]
+) -> list[dict]:
+    """Add speaker_slug, category, and source_slug to notable quotes."""
+    enriched = []
+    for q in quotes:
+        entry = {**q}
+        # #1: speaker_slug — only for known entities
+        speaker = q.get("speaker", "")
+        if speaker and speaker != "Óþekkt" and speaker in known_entities:
+            entry["speaker_slug"] = icelandic_slugify(speaker)
+        # #2: category — pass through from data.json (added in generate_overview)
+        # Already present if data.json was regenerated; handle legacy files
+        if "category" not in entry:
+            # Legacy data.json without category — leave as-is
+            pass
+        else:
+            # Normalise to hyphens for consistency with topic slugs
+            entry["category"] = entry["category"].replace("_", "-")
+        # #3: source_slug
+        source = q.get("source", "")
+        if source:
+            entry["source_slug"] = icelandic_slugify(source)
+        enriched.append(entry)
+    return enriched
+
+
+def _enrich_top_claims(claims: list[dict]) -> list[dict]:
+    """Normalise category to hyphens and convert sources to objects."""
+    enriched = []
+    for c in claims:
+        entry = {**c}
+        # #4: normalise category to hyphens
+        if "category" in entry:
+            entry["category"] = entry["category"].replace("_", "-")
+        # #3: convert sources from strings to {title, slug} objects
+        raw_sources = c.get("sources", [])
+        entry["sources"] = [
+            {"title": s, "slug": icelandic_slugify(s)}
+            for s in raw_sources
+        ]
+        enriched.append(entry)
+    return enriched
+
+
+def _build_detail(data: dict, known_entities: set[str] | None = None) -> dict:
     """Build per-overview detail JSON with resolved slugs for site linking."""
+    if known_entities is None:
+        known_entities = _load_entity_names()
+
     # Resolve entity slugs for linking to /raddirnar/ pages
     active_entities = []
     for entity in data.get("active_entities", []):
@@ -119,11 +177,13 @@ def _build_detail(data: dict) -> dict:
         "key_numbers": data.get("key_numbers", {}),
         "previous_period": data.get("previous_period", {}),
         "topic_activity": topic_activity,
-        "top_claims": data.get("top_claims", []),
+        "top_claims": _enrich_top_claims(data.get("top_claims", [])),
         "active_entities": active_entities,
         "articles": data.get("articles", []),
         "source_breakdown": data.get("source_breakdown", {}),
-        "notable_quotes": data.get("notable_quotes", []),
+        "notable_quotes": _enrich_notable_quotes(
+            data.get("notable_quotes", []), known_entities
+        ),
         "editorial": data.get("editorial", ""),
     }
 
@@ -136,6 +196,7 @@ def build_overviews() -> tuple[list[dict], dict[str, dict]]:
     if not OVERVIEWS_DIR.exists():
         return [], {}
 
+    known_entities = _load_entity_names()
     listing = []
     details = {}
 
@@ -148,7 +209,7 @@ def build_overviews() -> tuple[list[dict], dict[str, dict]]:
             continue
 
         listing.append(_build_listing_entry(data))
-        details[data["slug"]] = _build_detail(data)
+        details[data["slug"]] = _build_detail(data, known_entities)
 
     # Sort by period_start descending (newest first)
     listing.sort(key=lambda o: o["period_start"], reverse=True)

@@ -42,15 +42,26 @@ def _get_connection():
     )
 
 
+_DOMAIN_ALIASES: dict[str, str] = {
+    "shows.acast.com": "ruv.is",         # Silfrið (RÚV) hosted on Acast
+    "ruv-radio.akamaized.net": "ruv.is", # Víkulokin (RÚV) hosted on RÚV CDN
+    "podcasters.spotify.com": "mbl.is",   # Spursmál (mbl.is) hosted on Spotify
+    "anchor.fm": "mbl.is",               # Spursmál (mbl.is) old Anchor feed
+}
+
+
 def _domain_from_url(url: str | None) -> str | None:
-    """Extract domain from a URL, stripping www. prefix."""
+    """Extract domain from a URL, stripping www. prefix.
+
+    Podcast platform domains are mapped to the actual broadcaster.
+    """
     if not url:
         return None
     try:
         host = urlparse(url).hostname or ""
         if host.startswith("www."):
             host = host[4:]
-        return host or None
+        return _DOMAIN_ALIASES.get(host, host) or None
     except Exception:
         return None
 
@@ -320,6 +331,7 @@ def _fetch_notable_quotes(conn, start: date, end: date) -> list[dict]:
             "speaker": speaker or "Óþekkt",
             "source": source or "",
             "verdict": verdict,
+            "category": cat,
             "category_is": TOPIC_LABELS_IS.get(cat, cat),
         }
         for text, speaker, source, verdict, cat in rows

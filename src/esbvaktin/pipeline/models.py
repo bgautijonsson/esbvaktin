@@ -86,6 +86,7 @@ class EvidenceMatch(BaseModel):
     source_name: str
     source_url: str | None = None
     caveats: str | None = None
+    statement_is: str | None = None
 
 
 class ClaimWithEvidence(BaseModel):
@@ -211,6 +212,7 @@ class AnalysisReport(BaseModel):
     """Complete analysis report for an article."""
 
     article_title: str | None = None
+    article_url: str | None = None
     article_source: str | None = None
     article_date: date | None = None
     analysis_date: date = Field(default_factory=date.today)

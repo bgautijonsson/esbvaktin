@@ -188,7 +188,8 @@ def search_evidence(
         SELECT evidence_id, domain, topic, subtopic, statement,
                source_name, source_url, source_date, source_type,
                confidence, caveats,
-               1 - (embedding <=> %(embedding)s::vector) AS similarity
+               1 - (embedding <=> %(embedding)s::vector) AS similarity,
+               statement_is
         FROM evidence
         {where_clause}
         ORDER BY embedding <=> %(embedding)s::vector
@@ -200,7 +201,7 @@ def search_evidence(
     columns = [
         "evidence_id", "domain", "topic", "subtopic", "statement",
         "source_name", "source_url", "source_date", "source_type",
-        "confidence", "caveats", "similarity",
+        "confidence", "caveats", "similarity", "statement_is",
     ]
     results = [SearchResult(**dict(zip(columns, row))) for row in rows]
 

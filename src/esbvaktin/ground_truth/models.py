@@ -83,3 +83,4 @@ class SearchResult(BaseModel):
     confidence: str
     caveats: Optional[str]
     similarity: float
+    statement_is: Optional[str] = None

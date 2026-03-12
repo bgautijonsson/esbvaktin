@@ -24,6 +24,16 @@ uv run python scripts/check_duplicate.py --url "ARTICLE_URL" --title "ARTICLE_TI
 
 If the script exits with code 0 (duplicate found), **stop and inform the user**. Show which analysis directory already contains this article. Only proceed if the user explicitly requests re-analysis.
 
+### Step 0b: Panel Show Fast Path (optional)
+
+If the input is a **fréttasafn article ID** for a panel show, use the fetch script to bypass MCP token limits:
+
+```bash
+uv run python scripts/fetch_panel_transcript.py <article_id> [--name NAME]
+```
+
+This creates a `panel_*` work directory with `_article.md` already written. Set `WORK_DIR` to the printed path and **skip to Step 1b** (panel detection).
+
 ### Step 1: Prepare Working Directory
 
 ```bash
@@ -156,12 +166,12 @@ Wait for both agents to complete before proceeding to Step 6.
 uv run python -c "
 import json
 from pathlib import Path
-from esbvaktin.pipeline.parse_outputs import parse_assessments, parse_omissions
+from esbvaktin.pipeline.parse_outputs import parse_assessments, parse_omissions_safe
 from esbvaktin.pipeline.assemble_report import assemble_report
 
 work_dir = Path('$WORK_DIR')
 assessments = parse_assessments(work_dir / '_assessments.json')
-omissions = parse_omissions(work_dir / '_omissions.json')
+omissions = parse_omissions_safe(work_dir / '_omissions.json')
 
 # Generate summary from assessments
 verdicts = [a.verdict.value for a in assessments]
@@ -197,6 +207,7 @@ report = assemble_report(
     omissions=omissions,
     summary=summary,
     article_title=None,  # Set from metadata if available
+    article_url=None,    # Set from input URL if available
     language='is',
 )
 

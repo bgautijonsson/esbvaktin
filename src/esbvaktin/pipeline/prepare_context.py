@@ -439,6 +439,11 @@ claim fields plus the assessment fields:
 
     output_path = output_dir / "_context_assessment.md"
     output_path.write_text(context, encoding="utf-8")
+
+    import logging
+    _logger = logging.getLogger(__name__)
+    _logger.info("Assessment context: %.0f KB", output_path.stat().st_size / 1024)
+
     return output_path
 
 
@@ -453,19 +458,50 @@ def prepare_omission_context(
 ) -> Path:
     """Write omission analysis context for the subagent.
 
+    For large analyses (panel shows with 40-70+ claims), uses compact
+    Icelandic summaries (statement_is) instead of full English statements
+    to keep the context within agent limits.
+
     Returns path to the context file.
     """
     # Collect all unique evidence entries across claims
-    all_evidence: dict[str, str] = {}
+    all_evidence: dict[str, tuple[str, str | None, str | None]] = {}
     for cwe in claims_with_evidence:
         for ev in cwe.evidence:
             if ev.evidence_id not in all_evidence:
-                caveats = f" (Caveats: {ev.caveats})" if ev.caveats else ""
-                all_evidence[ev.evidence_id] = f"{ev.statement}{caveats}"
+                all_evidence[ev.evidence_id] = (
+                    ev.statement, ev.statement_is, ev.caveats
+                )
 
-    evidence_section = "\n".join(
-        f"- **{eid}**: {stmt}" for eid, stmt in sorted(all_evidence.items())
+    # Decide whether to use compact mode: threshold on total evidence text
+    _EVIDENCE_SIZE_THRESHOLD = 50_000  # 50KB
+    full_evidence_text = "".join(
+        stmt for stmt, _, _ in all_evidence.values()
     )
+    compact = len(full_evidence_text.encode("utf-8")) > _EVIDENCE_SIZE_THRESHOLD
+
+    evidence_lines: list[str] = []
+    for eid, (statement, statement_is, caveats) in sorted(all_evidence.items()):
+        caveat_str = f" ⚠️ {caveats}" if caveats else ""
+        if compact and statement_is:
+            evidence_lines.append(f"- **{eid}**: {statement_is}{caveat_str}")
+        elif compact:
+            # Fallback: truncate English statement
+            truncated = statement[:200] + "…" if len(statement) > 200 else statement
+            evidence_lines.append(f"- **{eid}**: {truncated}{caveat_str}")
+        else:
+            full = f"{statement} (Caveats: {caveats})" if caveats else statement
+            evidence_lines.append(f"- **{eid}**: {full}")
+    evidence_section = "\n".join(evidence_lines)
+
+    # Truncate article text for very large transcripts
+    _ARTICLE_SIZE_THRESHOLD = 30_000  # 30KB
+    if len(article_text.encode("utf-8")) > _ARTICLE_SIZE_THRESHOLD:
+        article_text = (
+            article_text[:5000]
+            + "\n\n[…klippt — langur texti stytt…]\n\n"
+            + article_text[-2000:]
+        )
 
     # List categories covered by the article's claims
     covered_topics = {cwe.claim.category for cwe in claims_with_evidence}
@@ -589,14 +625,28 @@ evidence. Your job is to identify significant omissions and assess framing.
 
 {article_text}
 """
-    # Append full Icelandic quality blocks for omission analysis
+    # Append Icelandic quality blocks — subset for compact mode
     if language == "is":
-        blocks = _load_icelandic_blocks()
+        if compact:
+            blocks = _load_icelandic_blocks_subset("Block D", "Block H")
+        else:
+            blocks = _load_icelandic_blocks()
         if blocks:
             context += f"\n\n{blocks}\n"
 
     output_path = output_dir / "_context_omissions.md"
     output_path.write_text(context, encoding="utf-8")
+
+    # Log context size and warn if still large
+    size_kb = output_path.stat().st_size / 1024
+    import logging
+    _logger = logging.getLogger(__name__)
+    _logger.info("Omission context: %.0f KB%s", size_kb, " (compact)" if compact else "")
+    if size_kb > 150:
+        _logger.warning(
+            "Omission context is %.0f KB — may exceed agent limits", size_kb
+        )
+
     return output_path
 
 

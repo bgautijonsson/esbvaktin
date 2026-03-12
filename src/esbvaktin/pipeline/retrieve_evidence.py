@@ -32,6 +32,7 @@ def _search_result_to_match(result: SearchResult) -> EvidenceMatch:
         source_name=result.source_name,
         source_url=result.source_url,
         caveats=result.caveats,
+        statement_is=result.statement_is,
     )
 
 

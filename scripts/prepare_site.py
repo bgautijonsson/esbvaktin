@@ -81,6 +81,11 @@ _SOURCE_FROM_DOMAIN: dict[str, str] = {
     "kjarninn.is": "Kjarninn",
     "stundin.is": "Stundin",
     "frettabladid.is": "Fréttablaðið",
+    # Podcast platforms → actual broadcasters
+    "shows.acast.com": "RÚV",            # Silfrið (RÚV) hosted on Acast
+    "ruv-radio.akamaized.net": "RÚV",    # Víkulokin (RÚV) hosted on RÚV CDN
+    "podcasters.spotify.com": "Morgunblaðið",  # Spursmál (mbl.is) hosted on Spotify
+    "anchor.fm": "Morgunblaðið",          # Spursmál (mbl.is) old Anchor feed
 }
 
 _IS_MONTHS: dict[str, int] = {
@@ -417,8 +422,13 @@ def _build_participants(
     entities_data: dict | None,
     claims: list[dict],
     site_entities: dict[str, dict] | None = None,
+    *,
+    is_panel: bool = False,
 ) -> list[dict]:
     """Build participant list with per-speaker verdict breakdown.
+
+    For regular articles, includes individual authors (with active attributions)
+    and quoted/paraphrased speakers. For panel shows, all speakers are "guest".
 
     Enriches with site-wide entity data (slug, credibility, mention_count,
     althingi speech count) when available.
@@ -427,28 +437,60 @@ def _build_participants(
         return []
 
     site_entities = site_entities or {}
-    participants = []
+
+    # Collect candidate voices: author (if individual + active) then speakers
+    candidates: list[tuple[dict, str]] = []  # (speaker_dict, role_in_article)
+
+    if not is_panel:
+        author = entities_data.get("article_author")
+        if author and author.get("type") == "individual":
+            candidates.append((author, "author"))
+
+    role_tag = "guest" if is_panel else "speaker"
     for speaker in entities_data.get("speakers", []):
+        candidates.append((speaker, role_tag))
+
+    participants = []
+    for speaker, role_in_article in candidates:
         attrs = speaker.get("attributions", [])
         if not attrs:
             # Legacy format
             attrs = [
-                {"claim_index": idx} for idx in speaker.get("claim_indices", [])
+                {"claim_index": idx, "attribution": "asserted"}
+                for idx in speaker.get("claim_indices", [])
             ]
 
+        # Filter to active attributions only
+        active_attrs = [
+            a for a in attrs
+            if a.get("attribution", "asserted") in _ACTIVE_ATTRIBUTIONS
+        ]
+        if not active_attrs:
+            continue
+
+        # Compute verdicts from active attributions
         verdicts: dict[str, int] = {}
-        for attr in attrs:
+        for attr in active_attrs:
             idx = attr["claim_index"]
             if idx < len(claims):
                 v = claims[idx].get("verdict", "unknown")
                 verdicts[v] = verdicts.get(v, 0) + 1
 
+        # Compute dominant attribution type
+        attr_counts: Counter[str] = Counter(
+            a.get("attribution", "asserted") for a in active_attrs
+        )
+        attribution_type = attr_counts.most_common(1)[0][0] if attr_counts else "asserted"
+
         p: dict = {
             "name": speaker["name"],
             "role": speaker.get("role"),
             "party": speaker.get("party"),
-            "claim_count": len(attrs),
+            "role_in_article": role_in_article,
+            "attribution_type": attribution_type,
+            "claim_count": len(active_attrs),
             "verdicts": verdicts,
+            "stance": speaker.get("stance"),
         }
 
         # Enrich from site-wide entity data
@@ -463,8 +505,8 @@ def _build_participants(
 
         participants.append(p)
 
-    # Sort by claim count descending
-    participants.sort(key=lambda p: p["claim_count"], reverse=True)
+    # Sort: authors first, then by claim count descending
+    participants.sort(key=lambda p: (p["role_in_article"] != "author", -p["claim_count"]))
     return participants
 
 
@@ -562,11 +604,11 @@ def prepare_report(
     # Extract article metadata from _article.md
     article_meta = _parse_article_meta(report_path.parent)
 
-    # Use article_meta, falling back to report JSON fields
-    article_source = article_meta["article_source"] or report.get("article_source")
-    article_url = article_meta["article_url"] or report.get("article_url")
-    article_author = article_meta["article_author"] or report.get("article_author")
-    article_date = article_meta["article_date"] or report.get("article_date")
+    # Prefer report JSON fields (structured), fall back to _article.md parsing (legacy)
+    article_source = report.get("article_source") or article_meta["article_source"]
+    article_url = report.get("article_url") or article_meta["article_url"]
+    article_author = report.get("article_author") or article_meta["article_author"]
+    article_date = report.get("article_date") or article_meta["article_date"]
 
     # Load entity data if available
     entities_data = _load_entities(report_path.parent)
@@ -650,11 +692,10 @@ def prepare_report(
     # Use Icelandic summary or generate one
     summary_is = is_data.get("summary_is") or report.get("summary", "")
 
-    # Detect panel show and build participant data
+    # Build participant data for all report types
     panel_show = _is_panel_show(report_path.parent)
-    participants = (
-        _build_participants(entities_data, claims, site_entities)
-        if panel_show else []
+    participants = _build_participants(
+        entities_data, enriched_claims, site_entities, is_panel=panel_show,
     )
 
     result = {
@@ -672,11 +713,11 @@ def prepare_report(
         "dominant_category": dominant_category,
         "categories": categories,
         "claims": enriched_claims,
+        "participants": participants,
     }
 
     if panel_show:
         result["source_type"] = "panel_show"
-        result["participants"] = participants
 
     return result
 
@@ -714,7 +755,9 @@ def _listing_entry(report_data: dict) -> dict:
 
     if report_data.get("source_type") == "panel_show":
         entry["source_type"] = "panel_show"
-        entry["participants"] = report_data.get("participants", [])
+
+    # Always include participants (empty list if no qualifying voices)
+    entry["participants"] = report_data.get("participants", [])
 
     return entry
 
@@ -804,6 +847,8 @@ def prepare_entity_details(site_dir: Path) -> None:
     For each entity, loads linked report JSONs and finds claims where the
     entity appears in the speakers[] array (by name match). This bypasses the
     truncated claim slug problem in entities.json.
+
+    Party entities get a party_members array with their affiliated politicians.
     """
     entities_path = site_dir / "_data" / "entities.json"
     reports_dir = site_dir / "_data" / "reports"
@@ -817,6 +862,13 @@ def prepare_entity_details(site_dir: Path) -> None:
     with open(entities_path, encoding="utf-8") as f:
         entities = json.load(f)
 
+    # Build party_slug → list of member entities (for party detail pages)
+    party_members_map: dict[str, list[dict]] = {}
+    for e in entities:
+        ps = e.get("party_slug")
+        if ps and e.get("subtype") == "politician":
+            party_members_map.setdefault(ps, []).append(e)
+
     # Load all reports into a slug → data map
     reports_map: dict[str, dict] = {}
     for rp in sorted(reports_dir.glob("*.json")):
@@ -826,7 +878,7 @@ def prepare_entity_details(site_dir: Path) -> None:
 
     written = 0
     for entity in entities:
-        detail = _build_entity_detail(entity, reports_map)
+        detail = _build_entity_detail(entity, reports_map, party_members_map)
         out_path = details_dir / f"{entity['slug']}.json"
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(detail, f, ensure_ascii=False, indent=2)
@@ -835,10 +887,15 @@ def prepare_entity_details(site_dir: Path) -> None:
     print(f"\nWrote {written} entity detail pages to {details_dir}")
 
 
-def _build_entity_detail(entity: dict, reports_map: dict[str, dict]) -> dict:
+def _build_entity_detail(
+    entity: dict,
+    reports_map: dict[str, dict],
+    party_members_map: dict[str, list[dict]] | None = None,
+) -> dict:
     """Build a detail JSON for a single entity.
 
     Resolves claims by scanning the entity's linked articles for speaker matches.
+    Party entities get a party_members array with affiliated politicians.
     """
     entity_name = entity["name"]
     article_slugs = entity.get("articles", [])
@@ -902,7 +959,7 @@ def _build_entity_detail(entity: dict, reports_map: dict[str, dict]) -> dict:
                 "attribution_types": sorted(article_attr_types),
             })
 
-    return {
+    detail = {
         "slug": entity["slug"],
         "name": entity_name,
         "type": entity.get("type", "individual"),
@@ -918,6 +975,27 @@ def _build_entity_detail(entity: dict, reports_map: dict[str, dict]) -> dict:
         "claims": resolved_claims,
         "articles": resolved_articles,
     }
+
+    # Add party_members for party entities
+    if entity.get("type") == "party" and party_members_map:
+        members = party_members_map.get(entity["slug"], [])
+        if members:
+            detail["party_members"] = sorted(
+                [
+                    {
+                        "slug": m["slug"],
+                        "name": m["name"],
+                        "role": m.get("role"),
+                        "stance_score": m.get("stance_score", 0.0),
+                        "credibility": m.get("credibility"),
+                        "claim_count": len(m.get("claims", [])),
+                    }
+                    for m in members
+                ],
+                key=lambda x: (-x["claim_count"], x["name"]),
+            )
+
+    return detail
 
 
 # ── Evidence detail page preparation ─────────────────────────────────

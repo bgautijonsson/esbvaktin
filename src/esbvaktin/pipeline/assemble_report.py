@@ -264,6 +264,7 @@ def assemble_report(
     omissions: OmissionAnalysis,
     summary: str,
     article_title: str | None = None,
+    article_url: str | None = None,
     article_source: str | None = None,
     article_date: date | None = None,
     language: str = "is",
@@ -295,6 +296,7 @@ def assemble_report(
 
     return AnalysisReport(
         article_title=article_title,
+        article_url=article_url,
         article_source=article_source,
         article_date=article_date,
         language=language,
