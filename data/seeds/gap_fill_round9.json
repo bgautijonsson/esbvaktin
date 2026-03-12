@@ -1,0 +1,217 @@
+[
+  {
+    "evidence_id": "FISH-LEGAL-004",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "cfp_landing_obligation_traceability",
+    "statement": "The EU Common Fisheries Policy includes a landing obligation (discard ban), fully phased in since 2019 under Regulation 1380/2013, requiring fishers to land all catches of regulated commercial species rather than discarding unwanted fish at sea. The revised EU Fisheries Control Regulation (EU) 2023/2842, entering into force on 9 January 2024, significantly strengthened monitoring and traceability: all EU vessels must digitally record catches via electronic logbooks, landing declarations, and transhipment records. Vessels over 18 metres assessed as high risk of non-compliance must carry remote electronic monitoring (onboard cameras) from January 2028. From 10 January 2026, the CATCH digital system requires all fishery product imports to be accompanied by electronic catch certificates. These requirements represent the most comprehensive catch documentation and traceability regime of any major fishing jurisdiction globally.",
+    "source_name": "European Commission — EU Fisheries Control System Revamp",
+    "source_url": "https://oceans-and-fisheries.ec.europa.eu/news/eu-fisheries-control-system-gets-major-revamp-2024-01-09_en",
+    "source_date": "2024-01-09",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Implementation timelines vary: digital logbooks apply from January 2026, onboard cameras from January 2028. Compliance with the landing obligation has been uneven — the European Court of Auditors found significant under-reporting of discards. The system is a legal framework; enforcement effectiveness varies by member state.",
+    "related_entries": [
+      "FISH-LEGAL-001",
+      "FISH-COMP-003"
+    ]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-005",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "cfp_relative_stability_new_members",
+    "statement": "Under the EU Common Fisheries Policy, Total Allowable Catches (TACs) for each fish stock are divided among member states according to the 'relative stability' principle — fixed percentage allocation keys established in 1983 based on historical catch records, the needs of fisheries-dependent communities, and compensation for loss of fishing opportunities in third-country waters (jurisdictional losses). When new member states join, their fishing possibilities are negotiated in the Accession Treaty and then integrated into the relative stability keys. Spain and Portugal's allocations were set in their 1985 Act of Accession. For Iceland, the critical question would be how its existing catch levels (approximately 1.0–1.2 million tonnes annually) would be reflected in new relative stability keys, given that Iceland's catch per capita (approximately 2,800 kg vs the EU average of 9 kg) is vastly higher than any current member state.",
+    "source_name": "European Parliament — The Common Fisheries Policy: Origins and Development",
+    "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/114/the-common-fisheries-policy-origins-and-development",
+    "source_date": "2024-06-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The relative stability principle provides predictability but is rigid — it does not automatically adjust for changes in stock distribution due to climate change or migration patterns. How Iceland's quotas would be handled is speculative; no direct precedent exists for a country with such dominant fisheries joining. Iceland would likely negotiate sui generis terms in an Accession Treaty.",
+    "related_entries": [
+      "FISH-LEGAL-001",
+      "FISH-LEGAL-002",
+      "FISH-DATA-001"
+    ]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-006",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "factortame_establishment_rights_fisheries",
+    "statement": "The Factortame cases (1990–2000) established that EU law prohibits nationality-based restrictions on ownership of fishing vessels and quota holding. The UK's Merchant Shipping Act 1988 required 75% British ownership, residence, and domicile for fishing vessel registration, specifically to prevent Spanish-owned companies ('quota hoppers') from fishing against UK quotas. The European Court of Justice ruled this violated the Treaty's establishment rights (now Article 49 TFEU), finding that residence/domicile requirements indirectly discriminated by nationality. However, the ECJ upheld that member states may require vessels to be managed and have operations directed from their territory. Under EU law, member states cannot restrict who owns fishing companies by nationality, but can require genuine economic links — such as landing catches locally or employing local crews. This is directly relevant to Iceland's fisheries ownership restrictions (25% direct / 33% indirect foreign ownership cap), which would need to be lifted or restructured upon EU accession.",
+    "source_name": "R (Factortame Ltd) v Secretary of State for Transport — European Court of Justice",
+    "source_url": "https://en.wikipedia.org/wiki/R_(Factortame_Ltd)_v_Secretary_of_State_for_Transport",
+    "source_date": "1999-10-28",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Post-Brexit, the UK is no longer bound by Factortame. The ECJ did allow 'genuine economic link' requirements, meaning member states have tools beyond nationality restrictions to ensure fishing benefits local communities. The precedent applies to establishment rights, not quota allocation — those remain under relative stability.",
+    "related_entries": [
+      "PREC-LEGAL-002",
+      "FISH-LEGAL-002",
+      "TRADE-DATA-023"
+    ]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-007",
+    "domain": "legal",
+    "topic": "fisheries",
+    "subtopic": "eu_iuu_regulation_catch_certification",
+    "statement": "The EU's IUU Regulation (EC) No 1005/2008 establishes one of the world's most stringent systems to prevent illegal, unreported, and unregulated fishing. All marine fishery products imported into the EU must be accompanied by catch certificates validated by the flag state, certifying compliance with applicable fishing laws. From 10 January 2026, the digital CATCH system replaced paper-based certificates, making import controls more effective and harmonised. The EU can issue 'yellow cards' (warnings) and 'red cards' (trade bans) to countries with inadequate IUU controls. As a non-EU state, Iceland's fishery exports to the EU must comply with IUU certification. If Iceland joined the EU, its own domestic fisheries would fall under the full EU enforcement framework — including the revised Control Regulation's requirements for electronic monitoring, digital catch recording, and systematic cross-checking of landing data.",
+    "source_name": "European Commission — Illegal Fishing (IUU Regulation)",
+    "source_url": "https://oceans-and-fisheries.ec.europa.eu/fisheries/rules/illegal-fishing_en",
+    "source_date": "2026-01-12",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Iceland already has its own robust fisheries monitoring system. The question is whether EU membership would add meaningful enforcement capacity or primarily add bureaucratic requirements. Iceland has never received an IUU yellow card.",
+    "related_entries": [
+      "FISH-LEGAL-004",
+      "FISH-LEGAL-001",
+      "FISH-COMP-003"
+    ]
+  },
+  {
+    "evidence_id": "FISH-DATA-028",
+    "domain": "economic",
+    "topic": "fisheries",
+    "subtopic": "fishing_village_depopulation_itq",
+    "statement": "Iceland's Individual Transferable Quota (ITQ) system, made permanent in 1990, has led to significant consolidation and rural depopulation. Since 1990, approximately 5,100 jobs (36%) were lost from fishing and fish processing, with rural areas losing 38% of fisheries jobs compared to lower losses in the capital region. By the 2020s, approximately 75% of quotas belonged to 25 of the largest vessel operators and fishing companies. Small fishing villages were severely affected as optimisation and aggregation of quota shares by large companies left traditional communities with little or no fishing rights. Research from the University of Iceland documents that rural residents in Northwest Iceland identify the ITQ system as the primary cause of outmigration and population decline. Mitigation measures (community quotas, small-boat concessions) have slowed decline in some villages but not reversed the broader trend. Between 1990 and 2020, several fishing communities lost more than half their population.",
+    "source_name": "Kokorsch & Benediktsson (2018) — 'Prosper or Perish? The Development of Icelandic Fishing Villages after the Privatisation of Fishing Rights', Maritime Studies",
+    "source_url": "https://link.springer.com/article/10.1007/s40152-018-0089-5",
+    "source_date": "2018-03-01",
+    "source_type": "academic_paper",
+    "confidence": "medium",
+    "caveats": "Rural depopulation is a complex, multi-causal phenomenon — urbanisation, service centralisation, and changing economic structures also contribute. The ITQ system also delivered biological sustainability benefits (cod stock recovery). Community quotas and small-vessel allowances partially offset the consolidation effects. The 36%/5,100 job loss figure covers 1990–2017.",
+    "related_entries": [
+      "FISH-DATA-022",
+      "FISH-DATA-024",
+      "FISH-DATA-005"
+    ]
+  },
+  {
+    "evidence_id": "PREC-DATA-012",
+    "domain": "economic",
+    "topic": "precedents",
+    "subtopic": "croatia_euro_adoption_interest_rates",
+    "statement": "Croatia adopted the euro on 1 January 2023, becoming the 20th eurozone member. The effect on borrowing costs has been significant: by January 2024, Croatia's average interest rate on new housing loans was 3.64%, compared to the eurozone average of 4.05% and Germany's 4.22%. Croatian National Bank Governor Boris Vujčić stated that interest rates on both household and corporate loans became 'entirely comparable, or, in certain segments, even lower' than the eurozone average — a marked change from pre-euro rates that exceeded the eurozone average by 1–2 percentage points. The improvement came through lower sovereign risk premiums, regulatory harmonisation with the Eurosystem, and large excess liquidity in the Croatian banking system. However, house prices continued to rise strongly — up 14.8% year-on-year in Q3 2022 — and outstanding housing loans reached a record €13.43 billion by October 2025, up 14.8% year-on-year.",
+    "source_name": "Boris Vujčić (CNB Governor) — 'One Year with the Euro', BIS Review",
+    "source_url": "https://www.bis.org/review/r240131a.htm",
+    "source_date": "2024-01-31",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Croatia's experience may not directly translate to Iceland. Croatia's banking system was already heavily euroised before formal adoption. The interest rate convergence partly reflects ECB tightening that raised eurozone rates toward Croatian levels, not just Croatian rates falling. House price inflation accelerated despite (or because of) cheaper credit. The comparison with Germany is partly timing-dependent — Germany's rates were unusually high in early 2024 due to ECB tightening.",
+    "related_entries": [
+      "PREC-HIST-011",
+      "CURR-DATA-004",
+      "HOUS-DATA-005"
+    ]
+  },
+  {
+    "evidence_id": "PREC-DATA-013",
+    "domain": "economic",
+    "topic": "precedents",
+    "subtopic": "finland_euro_economic_performance",
+    "statement": "Finland adopted the euro on 1 January 1999 and experienced dramatically divergent economic performance in two phases. From 1995 to 2007, real GDP per capita rose 55% — nearly double the US increase over the same period — driven largely by Nokia and the ICT sector. From 2008 onward, Finland's economy stagnated: real per capita income declined between 2008 and 2019. Nokia's share of Finnish GDP fell from approximately 4% in 2000 to under 0.5% by 2013 following the smartphone revolution. Without a floating currency to regain competitiveness through devaluation, Finland had to pursue 'internal devaluation' (wage restraint, cost-cutting). Finland's unit labour costs are approximately 20% higher than Germany's despite similar nominal labour cost levels. The OECD's 2025 survey noted that Finland's economy is 'gradually recovering after sharp contraction in late 2023' but growth lags behind Nordic peers and the OECD average, with real GDP contracting 0.1% in 2024. Finland's long-term growth outlook is further constrained by a shrinking working-age population and weak productivity.",
+    "source_name": "OECD Economic Surveys: Finland 2025",
+    "source_url": "https://www.oecd.org/en/publications/oecd-economic-surveys-finland-2025_985d0555-en.html",
+    "source_date": "2025-03-01",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Finland's economic difficulties are multi-causal — Nokia collapse, Russian trade sanctions (post-2014), forest industry decline, ageing population. Not all can be attributed to euro membership. However, the inability to devalue the currency is widely cited as having prolonged the adjustment. Finland's situation differs from Iceland's: Finland is a large eurozone economy with different industrial structure.",
+    "related_entries": [
+      "PREC-HIST-008",
+      "CURR-DATA-005",
+      "CURRENCY-DATA-013"
+    ]
+  },
+  {
+    "evidence_id": "CURRENCY-DATA-018",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "indexed_mortgage_total_repayment",
+    "statement": "Iceland's indexed mortgage system (verðtryggð lán), introduced in 1979, links outstanding loan principal to the consumer price index (CPI). Unlike nominal mortgages where principal decreases over time, indexed loans have principal that grows with inflation — creating negatively amortised loans where early payments do not cover accruing interest. Academic research (Ólafsson, 2013) documented that under typical conditions (4.15% real interest rate, 3.5% assumed inflation), a borrower taking a 26 million ISK indexed loan would repay approximately 120 million ISK over the life of the loan — roughly 4.6 times the original principal. By comparison, a typical 25-year eurozone mortgage at 2–3% nominal interest results in total repayment of approximately 1.3–1.5 times the principal. EU consumer law scholars have argued that Iceland's indexation practice may fail the European 'fairness test' under the Unfair Contract Terms Directive (93/13/EEC), which is incorporated into Icelandic law via the EEA Agreement.",
+    "source_name": "Ólafsson (2013) — 'An Examination of the Effect on the Icelandic Banking System of Verðtryggð Lán', arXiv:1302.4112",
+    "source_url": "https://arxiv.org/abs/1302.4112",
+    "source_date": "2013-02-17",
+    "source_type": "academic_paper",
+    "confidence": "medium",
+    "caveats": "The 4.6x multiple is illustrative and depends heavily on inflation assumptions. In low-inflation periods, indexed loans perform closer to nominal loans. Real interest rates on indexed loans (3–5%) are lower than nominal rates (7–9%), which theoretically compensates for principal growth. The comparison is not straightforward because indexed loans shift inflation risk from borrower to lender differently than nominal loans. The 2013 paper may not reflect current market conditions.",
+    "related_entries": [
+      "HOUSING-DATA-010",
+      "HOUS-DATA-005",
+      "CURRENCY-DATA-015"
+    ]
+  },
+  {
+    "evidence_id": "TRADE-DATA-028",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "eu_mercosur_agreement_2024",
+    "statement": "The EU and Mercosur (Brazil, Argentina, Uruguay, Paraguay) concluded negotiations on a comprehensive trade agreement on 6 December 2024, after over 20 years of intermittent talks. The EU Council authorised signature on 9 January 2026, and the agreement was signed on 17 January 2026 in Paraguay. The deal creates a market of approximately 780 million people and would eliminate over 90% of customs duties. It is the largest trade agreement the EU has ever negotiated. Ratification remains uncertain: on 21 January 2026, the European Parliament voted 334–324 to ask the European Court of Justice to rule on whether the trade component can be provisionally applied before full ratification by all member states. The agreement demonstrates the EU's capacity to conclude major trade deals — relevant to the Icelandic debate about whether EU membership provides trade advantages that EEA membership does not.",
+    "source_name": "Council of the European Union — EU-Mercosur Agreement",
+    "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/01/09/eu-mercosur-council-greenlights-signature-of-the-comprehensive-partnership-and-trade-agreement/",
+    "source_date": "2026-01-09",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Full ratification is not guaranteed — French and Austrian opposition remains strong, and the ECJ referral could delay implementation. Iceland as an EEA member is not party to EU trade agreements with third countries. The agreement's agricultural provisions have been controversial, particularly regarding beef imports and deforestation concerns.",
+    "related_entries": [
+      "EEA-LEGAL-022",
+      "TRADE-DATA-002",
+      "POL-DATA-016"
+    ]
+  },
+  {
+    "evidence_id": "TRADE-DATA-029",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "cbam_eea_iceland_aluminium",
+    "statement": "The EU Carbon Border Adjustment Mechanism (CBAM), entering its compliance phase in 2026, imposes carbon costs on imports of cement, iron and steel, aluminium, fertilisers, electricity, and hydrogen. Iceland, Norway, and Liechtenstein are exempt from CBAM as EEA members participating in the EU Emissions Trading System (ETS) — their products are treated as internal to the EU carbon market, not as third-country imports. However, CBAM has significant implications for Iceland's aluminium sector (approximately 18% of goods exports): as an ETS participant, Icelandic aluminium smelters face EU carbon pricing but benefit from free allowances that are being phased out by 2034. Iceland negotiated a partial exemption from ETS obligations for its unique geothermal/hydro energy mix. The CBAM regulation's incorporation into the EEA Agreement would formally establish a 'common CBAM area' covering EFTA/EEA states. For Iceland, full EU membership versus EEA membership makes little practical difference regarding CBAM, since EEA already provides equivalent treatment.",
+    "source_name": "European Commission — Carbon Border Adjustment Mechanism",
+    "source_url": "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en",
+    "source_date": "2026-01-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "CBAM implementation details are still evolving. The phase-out of free ETS allowances (2026–2034) will increase costs for Icelandic aluminium regardless of EU/EEA status. Iceland's ETS exemptions are subject to ongoing negotiation. The proposed CBAM extension to additional products (polymers, organic chemicals) could affect more Icelandic industries in future.",
+    "related_entries": [
+      "EEA-LEGAL-022",
+      "TRADE-DATA-002",
+      "ENERGY-DATA-003"
+    ]
+  },
+  {
+    "evidence_id": "TRADE-COMP-006",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "eea_limitations_democratic_deficit",
+    "statement": "The EEA Agreement gives Iceland access to the EU single market but without voting rights on the legislation it must adopt. Since 1994, Iceland has incorporated over 13,000 EU legal acts into domestic law through the EEA Joint Committee. Several specific cases illustrate EEA limitations: (1) In 2024, Samtök iðnaðarins (Federation of Icelandic Industries) warned that proposed EU anti-dumping measures on silicon metal imports would affect Icelandic producers who had no voice in the decision-making process. (2) Iceland participates in the EU ETS but cannot vote on emissions targets or allowance allocation rules. (3) Iceland is excluded from EU trade agreements with third countries — the EU-Mercosur deal, EU-Canada CETA, and EU-Japan EPA do not extend to EEA/EFTA states. (4) The EFTA Surveillance Authority (ESA) and EFTA Court mirror EU enforcement but lack the political weight of EU institutions. These limitations are cited by pro-EU voices as the 'democratic deficit' of EEA membership — accepting rules without co-determining them.",
+    "source_name": "Samtök iðnaðarins (SI) — Position on EEA Limitations",
+    "source_url": "https://www.si.is",
+    "source_date": "2024-09-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "EEA supporters counter that Iceland retains a formal right to reject individual EU acts (the 'right of reservation'), though this has rarely been exercised due to potential consequences. Iceland also has consultation rights before EU legislation is adopted (Article 99 of the EEA Agreement). The EEA's two-pillar structure (EFTA Court/ESA) was designed to preserve sovereignty while ensuring homogeneous application of single market rules. The 13,000+ legal acts figure includes minor technical standards.",
+    "related_entries": [
+      "EEA-LEGAL-022",
+      "POL-DATA-016",
+      "SOV-LEGAL-002"
+    ]
+  },
+  {
+    "evidence_id": "FISH-DATA-029",
+    "domain": "economic",
+    "topic": "fisheries",
+    "subtopic": "eu_fisheries_ownership_concentration",
+    "statement": "Ownership concentration in EU fisheries is significant and mirrors patterns seen in Iceland's ITQ system. In the Netherlands, a small number of family-run companies control the majority of pelagic fishing quota. In Spain, large fleet operators dominate the distant-water fleet. The EU's small-scale coastal fleet (vessels under 12 metres) represents approximately 73% of the fleet by number but holds only about 6% of the tonnage and a small share of total quota. Research shows that the marketisation of fishing rights within several EU member states has led to consolidation similar to Iceland's experience, despite the CFP's stated objectives of protecting small-scale fisheries and coastal communities. The European Parliament has repeatedly called for stronger protections for small-scale fisheries in quota allocation, but implementation varies widely across member states.",
+    "source_name": "European Parliament Research Service — Fisheries Ownership and Concentration in the EU",
+    "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/114/the-common-fisheries-policy-origins-and-development",
+    "source_date": "2024-06-01",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "Concentration patterns vary significantly between member states — Denmark and the Netherlands have high concentration, while Mediterranean states retain more fragmented fleets. The EU has measures to support small-scale fisheries (EMFAF fund, preferential access rules) that do not exist in Iceland's system. Direct comparison between EU concentration and Iceland's ITQ concentration requires careful contextualisation.",
+    "related_entries": [
+      "FISH-DATA-025",
+      "FISH-DATA-024",
+      "FISH-DATA-022"
+    ]
+  }
+]
