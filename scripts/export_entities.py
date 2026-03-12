@@ -61,7 +61,7 @@ def _get_report_slug(report_path: Path) -> str:
 def _get_claim_data(report_path: Path) -> list[dict]:
     """Get claim slugs and verdicts from a report.
 
-    Returns a list of {slug, verdict} dicts, one per claim.
+    Returns a list of {slug, verdict, text} dicts, one per claim.
     """
     with open(report_path, encoding="utf-8") as f:
         report = json.load(f)
@@ -72,8 +72,37 @@ def _get_claim_data(report_path: Path) -> list[dict]:
         claims.append({
             "slug": icelandic_slugify(text[:80]),
             "verdict": item.get("verdict", "unknown"),
+            "text": text,
         })
     return claims
+
+
+def _load_non_substantive_texts() -> set[str]:
+    """Load canonical texts of non-substantive claims from the DB.
+
+    Returns a set of canonical_text_is and canonical_text_en values
+    for claims marked as non-substantive. Used to exclude these from
+    credibility calculations.
+    """
+    try:
+        from esbvaktin.ground_truth.operations import get_connection
+
+        conn = get_connection()
+        rows = conn.execute(
+            "SELECT canonical_text_is, canonical_text_en "
+            "FROM claims WHERE substantive = FALSE"
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return set()
+
+    texts: set[str] = set()
+    for text_is, text_en in rows:
+        if text_is:
+            texts.add(text_is)
+        if text_en:
+            texts.add(text_en)
+    return texts
 
 
 def _process_entity_dir(
@@ -81,6 +110,7 @@ def _process_entity_dir(
     entity_dir: Path,
     report_slug: str,
     claim_data: list[dict],
+    non_substantive_texts: set[str] | None = None,
 ) -> None:
     """Process a single directory containing _entities.json."""
     entities_path = entity_dir / "_entities.json"
@@ -92,11 +122,11 @@ def _process_entity_dir(
 
     author = raw.get("article_author")
     if author and author.get("name"):
-        _merge_entity(entities, author, report_slug, claim_data)
+        _merge_entity(entities, author, report_slug, claim_data, non_substantive_texts)
 
     for speaker in raw.get("speakers", []):
         if speaker.get("name"):
-            _merge_entity(entities, speaker, report_slug, claim_data)
+            _merge_entity(entities, speaker, report_slug, claim_data, non_substantive_texts)
 
 
 def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
@@ -109,6 +139,9 @@ def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
     Returns a dict keyed by entity slug with merged data.
     """
     entities: dict[str, dict] = {}
+    non_sub = _load_non_substantive_texts()
+    if non_sub:
+        print(f"  Excluding {len(non_sub)} non-substantive claim texts from credibility")
 
     # Standard analyses
     for analysis_dir in sorted(ANALYSES_DIR.iterdir()):
@@ -121,7 +154,7 @@ def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
 
         report_slug = _get_report_slug(report_path)
         claim_data = _get_claim_data(report_path)
-        _process_entity_dir(entities, analysis_dir, report_slug, claim_data)
+        _process_entity_dir(entities, analysis_dir, report_slug, claim_data, non_sub)
 
     # Extra dirs (inbox entities) — these have _entities.json but no _report_final.json
     # Use the directory name as slug and extract claims from extracted_claims if available
@@ -132,7 +165,7 @@ def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
             if not sub_dir.is_dir():
                 continue
             slug = icelandic_slugify(sub_dir.name)
-            _process_entity_dir(entities, sub_dir, slug, [])
+            _process_entity_dir(entities, sub_dir, slug, [], non_sub)
 
     return entities
 
@@ -505,6 +538,7 @@ def _merge_entity(
     speaker: dict,
     report_slug: str,
     claim_data: list[dict],
+    non_substantive_texts: set[str] | None = None,
 ) -> None:
     """Merge a speaker into the entities dict, deduplicating by slug."""
     name = speaker["name"]
@@ -574,8 +608,14 @@ def _merge_entity(
             if cd["slug"] not in entity["claims"]:
                 entity["claims"].append(cd["slug"])
             # Only count verdicts for active attributions (not 'mentioned')
+            # and only for substantive claims (non-substantive excluded from credibility)
             if attr_type in _ACTIVE_ATTRIBUTIONS:
-                entity["_verdicts"].append(cd["verdict"])
+                is_non_sub = (
+                    non_substantive_texts
+                    and cd.get("text") in non_substantive_texts
+                )
+                if not is_non_sub:
+                    entity["_verdicts"].append(cd["verdict"])
 
     # Update mention count (count of articles)
     entity["mention_count"] = len(entity["articles"])

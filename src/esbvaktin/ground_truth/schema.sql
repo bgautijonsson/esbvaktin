@@ -135,6 +135,13 @@ CREATE INDEX IF NOT EXISTS idx_sightings_date ON claim_sightings(source_date);
 CREATE INDEX IF NOT EXISTS idx_sightings_url ON claim_sightings(source_url);
 CREATE INDEX IF NOT EXISTS idx_sightings_speech_id ON claim_sightings(speech_id);
 
+-- ═══════════════════════════════════════════════════════════════════════
+-- Migration: substantive flag for credibility weighting
+-- ═══════════════════════════════════════════════════════════════════════
+
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS substantive BOOLEAN DEFAULT TRUE;
+
+
 -- View: claim frequency for prioritisation
 CREATE OR REPLACE VIEW claim_frequency AS
 SELECT

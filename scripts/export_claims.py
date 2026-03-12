@@ -63,6 +63,7 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
             c.explanation_en,
             c.missing_context_is,
             c.confidence,
+            c.substantive,
             c.last_verified,
             c.version,
             c.created_at,
@@ -81,7 +82,7 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
         "claim_slug", "canonical_text_is", "canonical_text_en",
         "category", "claim_type", "verdict",
         "explanation_is", "explanation_en", "missing_context_is",
-        "confidence", "last_verified", "version", "created_at",
+        "confidence", "substantive", "last_verified", "version", "created_at",
         "sighting_count", "last_seen", "first_seen",
     ]
 
@@ -149,6 +150,7 @@ def _to_parquet(claims: list[dict], path: Path) -> None:
             [c["missing_context_is"] for c in claims], type=pa.string()
         ),
         "confidence": pa.array([c["confidence"] for c in claims], type=pa.float32()),
+        "substantive": pa.array([c["substantive"] for c in claims], type=pa.bool_()),
         "last_verified": pa.array([c["last_verified"] for c in claims], type=pa.string()),
         "version": pa.array([c["version"] for c in claims], type=pa.int32()),
         "created_at": pa.array([c["created_at"] for c in claims], type=pa.string()),

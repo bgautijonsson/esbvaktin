@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS claims (
     version INT DEFAULT 1,
     last_verified DATE NOT NULL DEFAULT CURRENT_DATE,
     published BOOLEAN DEFAULT FALSE,
+    substantive BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
