@@ -161,11 +161,26 @@ _NAME_ALIASES: dict[str, str] = {
     "samfylkingin": "samfylkingin",
     "samfylking": "samfylkingin",
     "flokkur fólksins": "flokkur-folksins",
+    "píratar": "piratar",
+    "piratar": "piratar",
+    "vinstrihreyfingin – grænt framboð": "vinstri-graen",
+    "vinstrihreyfingin - grænt framboð": "vinstri-graen",
+    "vinstrihreyfingin grænt framtíð": "vinstri-graen",
+    "vinstrihreyfingin grænt framboð": "vinstri-graen",
+    "vinstri-græn": "vinstri-graen",
     # Individual name variants
     "bjorn levi gunnarsson": "bjorn-levi-gunnarsson",
     "björn leví gunnarson": "bjorn-levi-gunnarsson",
     "björn leví gunnarsson": "bjorn-levi-gunnarsson",
     "lilja alfreðsdóttir": "lilja-dogg-alfredsdottir",
+    "kristrún": "kristrun-frostadottir",
+    "kristrúna": "kristrun-frostadottir",
+    "kristrúnar frostadóttur": "kristrun-frostadottir",
+    "birni inga hrafnsson": "bjorn-ingi-hrafnsson",
+    "pawel bartoszek": "pavel-bartoszek",
+    "þorgerður katrín": "thorgerdur-katrin-gunnarsdottir",
+    "þorgerður katrín gunnarsdóttur": "thorgerdur-katrin-gunnarsdottir",
+    "dagur b": "dagur-b-eggertsson",
     # Media — short vs full name
     "heimildin fréttastofa": "heimildin",
 }
@@ -174,6 +189,12 @@ _NAME_ALIASES: dict[str, str] = {
 _CANONICAL_NAMES: dict[str, str] = {
     "bjorn-levi-gunnarsson": "Björn Leví Gunnarsson",
     "heimildin": "Heimildin",
+    "bjorn-ingi-hrafnsson": "Björn Ingi Hrafnsson",
+    "pavel-bartoszek": "Pavel Bartoszek",
+    "thorgerdur-katrin-gunnarsdottir": "Þorgerður Katrín Gunnarsdóttir",
+    "dagur-b-eggertsson": "Dagur B. Eggertsson",
+    "kristrun-frostadottir": "Kristrún Frostadóttir",
+    "lilja-dogg-alfredsdottir": "Lilja Dögg Alfreðsdóttir",
 }
 
 # Entries that are titles/roles, not actual entities — skip these
@@ -182,6 +203,9 @@ _SKIP_NAMES = {
     "formaður sjálfstæðisflokksins",
     "utanríkisráðherra",
     "formenn ríkisstjórnarflokkanna",
+    "talsmenn esb-aðildar",
+    "mbl.is fréttaritari",
+    "ritstjórn mbl.is",
 }
 
 
@@ -286,6 +310,168 @@ def _enrich_althingi_stats(entities: dict[str, dict]) -> int:
             enriched += 1
 
     return enriched
+
+
+# ── Authoritative party affiliations from Alþingi DB ─────────────────
+
+# Map DB canonical party names → existing entity slugs
+_DB_PARTY_TO_SLUG: dict[str, str] = {
+    "Samfylkingin": "samfylkingin",
+    "Sjálfstæðisflokkur": "sjalfstaedisflokkurinn",
+    "Framsóknarflokkur": "framsoknarflokkurinn",
+    "Miðflokkurinn": "midflokkurinn",
+    "Viðreisn": "vidreisn",
+    "Flokkur fólksins": "flokkur-folksins",
+    "Píratar": "piratar",
+    "Vinstrihreyfingin - grænt framboð": "vinstri-graen",
+}
+
+# Reverse: free-text party variants → DB canonical name (for non-roster matches)
+_FREETEXT_TO_DB_PARTY: dict[str, str] = {
+    "miðflokkurinn": "Miðflokkurinn",
+    "miðflokkur": "Miðflokkurinn",
+    "sjálfstæðisflokkurinn": "Sjálfstæðisflokkur",
+    "sjálfstæðisflokkur": "Sjálfstæðisflokkur",
+    "framsóknarflokkurinn": "Framsóknarflokkur",
+    "framsóknarflokkur": "Framsóknarflokkur",
+    "viðreisn": "Viðreisn",
+    "samfylkingin": "Samfylkingin",
+    "samfylking": "Samfylkingin",
+    "flokkur fólksins": "Flokkur fólksins",
+    "píratar": "Píratar",
+    "piratar": "Píratar",
+    "vinstrihreyfingin – grænt framboð": "Vinstrihreyfingin - grænt framboð",
+    "vinstrihreyfingin - grænt framboð": "Vinstrihreyfingin - grænt framboð",
+    "vinstrihreyfingin grænt framtíð": "Vinstrihreyfingin - grænt framboð",
+    "vinstrihreyfingin grænt framboð": "Vinstrihreyfingin - grænt framboð",
+    "vinstri-græn": "Vinstrihreyfingin - grænt framboð",
+}
+
+
+def _load_mp_roster() -> dict[str, dict]:
+    """Load MP roster from althingi.db for sessions 155–157.
+
+    Returns a dict keyed by lowercased MP name → {name, mp_id, party}.
+    For MPs who served in multiple sessions, takes the latest session's party.
+    """
+    db_path = Path(os.environ.get("ALTHINGI_DB_PATH", str(_ALTHINGI_DB_DEFAULT)))
+    if not db_path.exists():
+        return {}
+
+    sql = """
+        SELECT m.name, m.id AS mp_id, ms.party, ms.session
+        FROM member_sessions ms
+        JOIN members m ON ms.mp_id = m.id AND ms.session = m.session
+        WHERE ms.session IN (155, 156, 157)
+          AND ms.party != 'utan þingflokka'
+        ORDER BY ms.session ASC
+    """
+    try:
+        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(sql).fetchall()
+        conn.close()
+    except Exception:
+        return {}
+
+    # Later sessions overwrite earlier — gives us the most recent party
+    roster: dict[str, dict] = {}
+    for row in rows:
+        roster[row["name"].lower()] = {
+            "name": row["name"],
+            "mp_id": row["mp_id"],
+            "party": row["party"],
+        }
+    return roster
+
+
+def _enrich_party_affiliations(
+    entities: dict[str, dict],
+    roster: dict[str, dict],
+) -> int:
+    """Override free-text party with canonical DB party, add party_slug.
+
+    Only processes subtype='politician' entities.
+    Returns the number of entities enriched with authoritative party data.
+    """
+    enriched = 0
+    for entity in entities.values():
+        if entity.get("subtype") != "politician":
+            continue
+
+        name = entity["name"]
+        # Try roster match (same fuzzy logic as althingi stats)
+        mp = roster.get(name.lower())
+        if not mp:
+            for roster_name, r in roster.items():
+                if _name_matches(name, roster_name):
+                    mp = r
+                    break
+
+        if mp:
+            db_party = mp["party"]
+            entity["party"] = db_party
+            slug = _DB_PARTY_TO_SLUG.get(db_party)
+            if slug:
+                entity["party_slug"] = slug
+            enriched += 1
+        else:
+            # Non-roster politician (foreign, former, etc.) — resolve from free text
+            free_party = (entity.get("party") or "").lower().strip()
+            if free_party:
+                db_party = _FREETEXT_TO_DB_PARTY.get(free_party)
+                if db_party:
+                    entity["party"] = db_party
+                    slug = _DB_PARTY_TO_SLUG.get(db_party)
+                    if slug:
+                        entity["party_slug"] = slug
+
+    return enriched
+
+
+def _ensure_party_entities(entities: dict[str, dict]) -> int:
+    """Create placeholder party entities for any party_slug that has no entity.
+
+    Returns the number of placeholder entities created.
+    """
+    # Collect all party_slugs referenced by politicians
+    referenced_slugs = {
+        e["party_slug"]
+        for e in entities.values()
+        if e.get("party_slug")
+    }
+
+    # Find which ones are missing
+    existing_party_slugs = {
+        slug for slug, e in entities.items()
+        if e["type"] == "party"
+    }
+    missing = referenced_slugs - existing_party_slugs
+
+    # Reverse lookup for display names
+    slug_to_name = {v: k for k, v in _DB_PARTY_TO_SLUG.items()}
+
+    created = 0
+    for slug in missing:
+        name = slug_to_name.get(slug, slug)
+        entities[slug] = {
+            "slug": slug,
+            "name": name,
+            "type": "party",
+            "description": "Stjórnmálaflokkur",
+            "role": None,
+            "party": None,
+            "mention_count": 0,
+            "articles": [],
+            "claims": [],
+            "stance_score": 0.0,
+            "stance": "neutral",
+            "credibility": None,
+            "attribution_counts": {},
+        }
+        created += 1
+
+    return created
 
 
 def _resolve_attributions(speaker: dict) -> list[dict]:
@@ -454,6 +640,70 @@ def _compute_scores(entities: dict[str, dict]) -> None:
         entity["attribution_counts"] = {k: v for k, v in raw_counts.items() if v > 0}
 
 
+# ── Politician subtype classification ────────────────────────────────
+
+# Icelandic role strings that indicate elected officials, ministers, or heads of state
+_POLITICIAN_ROLE_PATTERNS = {
+    "þingmaður", "þingkona",
+    "ráðherra", "forsætisráðherra", "utanríkisráðherra", "fjármálaráðherra",
+    "sjávarútvegsráðherra", "landbúnaðarráðherra", "atvinnuvegaáðherra",
+    "heilbrigðisráðherra", "dómsmálaráðherra", "menntamálaráðherra",
+    "umhverfisráðherra", "samgönguráðherra", "innviðaráðherra",
+    "forseti íslands", "forseti",
+    "formaður flokks", "varaformaður flokks",
+    "borgarstjóri",
+    # Foreign heads of state / government
+    "kanzlari", "forsætisráðherra", "forseti",
+    "kanslari",
+}
+
+
+def _is_politician(entity: dict) -> bool:
+    """Determine if an individual entity is a politician.
+
+    Signals (any one is sufficient):
+    1. Has Alþingi speech stats → elected official or minister
+    2. Has a party affiliation → party-connected political figure
+    3. Has a role matching known political role patterns
+    """
+    if entity["type"] != "individual":
+        return False
+
+    # Signal 1: Alþingi record
+    if entity.get("althingi_stats"):
+        return True
+
+    # Signal 2: Party affiliation
+    if entity.get("party"):
+        return True
+
+    # Signal 3: Role matches political patterns
+    role = (entity.get("role") or "").lower().strip()
+    if role:
+        # Check if role starts with or contains any politician pattern
+        for pattern in _POLITICIAN_ROLE_PATTERNS:
+            if pattern in role:
+                return True
+        # Also catch compound ráðherra roles (e.g. "utanríkis- og þróunarráðherra")
+        if "ráðherra" in role:
+            return True
+
+    return False
+
+
+def _classify_subtypes(entities: dict[str, dict]) -> int:
+    """Add subtype='politician' to individual entities that are politicians.
+
+    Returns the number of entities classified as politicians.
+    """
+    count = 0
+    for entity in entities.values():
+        if _is_politician(entity):
+            entity["subtype"] = "politician"
+            count += 1
+    return count
+
+
 def _generate_descriptions(entities: dict[str, dict]) -> None:
     """Generate basic Icelandic descriptions for entities that lack one."""
     type_labels = {
@@ -503,6 +753,10 @@ def export_entities(
     entities = load_all_entities(extra_dirs=extra_dirs)
     _compute_scores(entities)
     althingi_count = _enrich_althingi_stats(entities)
+    politician_count = _classify_subtypes(entities)
+    roster = _load_mp_roster()
+    party_enriched = _enrich_party_affiliations(entities, roster)
+    party_created = _ensure_party_entities(entities)
     _generate_descriptions(entities)
 
     # Apply canonical name overrides
@@ -555,6 +809,12 @@ def export_entities(
         print(f"Credibility: {len(cred_values)} entities scored, avg={avg_cred:.2f}")
     if althingi_count:
         print(f"Alþingi stats: {althingi_count} entities enriched with parliamentary data")
+    if politician_count:
+        print(f"Politicians: {politician_count} individuals classified as subtype=politician")
+    if party_enriched:
+        print(f"Party affiliations: {party_enriched} politicians linked to authoritative party data")
+    if party_created:
+        print(f"Party placeholders: {party_created} new party entities created as link targets")
 
     return sorted_entities
 
