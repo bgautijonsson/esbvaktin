@@ -331,3 +331,131 @@ async def get_debate_timeline(
     """
     rows = await db.execute_fetchall(sql, w.params + [limit])
     return [dict(r) for r in rows]
+
+
+# ── MP lookup queries ────────────────────────────────────────────────
+
+
+async def lookup_mp(
+    db: aiosqlite.Connection,
+    name: str | None = None,
+    party: str | None = None,
+    session: int | None = None,
+    limit: int = 30,
+) -> list[dict]:
+    """Find MPs by name or party, with session history summary."""
+    w = _WhereBuilder()
+    if name:
+        w.add("m.name LIKE ?", f"%{name}%")
+    if party:
+        w.add("ms.party = ?", party)
+    if session:
+        w.add("ms.session = ?", session)
+
+    sql = f"""
+        SELECT m.id AS mp_id, m.name, m.birth_date,
+               ms.party, ms.constituency, ms.seat_type,
+               ms.session, ms.from_date, ms.to_date
+        FROM members m
+        JOIN member_sessions ms ON m.id = ms.mp_id AND m.session = ms.session
+        WHERE {w.sql}
+        ORDER BY ms.session DESC, m.name ASC
+        LIMIT ?
+    """
+    rows = await db.execute_fetchall(sql, w.params + [limit])
+    return [dict(r) for r in rows]
+
+
+async def get_mp_detail(
+    db: aiosqlite.Connection,
+    mp_id: str,
+) -> dict | None:
+    """Full MP profile: identity, session history, and minister roles."""
+    # Basic identity (most recent session)
+    rows = await db.execute_fetchall(
+        """
+        SELECT id AS mp_id, name, birth_date, abbreviation
+        FROM members
+        WHERE id = ?
+        ORDER BY session DESC
+        LIMIT 1
+        """,
+        (mp_id,),
+    )
+    if not rows:
+        return None
+    profile = dict(rows[0])
+
+    # Session history (party, constituency, seat type over time)
+    rows = await db.execute_fetchall(
+        """
+        SELECT session, party, constituency, seat_type, from_date, to_date
+        FROM member_sessions
+        WHERE mp_id = ?
+        ORDER BY session DESC, from_date DESC
+        """,
+        (mp_id,),
+    )
+    profile["sessions"] = [dict(r) for r in rows]
+
+    # Minister roles
+    rows = await db.execute_fetchall(
+        """
+        SELECT session, title, party
+        FROM ministers
+        WHERE mp_id = ? AND title != ''
+        ORDER BY session DESC
+        """,
+        (mp_id,),
+    )
+    profile["minister_roles"] = [dict(r) for r in rows]
+
+    return profile
+
+
+async def list_ministers(
+    db: aiosqlite.Connection,
+    session: int | None = None,
+    party: str | None = None,
+) -> list[dict]:
+    """List ministers, optionally filtered by session and party."""
+    w = _WhereBuilder()
+    if session:
+        w.add("session = ?", session)
+    if party:
+        w.add("party = ?", party)
+
+    w.add("title != ''")
+
+    sql = f"""
+        SELECT mp_id, name, title, party, session
+        FROM ministers
+        WHERE {w.sql}
+        ORDER BY session DESC, name ASC
+    """
+    rows = await db.execute_fetchall(sql, w.params)
+    return [dict(r) for r in rows]
+
+
+async def list_current_mps(
+    db: aiosqlite.Connection,
+    session: int = 157,
+    party: str | None = None,
+) -> list[dict]:
+    """List all MPs in a given session with party, constituency, and seat type."""
+    w = _WhereBuilder()
+    w.add("ms.session = ?", session)
+    if party:
+        w.add("ms.party = ?", party)
+
+    sql = f"""
+        SELECT m.id AS mp_id, m.name, m.birth_date,
+               ms.party, ms.constituency, ms.seat_type,
+               ms.from_date, ms.to_date
+        FROM members m
+        JOIN member_sessions ms ON m.id = ms.mp_id AND m.session = ms.session
+        WHERE {w.sql}
+        ORDER BY m.name ASC
+    """
+    rows = await db.execute_fetchall(sql, w.params)
+    return [dict(r) for r in rows]

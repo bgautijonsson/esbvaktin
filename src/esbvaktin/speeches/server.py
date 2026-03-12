@@ -230,6 +230,172 @@ async def get_debate_timeline(
     return "\n".join(lines)
 
 
+@mcp.tool()
+async def lookup_mp(
+    name: str | None = None,
+    party: str | None = None,
+    session: int | None = None,
+    limit: int = 30,
+) -> str:
+    """Find MPs by name or party with their session history.
+
+    Returns matching MPs with party, constituency, and seat type per session.
+    Use this to find an MP's ID for get_mp_detail, or to browse MPs by party.
+
+    Args:
+        name: Partial name match (e.g. "Kristrún", "Bjarni")
+        party: Party abbreviation (e.g. "S" for Samfylkingin, "D" for Sjálfstæðisflokkur)
+        session: Legislative session number (e.g. 157 for current)
+        limit: Max results (default 30)
+    """
+    db = await _get_db()
+    results = await search.lookup_mp(db, name=name, party=party, session=session, limit=limit)
+
+    if not results:
+        return "No MPs found matching your criteria."
+
+    # Group by MP to show consolidated view
+    from collections import OrderedDict
+    grouped: OrderedDict[str, list[dict]] = OrderedDict()
+    for r in results:
+        key = r["mp_id"]
+        if key not in grouped:
+            grouped[key] = []
+        grouped[key].append(r)
+
+    lines = [f"## MPs found — {len(grouped)} matches\n"]
+    for mp_id, entries in grouped.items():
+        first = entries[0]
+        birth = f" (b. {first['birth_date'][:4]})" if first.get("birth_date") else ""
+        lines.append(f"### {first['name']}{birth}")
+        lines.append(f"**ID:** `{mp_id}`\n")
+        for e in entries:
+            seat = e.get("seat_type") or "?"
+            party_str = e.get("party") or "?"
+            const = e.get("constituency") or "?"
+            lines.append(f"- Session {e['session']}: {party_str} — {const} ({seat})")
+        lines.append("")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+async def get_mp_detail(mp_id: str) -> str:
+    """Get full profile of an MP: identity, all sessions served, minister roles.
+
+    Use lookup_mp first to find the MP's ID.
+
+    Args:
+        mp_id: The MP's numeric ID (e.g. "1417")
+    """
+    db = await _get_db()
+    result = await search.get_mp_detail(db, mp_id)
+
+    if not result:
+        return f"MP with ID `{mp_id}` not found."
+
+    birth = f" (b. {result['birth_date']})" if result.get("birth_date") else ""
+    lines = [
+        f"# {result['name']}{birth}",
+        f"**ID:** `{result['mp_id']}` | **Abbreviation:** {result.get('abbreviation', '?')}\n",
+    ]
+
+    # Session history
+    sessions = result.get("sessions", [])
+    if sessions:
+        lines.append(f"## Parliamentary service — {len(sessions)} entries\n")
+        lines.append("| Session | Party | Constituency | Seat | From | To |")
+        lines.append("|---------|-------|-------------|------|------|-----|")
+        for s in sessions:
+            from_d = (s.get("from_date") or "—")[:10]
+            to_d = (s.get("to_date") or "—")[:10]
+            lines.append(
+                f"| {s['session']} | {s.get('party', '?')} | "
+                f"{s.get('constituency', '?')} | {s.get('seat_type', '?')} | "
+                f"{from_d} | {to_d} |"
+            )
+        lines.append("")
+
+    # Minister roles
+    roles = result.get("minister_roles", [])
+    if roles:
+        lines.append(f"## Minister roles — {len(roles)} entries\n")
+        for r in roles:
+            lines.append(f"- **{r['title']}** (session {r['session']}, {r.get('party', '?')})")
+        lines.append("")
+    else:
+        lines.append("## Minister roles\nNone on record.\n")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+async def list_ministers(
+    session: int | None = None,
+    party: str | None = None,
+) -> str:
+    """List cabinet ministers, optionally filtered by session or party.
+
+    Defaults to showing all ministers across sessions. Use session=157 for
+    the current cabinet.
+
+    Args:
+        session: Legislative session (e.g. 157)
+        party: Party abbreviation filter
+    """
+    db = await _get_db()
+    results = await search.list_ministers(db, session=session, party=party)
+
+    if not results:
+        return "No ministers found."
+
+    # Group by session
+    by_session: dict[int, list[dict]] = {}
+    for r in results:
+        by_session.setdefault(r["session"], []).append(r)
+
+    lines = [f"## Ministers — {len(results)} entries\n"]
+    for sess in sorted(by_session, reverse=True):
+        entries = by_session[sess]
+        lines.append(f"### Session {sess}\n")
+        lines.append("| Name | Title | Party |")
+        lines.append("|------|-------|-------|")
+        for r in entries:
+            lines.append(f"| {r['name']} | {r['title']} | {r.get('party', '?')} |")
+        lines.append("")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+async def list_current_mps(
+    session: int = 157,
+    party: str | None = None,
+) -> str:
+    """List all MPs in a legislative session with party and constituency.
+
+    Args:
+        session: Legislative session (default 157 = current)
+        party: Filter by party abbreviation
+    """
+    db = await _get_db()
+    results = await search.list_current_mps(db, session=session, party=party)
+
+    if not results:
+        return f"No MPs found for session {session}."
+
+    lines = [
+        f"## MPs in session {session} — {len(results)} entries\n",
+        "| Name | Party | Constituency | Seat | Born |",
+        "|------|-------|-------------|------|------|",
+    ]
+    for r in results:
+        birth = (r.get("birth_date") or "?")[:4]
+        lines.append(
+            f"| {r['name']} | {r.get('party', '?')} | "
+            f"{r.get('constituency', '?')} | {r.get('seat_type', '?')} | {birth} |"
+        )
+    return "\n".join(lines)
+
+
 # ── Entry point ───────────────────────────────────────────────────────
 
 
