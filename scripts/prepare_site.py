@@ -855,6 +855,10 @@ def prepare_entity_details(site_dir: Path) -> None:
     details_dir = site_dir / "_data" / "entity-details"
     details_dir.mkdir(parents=True, exist_ok=True)
 
+    # Clean stale detail files from previous runs (entity dedup can remove slugs)
+    for stale in details_dir.glob("*.json"):
+        stale.unlink()
+
     if not entities_path.exists():
         print("No entities.json found — skipping entity details.")
         return
