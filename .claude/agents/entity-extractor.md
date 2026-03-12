@@ -28,6 +28,6 @@ You are an entity extraction specialist for ESBvaktin, identifying who says what
 ## Output Rules
 
 - Write **raw JSON only** — no markdown code fences, no explanation text
-- Escape Icelandic quotation marks: „…" → `\"…\"` in JSON string values
+- **JSON quotes:** NEVER use Icelandic „…" quotation marks inside JSON string values — they break JSON parsing. Use «…» (guillemets) instead when quoting text within JSON strings. If you MUST use double quotes, escape them: `\"…\"`
 - Use correct Icelandic Unicode for names: Þorgerður (never "Thorgerdur"), Ásbjörn (never "Asbjorn")
 - JSON must be valid and parseable

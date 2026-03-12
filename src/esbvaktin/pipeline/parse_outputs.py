@@ -12,11 +12,12 @@ from .models import (
     ArticleEntities,
     Claim,
     ClaimAssessment,
+    FramingAssessment,
     OmissionAnalysis,
 )
 
 
-def _sanitise_icelandic_quotes(text: str) -> str:
+def sanitise_icelandic_quotes(text: str) -> str:
     """Replace Icelandic/smart quotation marks that break JSON parsing.
 
     Icelandic text uses „ (U+201E) and " (U+201C) as quotation marks.
@@ -82,7 +83,7 @@ def _extract_json(text: str) -> str:
     except (json.JSONDecodeError, ValueError):
         pass
     # Sanitise smart/Icelandic quotes before parsing
-    return _sanitise_icelandic_quotes(raw)
+    return sanitise_icelandic_quotes(raw)
 
 
 def parse_claims(output_path: Path) -> list[Claim]:
@@ -188,6 +189,26 @@ def parse_omissions(output_path: Path) -> OmissionAnalysis:
     text = output_path.read_text(encoding="utf-8")
     raw = json.loads(_extract_json(text))
     return OmissionAnalysis.model_validate(_normalise_omissions(raw))
+
+
+def parse_omissions_safe(output_path: Path) -> OmissionAnalysis:
+    """Parse omission analysis output, returning a default if the file is missing.
+
+    Use this instead of ``parse_omissions()`` when the omissions agent may
+    have silently failed (e.g. context too large for the agent tier).
+    """
+    if not output_path.exists():
+        import logging
+        logging.getLogger(__name__).warning(
+            "Omissions file missing (%s) — using default (neutral_but_incomplete, 0.0)",
+            output_path,
+        )
+        return OmissionAnalysis(
+            omissions=[],
+            framing_assessment=FramingAssessment.NEUTRAL_BUT_INCOMPLETE,
+            overall_completeness=0.0,
+        )
+    return parse_omissions(output_path)
 
 
 def parse_entities(output_path: Path) -> ArticleEntities:

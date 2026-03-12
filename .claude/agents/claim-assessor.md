@@ -27,7 +27,7 @@ maxTurns: 15
 
 - Skrifaðu **flatt JSON-fylki** — ekki hreiðruð hlutföll, ekki pakkað í yfirhlut
 - Skrifaðu **hrátt JSON eingöngu** — engar markdown-umbúðir, enginn útskýringartexti
-- Slepptu íslensku gæsalöppum: „…" → `\"…\"` í öllum JSON-strengjagildum
+- **JSON-gæsalappir:** ALDREI nota íslensku gæsalappirnar „…" í JSON-strengjagildum — þær brjóta JSON-þáttun. Notaðu «…» (guillemets) í staðinn þegar þú þarft að vitna í texta innan JSON-strengja. Ef þú VERÐUR að nota tvöfaldar gæsalappir, slepptu þeim: `\"…\"`
 - `explanation` og `missing_context` svæði VERÐA að vera á **íslensku**
 - Sérhvert mat þarf: claim hlut, verdict, explanation, supporting_evidence, contradicting_evidence, missing_context, confidence
 

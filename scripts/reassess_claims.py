@@ -262,11 +262,11 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         "- **Heimildum háð**: sérhvert mat VERÐUR að vitna í tilteknar evidence_id úr heimildum hér að ofan",
         "- **Fyrirvarar skipta máli**: komið á framfæri fyrirvörum úr heimildum — þeir geta haft mikla þýðingu",
         "- **Auðmýkt**: ef heimildir duga ekki til, notið áfram `unverifiable` — ekki giska",
-        '- **Uppfærsla, ekki endurskrif**: fyrir fullyrðingar sem eru „að hluta staðfestar\u201c — breytið aðeins ef nýju heimildarnar 🆕 breyta myndinni verulega',
+        '- **Uppfærsla, ekki endurskrif**: fyrir fullyrðingar sem eru «að hluta staðfestar» — breytið aðeins ef nýju heimildarnar 🆕 breyta myndinni verulega',
         "- **Pólitískar fullyrðingar**: fullyrðingar um afstöðu flokka eða ákveðnar yfirlýsingar stjórnmálamanna "
         "verða einungis merktar `supported` ef heimild staðfestir beint — almennar upplýsingar um flokk duga ekki",
         "- **Tölulegar fullyrðingar**: ef heimildir sýna nálægar en ekki nákvæmlega sömu tölur, notið `partially_supported`",
-        '- JSON-\u00f6ryggi: noti\u00f0 \\\\" fyrir g\u00e6salappir \u00ed JSON-strengjum, ekki \u201e\u2026\u201c',
+        '- **JSON-gæsalappir**: ALDREI nota íslensku gæsalappirnar „…" í JSON-strengjagildum — þær brjóta JSON-þáttun. Notaðu «…» (guillemets) í staðinn. Ef þú VERÐUR að nota tvöfaldar gæsalappir, slepptu þeim: \\\\"…\\\\"',
     ])
 
     # Append Icelandic quality blocks

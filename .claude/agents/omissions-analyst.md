@@ -25,7 +25,7 @@ maxTurns: 10
 ## Úttaksreglur
 
 - Skrifaðu **hrátt JSON eingöngu** — engar markdown-umbúðir, enginn útskýringartexti
-- Slepptu íslensku gæsalöppum: „…" → `\"…\"` í öllum JSON-strengjagildum
+- **JSON-gæsalappir:** ALDREI nota íslensku gæsalappirnar „…" í JSON-strengjagildum — þær brjóta JSON-þáttun. Notaðu «…» (guillemets) í staðinn þegar þú þarft að vitna í texta innan JSON-strengja. Ef þú VERÐUR að nota tvöfaldar gæsalappir, slepptu þeim: `\"…\"`
 - `description` svæði VERÐA að vera á **íslensku**
 - `framing_assessment`: eitt af `balanced`, `leans_pro_eu`, `leans_anti_eu`, `strongly_pro_eu`, `strongly_anti_eu`, `neutral_but_incomplete`
 - `overall_completeness`: 0.0 til 1.0

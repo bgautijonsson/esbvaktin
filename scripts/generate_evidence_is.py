@@ -76,15 +76,15 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         "  Ef tölur eru í frumtextanum, haltu þeim nákvæmum. Ef aðeins er um staðreynd að ræða,",
         "  nægir ein setning.",
         "- **source_description_is**: 15\u201330 orð. Stutt lýsing á upprunastofnun/útgefanda.",
-        '  Dæmi: \u201eHagstofa Íslands er opinber tölfræðistofnun sem gefur reglulega út hagtölur'
-        ' um efnahag, fólksfjölda og samfélag.\u201c',
+        '  Dæmi: «Hagstofa Íslands er opinber tölfræðistofnun sem gefur reglulega út hagtölur'
+        ' um efnahag, fólksfjölda og samfélag.»',
         "- **Unicode skylda**: Sérhver íslensk setning VERÐUR að innihalda stafi úr",
         "  {þ, ð, á, é, í, ó, ú, ý, æ, ö}. Ef setning vantar þessa stafi er hún gölluð.",
         "- **ESB-hugtök**: Notaðu samræmd íslensk hugtök (sjá Block F hér að neðan).",
         "- **Ekki ofþýða**: Stofnanaheiti sem eru þekkt á íslensku (Hagstofa Íslands,",
         "  Seðlabanki Íslands, Eurostat, OECD) nota íslenskt heiti. Ensk heiti sem",
         "  hafa ekki viðtekna íslensku (t.d. sérstök skýrsluheiti) má halda á ensku.",
-        '- **JSON-\u00f6ryggi**: Nota\u00f0u \\\\" fyrir g\u00e6salappir \u00ed JSON-strengjum, ekki \u201e\u2026\u201c.',
+        '- **JSON-gæsalappir**: ALDREI nota íslensku gæsalappirnar „…" í JSON-strengjagildum — þær brjóta JSON-þáttun. Notaðu «…» (guillemets) í staðinn. Ef þú VERÐUR að nota tvöfaldar gæsalappir, slepptu þeim: \\\\"…\\\\"',
         "",
     ]
 
@@ -222,22 +222,14 @@ def _has_icelandic_chars(text: str) -> bool:
 
 
 def _extract_json_text(raw: str) -> str:
-    """Extract JSON from text, handling Icelandic quotes and markdown wrapping."""
-    # Strip markdown code fences
-    text = raw.strip()
-    if text.startswith("```"):
-        lines = text.split("\n")
-        # Remove first and last ``` lines
-        if lines[0].startswith("```"):
-            lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        text = "\n".join(lines)
+    """Extract JSON from text, handling Icelandic quotes and markdown wrapping.
 
-    # Sanitise Icelandic quotes that break JSON
-    text = text.replace("\u201e", '"').replace("\u201c", '"').replace("\u201d", '"')
+    Delegates to the canonical ``_extract_json`` from parse_outputs which
+    properly escapes Icelandic „…" quotes inside JSON string values.
+    """
+    from esbvaktin.pipeline.parse_outputs import _extract_json
 
-    return text.strip()
+    return _extract_json(raw)
 
 
 def write() -> None:

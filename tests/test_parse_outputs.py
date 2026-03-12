@@ -6,7 +6,7 @@ import pytest
 
 from esbvaktin.pipeline.parse_outputs import (
     _extract_json,
-    _sanitise_icelandic_quotes,
+    sanitise_icelandic_quotes,
     parse_assessments,
     parse_claims,
     parse_omissions,
@@ -88,7 +88,7 @@ class TestIcelandicQuoteSanitisation:
     def test_sanitise_low9_and_left_double(self):
         """„ (U+201E) and " (U+201C) — the standard Icelandic pair."""
         text = '"claim_text": "\u201eÞetta er rangt\u201c"'
-        result = _sanitise_icelandic_quotes(text)
+        result = sanitise_icelandic_quotes(text)
         assert "\u201e" not in result
         assert "\u201c" not in result
         assert '\\"' in result
@@ -96,7 +96,7 @@ class TestIcelandicQuoteSanitisation:
     def test_sanitise_right_double(self):
         """\u201d (U+201D) — right double quotation mark."""
         text = '"value": "said \u201dhello\u201d"'
-        result = _sanitise_icelandic_quotes(text)
+        result = sanitise_icelandic_quotes(text)
         assert "\u201d" not in result
 
     def test_parse_claims_with_icelandic_quotes(self, tmp_path):
@@ -137,6 +137,14 @@ class TestIcelandicQuoteSanitisation:
         import json
         parsed = json.loads(result)
         assert len(parsed) == 1
+
+    def test_guillemets_pass_through_cleanly(self):
+        """«» guillemets are JSON-safe and should pass through without sanitisation."""
+        text = '[{"key": "Ráðherra sagði «þetta sé rétt»"}]'
+        result = _extract_json(text)
+        import json
+        parsed = json.loads(result)
+        assert "«þetta sé rétt»" in parsed[0]["key"]
 
 
 class TestParseTranslation:

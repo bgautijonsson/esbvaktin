@@ -28,7 +28,7 @@ Samantektir þínar verða að vera:
 ## Úttaksreglur
 
 - Skrifaðu **hrátt JSON eingöngu** — engar markdown-umbúðir
-- Slepptu íslensku gæsalöppum: „…" → `\"…\"` í JSON-strengjum
+- **JSON-gæsalappir:** ALDREI nota íslensku gæsalappirnar „…" í JSON-strengjagildum — þær brjóta JSON-þáttun. Notaðu «…» (guillemets) í staðinn þegar þú þarft að vitna í texta innan JSON-strengja. Ef þú VERÐUR að nota tvöfaldar gæsalappir, slepptu þeim: `\"…\"`
 - Sérhver færsla þarf: `evidence_id` og `summary_is`
 - JSON verður að vera gilt og þáttanlegt
 
