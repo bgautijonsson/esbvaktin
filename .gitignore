@@ -59,3 +59,4 @@ data/overviews/
 
 # MCP config (user-local)
 .mcp.json
+data/althingi.db
