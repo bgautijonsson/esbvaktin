@@ -56,7 +56,7 @@ data/seeds/             # Evidence JSON seed files (committed)
 data/{source}/          # CSV outputs from R scripts (gitignored)
 R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
 .claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification
-.claude/agents/         # Custom agents: claim-extractor, claim-assessor, omissions-analyst, entity-extractor, site-exporter, evidence-summariser
+.claude/agents/         # Custom agents: claim-extractor, claim-assessor, omissions-analyst, entity-extractor, site-exporter, evidence-summariser, editorial-writer, claim-reviewer, evidence-auditor
 ```
 
 ## Custom Agents
@@ -72,6 +72,8 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 | `site-exporter` | sonnet | Bash, Read, Glob, Grep | Run the 7-script site data export chain |
 | `evidence-summariser` | sonnet | Read, Write, Glob, MCP mideind (check only) | Write Icelandic summaries for Ground Truth evidence batches |
 | `editorial-writer` | opus | Read, Write, Glob, Grep, MCP morphology, MCP mideind | Write Icelandic weekly editorial from overview context |
+| `claim-reviewer` | sonnet | Read, Write, Glob | Review published claims for substantiveness |
+| `evidence-auditor` | sonnet | Read, Write, Glob | Audit Ground Truth entries for internal contradictions |
 
 **Parallelisation:** `claim-assessor` + `omissions-analyst` always run in parallel (independent tasks). Multiple `evidence-summariser` instances can run in parallel across batches.
 
