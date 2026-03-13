@@ -14,11 +14,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Skip all tests if no database connection
-pytestmark = pytest.mark.skipif(
-    not os.environ.get("DATABASE_URL"),
-    reason="DATABASE_URL not set — need a running PostgreSQL instance",
-)
+from tests.conftest import requires_embeddings
+
+# Skip all tests if no database connection or no embeddings
+pytestmark = [
+    pytest.mark.skipif(
+        not os.environ.get("DATABASE_URL"),
+        reason="DATABASE_URL not set — need a running PostgreSQL instance",
+    ),
+    requires_embeddings,
+]
 
 from esbvaktin.ground_truth import (
     Confidence,

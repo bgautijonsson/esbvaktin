@@ -13,11 +13,15 @@ from esbvaktin.pipeline.retrieve_evidence import (
     retrieve_evidence_for_claim,
     retrieve_evidence_for_claims,
 )
+from tests.conftest import requires_embeddings
 
-pytestmark = pytest.mark.skipif(
-    not os.environ.get("DATABASE_URL"),
-    reason="DATABASE_URL not set — requires running PostgreSQL",
-)
+pytestmark = [
+    pytest.mark.skipif(
+        not os.environ.get("DATABASE_URL"),
+        reason="DATABASE_URL not set — requires running PostgreSQL",
+    ),
+    requires_embeddings,
+]
 
 
 @pytest.fixture
