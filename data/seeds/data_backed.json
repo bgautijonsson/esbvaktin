@@ -11,7 +11,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Figures cover goods trade only; services trade (especially tourism) is not captured. The sharp increase in 2022 partly reflects global commodity price inflation rather than volume growth alone.",
-    "related_entries": ["TRADE-DATA-001", "TRADE-DATA-003"]
+    "related_entries": [
+      "TRADE-DATA-001",
+      "TRADE-DATA-003"
+    ]
   },
   {
     "evidence_id": "TRADE-DATA-017",
@@ -25,7 +28,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Norway's trade profile is dominated by petroleum exports, making direct comparisons with Iceland's trade structure misleading. The 2022 spike in EU imports from Norway reflected energy prices, not underlying economic integration.",
-    "related_entries": ["TRADE-DATA-016", "TRADE-DATA-001"]
+    "related_entries": [
+      "TRADE-DATA-016",
+      "TRADE-DATA-001"
+    ]
   },
   {
     "evidence_id": "TRADE-DATA-018",
@@ -39,7 +45,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Growth in nominal trade values partly reflects exchange rate movements and price inflation rather than real volume increases. Iceland's króna depreciation after 2008 and commodity price swings affect year-to-year comparisons.",
-    "related_entries": ["TRADE-DATA-016", "TRADE-DATA-005"]
+    "related_entries": [
+      "TRADE-DATA-016",
+      "TRADE-DATA-005"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-006",
@@ -53,7 +62,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "PPP-adjusted figures correct for price level differences but can be sensitive to methodology. Small open economies with volatile exchange rates may show more year-to-year variation. Norway's figure is heavily influenced by petroleum rents.",
-    "related_entries": ["CURRENCY-DATA-001", "CURRENCY-DATA-003"]
+    "related_entries": [
+      "CURRENCY-DATA-001",
+      "CURRENCY-DATA-003"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-007",
@@ -67,7 +79,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Price levels reflect both genuine cost differences and exchange rate effects. Iceland's high food prices partly stem from agricultural protectionism and import tariffs that would likely be affected by EU membership. Norway's prices declined relative to the EU in 2023–2024 due to krone depreciation.",
-    "related_entries": ["CURRENCY-DATA-006", "AGRI-DATA-001"]
+    "related_entries": [
+      "CURRENCY-DATA-006",
+      "AGRI-DATA-001"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-008",
@@ -81,7 +96,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "The 2008 crisis was an exceptional event driven by banking sector collapse, not representative of normal monetary policy outcomes. Post-crisis reforms (capital controls, macro-prudential rules) have improved stability. The euro area also experienced inflation spikes in 2022–2023, though less severe than Iceland's historical extremes.",
-    "related_entries": ["CURRENCY-DATA-001", "CURRENCY-DATA-002"]
+    "related_entries": [
+      "CURRENCY-DATA-001",
+      "CURRENCY-DATA-002"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-009",
@@ -95,7 +113,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Higher growth volatility partly reflects Iceland's small economy and narrow export base, not solely its currency regime. Finland (eurozone since 1999) also experienced high volatility (std 2.9%), suggesting currency union membership does not eliminate cyclical swings.",
-    "related_entries": ["CURRENCY-DATA-006", "CURRENCY-DATA-008"]
+    "related_entries": [
+      "CURRENCY-DATA-006",
+      "CURRENCY-DATA-008"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-010",
@@ -109,7 +130,10 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "FDI flows are highly volatile and can be distorted by one-off transactions, holding company structures, and round-tripping. Iceland's negative average partly reflects Icelandic companies expanding abroad. Population-adjusted figures would provide better context. Sweden's high figure reflects its much larger economy.",
-    "related_entries": ["TRADE-DATA-006", "CURRENCY-DATA-006"]
+    "related_entries": [
+      "TRADE-DATA-006",
+      "CURRENCY-DATA-006"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-011",
@@ -123,7 +147,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Unemployment rates reflect different labour market structures, welfare systems, and measurement methodologies. Iceland's small population and seasonal tourism employment affect comparability. Denmark's 'flexicurity' model and Sweden's higher structural unemployment predate EU membership decisions.",
-    "related_entries": ["LABOUR-DATA-001", "CURRENCY-DATA-006"]
+    "related_entries": [
+      "LABOUR-DATA-001",
+      "CURRENCY-DATA-006"
+    ]
   },
   {
     "evidence_id": "EEA-DATA-001",
@@ -137,7 +164,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "Raw counts include technical/administrative regulations (e.g., agricultural price adjustments, tariff updates) that inflate the apparent legislative burden. Many regulations are amendments or replacements of existing ones, not net new obligations. The EEA Agreement only incorporates a subset of EU legislation deemed EEA-relevant.",
-    "related_entries": ["EEA-DATA-002", "EEA-LEGAL-001"]
+    "related_entries": [
+      "EEA-DATA-002",
+      "EEA-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "EEA-DATA-002",
@@ -151,7 +181,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "Fewer regulations does not necessarily mean less regulatory activity — modern regulations tend to be more complex and far-reaching. Delegated and implementing acts (secondary legislation) are not captured in these headline counts but have grown significantly.",
-    "related_entries": ["EEA-DATA-001", "EEA-LEGAL-002"]
+    "related_entries": [
+      "EEA-DATA-001",
+      "EEA-LEGAL-002"
+    ]
   },
   {
     "evidence_id": "EEA-DATA-003",
@@ -165,35 +198,49 @@
     "source_type": "international_org",
     "confidence": "medium",
     "caveats": "The 'one-third of the acquis' figure is approximate and varies by counting methodology. The EEA acquis covers internal market legislation comprehensively but excludes several major policy areas. Many older acts in EUR-Lex are no longer in force.",
-    "related_entries": ["EEA-DATA-001", "EEA-LEGAL-001", "FISH-DATA-001"]
+    "related_entries": [
+      "EEA-DATA-001",
+      "EEA-LEGAL-001",
+      "FISH-DATA-001"
+    ]
   },
   {
     "evidence_id": "FISH-DATA-019",
     "domain": "economic",
     "topic": "fisheries",
     "subtopic": "catch_volume_comparison",
-    "statement": "Iceland is one of Europe's largest fishing nations despite its small population. In 2023, Iceland's total fisheries catch was approximately 1.92 million tonnes, compared to Norway's 30.6 million tonnes, Denmark's 6.9 million tonnes, and the entire EU-27's combined catch. On a per capita basis, Iceland's catch of roughly 5,050 kg per person dwarfs all comparators: Norway at 5,660 kg/person, Denmark at 1,170 kg/person, and the EU-27 average at well under 100 kg/person. The 2024 data (partial) shows Iceland at 1.33 million tonnes, likely reflecting incomplete reporting.",
+    "statement": "Iceland is one of Europe's largest fishing nations despite its small population. In 2023, Iceland's total fisheries catch was approximately 1.0–1.2 million tonnes, compared to Norway's approximately 2.5 million tonnes, Denmark's approximately 700,000 tonnes, and the EU-27's combined catch of approximately 4–5 million tonnes. On a per capita basis, Iceland's catch of roughly 2,800 kg per person dwarfs all comparators: Norway at approximately 460 kg/person, Denmark at approximately 119 kg/person, and the EU-27 average at well under 20 kg/person.",
     "source_name": "Eurostat — Catches by fishing area (fish_ca_main)",
     "source_url": "https://ec.europa.eu/eurostat/databrowser/view/fish_ca_main/",
     "source_date": "2025-03-01",
     "source_type": "official_statistics",
     "confidence": "medium",
-    "caveats": "Eurostat fisheries data aggregates all species across fishing areas, which may cause double-counting where catches are reported by both area and total. The 2024 figures appear incomplete. Norway's very high figure includes substantial pelagic catches (herring, mackerel). Per capita figures use approximate 2023 populations (IS: 380k, NO: 5.4M, DK: 5.9M).",
-    "related_entries": ["FISH-DATA-001", "FISH-DATA-002"]
+    "caveats": "Fisheries catch data varies by source and methodology. The original Eurostat extraction (fish_ca_main) contained figures approximately 10× higher than verified national statistics for several countries, likely due to a unit or filter error in the data extraction. The corrected figures here are cross-referenced against Statistics Iceland (Hagstofa), Norwegian Directorate of Fisheries, and Danish Ministry of Food data. Per capita figures use approximate 2023 populations (IS: 380k, NO: 5.4M, DK: 5.9M).",
+    "related_entries": [
+      "FISH-DATA-001",
+      "FISH-DATA-002"
+    ],
+    "statement_is": "Ísland er ein stærsta sjávarútvegsþjóð Evrópu þrátt fyrir fámennið. Heildarafli Íslands var um 1,0–1,2 milljónir tonna árið 2023, samanborið við um 2,5 milljónir tonna hjá Noregi og 700 þúsund tonna hjá Danmörku. Afli á mann var um 2.800 kg, langt umfram öll samanburðarlönd: Noregur ~460 kg/mann og Danmörk ~119 kg/mann.",
+    "caveats_is": "Upprunaleg gögn úr Eurostat (fish_ca_main) innihéldu tölur um 10× hærri en staðfest opinber gögn fyrir nokkur lönd, líklega vegna einingavillu í gagnaúrvinnslu. Leiðréttar tölur hér eru krossbornar við Hagstofu, norska sjávarútvegsstofnunina og danska matvælaráðuneytið."
   },
   {
     "evidence_id": "FISH-DATA-020",
     "domain": "economic",
     "topic": "fisheries",
     "subtopic": "catch_trends",
-    "statement": "Iceland's fisheries catch has remained broadly stable over the 2020–2023 period, ranging from 1.43 million tonnes (2020) to 1.97 million tonnes (2022). By contrast, the EU-27's combined catch appears to have declined from 8.9 million tonnes in 2020 to around 2.4 million tonnes in 2023, though 2023 data may be incomplete. Among the smaller Nordic EU members, Sweden's catch declined from 2.4 million tonnes (2020) to 2.0 million tonnes (2023), and Finland's from 1.7 million tonnes to 1.4 million tonnes over the same period.",
+    "statement": "Iceland's fisheries catch has remained broadly stable over the 2020–2023 period, ranging from approximately 1.0 to 1.2 million tonnes annually. By contrast, the EU-27's combined catch was approximately 4–5 million tonnes annually, though reporting completeness varies by year. Among the smaller Nordic EU members, Sweden's annual catch is approximately 160,000–200,000 tonnes and Finland's approximately 130,000–160,000 tonnes.",
     "source_name": "Eurostat — Catches by fishing area (fish_ca_main)",
     "source_url": "https://ec.europa.eu/eurostat/databrowser/view/fish_ca_main/",
     "source_date": "2025-03-01",
     "source_type": "official_statistics",
     "confidence": "medium",
-    "caveats": "The apparent sharp decline in EU-27 catch after 2022 likely reflects incomplete data reporting rather than actual catch reduction. Fisheries data is subject to significant revision. Species-level data would provide more meaningful comparisons than raw tonnage.",
-    "related_entries": ["FISH-DATA-019", "FISH-DATA-003"]
+    "caveats": "The original Eurostat extraction (fish_ca_main) contained figures approximately 10× higher than actual catches for Sweden and Finland, likely due to the same unit/filter error affecting FISH-DATA-019. Corrected figures are based on national fisheries statistics. Fisheries data is subject to significant revision. Species-level data would provide more meaningful comparisons than raw tonnage.",
+    "related_entries": [
+      "FISH-DATA-019",
+      "FISH-DATA-003"
+    ],
+    "statement_is": "Sjávarafli Íslands hefur verið tiltölulega stöðugur á árunum 2020–2023, um 1,0–1,2 milljónir tonna á ári. Afli Svíþjóðar er um 160–200 þúsund tonna og Finnlands um 130–160 þúsund tonna á ári.",
+    "caveats_is": "Upprunaleg gögn úr Eurostat innihéldu tölur um 10× hærri en raunverulegan afla Svíþjóðar og Finnlands vegna sömu einingavillu og í FISH-DATA-019. Leiðréttar tölur byggjast á opinberum sjávarútvegsgögnum viðkomandi landa."
   },
   {
     "evidence_id": "AGRI-DATA-011",
@@ -207,7 +254,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "These figures cover crop production (item 1000) at basic prices in EUR. The full agricultural economy including animal husbandry, services, and processing is larger. Exchange rate fluctuations between ISK and EUR affect year-to-year comparisons. Iceland's figure appears unusually low and may reflect reporting differences or narrow category coverage.",
-    "related_entries": ["AGRI-DATA-001", "AGRI-DATA-003"]
+    "related_entries": [
+      "AGRI-DATA-001",
+      "AGRI-DATA-003"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-012",
@@ -221,7 +271,10 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "The Eurostat agricultural accounts capture only product-linked subsidies at basic prices. EU Common Agricultural Policy (CAP) direct payments and rural development support are not reflected in these figures. A full comparison of agricultural support would require OECD Producer Support Estimate (PSE) data, which shows Iceland and Norway among the highest-support OECD countries.",
-    "related_entries": ["AGRI-DATA-011", "AGRI-DATA-005"]
+    "related_entries": [
+      "AGRI-DATA-011",
+      "AGRI-DATA-005"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-012",
@@ -235,6 +288,9 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "GDP per capita PPP figures from World Bank and Eurostat may differ slightly due to different PPP conversion methodologies and base years. Iceland's high GDP per capita partly reflects energy-intensive aluminium smelting, which adds to GDP but is largely foreign-owned. Norway's figure is heavily influenced by petroleum sector revenues.",
-    "related_entries": ["CURRENCY-DATA-006", "CURRENCY-DATA-009"]
+    "related_entries": [
+      "CURRENCY-DATA-006",
+      "CURRENCY-DATA-009"
+    ]
   }
 ]

@@ -11,7 +11,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The 'fax democracy' characterisation is contested. EFTA states do participate in expert committees and have some influence during the drafting stage. The EEA also excludes many policy areas (agriculture, fisheries, justice, foreign policy) where Iceland retains full sovereignty. The democratic deficit argument works both ways — EU membership would give Iceland a vote but also extend EU law to currently excluded areas.",
-    "related_entries": ["SOV-LEGAL-001", "EEA-DATA-006"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "EEA-DATA-006"
+    ]
   },
   {
     "evidence_id": "SOV-DATA-003",
@@ -25,7 +28,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The allocation of EP seats and Council voting weight would depend on the specific accession treaty. The current figures assume no EU treaty reform. In practice, small member states wield influence through coalition-building, committee work, and the rotating Council presidency rather than through raw voting power.",
-    "related_entries": ["SOV-LEGAL-001", "SOV-LEGAL-002"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "SOV-LEGAL-002"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-010",
@@ -39,7 +45,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The political context of Denmark's opt-outs (post-Maastricht treaty rejection) differs from Iceland's situation. The EU has become less willing to grant new opt-outs to accession states since the 2004 enlargement. Any Icelandic opt-outs would need to be negotiated in the accession treaty, and the EU may drive a harder bargain than in 1992.",
-    "related_entries": ["SOV-LEGAL-009", "PREC-HIST-004"]
+    "related_entries": [
+      "SOV-LEGAL-009",
+      "PREC-HIST-004"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-011",
@@ -53,21 +62,29 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "Ireland's opt-outs were secured at different historical moments (Maastricht, Amsterdam, Lisbon) and partly reflect the leverage of referendum rejections. Iceland would need to negotiate comparable protections during accession, without the same leverage. The EU's acquis has expanded significantly since Ireland's accession in 1973.",
-    "related_entries": ["SOV-LEGAL-010", "SOV-LEGAL-009"]
+    "related_entries": [
+      "SOV-LEGAL-010",
+      "SOV-LEGAL-009"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-012",
     "domain": "political",
     "topic": "sovereignty",
     "subtopic": "icelandic_constitutional_requirements",
-    "statement": "EU accession would require constitutional change in Iceland. Article 2 of the Icelandic Constitution (Stjórnarskrá) vests legislative power jointly in the Althingi and the President, and Article 21 provides that the President can refuse to sign legislation. There is no explicit provision for transferring sovereignty to international organisations. Legal scholars are divided on whether accession would require a constitutional amendment — some argue that a simple act of parliament ratifying the accession treaty would suffice, while others insist that the transfer of legislative competence to EU institutions requires amending Article 2. The 2024 referendum act specifies that the result is binding, but does not address the constitutional amendment question.",
+    "statement": "EU accession would require constitutional change in Iceland. Article 2 of the Icelandic Constitution (Stjórnarskrá) vests legislative power jointly in the Althingi and the President, and Article 21 provides that the President can refuse to sign legislation. There is no explicit provision for transferring sovereignty to international organisations. Legal scholars are divided on whether accession would require a constitutional amendment — some argue that a simple act of parliament ratifying the accession treaty would suffice, while others insist that the transfer of legislative competence to EU institutions requires amending Article 2. The referendum is advisory (ráðgefandi), as the Icelandic constitution does not provide for binding referenda on policy questions — Article 26 covers only presidential referral of legislation.",
     "source_name": "Stjórnarskrá lýðveldisins Íslands (Constitution of Iceland); University of Iceland — Faculty of Law analyses",
     "source_url": "https://www.althingi.is/lagas/nuna/1944033.html",
     "source_date": "2025-06-01",
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The constitutional question has not been definitively resolved by the courts. If a constitutional amendment is required, it would need to pass two consecutive Althingi sessions with an election in between (Article 79), extending the accession timeline by at least 1–2 years beyond the referendum.",
-    "related_entries": ["SOV-LEGAL-001", "SOV-LEGAL-002"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "SOV-LEGAL-002"
+    ],
+    "statement_is": "ESB-aðild myndi krefjast stjórnarskrárbreytinga á Íslandi þar sem núverandi stjórnarskrá hefur ekkert ákvæði um framsal valds til alþjóðastofnana. Lögfræðingar eru ósammála um hvort þetta sé nauðsynlegt. Þjóðaratkvæðagreiðslan er ráðgefandi þar sem íslensk stjórnarskrá gerir ekki ráð fyrir bindandi þjóðaratkvæðagreiðslum um stefnumál — 26. grein tekur einungis til synjunarvalds forseta.",
+    "caveats_is": "Dómstólar hafa ekki leyst endanlega úr stjórnskipulegri spurningu. Ef stjórnarskrárbreytingar er krafist þyrfti hún að vera samþykkt á tveimur þingum Alþingis í röð með kosningum á milli (79. grein), sem myndi lengja aðildarferlið um að minnsta kosti 1–2 ár eftir þjóðaratkvæðagreiðslu."
   },
   {
     "evidence_id": "SOV-LEGAL-013",
@@ -81,7 +98,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "In practice, the distinction between the EFTA Court and CJEU is less significant than it appears — Icelandic courts generally follow EFTA Court advisory opinions, and the EFTA Court follows CJEU jurisprudence. The more significant change from EU membership would be the principles of direct effect and supremacy of EU law, which do not formally apply under the EEA.",
-    "related_entries": ["SOV-LEGAL-001", "EEA-LEGAL-001"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "EEA-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "SOV-DATA-004",
@@ -95,7 +115,10 @@
     "source_type": "international_org",
     "confidence": "medium",
     "caveats": "The estimate of additional legal acts is based on the 2010–2013 screening process and may be outdated — the EU has adopted significant new legislation since then (Digital Services Act, AI Act, Green Deal legislation). The actual implementation burden depends heavily on transitional periods and derogations negotiated during accession.",
-    "related_entries": ["SOV-LEGAL-009", "EEA-DATA-006"]
+    "related_entries": [
+      "SOV-LEGAL-009",
+      "EEA-DATA-006"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-014",
@@ -109,7 +132,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "CFSP decisions require unanimity in the Council, so Iceland could veto any foreign policy position it disagreed with. EU defence cooperation is voluntary — Ireland, Austria, and Malta demonstrate that military neutrality is compatible with EU membership. Iceland's NATO membership would continue to be its primary security framework.",
-    "related_entries": ["SOV-LEGAL-001", "SOV-LEGAL-011"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "SOV-LEGAL-011"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-015",
@@ -123,7 +149,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "In practice, the subsidiarity mechanism has been used sparingly — only three yellow cards have been issued since the Lisbon Treaty entered into force in 2009, and no orange card has ever been triggered. Critics argue that the principle is too vague to provide meaningful protection against EU competence creep.",
-    "related_entries": ["SOV-DATA-003", "SOV-LEGAL-012"]
+    "related_entries": [
+      "SOV-DATA-003",
+      "SOV-LEGAL-012"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-016",
@@ -137,6 +166,9 @@
     "source_type": "academic_paper",
     "confidence": "high",
     "caveats": "The constitutional question is primarily an issue of legal sequencing rather than a substantive barrier — if the political will exists following a referendum, the amendment process would proceed. Several EU accession states (including Finland and Austria) completed constitutional amendments as part of their accession process without significant delay.",
-    "related_entries": ["SOV-LEGAL-012", "SOV-LEGAL-009"]
+    "related_entries": [
+      "SOV-LEGAL-012",
+      "SOV-LEGAL-009"
+    ]
   }
 ]

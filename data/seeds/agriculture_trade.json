@@ -10,19 +10,27 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "High food prices reflect multiple factors: transport costs, small market, agricultural protection, import tariffs, and VAT. EU membership alone would not eliminate all price differences — Norway, also outside the EU's CAP, has similarly high food prices.",
-    "related_entries": ["AGRI-DATA-002", "AGRI-LEGAL-001"]
+    "related_entries": [
+      "AGRI-DATA-002",
+      "AGRI-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-002",
     "domain": "economic",
     "topic": "agriculture",
     "subtopic": "agricultural_protection",
-    "statement": "Iceland applies high import tariffs on many agricultural products: up to 80% on dairy products, 55% on meat, and 30–55% on various processed foods. These tariffs protect domestic agriculture but contribute to high consumer food prices.",
+    "statement": "Iceland applies high import tariffs on many agricultural products: up to 80% ad valorem on dairy products (effective tariff-rate equivalents can exceed 100% when specific duties per kg are included), 55% on meat, and 30–55% on various processed foods. These tariffs protect domestic agriculture but contribute to higher consumer prices. Under EU membership, these tariffs would be replaced by the EU's Common External Tariff and internal free trade, significantly restructuring the sector.",
     "source_name": "Icelandic customs tariff schedule — Tollskrá",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Agricultural tariffs are politically sensitive. The farming sector employs a small share of the workforce (~3%) but has significant cultural and political importance, particularly in rural areas.",
-    "related_entries": ["AGRI-DATA-001", "AGRI-LEGAL-001"]
+    "related_entries": [
+      "AGRI-DATA-001",
+      "AGRI-LEGAL-001"
+    ],
+    "statement_is": "Ísland leggur háa innflutningstolla á margar landbúnaðarafurðir: allt að 80% verðtoll á mjólkurvörur (raunverulegt tollígildi getur farið yfir 100% þegar kilógrammatollur er reiknaður inn), 55% á kjöt og 30–55% á ýmsan unninn mat. Tollarnir vernda innlendan landbúnað en stuðla að hærra matvælaverði. Með ESB-aðild myndu þessir tollar víkja fyrir sameiginlegum ytri tollum ESB og innri fríverslun.",
+    "caveats_is": "Tollar á landbúnaðarvörur eru pólitískt viðkvæmt mál. Landbúnaðurinn hefur fáa í vinnu, eða um 3% vinnuaflsins, en hefur verulega menningarlega og pólitíska þýðingu, sérstaklega í dreifbýli."
   },
   {
     "evidence_id": "AGRI-LEGAL-001",
@@ -34,7 +42,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "The net effect of CAP on Icelandic farmers would depend on how current Icelandic subsidies compare to CAP payments. Icelandic agriculture is heavily subsidised domestically, so the transition could be complex.",
-    "related_entries": ["AGRI-DATA-001", "AGRI-DATA-002"]
+    "related_entries": [
+      "AGRI-DATA-001",
+      "AGRI-DATA-002"
+    ]
   },
   {
     "evidence_id": "TRADE-DATA-001",
@@ -47,7 +58,9 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Trade shares fluctuate with commodity prices and exchange rates. The UK's departure from the EU in 2020 shifted some trade flows.",
-    "related_entries": ["TRADE-DATA-002"]
+    "related_entries": [
+      "TRADE-DATA-002"
+    ]
   },
   {
     "evidence_id": "TRADE-DATA-002",
@@ -59,7 +72,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The EEA already provides extensive market access. The incremental trade benefit of full EU membership would primarily come from agricultural/fisheries trade liberalisation and elimination of rules-of-origin requirements.",
-    "related_entries": ["TRADE-DATA-001", "EEA-LEGAL-003"]
+    "related_entries": [
+      "TRADE-DATA-001",
+      "EEA-LEGAL-003"
+    ]
   },
   {
     "evidence_id": "TRADE-COMP-001",
@@ -72,6 +88,8 @@
     "source_type": "international_org",
     "confidence": "medium",
     "caveats": "Estimating Iceland's net EU budget contribution is complex. As a high-GDP-per-capita country, Iceland would be a net contributor, but the exact amount depends on CAP receipts, structural funds, and other transfers.",
-    "related_entries": ["TRADE-DATA-001"]
+    "related_entries": [
+      "TRADE-DATA-001"
+    ]
   }
 ]

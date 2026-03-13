@@ -11,7 +11,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "CPI methodologies differ slightly between Statistics Iceland and Eurostat. Iceland's small, open economy is structurally more inflation-prone due to import dependence and exchange rate pass-through, which would not fully disappear with euro adoption.",
-    "related_entries": ["CURRENCY-DATA-001", "CURRENCY-DATA-003"]
+    "related_entries": [
+      "CURRENCY-DATA-001",
+      "CURRENCY-DATA-003"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-014",
@@ -25,7 +28,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "GDP volatility in small economies is structurally higher regardless of currency regime. Euro adoption would reduce exchange rate-driven volatility but could increase adjustment costs if asymmetric shocks occur (loss of independent monetary policy).",
-    "related_entries": ["CURRENCY-DATA-006", "CURRENCY-DATA-007"]
+    "related_entries": [
+      "CURRENCY-DATA-006",
+      "CURRENCY-DATA-007"
+    ]
   },
   {
     "evidence_id": "TRADE-DATA-019",
@@ -39,21 +45,29 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "Iceland's FDI is dominated by a few large projects (aluminium, data centres, geothermal), making flows lumpy. Negative net FDI in 2016–2020 partly reflects Icelandic pension funds diversifying internationally after capital controls were lifted in 2017, not necessarily a failure to attract foreign investment.",
-    "related_entries": ["TRADE-DATA-016", "TRADE-DATA-005"]
+    "related_entries": [
+      "TRADE-DATA-016",
+      "TRADE-DATA-005"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-015",
     "domain": "economic",
     "topic": "currency",
     "subtopic": "interest_rate_differential",
-    "statement": "The Central Bank of Iceland has consistently maintained higher interest rates than the European Central Bank. The CBI's key rate has averaged approximately 6.5% over the 2000–2025 period, compared to the ECB's average of roughly 1.5%. As of early 2026, the CBI policy rate stands at approximately 8.5%, while the ECB deposit facility rate is around 3.0%. This differential of ~5.5 percentage points translates directly into higher mortgage rates, business loan costs, and government borrowing costs. Pro-EU advocates argue that euro adoption would save Icelandic households and businesses billions of krónur annually in reduced interest expenses.",
+    "statement": "The Central Bank of Iceland has consistently maintained higher interest rates than the European Central Bank. The CBI's key rate has averaged approximately 6.5% over the 2000–2025 period, compared to the ECB's average of approximately 1.5%. As of early 2026, the CBI rate stood at 7.25% (after cumulative 2.0 percentage point cuts from 9.25%) while the ECB deposit facility rate was approximately 2.75%. This differential reflects Iceland's higher inflation, currency risk premium, and the CBI's need to defend the króna.",
     "source_name": "Central Bank of Iceland — Monetary policy decisions; ECB — Key interest rates",
     "source_url": null,
     "source_date": "2026-02-01",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Higher interest rates partly reflect Iceland's higher inflation and currency risk premium. Simply adopting the euro would not automatically deliver ECB-level rates if Iceland's fiscal position or banking sector were perceived as risky. The 2008 crisis showed that access to ECB liquidity is not guaranteed for peripheral eurozone members without conditionality.",
-    "related_entries": ["CURRENCY-DATA-001", "CURRENCY-DATA-013"]
+    "related_entries": [
+      "CURRENCY-DATA-001",
+      "CURRENCY-DATA-013"
+    ],
+    "statement_is": "Seðlabanki Íslands hefur stöðugt haldið hærri vöxtum en Seðlabanki Evrópu. Meðalstýrivextir á Íslandi voru um 6,5% á árunum 2000–2025 á móti ~1,5% hjá ESB. Í byrjun árs 2026 voru stýrivextir á Íslandi 7,25% (eftir 2,0 prósentustiga lækkun frá 9,25%) á meðan innlánsvextir ESB voru um 2,75%.",
+    "caveats_is": "Hærri vextir endurspegla að hluta til meiri verðbólgu og áhættuálag vegna gjaldmiðils á Íslandi. Að taka upp evruna eitt og sér myndi ekki sjálfkrafa tryggja vexti á pari við Seðlabanka Evrópu ef staða ríkisfjármála eða bankakerfis Íslands væri talin áhættusöm. Kreppan árið 2008 sýndi að aðgangur að lausafjárfyrirgreiðslu Seðlabanka Evrópu er ekki tryggður fyrir jaðarríki evrusvæðisins án skilyrða."
   },
   {
     "evidence_id": "EEA-DATA-006",
@@ -67,21 +81,29 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The count of incorporated legal acts includes both binding regulations/directives and non-binding recommendations/guidelines. The 75% figure is approximate and varies by methodology. Some incorporated acts are trivial (e.g., technical standards), while others have major policy impact.",
-    "related_entries": ["EEA-LEGAL-001", "SOV-LEGAL-001"]
+    "related_entries": [
+      "EEA-LEGAL-001",
+      "SOV-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "EEA-DATA-007",
     "domain": "political",
     "topic": "eea_eu_law",
     "subtopic": "eea_compliance_record",
-    "statement": "Iceland's compliance with transposing EEA-relevant EU legislation has been imperfect. As of 2025, the EFTA Surveillance Authority (ESA) reported an incorporation deficit of approximately 1.5% — meaning about 200 EEA-relevant directives had not been transposed into Icelandic law within the required deadline. ESA opened 25–35 formal infringement cases per year against Iceland in 2020–2024, comparable to medium-performing EU member states. The backlog has been a source of friction, with the EU criticising Iceland for delays in transposing financial services and data protection legislation.",
+    "statement": "Iceland's compliance with transposing EEA-relevant EU legislation has been imperfect. The EFTA Surveillance Authority (ESA) Internal Market Scoreboard reported an incorporation deficit of 2.1% (approximately 17 directives) in January 2025, improving to 1.4% (approximately 12 directives) by July 2025. The broader EEA Joint Committee incorporation backlog — covering all legal acts, not just directives — stood at approximately 400–500 outstanding acts. ESA opened 25–35 formal infringement cases per year against Iceland in 2020–2024, comparable to medium-performing EU member states.",
     "source_name": "EFTA Surveillance Authority — Internal Market Scoreboard 2024",
     "source_url": "https://www.eftasurv.int/",
     "source_date": "2025-06-01",
     "source_type": "international_org",
     "confidence": "medium",
-    "caveats": "Incorporation deficit metrics measure timeliness, not substantive compliance. Some delays reflect Iceland's small civil service capacity rather than political resistance. EU member states also have significant transposition deficits — Iceland's record is comparable to or better than several EU members.",
-    "related_entries": ["EEA-DATA-006", "EEA-LEGAL-002"]
+    "caveats": "Incorporation deficit metrics measure timeliness, not substantive compliance. The directive transposition deficit (12–17 directives out of ~800) should not be confused with the broader incorporation backlog of all legal acts (400–500). Some delays reflect Iceland's small civil service capacity rather than political resistance. EU member states also have significant transposition deficits — Iceland's record is comparable to or better than several EU members.",
+    "related_entries": [
+      "EEA-DATA-006",
+      "EEA-LEGAL-002"
+    ],
+    "statement_is": "Innleiðing Íslands á EES-löggjöf hefur ekki verið gallalaus. Samkvæmt ESA innri markaðsskýrslu var innleiðingarhalli tilskipana 2,1% (um 17 tilskipanir) í janúar 2025 og batnaði í 1,4% (um 12 tilskipanir) í júlí 2025. Breiðari innleiðingareftirstandinn — allar lagagerðir, ekki aðeins tilskipanir — var 400–500 gerðir. ESA opnaði 25–35 brotamál á ári gegn Íslandi á árunum 2020–2024.",
+    "caveats_is": "Innleiðingarhalli mælir tímanleika, ekki efnislega fylgni. Tilskipunareftirstand (12–17 tilskipanir af ~800) má ekki rugla saman við breiðari innleiðingareftirstand allra lagagerða (400–500). Sumar tafir endurspegla smæð stjórnsýslunnar fremur en pólitíska andstöðu."
   },
   {
     "evidence_id": "ENERGY-DATA-005",
@@ -95,7 +117,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "The 85% renewable share in primary energy is high but the remaining 15% is almost entirely imported fossil fuels for transport and fishing vessels. Iceland's transport sector remains heavily fossil-dependent. EU membership would bring obligations under transport decarbonisation directives.",
-    "related_entries": ["ENERGY-DATA-001", "ENERGY-DATA-003"]
+    "related_entries": [
+      "ENERGY-DATA-001",
+      "ENERGY-DATA-003"
+    ]
   },
   {
     "evidence_id": "ENERGY-DATA-006",
@@ -109,7 +134,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Iceland is not connected to the European electricity grid, so direct price convergence is currently impossible. A subsea cable project (IceLink) has been discussed but not approved. Without physical interconnection, EU energy market rules have limited practical impact on Icelandic prices.",
-    "related_entries": ["ENERGY-DATA-005", "ENERGY-ANALYSIS-001"]
+    "related_entries": [
+      "ENERGY-DATA-005",
+      "ENERGY-ANALYSIS-001"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-013",
@@ -123,7 +151,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Agricultural GDP share understates the sector's broader importance for rural communities, land stewardship, and food security on an isolated island. CAP membership would bring both tariff removal (increasing import competition) and access to CAP subsidies (which could offset some losses). The net effect is contested.",
-    "related_entries": ["AGRI-DATA-001", "AGRI-LEGAL-001"]
+    "related_entries": [
+      "AGRI-DATA-001",
+      "AGRI-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-014",
@@ -137,7 +168,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Price level comparisons reflect exchange rate effects; króna weakness inflates Iceland's position in the index. Geographic isolation and small market size contribute significantly to high prices independently of tariff policy. Norway, also outside the EU with high agricultural protection, has similarly elevated prices.",
-    "related_entries": ["AGRI-DATA-013", "AGRI-DATA-001"]
+    "related_entries": [
+      "AGRI-DATA-013",
+      "AGRI-DATA-001"
+    ]
   },
   {
     "evidence_id": "FISH-DATA-021",
@@ -151,7 +185,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Catch volumes fluctuate year to year based on quotas, fish stock assessments, and environmental conditions. The comparison is in volume (tonnes), not value; Icelandic catch is dominated by high-volume species (cod, capelin, herring) while some EU members catch higher-value species.",
-    "related_entries": ["FISH-DATA-001", "FISH-DATA-003"]
+    "related_entries": [
+      "FISH-DATA-001",
+      "FISH-DATA-003"
+    ]
   },
   {
     "evidence_id": "HOUSING-DATA-007",
@@ -165,7 +202,10 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "Cross-country housing price comparisons are complicated by differences in property types, sizes, and quality. Iceland's housing market is geographically concentrated — 65% of the population lives in the capital region. Exchange rate fluctuations affect the euro-denominated comparison significantly.",
-    "related_entries": ["HOUSING-DATA-001", "HOUSING-DATA-003"]
+    "related_entries": [
+      "HOUSING-DATA-001",
+      "HOUSING-DATA-003"
+    ]
   },
   {
     "evidence_id": "TRADE-DATA-020",
@@ -179,7 +219,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Tourism is highly seasonal and vulnerable to external shocks (volcanic eruptions, pandemics, exchange rate movements). Services trade statistics can be less reliable than goods trade data. Financial services passporting benefits depend on the depth of Iceland's financial sector, which remains limited after the 2008 banking collapse.",
-    "related_entries": ["TRADE-DATA-016", "TRADE-DATA-018"]
+    "related_entries": [
+      "TRADE-DATA-016",
+      "TRADE-DATA-018"
+    ]
   },
   {
     "evidence_id": "CURRENCY-DATA-016",
@@ -193,7 +236,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Exchange rate flexibility can be both an advantage (automatic stabiliser during asymmetric shocks) and a disadvantage (imported inflation, uncertainty for trade and investment). The optimal currency area literature suggests Iceland is too small for an independent currency, but the eurozone is arguably not an optimal currency area either.",
-    "related_entries": ["CURRENCY-DATA-013", "CURRENCY-DATA-015"]
+    "related_entries": [
+      "CURRENCY-DATA-013",
+      "CURRENCY-DATA-015"
+    ]
   },
   {
     "evidence_id": "EEA-DATA-008",
@@ -207,7 +253,10 @@
     "source_type": "international_org",
     "confidence": "medium",
     "caveats": "The EEA Grants figure is the total commitment, not annual expenditure. Iceland's hypothetical EU budget contribution is estimated based on GNI share and may not reflect negotiated rebates or transitional arrangements. Net recipient status is not guaranteed — it depends on the spending programmes Iceland would qualify for.",
-    "related_entries": ["EEA-DATA-006", "EEA-LEGAL-001"]
+    "related_entries": [
+      "EEA-DATA-006",
+      "EEA-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "TRADE-DATA-021",
@@ -221,7 +270,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "Agricultural tariff averages mask wide variation by product — some dairy tariffs exceed 100% while fresh fish enters the EU duty-free. The Iceland-China FTA has had limited trade impact so far. EU FTA access would be a net gain for most sectors, with agriculture being the main exception.",
-    "related_entries": ["TRADE-DATA-016", "AGRI-DATA-013"]
+    "related_entries": [
+      "TRADE-DATA-016",
+      "AGRI-DATA-013"
+    ]
   },
   {
     "evidence_id": "FISH-DATA-022",
@@ -235,7 +287,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "The ITQ system has been criticised for concentrating quota ownership in few hands and disadvantaging smaller fishing communities. The CFP has also reformed significantly since 2013, incorporating some rights-based management elements. Any accession negotiation would involve bespoke fisheries arrangements, not a simple adoption of the standard CFP.",
-    "related_entries": ["FISH-DATA-001", "FISH-LEGAL-001"]
+    "related_entries": [
+      "FISH-DATA-001",
+      "FISH-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "EEA-DATA-009",
@@ -249,6 +304,9 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "The pre-2013 negotiation progress does not automatically carry over. If Iceland resumes negotiations, it may need to restart some chapters due to changes in EU legislation since 2013. The political context has also shifted — the EU's stance on fisheries has hardened following Brexit negotiations.",
-    "related_entries": ["EEA-DATA-006", "PREC-HIST-001"]
+    "related_entries": [
+      "EEA-DATA-006",
+      "PREC-HIST-001"
+    ]
   }
 ]

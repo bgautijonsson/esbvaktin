@@ -11,7 +11,11 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Whether previous governments 'promised' a referendum depends on interpretation. The 2009 coalition committed to a referendum on any final accession treaty (which was never reached), not on whether to start negotiations. The characterisation that governments 'didn't keep their promise' conflates different types of commitments. Only the 2024 coalition has made an explicit commitment to a referendum on resuming negotiations per se.",
-    "related_entries": ["POLITICAL-DATA-002", "POLITICAL-DATA-010", "SOV-DATA-006"]
+    "related_entries": [
+      "POLITICAL-DATA-002",
+      "POLITICAL-DATA-010",
+      "SOV-DATA-006"
+    ]
   },
   {
     "evidence_id": "ORG-DATA-001",
@@ -25,7 +29,10 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "Employer organisation surveys reflect the views of business owners and managers, not the general public or workers. The doubling of strong opposition may reflect sampling variation, changes in SI membership composition, or genuine shifts in business sentiment. The survey methodology (sample size, response rate, question wording) has not been independently verified. SI's public position on EU membership is more nuanced than the survey results might suggest — the organisation has called for thorough economic analysis before any decision.",
-    "related_entries": ["POL-DATA-004", "POL-DATA-005"]
+    "related_entries": [
+      "POL-DATA-004",
+      "POL-DATA-005"
+    ]
   },
   {
     "evidence_id": "ORG-DATA-002",
@@ -39,21 +46,31 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "BÍ is an advocacy organisation representing farmers' interests and its position reflects those interests. Some economists and pro-EU commentators argue that BÍ overstates the risks and understates the potential benefits of CAP participation (direct payments, rural development funding, access to EU food markets). The impact on Icelandic agriculture would depend heavily on transition arrangements negotiated during accession — Finland and Sweden's experience suggests that Arctic/sub-Arctic supplements are possible.",
-    "related_entries": ["AGRI-DATA-017", "AGRI-LEGAL-004", "AGRI-DATA-016"]
+    "related_entries": [
+      "AGRI-DATA-017",
+      "AGRI-LEGAL-004",
+      "AGRI-DATA-016"
+    ]
   },
   {
     "evidence_id": "POLITICAL-DATA-012",
     "domain": "political",
     "topic": "party_positions",
     "subtopic": "vidreisn_leader_foreign_minister",
-    "statement": "Þórdís Kolbrún Reykfjörð Gylfadóttir, leader of Viðreisn (Reform Party), serves as utanríkisráðherra (Foreign Minister) in the coalition government formed in late 2024. She has been Viðreisn's leader since 2022 and was first elected to Althingi in 2016. As Foreign Minister, she has been the primary government spokesperson on the EU referendum process, including submitting the parliamentary resolution (þingsályktunartillaga) for the 29 August 2026 referendum. Her dual role as party leader of Iceland's most pro-EU party and as Foreign Minister responsible for EU relations has drawn criticism from opposition parties, who argue that the referendum process is being driven by partisan interests rather than national interest. Viðreisn has been the strongest parliamentary advocate for EU membership since the party's founding in 2016.",
+    "statement": "Þorgerður Katrín Gunnarsdóttir, leader of Viðreisn (Reform Party), serves as utanríkisráðherra (Foreign Minister) in the coalition government formed in late 2024. She has been Viðreisn's leader since 2018 and an Althingi MP since 2016. As Foreign Minister, she oversees the EU referendum process and has been the government's primary spokesperson on the question. She announced the referendum date of 29 August 2026.",
     "source_name": "Althingi — Member directory; Government of Iceland cabinet listing",
     "source_url": "https://www.althingi.is/",
     "source_date": "2026-01-01",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "The combination of party leadership and the relevant ministerial portfolio is common in Icelandic coalition politics — it is standard practice for senior coalition party leaders to hold key ministerial positions aligned with their party's policy priorities.",
-    "related_entries": ["POLITICAL-DATA-004", "POLITICAL-DATA-002", "SOV-DATA-006"]
+    "related_entries": [
+      "POLITICAL-DATA-004",
+      "POLITICAL-DATA-002",
+      "SOV-DATA-006"
+    ],
+    "statement_is": "Þorgerður Katrín Gunnarsdóttir, formaður Viðreisnar og utanríkisráðherra, hefur verið aðaltalsmaður ríkisstjórnarinnar um þjóðaratkvæðagreiðsluna og leiðir ESB-ferlið. Hún tilkynnti dagsetninguna 29. ágúst 2026.",
+    "caveats_is": "Það er algengt í íslenskum samsteypustjórnum að formaður stjórnmálaflokks fari jafnframt með það ráðherraembætti sem mestu máli skiptir fyrir flokkinn – það er hefð fyrir því að helstu leiðtogar stjórnarflokkanna gegni lykilráðherraembættum í samræmi við stefnumál flokka sinna."
   },
   {
     "evidence_id": "POLITICAL-DATA-013",
@@ -67,6 +84,10 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Political party connections across borders are normal in democratic politics — most Icelandic parties have international affiliations. The characterisation of contacts with the US Republican Party comes primarily from political opponents and media reports, and the significance of any such contacts is disputed. Sigmundur Davíð's 'Evrópubrölt' characterisation is a political opinion, not a factual claim.",
-    "related_entries": ["POLITICAL-DATA-005", "POL-DATA-020", "PARTY-DATA-012"]
+    "related_entries": [
+      "POLITICAL-DATA-005",
+      "POL-DATA-020",
+      "PARTY-DATA-012"
+    ]
   }
 ]

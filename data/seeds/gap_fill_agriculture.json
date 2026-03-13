@@ -11,7 +11,11 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "Iceland's specific CAP allocation would depend on accession negotiations. Post-2027 CAP reform discussions are ongoing and may change the budget structure substantially. The net fiscal impact for Iceland would depend on the balance between its budget contribution and CAP receipts.",
-    "related_entries": ["AGRI-DATA-001", "AGRI-LEGAL-001", "AGRI-COMP-001"]
+    "related_entries": [
+      "AGRI-DATA-001",
+      "AGRI-LEGAL-001",
+      "AGRI-COMP-001"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-016",
@@ -25,7 +29,11 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The 10-year phasing was controversial: new member states argued it created two classes of EU farmers. While direct payment levels eventually converged, the legacy gap has had lasting effects on agricultural competitiveness. Iceland would likely seek similar transitional arrangements, and might reference the Nordic precedents (Finnish/Swedish supplementary aid) for sub-Arctic farming.",
-    "related_entries": ["AGRI-LEGAL-001", "AGRI-LEGAL-002", "EEA-LEGAL-014"]
+    "related_entries": [
+      "AGRI-LEGAL-001",
+      "AGRI-LEGAL-002",
+      "EEA-LEGAL-014"
+    ]
   },
   {
     "evidence_id": "AGRI-LEGAL-004",
@@ -39,7 +47,11 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "While no formal permanent opt-outs from CAP exist, de facto variations persist. The Finnish/Swedish supplementary aid programmes constitute a form of differential treatment that has been maintained for decades. Iceland could potentially negotiate similar supplementary aid for its specific agricultural conditions. The practical impact on Icelandic agriculture would depend heavily on the transition terms and any special arrangements negotiated.",
-    "related_entries": ["AGRI-DATA-016", "EEA-LEGAL-012", "EEA-LEGAL-014"]
+    "related_entries": [
+      "AGRI-DATA-016",
+      "EEA-LEGAL-012",
+      "EEA-LEGAL-014"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-017",
@@ -53,21 +65,31 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "The PSE is a composite measure that includes both direct budget transfers and market price support (the effect of tariffs and quotas). The high Icelandic PSE partly reflects the large gap between Icelandic and world market prices, which is itself partly a function of high production costs in sub-Arctic conditions. EU membership would replace tariff protection with CAP direct payments, which could partially offset the impact — but the net effect on farm incomes is debated.",
-    "related_entries": ["AGRI-DATA-001", "AGRI-COMP-001", "AGRI-COMP-002"]
+    "related_entries": [
+      "AGRI-DATA-001",
+      "AGRI-COMP-001",
+      "AGRI-COMP-002"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-018",
     "domain": "economic",
     "topic": "agriculture",
     "subtopic": "iceland_negotiations_agriculture_chapter",
-    "statement": "During Iceland's EU accession negotiations (2010–2013), the agriculture chapter (Chapter 11) was one of the most politically sensitive negotiating chapters and was never opened for negotiations before the process was suspended in May 2013. Analytical screening of Chapter 11 was completed by the European Commission in 2011, identifying significant gaps between Iceland's agricultural policy and the EU acquis. Key issues included: Iceland's high tariff protection (incompatible with the EU customs union), the absence of CAP-compatible direct payment schemes, differences in food safety and veterinary standards, and the need to fundamentally restructure agricultural support. Of the 35 negotiating chapters, Iceland opened 27 and provisionally closed 11 — an unprecedented pace enabled by existing EEA compliance. However, the chapters not opened included the most politically difficult: Chapter 11 (agriculture), Chapter 13 (fisheries), Chapter 17 (economic and monetary policy), and Chapter 33 (financial and budgetary provisions). These same chapters would be the focus of any resumed negotiations.",
+    "statement": "During Iceland's EU accession negotiations (2010–2013), the agriculture chapter (Chapter 11) was one of the most politically sensitive negotiating chapters and was never opened for negotiations before the process was suspended in May 2013. Analytical screening of Chapter 11 was completed by the European Commission in 2011, identifying significant gaps between Iceland's agricultural policy and the EU acquis. Key issues included: Iceland's high tariff protection (incompatible with the EU customs union), the absence of CAP-compatible direct payment schemes, differences in food safety and veterinary standards, and the need to fundamentally restructure agricultural support. Of the 35 negotiating chapters, Iceland opened 27 and provisionally closed 11. However, 8 chapters were never opened, including the most politically difficult: Chapter 11 (agriculture), Chapter 12 (food safety, veterinary and phytosanitary policy), Chapter 13 (fisheries), Chapter 14 (transport policy), Chapter 17 (economic and monetary policy), Chapter 22 (regional policy), Chapter 27 (environment), and Chapter 33 (financial and budgetary provisions). These same chapters would be the focus of any resumed negotiations.",
     "source_name": "European Commission — Iceland progress reports 2011–2013; Screening report Chapter 11",
     "source_url": "https://enlargement.ec.europa.eu/enlargement-policy/negotiations-status/iceland_en",
     "source_date": "2013-05-01",
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "The agriculture chapter was not the sole reason negotiations were suspended. The Sigmundur Davíð Gunnlaugsson government (2013) suspended negotiations for broad political reasons, and the chapter not being opened was a symptom of the political complexity rather than the direct cause of suspension. The fisheries chapter was equally if not more contentious politically.",
-    "related_entries": ["AGRI-LEGAL-001", "FISH-DATA-023", "EEA-LEGAL-020"]
+    "related_entries": [
+      "AGRI-LEGAL-001",
+      "FISH-DATA-023",
+      "EEA-LEGAL-020"
+    ],
+    "statement_is": "Landbúnaðarkaflinn (11. kafli) var aldrei opnaður í aðildarviðræðum Íslands og ESB (2010–2013). Af 35 samningsköflum opnaði Ísland 27 og lokaði 11 til bráðabirgða. Átta kaflar voru aldrei opnaðir, þar á meðal þeir pólitískt viðkvæmustu: landbúnaður (11), matvælaöryggi (12), sjávarútvegur (13), samgöngustefna (14), efnahags- og peningamálastefna (17), svæðisstefna (22), umhverfismál (27) og fjármála- og fjárlagaákvæði (33).",
+    "caveats_is": "Landbúnaðarkaflinn var ekki eina ástæðan fyrir því að viðræðum var slitið. Ríkisstjórn Sigmundar Davíðs Gunnlaugssonar (2013) sleit viðræðum af víðtækum pólitískum ástæðum og sú staðreynd að kaflinn var ekki opnaður var frekar einkenni þess hversu flókin staðan var í pólitíkinni en bein orsök viðræðuslitanna. Sjávarútvegskaflinn var jafn umdeildur á pólitíska vísu, ef ekki meira."
   },
   {
     "evidence_id": "AGRI-DATA-019",
@@ -81,6 +103,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "Fisheries faces equally fundamental changes since the Common Fisheries Policy also falls outside the EEA. Whether agriculture or fisheries would represent the 'most significant' change depends on how one measures impact: by number of legislative changes required, by economic value at stake, or by political sensitivity. Fisheries is more economically significant for Iceland (approximately 5% of GDP vs 1% for agriculture) but agriculture involves more households.",
-    "related_entries": ["AGRI-DATA-017", "AGRI-DATA-018", "FISH-DATA-023"]
+    "related_entries": [
+      "AGRI-DATA-017",
+      "AGRI-DATA-018",
+      "FISH-DATA-023"
+    ]
   }
 ]

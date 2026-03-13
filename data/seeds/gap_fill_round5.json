@@ -11,7 +11,11 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "While withdrawal is legally straightforward, the Brexit experience showed it can be economically and politically disruptive. The Wightman revocation right requires the decision to be 'unequivocal and unconditional' and taken in accordance with the state's constitutional requirements. Political goodwill could be damaged by triggering and then revoking Article 50.",
-    "related_entries": ["SOV-LEGAL-001", "PREC-DATA-003", "PREC-HIST-017"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "PREC-DATA-003",
+      "PREC-HIST-017"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-020",
@@ -25,21 +29,30 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "The phasing-in schedule can be modified in accession treaty negotiations. New member states are permitted to 'top up' EU direct payments with national funds (complementary national direct payments, CNDP) during the phasing-in period. The total (EU + national) payment cannot exceed what the farmer would have received under full CAP membership. Iceland's very different agricultural structure (dominated by sheep and dairy, minimal arable) means per-hectare payments would be calculated differently.",
-    "related_entries": ["AGRI-LEGAL-001", "AGRI-DATA-018"]
+    "related_entries": [
+      "AGRI-LEGAL-001",
+      "AGRI-DATA-018"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-021",
     "domain": "economic",
     "topic": "agriculture",
     "subtopic": "article_142_supplementary_aid_finland_sweden",
-    "statement": "Article 142 of the EU's CAP regulation (originally Article 141/142 of the 1994 Act of Accession) allows Finland and Sweden to provide long-term national aid to farmers in northern regions (above the 62nd parallel and adjacent areas) to compensate for severe climatic disadvantage. This aid — approximately €560 million per year for Finland alone — supplements CAP payments and covers livestock, dairy, and horticultural production. It was negotiated as a permanent feature of their accession treaty, not a temporary transition measure, because the European Commission accepted that Arctic and sub-Arctic farming would not be viable under standard CAP support levels. Iceland, with similar or more extreme climatic conditions, could invoke this precedent to negotiate comparable supplementary aid provisions in its accession treaty.",
+    "statement": "Article 142 of the EU's CAP regulation (originally Article 141/142 of the 1994 Act of Accession) allows Finland and Sweden to provide long-term national aid to farmers in northern regions (above the 62nd parallel). Finland's actual annual spending under Article 142 is approximately €290 million per year (authorised ceiling ~€575 million per year per Commission Decision (EU) 2022/2460, roughly 90% of its total national agricultural aid). This represents a permanent derogation from normal EU state aid rules. The precedent is potentially significant for Iceland's accession negotiations, as Iceland could argue for a similar permanent aid framework for its agriculture sector, which faces comparable climate and geographic challenges to northern Finland.",
     "source_name": "Act of Accession of Austria, Finland, and Sweden (1994), Articles 141–142; European Commission Decision C(2021)1896 authorising Finnish national aid",
     "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A11994N%2FAFP",
     "source_date": "2025-06-01",
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The Article 142 precedent is specific to northern agriculture and was negotiated at a time when the EU was eager to include Nordic states. The EU's appetite for permanent derogations has decreased since the 2004 enlargement. Iceland would need to demonstrate that its agricultural conditions are genuinely comparable to northern Finland/Sweden, which is plausible given its latitude (63–66°N) but its farming is structurally different (sheep-dominated, minimal grain). The negotiation would be politically sensitive.",
-    "related_entries": ["AGRI-LEGAL-001", "AGRI-DATA-018", "AGRI-LEGAL-003"]
+    "related_entries": [
+      "AGRI-LEGAL-001",
+      "AGRI-DATA-018",
+      "AGRI-LEGAL-003"
+    ],
+    "statement_is": "Grein 142 í aðildarsáttmála Finnlands og Svíþjóðar (1994) heimilar þessum ríkjum langtíma ríkisstuðning við norðlægan landbúnað. Raunútgjöld Finnlands samkvæmt 142. grein eru um 290 milljónir evra á ári (heimilað hámark ~575 milljónir evra samkvæmt ákvörðun framkvæmdastjórnarinnar (ESB) 2022/2460). Þetta fordæmi gæti skipt máli í aðildarviðræðum Íslands þar sem íslenskur landbúnaður stendur frammi fyrir svipuðum veðurfars- og landfræðilegum áskorunum og Norður-Finnland.",
+    "caveats_is": "Fordæmið sem 142. grein skapar á sérstaklega við um landbúnað á norðurslóðum og var samið um á þeim tíma þegar ESB var fúst til að taka Norðurlöndin inn. Vilji ESB til að veita varanlegar undanþágur hefur minnkað frá stækkuninni árið 2004. Ísland þyrfti að sýna fram á að landbúnaðaraðstæður þar séu raunverulega sambærilegar við þær sem ríkja í norðurhluta Finnlands/Svíþjóðar, sem er trúverðugt í ljósi breiddargráðu landsins (63–66°N), en landbúnaður þess er byggingarlega frábrugðinn (sauðfjárrækt ríkjandi, lítil kornrækt). Samningaviðræðurnar yrðu pólitískt viðkvæmar."
   },
   {
     "evidence_id": "AGRI-LEGAL-005",
@@ -53,21 +66,30 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "Croatia's agricultural sector (~4% of GDP) is much larger relative to its economy than Iceland's (~1.2%). Croatia also had significant rural poverty that justified the extended transition and support. Iceland's agricultural challenges are different: fewer but larger farms, higher productivity per worker, different product mix. The 7-year land market restriction, while politically important for Croatia, would be less relevant for Iceland where foreign land purchases are already restricted.",
-    "related_entries": ["AGRI-DATA-020", "PREC-HIST-006"]
+    "related_entries": [
+      "AGRI-DATA-020",
+      "PREC-HIST-006"
+    ]
   },
   {
     "evidence_id": "EEA-DATA-011",
     "domain": "political",
     "topic": "eea_eu_law",
     "subtopic": "eea_democratic_deficit_quantified",
-    "statement": "Iceland's participation in the EU single market through the EEA Agreement creates a significant democratic deficit. As of 2025, the EEA Agreement has incorporated approximately 13,000 EU legal acts into Icelandic law. These acts were adopted by the EU Council and European Parliament — institutions in which Iceland has no representation. The EEA Joint Committee incorporates approximately 300–500 new EU acts per year. While the EEA EFTA states have a formal 'decision-shaping' role (participation in expert groups, consultation during drafting), they have no 'decision-making' power — no vote in Council, no MEPs, no Commissioner. The Icelandic Althingi's European Affairs Committee reviews EEA-relevant legislation, but in practice it acts as a rubber stamp: of the ~13,000 incorporated acts, Iceland has never exercised its Article 102 'right of reservation' to veto a single one. Full EU membership would replace this 'legislation without representation' with formal voting rights: a Council vote, 6+ European Parliament seats, and a European Commissioner.",
+    "statement": "Iceland's participation in the EU single market through the EEA Agreement creates a significant democratic deficit. As of 2025, the EEA Agreement has incorporated approximately 13,000 EU legal acts into Icelandic law. These acts were adopted by the EU Council and European Parliament — institutions in which Iceland has no representation. The EEA Joint Committee incorporates approximately 300–500 new EU acts per year. While the EEA EFTA states have a formal 'decision-shaping' role, they have no 'decision-making' power. Iceland has never exercised its Article 102 'right of reservation' to veto any of the ~13,000 incorporated acts. Norway, by contrast, has invoked Article 102 reservations on several occasions (including the Third Postal Directive and the AIFM Directive), though most were eventually resolved. Full EU membership would replace this 'legislation without representation' with formal voting rights: a Council vote, 6+ European Parliament seats, and a European Commissioner.",
     "source_name": "EFTA Secretariat — EEA Decision-Shaping; Althingi European Affairs Committee annual reports; Frosti Sigurjónsson, 'Iceland and the EEA: Policy Without Voice' (2023)",
     "source_url": "https://www.efta.int/eea/eea-decision-shaping",
     "source_date": "2025-12-01",
     "source_type": "expert_analysis",
     "confidence": "high",
-    "caveats": "The democratic deficit argument is sometimes overstated. The EEA excludes major policy areas (agriculture, fisheries, customs, tax, foreign and security policy, justice and home affairs) where Iceland retains full sovereignty. If Iceland joined the EU, it would gain voting rights but also extend EU law to these currently excluded areas. Small member states' voting weight is modest — Malta's influence in Council is limited. The decision-shaping tools, while weak, are not zero: Iceland's experts participate in hundreds of EU working groups.",
-    "related_entries": ["SOV-LEGAL-009", "EEA-DATA-010", "EEA-LEGAL-006"]
+    "caveats": "The democratic deficit argument is sometimes overstated. The EEA excludes major policy areas (agriculture, fisheries, customs, tax, foreign and security policy, justice and home affairs) where Iceland retains full sovereignty. If Iceland joined the EU, it would gain voting rights but also extend EU law to these currently excluded areas. Small member states' voting weight is modest — Malta's influence in Council is limited. The decision-shaping tools, while weak, are not zero: Iceland's experts participate in hundreds of EU working groups. Norway's use of Article 102 shows the reservation right is legally available, even if Iceland has chosen not to use it.",
+    "related_entries": [
+      "SOV-LEGAL-009",
+      "EEA-DATA-010",
+      "EEA-LEGAL-006"
+    ],
+    "statement_is": "EES-samningurinn skapar verulegan lýðræðishalla þar sem Ísland hefur innleitt um 13.000 lagagerðir ESB án atkvæðisréttar. Ísland hefur aldrei beitt neitunarvaldi sínu samkvæmt 102. grein, en Noregur hefur gert það nokkrum sinnum (m.a. varðandi þriðju póstþjónustutilskipunina og AIFM-tilskipunina). Full ESB-aðild myndi veita atkvæðisrétt í ráðherraráði, 6+ þingsæti í Evrópuþinginu og framkvæmdastjóra.",
+    "caveats_is": "Rökin um lýðræðishalla eru stundum ofmetin. EES-samningurinn útilokar stóra málaflokka þar sem Ísland heldur fullu fullveldi. Ef Ísland gengi í ESB fengi það atkvæðisrétt en lög ESB næðu þá einnig yfir undanskildu málaflokka. Notkun Noregs á 102. grein sýnir að neitunarvaldið er til staðar, jafnvel þótt Ísland hafi kosið að nýta það ekki."
   },
   {
     "evidence_id": "HOUSING-DATA-010",
@@ -81,7 +103,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "The indexed mortgage system has both defenders and critics. Defenders argue it protects lenders and stabilises the financial system by eliminating inflation risk on bank balance sheets. Critics (notably the IMF in its 2018 Article IV consultation) argue it transfers inflation risk to households, creates payment shock during inflation spikes, and was a contributing factor in the 2008 financial crisis. Eurozone membership would likely lead to a gradual shift away from indexed mortgages as inflation falls to ECB target levels (~2%).",
-    "related_entries": ["HOUSING-DATA-008", "HOUS-DATA-005"]
+    "related_entries": [
+      "HOUSING-DATA-008",
+      "HOUS-DATA-005"
+    ]
   },
   {
     "evidence_id": "HOUSING-DATA-011",
@@ -95,7 +120,11 @@
     "source_type": "academic_paper",
     "confidence": "high",
     "caveats": "The capitalisation effect depends critically on supply elasticity. If EU membership also stimulated construction (e.g., via structural funds, construction labour mobility, or lower building material costs), the price impact would be smaller. The Glaeser et al. estimates are based on US data and may not transfer directly to Iceland. The ECB's research also shows that monetary policy tightening from 2022 reversed some of the price gains. Any price impact would be gradual, not immediate, and would interact with other policy changes.",
-    "related_entries": ["HOUSING-DATA-009", "HOUSING-DATA-010", "HOUS-DATA-006"]
+    "related_entries": [
+      "HOUSING-DATA-009",
+      "HOUSING-DATA-010",
+      "HOUS-DATA-006"
+    ]
   },
   {
     "evidence_id": "SOV-DATA-009",
@@ -109,7 +138,10 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "US foreign policy can shift with administrations. While the institutional US position supports European integration, individual administrations (notably Trump 2017–2021) have been more sceptical of the EU. The US may have informal preferences about Iceland's strategic alignment that are not publicly stated. Iceland's strategic location in the GIUK gap gives it outsized importance for North Atlantic defence, which could theoretically factor into US calculations. However, no administration has ever publicly opposed Iceland's EU aspirations.",
-    "related_entries": ["SOV-LEGAL-008", "SOV-HIST-003"]
+    "related_entries": [
+      "SOV-LEGAL-008",
+      "SOV-HIST-003"
+    ]
   },
   {
     "evidence_id": "POLL-DATA-021",
@@ -123,7 +155,9 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "Exact polling figures vary by pollster, date, and question wording. The 42/42/16 split on membership is approximate. The negotiations-membership gap could narrow or widen during the campaign. Historical precedent from Norway (1972, 1994) and Denmark (1972) suggests that EU referendum campaigns can shift opinion significantly. The undecided voters (16%) are likely decisive and may break differently depending on campaign dynamics.",
-    "related_entries": ["POLL-DATA-020"]
+    "related_entries": [
+      "POLL-DATA-020"
+    ]
   },
   {
     "evidence_id": "POLL-DATA-022",
@@ -137,7 +171,10 @@
     "source_type": "academic_paper",
     "confidence": "medium",
     "caveats": "Framing effects are a universal feature of polling, not unique to EU questions. The specific percentage-point differences cited are approximate and vary across studies. As the referendum campaign intensifies, respondents may form firmer opinions less susceptible to framing. Deliberative polling (where respondents receive information before answering) tends to produce different results from standard polls.",
-    "related_entries": ["POLL-DATA-021", "POLL-DATA-020"]
+    "related_entries": [
+      "POLL-DATA-021",
+      "POLL-DATA-020"
+    ]
   },
   {
     "evidence_id": "PREC-DATA-010",
@@ -151,7 +188,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Emissions accounting methodologies differ (production-based vs consumption-based). On a consumption basis (including imported goods), Denmark's reduction is smaller. The offshoring argument applies to most developed economies and is not unique to EU membership. Iceland's situation is different: its electricity is already ~100% renewable, so the comparison with Danish wind success is limited. The relevance for Iceland is primarily the agricultural sector, where EU climate targets would apply but reductions have proved difficult everywhere.",
-    "related_entries": ["PREC-HIST-004", "ENERGY-DATA-006"]
+    "related_entries": [
+      "PREC-HIST-004",
+      "ENERGY-DATA-006"
+    ]
   },
   {
     "evidence_id": "POLITICAL-DATA-014",
@@ -165,7 +205,11 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "The specific voter split figures are approximate and based on polling cross-tabulations with relatively small subsamples. Flokkur fólksins's position could evolve as the referendum approaches. The party may be using the referendum as a way to express EU-scepticism while maintaining coalition stability. Internal party dynamics may not be fully visible in public polling.",
-    "related_entries": ["POLITICAL-DATA-009", "PARTY-DATA-011", "SOV-DATA-006"]
+    "related_entries": [
+      "POLITICAL-DATA-009",
+      "PARTY-DATA-011",
+      "SOV-DATA-006"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-026",
@@ -179,7 +223,11 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The 2012 precedent cuts both ways: it shows advisory referenda can be ignored, but it also generated lasting public anger about democratic legitimacy. If turnout is high and the margin clear, ignoring the result would be politically very difficult. The coalition parties have explicitly committed to resuming negotiations if the 'yes' side wins. The threshold for what constitutes a 'clear' result has not been defined — a narrow victory could create procedural and political uncertainty.",
-    "related_entries": ["SOV-DATA-005", "SOV-DATA-006", "SOV-HIST-001"]
+    "related_entries": [
+      "SOV-DATA-005",
+      "SOV-DATA-006",
+      "SOV-HIST-001"
+    ]
   },
   {
     "evidence_id": "EEA-LEGAL-022",
@@ -193,7 +241,11 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The boundary between 'EEA-relevant' and 'excluded' is not always sharp. Some EU legislation in excluded areas (e.g., financial regulation, energy, environment) is incorporated into the EEA if it has single market implications. The EEA's dynamic incorporation mechanism means the boundary shifts as new EU legislation is adopted. In practice, Iceland implements more EU law than the formal exclusions suggest.",
-    "related_entries": ["EEA-DATA-010", "SOV-LEGAL-009", "EEA-DATA-011"]
+    "related_entries": [
+      "EEA-DATA-010",
+      "SOV-LEGAL-009",
+      "EEA-DATA-011"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-022",
@@ -207,6 +259,10 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "The €80–120 million estimate is highly approximate and depends on accession treaty terms, CAP reform trajectory, and Iceland's national strategic plan choices. Article 142-type supplementary national aid (Finland/Sweden precedent) could bridge part of the gap. The loss of border protection (high agricultural tariffs would be replaced by the EU's Common External Tariff) would expose Icelandic farmers to European competition, particularly in dairy. However, sheep farming faces less direct competition due to Iceland's specific breeds and market niche.",
-    "related_entries": ["AGRI-DATA-020", "AGRI-DATA-021", "AGRI-LEGAL-001"]
+    "related_entries": [
+      "AGRI-DATA-020",
+      "AGRI-DATA-021",
+      "AGRI-LEGAL-001"
+    ]
   }
 ]

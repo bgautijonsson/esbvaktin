@@ -11,7 +11,10 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "Polling methodology and question wording vary between surveys. Some polls ask about 'applying for membership' while others ask about 'joining the EU', which can produce different results. Undecided voters remain a large and potentially decisive group.",
-    "related_entries": ["POLL-DATA-002", "POLL-DATA-003"]
+    "related_entries": [
+      "POLL-DATA-002",
+      "POLL-DATA-003"
+    ]
   },
   {
     "evidence_id": "POLL-DATA-002",
@@ -25,7 +28,9 @@
     "source_type": "academic_paper",
     "confidence": "medium",
     "caveats": "Demographic breakdowns in Icelandic polls have smaller sample sizes per subgroup (total population ~390,000), increasing margin of error for individual categories. Cross-tabulations should be interpreted with caution.",
-    "related_entries": ["POLL-DATA-001"]
+    "related_entries": [
+      "POLL-DATA-001"
+    ]
   },
   {
     "evidence_id": "POLL-DATA-003",
@@ -39,21 +44,29 @@
     "source_type": "official_statistics",
     "confidence": "medium",
     "caveats": "Issue salience is sensitive to framing and current events. Rankings may shift significantly in the months leading up to the referendum as campaign messaging intensifies.",
-    "related_entries": ["POLL-DATA-001", "POLL-DATA-002"]
+    "related_entries": [
+      "POLL-DATA-001",
+      "POLL-DATA-002"
+    ]
   },
   {
     "evidence_id": "POL-DATA-001",
     "domain": "political",
     "topic": "party_positions",
     "subtopic": "pro_membership_parties",
-    "statement": "Samfylkingin (Social Democrats) and Viðreisn (Reform Party) are the two Althingi parties that formally support EU membership. Samfylkingin has supported EU membership since 2007 and led the 2009 application process while in government. Viðreisn was founded in 2016 partly on a pro-EU platform and has consistently advocated for completing accession negotiations. Together they held approximately 17 of 63 Althingi seats after the 2024 elections.",
+    "statement": "Samfylkingin (Social Democrats) and Viðreisn (Reform Party) are the two Althingi parties that formally support EU membership. Samfylkingin has supported EU membership since 2007 and led the 2009 application process while in government. Viðreisn was founded in 2016 partly on a pro-EU platform and has consistently advocated for completing accession negotiations. Together they hold 24 of 63 Althingi seats after the 2024 elections (Samfylkingin 13, Viðreisn 11).",
     "source_name": "Althingi — Party platforms and election results",
     "source_url": "https://www.althingi.is/",
     "source_date": "2025-01-01",
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "Party positions can evolve. Individual MPs may diverge from the official party line. Seat counts reflect the most recent election and may change with by-elections or party defections.",
-    "related_entries": ["POL-DATA-002", "POL-DATA-003"]
+    "related_entries": [
+      "POL-DATA-002",
+      "POL-DATA-003"
+    ],
+    "statement_is": "Samfylkingin og Viðreisn eru einu þingflokkar Alþingis sem styðja formlega ESB-aðild. Samfylkingin hefur stutt aðild síðan 2007 og leiddi umsóknarferlið 2009, en Viðreisn var stofnuð 2016 meðal annars á ESB-vettvangi. Saman halda þau 24 af 63 þingsætum eftir kosningar 2024 (Samfylkingin 13, Viðreisn 11).",
+    "caveats_is": "Stefna flokka getur þróast. Einstakir þingmenn kunna að víkja frá opinberri flokkslínu. Sætafjöldi endurspeglar nýjustu kosningar og getur breyst með aukakosningum eða flokksflutningum."
   },
   {
     "evidence_id": "POL-DATA-002",
@@ -67,7 +80,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "The Independence Party has factions with varying views on EU engagement. Some members support the EEA but oppose full membership. Framsóknarflokkurinn's position has softened slightly in recent years, with some members open to revisiting the question.",
-    "related_entries": ["POL-DATA-001", "POL-DATA-003"]
+    "related_entries": [
+      "POL-DATA-001",
+      "POL-DATA-003"
+    ]
   },
   {
     "evidence_id": "POL-DATA-003",
@@ -81,7 +97,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "Internal party dynamics are fluid. Both parties may adopt clearer positions as the referendum approaches. Their voters' preferences do not necessarily track party leadership statements.",
-    "related_entries": ["POL-DATA-001", "POL-DATA-002"]
+    "related_entries": [
+      "POL-DATA-001",
+      "POL-DATA-002"
+    ]
   },
   {
     "evidence_id": "POL-DATA-004",
@@ -95,7 +114,10 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "SA and ASÍ are umbrella organisations whose member federations may hold divergent views. Formal position papers may differ from the views expressed by individual leaders in media.",
-    "related_entries": ["POL-DATA-005", "LABOUR-DATA-005"]
+    "related_entries": [
+      "POL-DATA-005",
+      "LABOUR-DATA-005"
+    ]
   },
   {
     "evidence_id": "POL-DATA-005",
@@ -109,6 +131,8 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "The fisheries sector's economic weight has declined relative to tourism and technology in recent decades. The sector's political influence may exceed its current GDP share due to historical importance and regional employment concentration. Any accession negotiation would likely involve special arrangements for fisheries, as was discussed during the 2010–2013 negotiations.",
-    "related_entries": ["POL-DATA-004"]
+    "related_entries": [
+      "POL-DATA-004"
+    ]
   }
 ]

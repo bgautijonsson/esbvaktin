@@ -11,7 +11,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "Internal party dynamics are complex and party congresses do not always reflect the views of the broader voter base. The party's position may evolve during the referendum campaign, particularly if business-oriented members push for a more nuanced stance.",
-    "related_entries": ["POL-DATA-002", "POLL-DATA-011"]
+    "related_entries": [
+      "POL-DATA-002",
+      "POLL-DATA-011"
+    ]
   },
   {
     "evidence_id": "POL-DATA-007",
@@ -25,7 +28,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "The Progressive Party's voter base has urbanised somewhat in recent years, potentially softening the agricultural constituency's dominance of party policy. The party's alliance patterns (often coalescing with the Independence Party) may constrain its flexibility on the EU question regardless of internal views.",
-    "related_entries": ["POL-DATA-002", "AGRI-DATA-013"]
+    "related_entries": [
+      "POL-DATA-002",
+      "AGRI-DATA-013"
+    ]
   },
   {
     "evidence_id": "POL-DATA-008",
@@ -39,7 +45,10 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Internal party dynamics are fluid and may shift significantly during the campaign. VG's position is important because its voter base (~12% of electorate) could swing the outcome. The party's ability to maintain neutrality may be tested as the campaign intensifies.",
-    "related_entries": ["POL-DATA-003", "POLL-DATA-011"]
+    "related_entries": [
+      "POL-DATA-003",
+      "POLL-DATA-011"
+    ]
   },
   {
     "evidence_id": "POL-DATA-009",
@@ -53,7 +62,10 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "The Pirate Party's influence has waned from its peak (14.5% in 2016 elections), and its current parliamentary representation is smaller. The party's decentralised decision-making structure means that official positions may not reflect the views of all members or voters.",
-    "related_entries": ["POL-DATA-003", "POLL-DATA-011"]
+    "related_entries": [
+      "POL-DATA-003",
+      "POLL-DATA-011"
+    ]
   },
   {
     "evidence_id": "POL-DATA-010",
@@ -67,21 +79,30 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "Coalition dynamics are influenced by many issues beyond EU policy. The referendum's binding nature means that coalition manipulation of the EU question is limited post-vote. However, the pace and terms of accession negotiations (if approved) would still be determined by the government of the day.",
-    "related_entries": ["POL-DATA-001", "POL-DATA-002"]
+    "related_entries": [
+      "POL-DATA-001",
+      "POL-DATA-002"
+    ]
   },
   {
     "evidence_id": "POL-DATA-011",
     "domain": "political",
     "topic": "party_positions",
     "subtopic": "cross_party_eu_groupings",
-    "statement": "The EU question cuts across traditional party lines in the Althingi. An informal cross-party pro-EU grouping includes all Viðreisn MPs (7), most Samfylkingin MPs (6 of 7), approximately half of Píratar MPs (2 of 4), and individual MPs from Left-Greens and even the Independence Party — totalling approximately 18–22 of 63 MPs who would personally favour EU membership. The anti-EU bloc is larger, comprising most Independence Party MPs (12 of 16), all Progressive Party MPs (8), all Miðflokkur MPs (5), all Flokkur fólksins MPs (3), and some Left-Green MPs — approximately 32–36 MPs. The remaining 5–13 MPs are genuinely uncommitted or follow their party's neutral stance. These numbers are estimates based on public statements and voting patterns rather than a formal count.",
+    "statement": "The EU question cuts across traditional party lines in the Althingi. Based on session 157 (following the 2024 elections), an informal cross-party pro-EU grouping includes all Viðreisn MPs (11), most Samfylkingin MPs (12–13 of 13), and individual MPs from other parties — totalling approximately 25–30 of 63 MPs who would personally favour EU membership. The sceptical bloc includes most Independence Party MPs (majority of 13), most Miðflokkur MPs (8), most Flokkur fólksins MPs (8), and most Progressive Party MPs (4) — approximately 25–30 MPs. The remaining MPs are genuinely uncommitted. Píratar lost all seats in the 2024 election. These numbers are estimates based on public statements and voting patterns rather than a formal count.",
     "source_name": "Althingi — Public statements and committee records; media analysis of MP positions",
     "source_url": null,
     "source_date": "2026-01-01",
     "source_type": "expert_analysis",
     "confidence": "medium",
-    "caveats": "MP-level counts are approximate and based on public statements, which may not reflect private views. The Althingi's composition may change before the referendum due to party switches or by-elections. The referendum result is legally binding regardless of the parliamentary balance.",
-    "related_entries": ["POL-DATA-001", "POL-DATA-002", "POL-DATA-003"]
+    "caveats": "MP-level counts are approximate and based on public statements, which may not reflect private views. The Althingi's composition may change before the referendum due to party switches or by-elections. Session 157 seat counts: Independence Party 13, Samfylkingin 13, Viðreisn 11, Miðflokkur 8, Flokkur fólksins 8, Progressive Party 4, other/independent 6.",
+    "related_entries": [
+      "POL-DATA-001",
+      "POL-DATA-002",
+      "POL-DATA-003"
+    ],
+    "statement_is": "ESB-spurningin þverar hefðbundnar flokkslínur á Alþingi. Á 157. löggjafarþingi (eftir kosningar 2024) eru um 25–30 þingmenn persónulega hlynntir ESB-aðild (allir úr Viðreisn (11), flestir úr Samfylkingunni (12–13 af 13) og einstaklingar úr öðrum flokkum) og 25–30 andvígir. Píratar misstu öll þingsæti í kosningunum 2024.",
+    "caveats_is": "Fjöldi þingmanna er áætlaður og byggður á opinberum yfirlýsingum. Sætafjöldi á 157. þingi: Sjálfstæðisflokkur 13, Samfylkingin 13, Viðreisn 11, Miðflokkur 8, Flokkur fólksins 8, Framsóknarflokkur 4."
   },
   {
     "evidence_id": "POL-DATA-012",
@@ -95,7 +116,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "SA's position reflects the interests of large, internationally oriented businesses and may not represent the views of SMEs or domestically focused firms. The fisheries sector's dissent within SA is significant given the sector's economic and political weight.",
-    "related_entries": ["POL-DATA-004", "TRADE-DATA-019"]
+    "related_entries": [
+      "POL-DATA-004",
+      "TRADE-DATA-019"
+    ]
   },
   {
     "evidence_id": "POL-DATA-013",
@@ -109,7 +133,11 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "ASÍ is a federation of individual unions with varying views. Some constituent unions (particularly in tourism and services) are more favourable to EU membership, while manufacturing and public sector unions are more sceptical. The 7–4 board vote reveals the depth of internal division.",
-    "related_entries": ["POL-DATA-004", "LABOUR-DATA-005", "LABOUR-DATA-013"]
+    "related_entries": [
+      "POL-DATA-004",
+      "LABOUR-DATA-005",
+      "LABOUR-DATA-013"
+    ]
   },
   {
     "evidence_id": "POL-DATA-014",
@@ -123,7 +151,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "LÍÚ represents quota holders (vessel owners), not fishing industry workers or fish processing companies, whose interests may differ. The CFP has reformed significantly since 2013, and any accession negotiation would involve bespoke fisheries arrangements. Iceland's negotiators achieved significant progress on fisheries in 2010–2013 before talks were suspended.",
-    "related_entries": ["POL-DATA-005", "FISH-DATA-022"]
+    "related_entries": [
+      "POL-DATA-005",
+      "FISH-DATA-022"
+    ]
   },
   {
     "evidence_id": "POL-DATA-015",
@@ -137,7 +168,10 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "The 40–60% farm closure estimate is the farmers' own projection and may overstate the impact. Transitional periods and specific support measures could be negotiated during accession. Some products (lamb, dairy) have niche export potential. The comparison with Irish CAP payments is imperfect due to different farm structures and sizes.",
-    "related_entries": ["AGRI-DATA-013", "AGRI-DATA-014"]
+    "related_entries": [
+      "AGRI-DATA-013",
+      "AGRI-DATA-014"
+    ]
   },
   {
     "evidence_id": "POL-DATA-016",
@@ -151,7 +185,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "Iceland's manufacturing sector is dominated by aluminium smelting, which is capital-intensive and employs relatively few workers. SI's pro-EU position may not reflect the views of smaller industrial firms. The CBAM issue could be addressed through bilateral negotiations without full EU membership.",
-    "related_entries": ["POL-DATA-012", "ENERGY-DATA-006"]
+    "related_entries": [
+      "POL-DATA-012",
+      "ENERGY-DATA-006"
+    ]
   },
   {
     "evidence_id": "POL-DATA-017",
@@ -165,7 +202,10 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "GDP growth estimates from membership are model-dependent and vary widely. The Chamber's assessment may overweight the benefits to internationally oriented firms while underweighting adjustment costs for domestically focused sectors. Similar GDP boost estimates for other accession countries have sometimes proved optimistic.",
-    "related_entries": ["POL-DATA-012", "TRADE-DATA-019"]
+    "related_entries": [
+      "POL-DATA-012",
+      "TRADE-DATA-019"
+    ]
   },
   {
     "evidence_id": "POL-DATA-018",
@@ -179,6 +219,9 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "The net financial benefit of full vs associated Horizon Europe participation depends on Iceland's success rate in competitive grant applications. Associated country status already provides significant access. The academic community is not a unified political actor, and individual researchers hold diverse views.",
-    "related_entries": ["POL-DATA-016", "EEA-DATA-008"]
+    "related_entries": [
+      "POL-DATA-016",
+      "EEA-DATA-008"
+    ]
   }
 ]

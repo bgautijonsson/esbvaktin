@@ -9,7 +9,9 @@
     "source_type": "academic_paper",
     "confidence": "high",
     "caveats": "Despite rejecting EU membership twice, Norway joined the EEA in 1994, creating the 'best of both worlds' or 'worst of both worlds' arrangement depending on perspective.",
-    "related_entries": ["PREC-HIST-002"]
+    "related_entries": [
+      "PREC-HIST-002"
+    ]
   },
   {
     "evidence_id": "PREC-HIST-002",
@@ -21,7 +23,9 @@
     "source_type": "academic_paper",
     "confidence": "medium",
     "caveats": "Norway's economic situation is not directly comparable to Iceland's due to petroleum wealth (Government Pension Fund Global worth ~$1.7 trillion). Norway's success outside the EU does not necessarily predict Iceland's trajectory.",
-    "related_entries": ["PREC-HIST-001"]
+    "related_entries": [
+      "PREC-HIST-001"
+    ]
   },
   {
     "evidence_id": "PREC-HIST-003",
@@ -35,19 +39,26 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Brexit's full economic impact is difficult to isolate from COVID-19 effects and other factors. The UK's departure from a large existing trading bloc is a fundamentally different situation from Iceland potentially joining the EU.",
-    "related_entries": ["SOV-LEGAL-001", "FISH-LEGAL-005"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "FISH-LEGAL-005"
+    ]
   },
   {
     "evidence_id": "PREC-HIST-004",
     "domain": "precedent",
     "topic": "precedents",
     "subtopic": "iceland_negotiations",
-    "statement": "Iceland opened EU accession negotiations in July 2010 under the Social Democrat-led government. Of 33 negotiation chapters, 27 were screened, 11 were formally opened, and none were provisionally closed. The most contentious chapter (13: Fisheries) was never opened. The centre-right government elected in 2013 froze negotiations, and Iceland formally withdrew its application in March 2015.",
+    "statement": "Iceland opened EU accession negotiations in July 2010 under the Social Democrat-led government. Of 33 negotiation chapters, 27 were opened and 11 were provisionally closed — an unprecedented pace enabled by existing EEA compliance. The most contentious chapter (13: Fisheries) was among the 8 chapters never opened. The centre-right government elected in 2013 froze negotiations, and Iceland formally withdrew its application in March 2015.",
     "source_name": "European Commission — Iceland accession progress reports",
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "The 2010–2015 negotiations provide a useful starting point, but conditions have changed significantly since then (post-COVID economy, geopolitical shifts, EU reforms).",
-    "related_entries": ["PREC-HIST-005"]
+    "related_entries": [
+      "PREC-HIST-005"
+    ],
+    "statement_is": "Ísland hóf aðildarviðræður við ESB í júlí 2010 undir forystu Samfylkingarinnar. Af 33 samningsköflum voru 27 opnaðir og 11 lokaðir til bráðabirgða — óvenjuhraður framgangur vegna EES-aðlögunar. Kafli 13 um sjávarútveg var meðal 8 kafla sem aldrei voru opnaðir. Miðjuhægri ríkisstjórnin sem tók við 2013 frysti viðræðurnar og Ísland dró umsókn sína til baka í mars 2015.",
+    "caveats_is": "Samningaviðræðurnar 2010–2015 voru gagnlegur upphafspunktur en aðstæður hafa breyst verulega síðan þá (hagkerfið eftir COVID, geópólitískar breytingar, umbætur innan ESB)."
   },
   {
     "evidence_id": "PREC-HIST-005",
@@ -59,7 +70,9 @@
     "source_type": "academic_paper",
     "confidence": "high",
     "caveats": "The current referendum context (2026) is different: it is not crisis-driven, and geopolitical factors (Russia-Ukraine war, Arctic security) play a more prominent role than in 2009.",
-    "related_entries": ["PREC-HIST-004"]
+    "related_entries": [
+      "PREC-HIST-004"
+    ]
   },
   {
     "evidence_id": "PREC-HIST-006",
@@ -71,7 +84,9 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "Croatia's accession process is instructive but not directly comparable: Croatia had far more chapters requiring reform (judiciary, anti-corruption) than Iceland would, given Iceland's existing EEA implementation.",
-    "related_entries": ["PREC-HIST-004"]
+    "related_entries": [
+      "PREC-HIST-004"
+    ]
   },
   {
     "evidence_id": "PREC-HIST-007",
@@ -83,6 +98,8 @@
     "source_type": "international_org",
     "confidence": "high",
     "caveats": "The Swiss bilateral model is sometimes cited as an alternative to EU membership, but the EU has signalled it will not extend this model to other countries. Switzerland's situation is also complicated by ongoing institutional framework negotiations.",
-    "related_entries": ["EEA-LEGAL-003"]
+    "related_entries": [
+      "EEA-LEGAL-003"
+    ]
   }
 ]

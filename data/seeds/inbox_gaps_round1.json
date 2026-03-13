@@ -11,7 +11,11 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "Article 142 aid is not a 'permanent derogation from the CAP' — it supplements CAP payments rather than replacing them. Finland and Sweden still fully implement the CAP; the national aid is additional. The aid must not lead to increased production or exceed pre-accession support levels. Whether Iceland could negotiate similar provisions depends on its accession terms, and no two accessions are identical.",
-    "related_entries": ["AGRI-DATA-004", "AGRI-COMP-001", "PREC-HIST-001"]
+    "related_entries": [
+      "AGRI-DATA-004",
+      "AGRI-COMP-001",
+      "PREC-HIST-001"
+    ]
   },
   {
     "evidence_id": "AGRI-LEGAL-003",
@@ -25,7 +29,11 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "The fact that agriculture was never opened means there is no precedent from the 2010–2013 round for what terms Iceland might achieve. Any resumed negotiations would effectively start from scratch on this chapter. The EU's agricultural acquis has also evolved significantly since 2013 (new CAP 2023–2027, Green Deal, Farm to Fork).",
-    "related_entries": ["AGRI-LEGAL-001", "AGRI-LEGAL-002", "AGRI-DATA-004"]
+    "related_entries": [
+      "AGRI-LEGAL-001",
+      "AGRI-LEGAL-002",
+      "AGRI-DATA-004"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-008",
@@ -39,7 +47,11 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "The practical impact depends heavily on transition periods and any special provisions Iceland might negotiate. Iceland's high production costs (small scale, harsh climate, expensive labour) mean that even with full market access, Icelandic agricultural exports would remain small. The main impact would be on import competition, not export opportunities.",
-    "related_entries": ["AGRI-LEGAL-001", "AGRI-DATA-004", "EEA-LEGAL-001"]
+    "related_entries": [
+      "AGRI-LEGAL-001",
+      "AGRI-DATA-004",
+      "EEA-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "AGRI-DATA-009",
@@ -53,21 +65,31 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "These studies predate the current CAP (2023–2027) and were produced during the 2010–2013 negotiation period. Actual impacts would depend on negotiated terms (transition periods, national aid provisions, rural development allocations). Both sides of the debate have incentives to present extreme scenarios. Iceland's agricultural sector has also evolved since 2012.",
-    "related_entries": ["AGRI-DATA-003", "AGRI-DATA-004", "AGRI-LEGAL-002"]
+    "related_entries": [
+      "AGRI-DATA-003",
+      "AGRI-DATA-004",
+      "AGRI-LEGAL-002"
+    ]
   },
   {
     "evidence_id": "POLL-DATA-014",
     "domain": "political",
     "topic": "polling",
     "subtopic": "march_2026_gallup",
-    "statement": "The Gallup Þjóðarpúls survey conducted February–March 2026 (sample size approximately 9,958, participation rate 43.3%) showed 42% of Icelanders support EU membership and 42% oppose it, with approximately 16% undecided. This represents a statistical dead heat, consistent with the trend of gradually rising support from ~35% in 2022 to ~45% in late 2025, now stabilising. A separate question on the upcoming referendum found 52% favour continuing EU accession negotiations versus 48% opposed — a higher figure than membership support, reflecting voters who want negotiations to proceed without necessarily supporting the end result of membership.",
+    "statement": "The Gallup Þjóðarpúls survey conducted February–March 2026 (sample size approximately 1,898, response rate 42.7%, yielding approximately 810 completed responses) showed 42% of Icelanders support EU membership and 42% oppose it, with approximately 16% undecided. A separate question about the referendum process showed 57% support for holding a referendum on whether to open accession negotiations, approximately 30% opposed, and ~13% undecided.",
     "source_name": "Gallup Ísland — Þjóðarpúls, February–March 2026",
     "source_url": "https://www.gallup.is/nidurstodur/thjodarpuls/",
     "source_date": "2026-03-01",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "The 42/42 split is within the margin of error. Online panel surveys (which Gallup Þjóðarpúls uses) may under-represent older and rural voters who tend to be more EU-sceptic. The gap between 'support negotiations' (52%) and 'support membership' (42%) is significant — roughly 10% of voters want to negotiate but are not yet committed to joining.",
-    "related_entries": ["POLL-DATA-001", "POLL-DATA-004", "POLL-DATA-007"]
+    "related_entries": [
+      "POLL-DATA-001",
+      "POLL-DATA-004",
+      "POLL-DATA-007"
+    ],
+    "statement_is": "Þjóðarpúls Gallup (febrúar–mars 2026, n≈1.898, svarhlutfall 42,7%, um 810 fullkláruð svör) sýndi 42% Íslendinga hlynnt ESB-aðild og 42% á móti, með um 16% óákveðna. Sérstök spurning um þjóðaratkvæðagreiðslu sýndi 57% stuðning við að halda hana.",
+    "caveats_is": "Þetta 42/42 jafntefli er innan skekkjumarka. Vefkannanir með þátttökuhópum (sem Gallup Þjóðarpúls notar) geta vanmetið eldri kjósendur og kjósendur á landsbyggðinni sem eru gjarnan efins um ESB. Bilið milli þeirra sem „styðja viðræður“ (52%) og þeirra sem „styðja aðild“ (42%) er umtalsvert — um það bil 10% kjósenda vilja semja en eru ekki enn staðráðnir í að ganga í sambandið."
   },
   {
     "evidence_id": "POLL-DATA-015",
@@ -81,7 +103,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "These figures are for 'continuing negotiations' not 'supporting membership', so the gender gap on the ultimate membership question may differ. The survey had approximately 800 respondents, meaning gender subsamples are around 400 each with correspondingly wider margins of error.",
-    "related_entries": ["POLL-DATA-014", "POLL-DATA-007"]
+    "related_entries": [
+      "POLL-DATA-014",
+      "POLL-DATA-007"
+    ]
   },
   {
     "evidence_id": "POLL-DATA-016",
@@ -95,7 +120,11 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Party subsamples are small (especially for smaller parties), so individual party breakdowns have wide margins of error. The survey measures support for 'continuing negotiations' rather than EU membership per se. Flokkur fólksins, which is in the coalition but EU-sceptic, may have split voters — this is not detailed in the published results.",
-    "related_entries": ["POLL-DATA-014", "POLL-DATA-015", "POLITICAL-DATA-001"]
+    "related_entries": [
+      "POLL-DATA-014",
+      "POLL-DATA-015",
+      "POLITICAL-DATA-001"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-017",
@@ -109,7 +138,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "Article 24 creates a consultation obligation, not a veto power — the Foreign Affairs Committee advises but the government retains decision-making authority. The 'urgent necessity' exception is undefined and has been criticised as too broad. The EEA consultation rules referenced in the second paragraph are set by the Presidium and can be amended without legislation.",
-    "related_entries": ["SOV-LEGAL-001", "EEA-LEGAL-001"]
+    "related_entries": [
+      "SOV-LEGAL-001",
+      "EEA-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-018",
@@ -123,7 +155,10 @@
     "source_type": "legal_text",
     "confidence": "high",
     "caveats": "The Icelandic Constitution does not explicitly require referenda for EU accession — it is a political choice by the government. Article 26 of the Constitution addresses presidential referral of legislation, not citizen-initiated referenda. The binding nature of the referendum depends on the specific legislation passed by Alþingi. Some critics argue the government should have held a broader public consultation process before setting the referendum date.",
-    "related_entries": ["SOV-LEGAL-017", "SOV-LEGAL-001"]
+    "related_entries": [
+      "SOV-LEGAL-017",
+      "SOV-LEGAL-001"
+    ]
   },
   {
     "evidence_id": "POL-DATA-019",
@@ -137,7 +172,11 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "BÍ's position represents the institutional stance of the association's leadership, not necessarily all individual farmers. The 'minimum requirements' approach suggests tacit acknowledgment that membership remains possible and preparations should be made. BÍ is one of Iceland's most influential interest groups and has significant lobbying power, particularly through Framsóknarflokkurinn (Progressive Party), historically the farmers' party.",
-    "related_entries": ["AGRI-DATA-004", "AGRI-LEGAL-003", "AGRI-DATA-009"]
+    "related_entries": [
+      "AGRI-DATA-004",
+      "AGRI-LEGAL-003",
+      "AGRI-DATA-009"
+    ]
   },
   {
     "evidence_id": "POL-DATA-020",
@@ -151,7 +190,11 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "Party positions can shift, especially as the referendum approaches and the campaign intensifies. Internal divisions exist within all parties — Sjálfstæðisflokkurinn has a pro-business wing that is more open to EU membership, and individual MPs may break with party lines. The 4-seat Framsóknarflokkurinn is diminished from its historical strength and its position carries less weight than in previous decades.",
-    "related_entries": ["POLITICAL-DATA-001", "POLITICAL-DATA-002", "POLL-DATA-016"]
+    "related_entries": [
+      "POLITICAL-DATA-001",
+      "POLITICAL-DATA-002",
+      "POLL-DATA-016"
+    ]
   },
   {
     "evidence_id": "POL-DATA-021",
@@ -165,6 +208,10 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "Coalition dynamics could shift if the referendum result goes against the government's position. Flokkur fólksins' participation in a pro-EU coalition while opposing membership creates a credibility tension for both sides. The coalition's durability may depend on keeping the EU question compartmentalised from other policy areas.",
-    "related_entries": ["POLITICAL-DATA-001", "POLITICAL-DATA-002", "POL-DATA-020"]
+    "related_entries": [
+      "POLITICAL-DATA-001",
+      "POLITICAL-DATA-002",
+      "POL-DATA-020"
+    ]
   }
 ]

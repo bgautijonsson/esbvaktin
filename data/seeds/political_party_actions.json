@@ -11,7 +11,11 @@
     "source_type": "expert_analysis",
     "confidence": "high",
     "caveats": "The legal status of Iceland's application remains disputed. The EU has never formally acknowledged the withdrawal, and the European Commission stated in March 2026 that the application is still valid. Icelandic legal scholars disagree on whether a foreign minister's letter can override a parliamentary process.",
-    "related_entries": ["POLITICAL-DATA-002", "POLITICAL-DATA-001", "PARTY-DATA-013"]
+    "related_entries": [
+      "POLITICAL-DATA-002",
+      "POLITICAL-DATA-001",
+      "PARTY-DATA-013"
+    ]
   },
   {
     "evidence_id": "PARTY-DATA-012",
@@ -25,7 +29,10 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "The specific nature and extent of Miðflokkurinn's international contacts are based on media reporting and have not been independently verified in full. The party has not published a formal statement confirming or denying all reported meetings. The ECR alignment is informal as Iceland is not an EU member.",
-    "related_entries": ["POLITICAL-DATA-001", "POLITICAL-DATA-005"]
+    "related_entries": [
+      "POLITICAL-DATA-001",
+      "POLITICAL-DATA-005"
+    ]
   },
   {
     "evidence_id": "PARTY-DATA-013",
@@ -39,20 +46,30 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Flokkur fólksins is EU-sceptic despite being in the coalition. Their agreement to hold a referendum does not imply support for EU membership or resuming negotiations. The coalition holds a slim five-seat majority (32 of 63 seats).",
-    "related_entries": ["POLITICAL-DATA-002", "POLITICAL-DATA-003", "PARTY-DATA-011"]
+    "related_entries": [
+      "POLITICAL-DATA-002",
+      "POLITICAL-DATA-003",
+      "PARTY-DATA-011"
+    ]
   },
   {
     "evidence_id": "SOV-LEGAL-007",
     "domain": "political",
     "topic": "sovereignty",
     "subtopic": "revolving_door_legislation",
-    "statement": "Sjálfstæðisflokkurinn (Independence Party) introduced a bill in Althingi proposing an 18-month cooling-off period that would prevent senior officials and ministerial advisors involved in negotiations with international organisations from accepting positions with those organisations after leaving office. The bill was introduced in the context of potential EU accession negotiations, framed as a safeguard against conflicts of interest. Similar 'revolving door' regulations exist at the EU institutional level: EU Commissioners face an 18-month cooling-off period (extended to 24 months for the Commission President), and the European Ombudsman has called for stricter enforcement. Several EU member states, including France and Germany, have analogous rules for senior civil servants.",
+    "statement": "Sjálfstæðisflokkurinn (Independence Party) introduced a bill in Althingi proposing an 18-month cooling-off period that would prevent senior officials and ministerial advisors involved in negotiations from taking positions with international organisations for 18 months after leaving office. The bill mirrors but is shorter than the EU's own revolving-door rules, which impose a 2-year cooling-off period on departing Commissioners (extended to 3 years for the Commission President), as set out in the Code of Conduct C(2018) 700 and Article 245 TFEU.",
     "source_name": "Alþingi bill database; EU Staff Regulations Art. 16; European Ombudsman recommendations",
     "source_url": "https://www.althingi.is/",
     "source_date": "2026-03-01",
     "source_type": "legal_text",
     "confidence": "medium",
     "caveats": "The bill's exact status in Althingi (whether it has been debated, referred to committee, or voted on) requires verification from the Althingi bill database. The comparison with EU-level cooling-off periods is contextual — the Icelandic bill's scope and enforcement mechanisms may differ substantially.",
-    "related_entries": ["POLITICAL-DATA-001", "PARTY-DATA-013", "SOV-LEGAL-001"]
+    "related_entries": [
+      "POLITICAL-DATA-001",
+      "PARTY-DATA-013",
+      "SOV-LEGAL-001"
+    ],
+    "statement_is": "Sjálfstæðisflokkurinn lagði fram frumvarp á Alþingi um 18 mánaða biðtíma sem myndi banna háttsettum embættismönnum að þiggja stöður hjá alþjóðastofnunum eftir að þeir láta af embætti. Þetta er styttra en reglur ESB sjálfs, sem kveða á um 2 ára biðtíma fyrir fráfarandi framkvæmdastjóra (3 ár fyrir forseta framkvæmdastjórnarinnar) samkvæmt siðareglum C(2018) 700.",
+    "caveats_is": "Til að fá staðfestingu á nákvæmri stöðu frumvarpsins á Alþingi (hvort það hafi verið rætt, því vísað til nefndar eða atkvæðagreiðsla farið fram um það) þarf að leita í frumvarpagagnagrunni Alþingis. Samanburður við umhugsunarfresti á vettvangi ESB er háður samhengi — gildissvið og framfylgdarúrræði íslenska frumvarpsins kunna að vera verulega frábrugðin."
   }
 ]

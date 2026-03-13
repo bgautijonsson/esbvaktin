@@ -4,14 +4,20 @@
     "domain": "economic",
     "topic": "housing",
     "subtopic": "ecb_vs_iceland_mortgage_rates",
-    "statement": "There is a significant structural difference between mortgage interest rates in Iceland and the euro area. The European Central Bank's MFI interest rate statistics show that the average interest rate on new housing loans in the euro area ranged from approximately 3.2% to 3.8% in late 2025/early 2026, depending on the fixation period and member state. In contrast, Seðlabanki Íslands data shows average interest rates on new indexed housing loans (verðtryggð lán) in Iceland at approximately 7.5–8.5% in the same period. However, this comparison is structurally misleading without context: Icelandic indexed mortgages adjust the principal for inflation (CPI-linked), meaning the effective real interest rate is lower than the nominal rate — a borrower pays, say, 4% real plus inflation adjustment, rather than 8% nominal. Euro area mortgages are predominantly nominal (not inflation-indexed). The appropriate comparison is between the real rates or between total cost of borrowing over the loan lifetime, not between nominal figures from structurally different systems.",
+    "statement": "There is a significant structural difference between mortgage interest rates in Iceland and the euro area. The European Central Bank's MFI interest rate statistics show that the average interest rate on new housing loans in the euro area ranged from approximately 3.2% to 3.8% in late 2025/early 2026, depending on the fixation period and member state. In contrast, Seðlabanki Íslands data shows average interest rates on new non-indexed variable-rate housing loans (óverðtryggð lán) in Iceland at approximately 7.5–8.5%, while indexed mortgages (verðtryggð lán) carry a nominal rate of 3.5–5.5% plus CPI adjustment. The comparison is structurally complex: Icelandic indexed mortgages adjust the principal for inflation, meaning the effective real interest rate is lower than the nominal rate. Euro area mortgages are predominantly nominal (not inflation-indexed). The appropriate comparison is between total cost of borrowing over the loan lifetime, not between nominal figures from structurally different systems.",
     "source_name": "European Central Bank — Statistical Data Warehouse: MFI interest rate statistics; Seðlabanki Íslands — Financial Stability report",
     "source_url": "https://www.ecb.europa.eu/stats/financial_markets_and_interest_rates/bank_interest_rates/html/index.en.html",
     "source_date": "2026-01-15",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Joining the euro would not automatically bring Icelandic mortgage rates to euro area levels. Domestic risk premia, bank funding costs, housing market conditions, and credit risk assessments would still affect rates. Nordic countries (Finland) that use the euro have had mortgage rates slightly higher than the euro area average. Iceland's small banking sector and concentrated housing market could maintain higher spreads even with euro adoption. Non-indexed Icelandic variable-rate mortgages exist at lower nominal rates but carry different risk profiles.",
-    "related_entries": ["HOUSING-DATA-001", "HOUSING-DATA-003", "CURRENCY-DATA-006"]
+    "related_entries": [
+      "HOUSING-DATA-001",
+      "HOUSING-DATA-003",
+      "CURRENCY-DATA-006"
+    ],
+    "statement_is": "Mikill skipulagsmunur er á húsnæðislánum á Íslandi og á evrusvæðinu. Óverðtryggð lán á Íslandi bera 7,5–8,5% nafnvexti en verðtryggð lán bera 3,5–5,5% nafnvexti auk verðbótaþáttar. Meðalvextir á nýjum húsnæðislánum á evrusvæðinu voru 3,2–3,8%. Samanburður á nafnvöxtum er villandi þar sem um 80% íslenskra húsnæðislána eru verðtryggð og höfuðstóll þeirra hækkar með verðbólgu.",
+    "caveats_is": "Aðild að evrusvæðinu myndi ekki sjálfkrafa færa íslenska húsnæðislánavexti niður á það stig sem gildir á evrusvæðinu. Innlend áhættuálög, fjármögnunarkostnaður banka, aðstæður á húsnæðismarkaði og mat á lánshæfisáhættu hefðu enn áhrif á vexti. Norðurlönd (Finnland) sem nota evru hafa verið með örlítið hærri húsnæðislánavexti en meðaltal evrusvæðisins. Smæð bankakerfisins á Íslandi og samþjappaður húsnæðismarkaður gætu viðhaldið hærra vaxtamunarbili jafnvel þótt evran yrði tekin upp. Óverðtryggð íslensk lán með breytilegum vöxtum eru í boði á lægri nafnvöxtum en búa yfir annars konar áhættusniði."
   },
   {
     "evidence_id": "HOUSING-DATA-009",
@@ -25,6 +31,10 @@
     "source_type": "academic_paper",
     "confidence": "high",
     "caveats": "The relationship between interest rates and housing prices depends crucially on supply elasticity. In markets where housing supply responds quickly to demand (elastic supply), lower rates may lead to more construction rather than higher prices. Iceland's housing supply is relatively inelastic due to construction constraints, planning restrictions, high material costs, and a small labour market — making it particularly vulnerable to demand-driven price inflation from lower rates. Some economists argue that stable, predictable rates (even if higher) produce better housing market outcomes than volatile rates.",
-    "related_entries": ["HOUSING-DATA-008", "HOUSING-DATA-001", "HOUSING-ANALYSIS-001"]
+    "related_entries": [
+      "HOUSING-DATA-008",
+      "HOUSING-DATA-001",
+      "HOUSING-ANALYSIS-001"
+    ]
   }
 ]

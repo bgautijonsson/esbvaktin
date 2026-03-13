@@ -11,7 +11,10 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "The crisis had multiple causes beyond currency policy, including excessive banking sector growth, inadequate regulation, and global financial contagion. The króna's depreciation also aided the subsequent export-led recovery by making Icelandic goods and tourism cheaper.",
-    "related_entries": ["CURR-DATA-002", "CURR-DATA-003"]
+    "related_entries": [
+      "CURR-DATA-002",
+      "CURR-DATA-003"
+    ]
   },
   {
     "evidence_id": "CURR-DATA-002",
@@ -25,35 +28,48 @@
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Capital controls were considered necessary for macroeconomic stability in the crisis aftermath. Some economists argue they protected the recovery. The experience is cited by both sides of the EU debate: pro-EU advocates argue euro adoption would eliminate the need for such controls, while opponents note that eurozone members faced their own severe crises without the devaluation option.",
-    "related_entries": ["CURR-DATA-001", "CURR-DATA-005"]
+    "related_entries": [
+      "CURR-DATA-001",
+      "CURR-DATA-005"
+    ]
   },
   {
     "evidence_id": "CURR-DATA-003",
     "domain": "economic",
     "topic": "currency",
     "subtopic": "inflation_comparison",
-    "statement": "Iceland has experienced significantly higher and more volatile inflation than the eurozone over the past two decades. Average annual CPI inflation in Iceland was approximately 5.5% over 2005–2025, compared to approximately 2.1% in the eurozone over the same period. Iceland's inflation peaked at 18.6% in January 2009 during the crisis and reached 10.2% in 2022–2023 during the global inflation surge. The eurozone peaked at 10.6% in October 2022 but returned below 3% by late 2023, while Icelandic inflation remained above 6% through most of 2024.",
+    "statement": "Iceland has experienced significantly higher and more volatile inflation than the eurozone over the past two decades. Average annual CPI inflation in Iceland was approximately 5.5% over 2005–2025, compared to approximately 2.1% in the eurozone over the same period. Iceland's annual average CPI inflation peaked at 12.7% in 2008 during the financial crisis (the 12-month year-on-year reading reached 18.6% in January 2009) and reached 10.2% in 2022–2023 during the global inflation surge. The eurozone peaked at 10.6% in October 2022 but returned below 3% by late 2023, while Icelandic inflation remained above 6% through most of 2024.",
     "source_name": "Hagstofa Íslands — Consumer price index; Eurostat — HICP",
     "source_url": null,
     "source_date": "2025-12-01",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Inflation comparisons should account for differences in basket composition and housing market dynamics. Iceland's small, open economy is structurally more inflation-prone due to import dependence and wage-bargaining patterns. Euro adoption would not automatically deliver eurozone inflation rates, as seen in the varied inflation experiences of Baltic states after euro adoption.",
-    "related_entries": ["CURR-DATA-001", "CURR-DATA-004"]
+    "related_entries": [
+      "CURR-DATA-001",
+      "CURR-DATA-004"
+    ],
+    "statement_is": "Verðbólga á Íslandi hefur verið mun hærri og sveiflukenndari en á evrusvæðinu síðustu tvo áratugi. Meðalverðbólga á Íslandi var um 5,5% á árunum 2005–2025 samanborið við 2,1% á evrusvæðinu. Meðalársverðbólga náði hámarki í 12,7% árið 2008 í fjármálakreppunni (12 mánaða breytingin fór hæst í 18,6% í janúar 2009) og 10,2% árið 2022–2023.",
+    "caveats_is": "Í verðbólgusamanburði þarf að taka tillit til mismunandi samsetningar vörukörfu og þróunar á húsnæðismarkaði. Ísland, sem er lítið og opið hagkerfi, er í eðli sínu viðkvæmara fyrir verðbólgu vegna innflutningsháðar og kjarasamningahefðar. Upptaka evru myndi ekki sjálfkrafa skila verðbólgu á pari við evrusvæðið, líkt og sést á ólíkri reynslu Eystrasaltsríkjanna af verðbólgu eftir upptöku evrunnar."
   },
   {
     "evidence_id": "CURR-DATA-004",
     "domain": "economic",
     "topic": "currency",
     "subtopic": "interest_rate_differential",
-    "statement": "The Central Bank of Iceland's policy rate has consistently been significantly higher than the European Central Bank's rate. As of early 2026, the CBI policy rate stood at approximately 8.0%, compared to the ECB's main refinancing rate of around 2.75%. This differential reflects Iceland's higher inflation, smaller and less liquid financial markets, and currency risk premium. The spread has averaged roughly 4–6 percentage points over the past decade, translating into higher mortgage rates (~7–9% in Iceland vs ~3–4% in the eurozone) and higher cost of capital for businesses.",
+    "statement": "The Central Bank of Iceland's policy rate has consistently been significantly higher than the European Central Bank's rate. As of early 2026, the CBI policy rate stood at 7.25%, compared to the ECB's deposit facility rate of approximately 2.75%. This ~4.5 percentage point gap is typical — over the 2000–2025 period, the CBI rate averaged approximately 6.5% versus the ECB's ~1.5%. The CBI cut rates by a cumulative 2.0 percentage points from 9.25% starting in mid-2025, reaching 7.25% by March 2026. If Iceland adopted the euro, Icelandic borrowers would benefit from lower base rates, though a convergence premium would likely apply during a transition period.",
     "source_name": "Seðlabanki Íslands — Policy rate decisions; ECB — Key interest rates",
     "source_url": "https://www.sedlabanki.is/",
     "source_date": "2026-02-01",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Lower interest rates under euro adoption would stimulate borrowing but could also fuel asset bubbles if not accompanied by adequate macroprudential regulation. Iceland's high rates partly compensate for inflation, so real interest rate differentials are smaller than nominal ones. The loss of independent monetary policy is a significant trade-off.",
-    "related_entries": ["CURR-DATA-003", "CURR-DATA-005"]
+    "related_entries": [
+      "CURR-DATA-003",
+      "CURR-DATA-005"
+    ],
+    "statement_is": "Stýrivextir Seðlabanka Íslands hafa stöðugt verið mun hærri en vextir Seðlabanka Evrópu. Í byrjun árs 2026 voru stýrivextir á Íslandi 7,25% samanborið við ~2,75% hjá ESB — um 4,5 prósentustiga bil. Seðlabankinn lækkaði vexti um samtals 2,0 prósentustig frá 9,25% og náðu þeir 7,25% í mars 2026.",
+    "caveats_is": "Lægri vextir við upptöku evru myndu örva lánveitingar en gætu einnig ýtt undir eignabólur ef ekki kæmi til fullnægjandi þjóðhagsvarúðarreglugerðar. Háir vextir á Íslandi vega að hluta til upp á móti verðbólgu þannig að raunvaxtamunur er minni en nafnvaxtamunur. Missir sjálfstæðrar peningastefnu er verulegur fórnarkostnaður."
   },
   {
     "evidence_id": "CURR-DATA-005",
@@ -67,6 +83,9 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Meeting convergence criteria is a prerequisite for euro adoption but does not happen at the point of EU accession — new members commit to eventual euro adoption but set their own timeline. Croatia's experience (joined EU 2013, adopted euro 2023) suggests a transition period of approximately 7–10 years is typical. Iceland's debt-to-GDP is marginally above the 60% threshold but on a downward trajectory.",
-    "related_entries": ["CURR-DATA-003", "CURR-DATA-004"]
+    "related_entries": [
+      "CURR-DATA-003",
+      "CURR-DATA-004"
+    ]
   }
 ]
