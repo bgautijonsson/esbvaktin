@@ -1,0 +1,182 @@
+[
+  {
+    "evidence_id": "SOV-LEGAL-028",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "referendum_bill_parliamentary_procedure",
+    "statement": "The parliamentary resolution (þingsályktunartillaga) on the EU referendum was submitted to Althingi on Friday 7 March 2026 by Foreign Minister Þorgerður Katrín Gunnarsdóttir (Viðreisn). Opposition parties criticised both the timing — a Friday submission was seen as an attempt to limit immediate media scrutiny and parliamentary response — and the process, arguing that the Foreign Affairs Committee (utanríkismálanefnd) was not adequately consulted before the bill's introduction. Under Article 24 of the Parliamentary Rules of Procedure, the government is obligated to consult the Foreign Affairs Committee on important foreign affairs matters before making decisions. The government maintained that proper procedures were followed and that the committee would have ample time to review the bill during the normal legislative process.",
+    "source_name": "Althingi — Parliamentary record, 7 March 2026; Lög um þingsköp Alþingis nr. 55/1991, Article 24",
+    "source_url": "https://www.althingi.is/",
+    "source_date": "2026-03-07",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Whether the Friday timing was deliberate or coincidental is a matter of political interpretation. Article 24 requires consultation on 'important foreign affairs matters' but does not specify the form or timing of such consultation. The government may argue that a þingsályktunartillaga is a parliamentary instrument, not an executive decision, and therefore falls outside Article 24's scope. Legal experts are divided on this interpretation.",
+    "related_entries": [
+      "SOV-LEGAL-019",
+      "SOV-DATA-006",
+      "PARTY-DATA-020"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-029",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_acquis_supremacy_direct_effect",
+    "statement": "Two foundational principles of EU law — supremacy and direct effect — would represent a qualitative change from Iceland's current EEA arrangement. The principle of supremacy (established in Costa v ENEL, 1964) means that EU law takes precedence over conflicting national law, including constitutional provisions. The principle of direct effect (established in Van Gend en Loos, 1963) means that individuals can invoke EU law directly before national courts. Under the EEA, Iceland implements EU single market law but the EFTA Court's rulings are advisory, and EEA law does not formally have supremacy over Icelandic law. In practice, Icelandic courts generally follow EFTA Court opinions, but the distinction matters constitutionally: EU membership would formally subordinate Althingi's legislative authority to EU law in areas of EU competence, whereas the EEA preserves formal parliamentary sovereignty.",
+    "source_name": "CJEU — Case 6/64 Costa v ENEL; Case 26/62 Van Gend en Loos; EEA Agreement Articles 6 and 7; EFTA Court advisory opinion mechanism",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A61964CJ0006",
+    "source_date": "1964-07-15",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The practical difference between formal and informal supremacy is debated. Some scholars argue that the EEA's 'quasi-supremacy' already constrains Icelandic legislative autonomy in practice, making the formal change less significant than it appears. Others argue that the constitutional principle is fundamental regardless of practical convergence. The German Constitutional Court's (Bundesverfassungsgericht) jurisprudence on the limits of EU supremacy (Solange I & II, Lisbon judgment) shows that even within the EU, the relationship between national constitutions and EU law remains contested.",
+    "related_entries": [
+      "SOV-LEGAL-013",
+      "SOV-LEGAL-012",
+      "SOV-LEGAL-009"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-030",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_competence_categories",
+    "statement": "The Treaty on the Functioning of the EU (TFEU) distinguishes three categories of EU competence. Exclusive competences (Article 3 TFEU) — where only the EU may legislate — include customs union, competition rules, monetary policy (eurozone), common commercial policy, and conservation of marine biological resources under the CFP. Shared competences (Article 4 TFEU) — where both EU and member states may legislate, but member states may only act where the EU has not — include internal market, agriculture, environment, transport, energy, and the area of freedom, security and justice. Supporting competences (Article 6 TFEU) — where the EU may only support member state action — include tourism, culture, education, and civil protection. For Iceland, the most significant changes from EU membership would be in the exclusive competence areas: the customs union would end Iceland's independent trade policy, and the CFP would transfer fisheries management authority to the EU.",
+    "source_name": "Treaty on the Functioning of the European Union, Articles 2–6; EUR-Lex — Division of competences within the EU",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A12016E003",
+    "source_date": "2016-06-07",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The competence categories provide a formal framework, but the practical boundary between shared and exclusive competence is often blurred through EU legislation that pre-empts member state action. The 'creep' of EU competence into areas formally reserved for member states is a persistent criticism. However, the principle of conferral (Article 5 TEU) means the EU can only act within the competences conferred upon it by the Treaties.",
+    "related_entries": [
+      "SOV-DATA-004",
+      "SOV-LEGAL-015",
+      "SOV-LEGAL-009"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-018",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "bjorn_bjarnason_mfa_critique",
+    "statement": "Björn Bjarnason, former Minister of Justice (2003–2009) and long-serving Independence Party MP, has been a prominent critic of the Ministry for Foreign Affairs' (utanríkisráðuneytið) role in the EU referendum process. Bjarnason has argued that the MFA has failed to provide neutral, balanced information to the public, instead acting as an advocate for EU membership. He has pointed to the ministry's information materials and public presentations as evidence of institutional bias. Bjarnason's critique carries weight because of his seniority and his role as a public intellectual in Icelandic politics, though his own anti-EU position is well established. The MFA, under Foreign Minister Þorgerður Katrín Gunnarsdóttir (Viðreisn, pro-EU), has maintained that its information provision is factual and balanced.",
+    "source_name": "Björn Bjarnason — Op-eds and public statements; Morgunblaðið; Vísir",
+    "source_url": null,
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Bjarnason is a political actor with a clear anti-EU position, and his critique of the MFA should be evaluated in that context. Whether the MFA's information provision is genuinely biased or is perceived as such by opponents is a matter of interpretation. Similar debates about government neutrality arise in virtually all referendum campaigns.",
+    "related_entries": [
+      "SOV-DATA-006",
+      "PARTY-DATA-020",
+      "POL-DATA-021"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-019",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "constitutional_society_natural_resources",
+    "statement": "Stjórnarskrárfélagið (Constitutional Society of Iceland), a civil society organisation that campaigns for implementation of the 2011 draft constitution, has taken the position that EU accession negotiations should not begin without first securing national ownership of natural resources in the constitution. The society points to the 2012 referendum result in which 82.9% voted in favour of a constitutional natural resources clause (auðlindaákvæðið). Their argument is that negotiating EU membership without this constitutional protection could lead to EU rules undermining Iceland's control over fisheries quotas, energy resources, and water rights. The society has called on the government to prioritise constitutional reform before or in parallel with the EU referendum process.",
+    "source_name": "Stjórnarskrárfélagið — Public statements and press releases; 2012 constitutional referendum results",
+    "source_url": "https://www.stjornarskrarfelagid.is/",
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The Constitutional Society is an advocacy organisation with a specific agenda (implementing the 2011 draft constitution). The link between constitutional resource protection and EU accession is contested — some legal scholars argue that the two processes are independent and can proceed in parallel, while others agree with the society's sequencing argument. EU accession would not automatically override constitutional provisions, and resource-related protections could potentially be included in an accession treaty.",
+    "related_entries": [
+      "SOV-LEGAL-017",
+      "SOV-DATA-005",
+      "SOV-HIST-001"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-020",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "us_commercial_defence_interests_intertwined",
+    "statement": "Several analysts and commentators have argued that US commercial and defence interests regarding Iceland are intertwined. The US maintains strategic interest in Iceland through the GIUK gap for North Atlantic maritime surveillance, the 1951 bilateral defence agreement, and periodic military deployments to Keflavík. Commercially, US companies are significant investors in Iceland's energy-intensive industries (Alcoa operates the Fjardaál aluminium smelter, and Century Aluminum operates the Norðurál smelter at Grundartangi). EU membership could affect both dimensions: CFSP obligations might complicate bilateral defence cooperation, while EU competition, state aid, and energy market rules could alter the regulatory environment for US industrial investments. However, 23 EU member states are also NATO allies, and the US has substantial commercial interests across the EU, suggesting that EU membership need not conflict with US interests.",
+    "source_name": "US State Department; IISS Strategic Survey; Alcoa and Century Aluminum annual reports; academic analyses of US-Iceland relations",
+    "source_url": "https://www.state.gov/u-s-relations-with-iceland/",
+    "source_date": "2026-01-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The claim that US interests in Iceland are 'intertwined' is an analytical judgment, not an established fact. The US has not publicly linked its commercial and defence interests in Iceland to the EU membership question. The Trump administration's approach to Iceland specifically has not been articulated in policy documents. US companies operating in Iceland have not publicly taken positions on the EU referendum.",
+    "related_entries": [
+      "SOV-DATA-008",
+      "SOV-HIST-002",
+      "SOV-HIST-003"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-021",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "snorri_masson_sovereignty_absolutism",
+    "statement": "Miðflokkurinn MP Snorri Másson has articulated a 'sovereignty absolutist' position on EU membership, arguing that EU accession would represent a fundamental change to Iceland's status as an independent nation-state that manages its own affairs. His argument goes beyond specific policy areas (fisheries, agriculture) to the constitutional principle: that transferring legislative authority in any area to a supranational institution is incompatible with Icelandic self-determination. He has stated that Iceland is a sovereign nation-state (sjálfstætt þjóðríki) that controls its own resources and that EU membership would end this status. This position reflects a strand of Icelandic political thought that views sovereignty as indivisible rather than as a bundle of competences that can be shared.",
+    "source_name": "Althingi debate records; Snorri Másson — Op-eds and interviews",
+    "source_url": "https://www.althingi.is/",
+    "source_date": "2026-03-01",
+    "source_type": "parliamentary_record",
+    "confidence": "medium",
+    "caveats": "The 'indivisible sovereignty' view is a political-philosophical position, not a legal fact. International law scholars generally view sovereignty as a bundle of rights that states routinely share through treaties and international organisations. Iceland already shares sovereignty through NATO, the EEA, the WTO, and other institutions. The question is one of degree, not of kind. EU member states retain sovereignty in many areas and have the right to withdraw under Article 50.",
+    "related_entries": [
+      "SOV-LEGAL-012",
+      "SOV-LEGAL-001",
+      "POLITICAL-DATA-005"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-031",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_enhanced_cooperation",
+    "statement": "The EU's enhanced cooperation mechanism (Articles 326–334 TFEU) allows a minimum of nine member states to establish advanced integration among themselves when the full EU cannot reach agreement. This mechanism has been used for the Unitary Patent, the European Public Prosecutor's Office (EPPO), and a proposed Financial Transaction Tax. Enhanced cooperation means that EU membership does not entail uniform obligations across all member states — countries can choose not to participate in certain deeper integration measures. For Iceland, this is relevant because it means that EU membership would not automatically require participation in all EU initiatives beyond the core acquis. However, non-participation in enhanced cooperation does not provide the same level of protection as a treaty opt-out, as it requires the issue to first fail at the EU-wide level.",
+    "source_name": "Treaty on the Functioning of the European Union, Articles 326–334; European Commission — Enhanced cooperation factsheet",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A12016E326",
+    "source_date": "2016-06-07",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Enhanced cooperation is not a general opt-out mechanism — it applies only when a subset of states wants to go further than the minimum, not when a state wants to do less. The distinction is important: it provides flexibility for deepening integration, not for avoiding baseline obligations. The mechanism has been used sparingly (three active cases as of 2026).",
+    "related_entries": [
+      "SOV-LEGAL-006",
+      "SOV-LEGAL-010",
+      "SOV-LEGAL-015"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-032",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_customs_union_trade_policy_sovereignty",
+    "statement": "EU membership would transfer trade policy sovereignty from Iceland to the EU. Under the EU's exclusive competence in common commercial policy (Article 207 TFEU) and customs union (Article 28 TFEU), Iceland would lose the ability to negotiate bilateral trade agreements independently. Currently, Iceland negotiates trade agreements through EFTA (which has 31 free trade agreements covering 43 partners) and bilaterally. As an EU member, Iceland would benefit from the EU's extensive trade agreement network (covering over 70 countries), but would be unable to pursue independent trade deals. The EU's Common External Tariff would replace Iceland's national tariff schedule, potentially affecting import prices for goods not covered by existing EEA arrangements — particularly agricultural products, where Iceland maintains high protective tariffs (30–100%+ on dairy and meat). Iceland would gain a voice in EU trade policy through the Council's Trade Policy Committee but would be one of 28+ member states.",
+    "source_name": "TFEU Articles 28, 207; EFTA — Free Trade Agreements list; European Commission — Trade agreements overview",
+    "source_url": "https://www.efta.int/free-trade/free-trade-agreements",
+    "source_date": "2026-01-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The net effect on Iceland's trade depends on whether the EU's trade agreements provide better or worse terms than EFTA/bilateral agreements in sectors important to Iceland. Iceland's current EFTA trade agreements cover most major trading partners, but the EU's agreements include countries (e.g., Japan, Mercosur) where EFTA coverage is incomplete. Agricultural tariff removal would have significant domestic effects but could be managed through transition periods.",
+    "related_entries": [
+      "SOV-LEGAL-009",
+      "TRADE-DATA-001",
+      "SOV-DATA-004"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-022",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "advisory_referendum_political_weight",
+    "statement": "While the 2026 EU referendum is legally advisory (ráðgefandi þjóðaratkvæðagreiðsla), Icelandic political convention and European precedent suggest that the result would carry strong political weight. Prime Minister Kristrún Frostadóttir has stated that the government will respect the outcome. The main precedent for ignoring an advisory referendum result in Iceland — the 2012 constitutional referendum, where 66.9% supported using the Constitutional Council's draft as the basis for a new constitution, but no subsequent Althingi enacted it — is widely criticised and described as a democratic failure. This makes it politically very difficult for any government to disregard a clear referendum outcome. In Denmark, advisory referenda results have been consistently followed since the 1950s. The political cost of ignoring a referendum result in a small, transparent democracy like Iceland would likely be severe.",
+    "source_name": "Icelandic Constitutional Law scholars; 2012 referendum precedent; Danish referendum practice",
+    "source_url": null,
+    "source_date": "2026-03-01",
+    "source_type": "academic_paper",
+    "confidence": "medium",
+    "caveats": "The political weight of an advisory referendum depends on turnout, margin, and the political context. A narrow result (e.g., 51–49) might give future governments more room to argue the mandate is insufficient. The PM's own statement that an 'extraordinarily strong mandate' is needed could be used to justify inaction after a narrow yes vote. The legal distinction between advisory and binding remains important — Althingi retains full authority regardless of the result.",
+    "related_entries": [
+      "SOV-DATA-005",
+      "SOV-DATA-006",
+      "SOV-HIST-001"
+    ]
+  }
+]

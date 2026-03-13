@@ -1,0 +1,182 @@
+[
+  {
+    "evidence_id": "PARTY-DATA-017",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "vidreisn_founding_and_eu_platform",
+    "statement": "Viðreisn (Reform Party) was established as a political movement in November 2014 and registered as a political party in 2016. The party was co-founded by Benedikt Jóhannesson and other former Independence Party members who sought a liberal, pro-European platform. EU membership has been a core plank of Viðreisn's platform since inception — the party's founding manifesto explicitly calls for Iceland to resume EU accession negotiations and complete membership. However, Viðreisn's platform encompasses broader objectives including fiscal discipline, market liberalism, and constitutional reform, meaning it was not founded solely for the purpose of EU membership. In the 2016 elections, Viðreisn won 10.5% of the vote and 7 seats; by 2024, it had grown to 11 seats (17.5%).",
+    "source_name": "Viðreisn — Founding manifesto (2014); Viðreisn party statutes; Landskjörstjórn election results",
+    "source_url": "https://www.vidreisn.is/stefna",
+    "source_date": "2024-11-01",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Whether Viðreisn was founded 'for the purpose of' EU membership or 'with EU membership as a core policy' is a matter of framing. The party's founders had multiple motivations, including dissatisfaction with the Independence Party's economic policies post-crisis. The EU question was central but not the sole driver.",
+    "related_entries": [
+      "POL-DATA-001",
+      "POLITICAL-DATA-004",
+      "POLITICAL-DATA-012"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-018",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "flokkur_folksins_coalition_contradiction",
+    "statement": "Flokkur fólksins (People's Party) occupies a unique position in the EU referendum debate as a coalition partner in the government that scheduled the referendum, despite the party's EU-sceptic base. Party founder and leader Inga Sæland has stated that Flokkur fólksins agreed to the referendum as part of the coalition agreement but maintains that the party's position is against EU membership. The party's official stance is that citizens deserve the right to vote on the question, even though the party will campaign for a 'No' result. This creates an unusual dynamic where a governing party actively campaigns against a policy enabled by its own government. Flokkur fólksins holds 8 Althingi seats and three cabinet positions (infrastructure, social affairs, education).",
+    "source_name": "Coalition agreement 2024; Flokkur fólksins — Party statements; Althingi records",
+    "source_url": "https://www.flokkurfolksins.is/",
+    "source_date": "2026-02-01",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Coalition compromises involving referenda are not unprecedented in European democracies — the UK's 2016 EU referendum occurred under a Conservative government with divided views. The party's willingness to support a referendum while opposing the likely outcome reflects pragmatic coalition politics rather than an inherent contradiction.",
+    "related_entries": [
+      "POLITICAL-DATA-002",
+      "POLITICAL-DATA-009",
+      "PARTY-DATA-013"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-019",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "kristrun_frostadottir_mandate_framing",
+    "statement": "Prime Minister Kristrún Frostadóttir (Samfylkingin) has emphasised that any EU accession process would require a 'ofboðslega sterkt umboð' (extraordinarily strong mandate) and broad societal consensus. In interviews and Althingi debates in early 2026, she stated that a narrow referendum victory would not be sufficient to proceed with accession negotiations — implying that the margin of victory matters, not just a simple majority. This framing is notable because the referendum legislation itself does not specify a minimum threshold or supermajority requirement. Frostadóttir has also stressed that the referendum is about resuming negotiations, not about joining the EU — any accession treaty would require separate parliamentary ratification and potentially a second referendum.",
+    "source_name": "Althingi debate records; RÚV interviews with PM Kristrún Frostadóttir, February–March 2026",
+    "source_url": "https://www.ruv.is/",
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The PM's statements about needing a 'strong mandate' are political framing rather than legal requirements. There is no formal threshold beyond a simple majority in the referendum legislation. The emphasis on mandate strength may be a rhetorical strategy to manage expectations or to signal to EU-sceptic coalition partners that the process will not be rushed.",
+    "related_entries": [
+      "POLITICAL-DATA-002",
+      "SOV-DATA-006",
+      "PARTY-DATA-013"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-020",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "sjalfsstaedisflokkur_referendum_opposition",
+    "statement": "Sjálfstæðisflokkurinn (Independence Party) has opposed the government's handling of the EU referendum process while not opposing the principle of a referendum outright. Party leader Bjarni Benediktsson and other senior figures have criticised the referendum timeline as rushed, arguing that the date of 29 August 2026 does not allow sufficient time for public debate and information gathering. The party has also challenged the government's consultation process, arguing that the Foreign Affairs Committee (utanríkismálanefnd) was not adequately consulted before the referendum bill was introduced. Several Independence Party MPs have described the government's approach as 'frasakennd' (outrageous/reckless), referring to the pace rather than the principle of consulting the public. The party supports a 'No' vote but has framed its campaign primarily around sovereignty, fisheries, and agricultural concerns.",
+    "source_name": "Althingi debate records; Sjálfstæðisflokkur — Press releases; Morgunblaðið coverage",
+    "source_url": "https://www.xd.is/",
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The characterisation of the timeline as 'rushed' is a political judgment. The government argues that 6 months of campaign time is adequate, pointing to precedents in other countries. The Independence Party's position reflects both substantive policy opposition and tactical parliamentary strategy.",
+    "related_entries": [
+      "POLITICAL-DATA-006",
+      "POL-DATA-006",
+      "SOV-DATA-006"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-021",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "trump_iceland_eu_speculation",
+    "statement": "In early 2026, Icelandic and international media reported speculation that the incoming Trump administration might prefer Iceland to remain outside the EU, based on broader US scepticism toward multilateral institutions and Trump's transactional approach to alliances. The nomination of Billy Long as US Ambassador to Iceland received attention in the EU debate context, though Long made no public statements opposing Icelandic EU membership. Some Icelandic commentators, including opposition politicians, cited unnamed sources 'close to' the prospective ambassador or administration as evidence of US opposition, but no official US government position against Icelandic EU membership has been documented. The US State Department's standard position is that EU membership is a sovereign decision for each country.",
+    "source_name": "US State Department — Bilateral Relations Factsheet; Icelandic media reports (Heimildin, Stundin); Altinget.no",
+    "source_url": "https://www.state.gov/u-s-relations-with-iceland/",
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Claims about US opposition to Icelandic EU membership are based on unnamed sources and political speculation, not documented policy. The US has not historically opposed EU enlargement — it supported the accession of Central and Eastern European states. However, the Trump administration's approach to alliances and multilateral institutions differs from previous administrations, and its specific Iceland policy preferences have not been publicly articulated.",
+    "related_entries": [
+      "SOV-DATA-008",
+      "SOV-HIST-002",
+      "PARTY-DATA-012"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-022",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "ecr_farage_iceland_contacts",
+    "statement": "Icelandic media (Heimildin, Stundin) reported in early 2026 that a political advisor with connections to Nigel Farage visited Iceland twice in the first quarter of 2026, meeting with representatives of Miðflokkurinn and possibly Sjálfstæðisflokkurinn. Norwegian outlet Altinget.no also covered these contacts. The reported purpose was to share campaign strategies from the UK's Brexit referendum and to offer support for the anti-EU campaign. Miðflokkurinn has not confirmed or denied specific meetings in official statements, though the party is affiliated with the European Conservatives and Reformists (ECR) group, which includes parties associated with Farage's political network. Sjálfstæðisflokkurinn has not publicly commented on the reported contacts.",
+    "source_name": "Heimildin; Stundin; Altinget.no — Reports on international contacts in EU referendum campaign",
+    "source_url": null,
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The specific details of meetings — who attended, what was discussed, what commitments were made — have not been independently verified. International political contacts and campaign strategy sharing are common in democratic politics and are not inherently problematic. The significance of these contacts is contested: pro-EU commentators frame them as foreign interference, while anti-EU commentators view them as normal international political networking.",
+    "related_entries": [
+      "PARTY-DATA-012",
+      "POLITICAL-DATA-013",
+      "POLITICAL-DATA-005"
+    ]
+  },
+  {
+    "evidence_id": "PARTY-DATA-023",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "campaign_finance_eu_referendum",
+    "statement": "The EU referendum campaign has attracted significant financial commitments from organised interest groups. On the anti-EU side, Landssamband íslenskra útvegsmanna (LÍÚ, Federation of Fishing Vessel Owners) committed approximately ISK 500 million (~EUR 3.3 million) — the largest single campaign contribution. Bændasamtök Íslands (Farmers' Association) has also pledged substantial resources. On the pro-EU side, Samtök atvinnulífsins (SA, Confederation of Icelandic Enterprise) pledged approximately ISK 200 million (~EUR 1.3 million), and Viðskiptaráð Íslands (Chamber of Commerce) has contributed resources. The disparity in campaign spending has been noted by commentators, with the anti-EU side outspending the pro-EU side by an estimated 2:1 ratio. Iceland's campaign finance laws require disclosure of contributions above ISK 400,000 to political campaigns.",
+    "source_name": "Campaign finance declarations; Icelandic media reports on campaign spending",
+    "source_url": null,
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Campaign finance figures are estimates based on pledges and media reports; final spending may differ. The ISK 500 million LÍÚ figure has been reported in multiple outlets but the exact breakdown and timing of expenditure is not yet public. Iceland's campaign finance disclosure requirements for referendum campaigns may differ from those for parliamentary elections.",
+    "related_entries": [
+      "POL-DATA-014",
+      "POL-DATA-012",
+      "POL-DATA-005"
+    ]
+  },
+  {
+    "evidence_id": "POL-DATA-022",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "kristrun_frostadottir_political_evolution",
+    "statement": "Kristrún Frostadóttir became leader of Samfylkingin in 2022 and Prime Minister following the 2024 elections. An economist by training (MSc from the London School of Economics), she has positioned herself as a pragmatic pro-European who frames EU membership in economic terms rather than ideological ones. Her political evolution on the EU question has been noted: in earlier statements she emphasised the economic cost-benefit analysis, while as PM she has increasingly stressed the need for broad consensus and strong democratic mandate. She is the youngest PM in Iceland's history and has sought to reach younger voters who polls suggest are more pro-EU. Her government's framing of the referendum as being about 'resuming negotiations' rather than 'joining the EU' has been a deliberate strategic choice to lower the perceived stakes.",
+    "source_name": "Samfylkingin — Leadership statements; RÚV; Morgunblaðið profiles",
+    "source_url": null,
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Characterisations of political 'evolution' are interpretive. Politicians adjust messaging to context without necessarily changing views. The framing of the referendum question is constrained by the coalition agreement and parliamentary resolution, not solely determined by the PM.",
+    "related_entries": [
+      "POLITICAL-DATA-002",
+      "POLITICAL-DATA-008",
+      "PARTY-DATA-019"
+    ]
+  },
+  {
+    "evidence_id": "POL-DATA-023",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "midflokkurinn_european_campaign_rhetoric",
+    "statement": "Miðflokkurinn (Centre Party) has adopted particularly sharp rhetoric in opposing the EU referendum, using terms such as 'Evrópubrölt' (EU agitation/hustle) and 'þjóðarsvik' (treason/national betrayal) to characterise the government's referendum initiative. Party founder Sigmundur Davíð Gunnlaugsson has framed the EU question as an existential threat to Icelandic sovereignty, comparing it to the loss of independence that Iceland experienced under Danish colonial rule. The party's campaign messaging emphasises three themes: (1) loss of fishing rights and control over natural resources; (2) loss of legislative sovereignty to Brussels bureaucrats; (3) foreign interference in Iceland's democratic process. Miðflokkurinn has also challenged the neutrality of the government's public information campaign, demanding equal airtime for anti-EU perspectives.",
+    "source_name": "Miðflokkurinn — Press releases and social media; Althingi debate records; Vísir, Morgunblaðið coverage",
+    "source_url": "https://www.midflokkurinn.is/",
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Campaign rhetoric from all parties is designed to persuade, not to provide balanced analysis. The 'þjóðarsvik' framing is considered extreme by many commentators and does not reflect the legal or constitutional nature of the referendum process. The comparison to Danish colonial rule is ahistorical in the context of voluntary EU membership with Article 50 withdrawal rights.",
+    "related_entries": [
+      "POLITICAL-DATA-005",
+      "POLITICAL-DATA-013",
+      "PARTY-DATA-012"
+    ]
+  },
+  {
+    "evidence_id": "POL-DATA-024",
+    "domain": "political",
+    "topic": "party_positions",
+    "subtopic": "government_information_campaign_debate",
+    "statement": "The government launched a public information campaign ('Upplýsingaherferð um ESB-viðræður') in early 2026 to inform voters ahead of the referendum. The campaign includes a dedicated website, public meetings, and materials covering the potential implications of EU membership across key sectors. Opposition parties — particularly Sjálfstæðisflokkurinn and Miðflokkurinn — have criticised the campaign as biased toward a pro-EU outcome, arguing that the government's framing presents the benefits of EU membership more prominently than the risks. The government has responded that the campaign is factual and that both sides will have ample opportunity to present their case during the formal campaign period. The independence of the campaign has been a persistent parliamentary flashpoint, with opposition parties demanding that an independent body, rather than the government, should oversee public information provision.",
+    "source_name": "Government of Iceland — Referendum information materials; Althingi debate records; RÚV coverage",
+    "source_url": "https://www.stjornarradid.is/",
+    "source_date": "2026-03-01",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Debates about government neutrality in referendum campaigns are standard in democratic politics. Both the UK (2016 Brexit) and Denmark (1992 Maastricht) experienced similar controversies. Whether the Icelandic campaign is genuinely biased or merely perceived as such by opponents is a matter of interpretation. The opposition's criticism may itself be a campaign tactic.",
+    "related_entries": [
+      "SOV-DATA-006",
+      "PARTY-DATA-020",
+      "POLITICAL-DATA-013"
+    ]
+  }
+]
