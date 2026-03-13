@@ -215,8 +215,11 @@ _NAME_ALIASES: dict[str, str] = {
     "þorgerður katrín": "thorgerdur-katrin-gunnarsdottir",
     "þorgerður katrín gunnarsdóttur": "thorgerdur-katrin-gunnarsdottir",
     "dagur b": "dagur-b-eggertsson",
-    # Media — short vs full name
+    # Media — short vs full name and duplicate slugs
     "heimildin fréttastofa": "heimildin",
+    "mbl.is": "morgunbladid",
+    "morgunblaðið": "morgunbladid",
+    "fréttastofa rúv": "ruv",
 }
 
 # Override display names for aliases where heuristic may pick wrong variant
@@ -764,6 +767,59 @@ def _classify_subtypes(entities: dict[str, dict]) -> int:
     return count
 
 
+# ── Media outlet subtype classification ───────────────────────────────
+
+# Known media outlet slugs — derived from _SOURCE_FROM_DOMAIN in prepare_site.py
+_KNOWN_OUTLETS: set[str] = {
+    "visir", "morgunbladid", "ruv",
+    "heimildin", "kjarninn", "stundin", "frettabladid",
+    "dv", "altinget-no", "nutiminn",
+}
+
+# Map outlet entity slugs → all article_source values that belong to them.
+# Panel shows and podcasts fold into their parent outlet.
+_OUTLET_SOURCE_ALIASES: dict[str, list[str]] = {
+    "morgunbladid": ["Morgunblaðið", "Spursmál (mbl.is)"],
+    "ruv": ["RÚV", "Silfrið (RÚV)", "Vikulokin (RÚV)", "Ríkisútvarpið"],
+    "visir": ["Vísir", "Vísir/Bylgjan"],
+    "dv": ["DV"],
+    "heimildin": ["Heimildin"],
+    "kjarninn": ["Kjarninn"],
+    "stundin": ["Stundin"],
+    "frettabladid": ["Fréttablaðið"],
+    "altinget-no": ["Altinget.no"],
+    "nutiminn": ["Nútíminn"],
+}
+
+# Roles that indicate a media/news operation
+_MEDIA_ROLE_PATTERNS = {"fréttaflutningur", "fréttamiðill", "fjölmiðill"}
+
+
+def _classify_media_outlets(entities: dict[str, dict]) -> int:
+    """Add subtype='media' to institution entities that are news outlets.
+
+    Returns the number of entities classified as media outlets.
+    """
+    count = 0
+    for slug, entity in entities.items():
+        if entity["type"] != "institution":
+            continue
+
+        # Known outlet slug
+        if slug in _KNOWN_OUTLETS:
+            entity["subtype"] = "media"
+            count += 1
+            continue
+
+        # Role matches media patterns
+        role = (entity.get("role") or "").lower().strip()
+        if role and role in _MEDIA_ROLE_PATTERNS:
+            entity["subtype"] = "media"
+            count += 1
+
+    return count
+
+
 def _generate_descriptions(entities: dict[str, dict]) -> None:
     """Generate basic Icelandic descriptions for entities that lack one."""
     type_labels = {
@@ -817,6 +873,7 @@ def export_entities(
     _compute_scores(entities)
     althingi_count = _enrich_althingi_stats(entities)
     politician_count = _classify_subtypes(entities)
+    media_count = _classify_media_outlets(entities)
     roster = _load_mp_roster()
     party_enriched = _enrich_party_affiliations(entities, roster)
     party_created = _ensure_party_entities(entities)
@@ -878,6 +935,8 @@ def export_entities(
         print(f"Party affiliations: {party_enriched} politicians linked to authoritative party data")
     if party_created:
         print(f"Party placeholders: {party_created} new party entities created as link targets")
+    if media_count:
+        print(f"Media outlets: {media_count} institutions classified as subtype=media")
 
     return sorted_entities
 

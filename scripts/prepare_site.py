@@ -23,7 +23,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from export_entities import _NAME_ALIASES  # noqa: E402
+from export_entities import _NAME_ALIASES, _OUTLET_SOURCE_ALIASES  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ANALYSES_DIR = PROJECT_ROOT / "data" / "analyses"
@@ -949,7 +949,18 @@ def _build_entity_detail(
 
             resolved_claims.append({
                 "claim_text": claim_text,
+                "original_quote": claim_item.get("claim", {}).get(
+                    "original_quote", ""
+                ),
                 "verdict": verdict,
+                "explanation": claim_item.get("explanation", ""),
+                "missing_context": claim_item.get("missing_context", ""),
+                "supporting_evidence": claim_item.get(
+                    "supporting_evidence", []
+                ),
+                "contradicting_evidence": claim_item.get(
+                    "contradicting_evidence", []
+                ),
                 "category": category,
                 "attribution": attribution,
                 "article_slug": article_slug,
@@ -992,6 +1003,14 @@ def _build_entity_detail(
         "articles": resolved_articles,
     }
 
+    # Add subtype to detail
+    if entity.get("subtype"):
+        detail["subtype"] = entity["subtype"]
+
+    # Add party_slug for politician → party linking
+    if entity.get("party_slug"):
+        detail["party_slug"] = entity["party_slug"]
+
     # Add party_members for party entities
     if entity.get("type") == "party" and party_members_map:
         members = party_members_map.get(entity["slug"], [])
@@ -1011,7 +1030,88 @@ def _build_entity_detail(
                 key=lambda x: (-x["claim_count"], x["name"]),
             )
 
+    # Add outlet coverage for media entities
+    if entity.get("subtype") == "media":
+        _enrich_outlet_coverage(detail, entity, reports_map)
+
     return detail
+
+
+def _enrich_outlet_coverage(
+    detail: dict,
+    entity: dict,
+    reports_map: dict[str, dict],
+) -> None:
+    """Enrich a media entity detail with aggregate coverage from its articles.
+
+    Matches reports by article_source using _OUTLET_SOURCE_ALIASES to fold
+    panel shows and podcasts into their parent outlet.
+    """
+    slug = entity["slug"]
+    source_names = set(_OUTLET_SOURCE_ALIASES.get(slug, []))
+
+    # Also match by entity name directly (catches outlets not in aliases)
+    source_names.add(entity["name"])
+
+    # Find all reports published by this outlet
+    matched_reports = [
+        r for r in reports_map.values()
+        if r.get("article_source") in source_names
+    ]
+    matched_reports.sort(key=lambda r: r.get("article_date") or "", reverse=True)
+
+    if not matched_reports:
+        return
+
+    # Build outlet_articles list
+    outlet_articles = []
+    for r in matched_reports:
+        outlet_articles.append({
+            "slug": r["slug"],
+            "title": r.get("article_title", ""),
+            "date": r.get("article_date"),
+            "source": r.get("article_source"),
+            "claim_count": r.get("claim_count", 0),
+            "verdict_counts": r.get("verdict_counts", {}),
+            "dominant_category": r.get("dominant_category"),
+            "categories": r.get("categories", []),
+            "participants": r.get("participants", []),
+        })
+
+    # Aggregate verdict scorecard across ALL claims in outlet's articles
+    outlet_scorecard: dict[str, int] = {}
+    for r in matched_reports:
+        for verdict, count in r.get("verdict_counts", {}).items():
+            outlet_scorecard[verdict] = outlet_scorecard.get(verdict, 0) + count
+
+    # Collect unique speakers/participants across all articles
+    unique_speakers: set[str] = set()
+    for r in matched_reports:
+        for p in r.get("participants", []):
+            if isinstance(p, dict):
+                unique_speakers.add(p.get("name", ""))
+
+    # Collect topic/category distribution
+    category_counts: dict[str, int] = {}
+    for r in matched_reports:
+        for cat in r.get("categories", []):
+            category_counts[cat] = category_counts.get(cat, 0) + 1
+
+    total_claims = sum(r.get("claim_count", 0) for r in matched_reports)
+    dates = [r.get("article_date") for r in matched_reports if r.get("article_date")]
+
+    detail["outlet_articles"] = outlet_articles
+    detail["outlet_scorecard"] = outlet_scorecard
+    detail["outlet_stats"] = {
+        "article_count": len(matched_reports),
+        "total_claims": total_claims,
+        "unique_speakers": len(unique_speakers - {""}),
+        "topic_distribution": category_counts,
+        "date_range": {
+            "first": min(dates) if dates else None,
+            "last": max(dates) if dates else None,
+        },
+    }
 
 
 # ── Evidence detail page preparation ─────────────────────────────────
