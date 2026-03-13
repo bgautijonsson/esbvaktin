@@ -22,6 +22,9 @@ from collections import Counter
 from pathlib import Path
 from urllib.parse import urlparse
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from export_entities import _NAME_ALIASES  # noqa: E402
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ANALYSES_DIR = PROJECT_ROOT / "data" / "analyses"
 EVIDENCE_META_PATH = PROJECT_ROOT / "data" / "export" / "evidence_meta.json"
@@ -908,6 +911,8 @@ def _build_entity_detail(
     resolved_articles = []
     scorecard: dict[str, int] = {}
 
+    entity_slug = entity["slug"]
+
     for article_slug in article_slugs:
         report = reports_map.get(article_slug)
         if not report:
@@ -918,10 +923,17 @@ def _build_entity_detail(
 
         for claim_item in report.get("claims", []):
             speakers = claim_item.get("speakers", [])
-            # Find this entity in the claim's speakers
+            # Find this entity in the claim's speakers (match by slug to
+            # handle transliterated names from entity-extractor agents)
             match = None
             for s in speakers:
-                if s["name"] == entity_name:
+                speaker_name = s.get("name") or ""
+                if not speaker_name:
+                    continue
+                speaker_slug = _NAME_ALIASES.get(
+                    speaker_name.lower(), icelandic_slugify(speaker_name)
+                )
+                if speaker_slug == entity_slug:
                     match = s
                     break
             if not match:

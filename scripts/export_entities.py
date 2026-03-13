@@ -210,7 +210,8 @@ _NAME_ALIASES: dict[str, str] = {
     "kristrúna": "kristrun-frostadottir",
     "kristrúnar frostadóttur": "kristrun-frostadottir",
     "birni inga hrafnsson": "bjorn-ingi-hrafnsson",
-    "pawel bartoszek": "pavel-bartoszek",
+    "pawel bartoszek": "pawel-bartoszek",
+    "pavel bartoszek": "pawel-bartoszek",
     "þorgerður katrín": "thorgerdur-katrin-gunnarsdottir",
     "þorgerður katrín gunnarsdóttur": "thorgerdur-katrin-gunnarsdottir",
     "dagur b": "dagur-b-eggertsson",
@@ -223,7 +224,7 @@ _CANONICAL_NAMES: dict[str, str] = {
     "bjorn-levi-gunnarsson": "Björn Leví Gunnarsson",
     "heimildin": "Heimildin",
     "bjorn-ingi-hrafnsson": "Björn Ingi Hrafnsson",
-    "pavel-bartoszek": "Pavel Bartoszek",
+    "pawel-bartoszek": "Pawel Bartoszek",
     "thorgerdur-katrin-gunnarsdottir": "Þorgerður Katrín Gunnarsdóttir",
     "dagur-b-eggertsson": "Dagur B. Eggertsson",
     "kristrun-frostadottir": "Kristrún Frostadóttir",
@@ -239,6 +240,18 @@ _SKIP_NAMES = {
     "talsmenn esb-aðildar",
     "mbl.is fréttaritari",
     "ritstjórn mbl.is",
+}
+
+# Former MPs / politicians who now appear as experts — exclude from
+# subtype='politician' so they aren't shown with a current party link.
+# Their althingi_stats are preserved as historical record.
+_NOT_POLITICIANS: set[str] = {
+    "dora-sif-tynes",
+}
+
+# Override roles for entities whose extractor-assigned role is outdated
+_ROLE_OVERRIDES: dict[str, str] = {
+    "dora-sif-tynes": "lögmaður og sérfræðingur í EES-rétti",
 }
 
 
@@ -737,7 +750,14 @@ def _classify_subtypes(entities: dict[str, dict]) -> int:
     Returns the number of entities classified as politicians.
     """
     count = 0
-    for entity in entities.values():
+    for slug, entity in entities.items():
+        if slug in _NOT_POLITICIANS:
+            # Former politician — strip party affiliation, apply role override
+            entity.pop("party", None)
+            entity.pop("party_slug", None)
+            if slug in _ROLE_OVERRIDES:
+                entity["role"] = _ROLE_OVERRIDES[slug]
+            continue
         if _is_politician(entity):
             entity["subtype"] = "politician"
             count += 1
@@ -768,7 +788,10 @@ def _generate_descriptions(entities: dict[str, dict]) -> None:
 
         if entity["type"] == "individual":
             if entity.get("role"):
-                parts.append(entity["role"].capitalize())
+                role = entity["role"]
+                # Capitalise first letter only — .capitalize() lowercases
+                # the rest, which breaks acronyms like EES, ESB
+                parts.append(role[0].upper() + role[1:] if role else role)
             if entity.get("party"):
                 parts.append(f"({entity['party']})")
         else:
