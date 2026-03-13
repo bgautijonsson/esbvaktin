@@ -767,6 +767,21 @@ def _classify_subtypes(entities: dict[str, dict]) -> int:
     return count
 
 
+# ── Icelandic entity classification ──────────────────────────────────
+
+# Icelandic party slugs (8 current Alþingi parties)
+_ICELANDIC_PARTIES: set[str] = {
+    "midflokkurinn", "sjalfstaedisflokkurinn", "vidreisn",
+    "flokkur-folksins", "framsoknarflokkurinn", "samfylkingin",
+    "piratar", "vinstri-graen",
+}
+
+# Icelandic media outlet slugs
+_ICELANDIC_OUTLETS: set[str] = {
+    "visir", "morgunbladid", "ruv", "dv", "heimildin",
+    "kjarninn", "stundin", "frettabladid", "nutiminn",
+}
+
 # ── Media outlet subtype classification ───────────────────────────────
 
 # Known media outlet slugs — derived from _SOURCE_FROM_DOMAIN in prepare_site.py
@@ -878,6 +893,13 @@ def export_entities(
     party_enriched = _enrich_party_affiliations(entities, roster)
     party_created = _ensure_party_entities(entities)
     _generate_descriptions(entities)
+
+    # Flag Icelandic parties and outlets
+    for slug, entity in entities.items():
+        if entity["type"] == "party":
+            entity["icelandic"] = slug in _ICELANDIC_PARTIES
+        elif entity.get("subtype") == "media":
+            entity["icelandic"] = slug in _ICELANDIC_OUTLETS
 
     # Apply canonical name overrides
     for slug, canonical in _CANONICAL_NAMES.items():

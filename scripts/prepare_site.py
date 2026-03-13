@@ -1007,6 +1007,10 @@ def _build_entity_detail(
     if entity.get("subtype"):
         detail["subtype"] = entity["subtype"]
 
+    # Pass through icelandic flag for comparison pages
+    if "icelandic" in entity:
+        detail["icelandic"] = entity["icelandic"]
+
     # Add party_slug for politician → party linking
     if entity.get("party_slug"):
         detail["party_slug"] = entity["party_slug"]
