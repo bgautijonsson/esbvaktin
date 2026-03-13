@@ -25,7 +25,36 @@ Evidence entries are sourced from official statistics (Hagstofa, Eurostat), lega
 
 **Anyone can inspect, verify, or challenge the evidence base.**
 
-## 2. Claim extraction
+## 2. Article discovery and monitoring
+
+ESB Vaktin monitors the following Icelandic news sources and political party websites for EU referendum coverage:
+
+**News media:**
+- RÚV (ruv.is) — public broadcaster
+- Morgunblaðið (mbl.is)
+- Vísir (visir.is)
+- DV (dv.is)
+- Stundin (stundin.is)
+- Heimildin (heimildin.is)
+- Kjarninn (kjarninn.is)
+- Nútíminn (nutiminn.is)
+- Heimssýn (heimssyn.is)
+
+**Political parties:**
+- Viðreisn, Sjálfstæðisflokkurinn, Miðflokkurinn, Vinstri grænir, Flokkur fólksins
+
+**Panel shows:**
+- Silfrið (RÚV), Spursmál (mbl.is), Vikulokin (RÚV)
+
+Articles are discovered by keyword scanning for EU-related terms (ESB, Evrópusambandið, þjóðaratkvæðagreiðsla, aðildarviðræður, EES, etc.) across these sources. Discovered articles are filtered against a registry of already-processed articles and a list of known false positives (articles where EU keywords appear only in sidebars or tag clouds).
+
+Not every article that mentions the EU is analysed — only articles that contain verifiable factual claims about EU membership topics. Short items, personnel news, and articles with only tangential mentions are excluded.
+
+Parliamentary speeches from Alþingi are sourced separately via a dedicated speech database (see the [althingi-mcp](https://github.com/bgautijonsson/althingi-mcp) project). Speeches are filtered to EU-related debates and ranked by claim density for analysis.
+
+**Selection is not automated.** Discovered articles are presented to a human operator who decides which to analyse. The pipeline does not autonomously publish assessments.
+
+## 3. Claim extraction
 
 When an article or speech is analysed, the first step is extracting factual claims. This is done by an AI agent ([`.claude/agents/claim-extractor.md`](.claude/agents/claim-extractor.md)) that:
 
@@ -45,13 +74,13 @@ The pipeline explicitly excludes:
 - Common knowledge ("Iceland is not in the EU")
 - Claims unrelated to EU membership
 
-## 3. Evidence matching
+## 4. Evidence matching
 
 Each extracted claim is matched against the evidence database using semantic similarity search (BAAI/bge-m3 multilingual embeddings). The top matching evidence entries are retrieved and provided as context for assessment.
 
 This is not keyword matching — the system understands that "kvótakerfið" (the quota system) relates to evidence about fisheries policy, even without exact word overlap.
 
-## 4. Claim assessment
+## 5. Claim assessment
 
 Assessment is the most critical step. An AI agent ([`.claude/agents/claim-assessor.md`](.claude/agents/claim-assessor.md)) evaluates each claim against the matched evidence using a five-point scale:
 
@@ -80,11 +109,11 @@ The assessment agent:
 - **Cannot** introduce information not in the evidence database
 - **Does** write assessments in Icelandic, directly (not translated from English)
 
-## 5. Omission and framing analysis
+## 6. Omission and framing analysis
 
 A separate agent ([`.claude/agents/omissions-analyst.md`](.claude/agents/omissions-analyst.md)) analyses what the article *doesn't* say — identifying missing context, one-sided framing, or important caveats that were omitted. This runs in parallel with assessment.
 
-## 6. Human oversight
+## 7. Human oversight
 
 The pipeline is AI-assisted, not AI-autonomous:
 
@@ -93,10 +122,11 @@ The pipeline is AI-assisted, not AI-autonomous:
 - Verdicts can be updated as new evidence is added
 - The entire codebase, including all prompts, is open for public scrutiny
 
-## 7. Transparency guarantees
+## 8. Transparency guarantees
 
 | What | Where | Licence |
 |------|-------|---------|
+| Monitored sources and discovery method | [METHODOLOGY.md § 2](METHODOLOGY.md#2-article-discovery-and-monitoring) | CC BY-SA 4.0 |
 | AI agent prompts | [`.claude/agents/`](.claude/agents/) | AGPL-3.0 |
 | Context preparation (full instructions to AI) | [`src/esbvaktin/pipeline/prepare_context.py`](src/esbvaktin/pipeline/prepare_context.py) | AGPL-3.0 |
 | Evidence database seed data | [`data/seeds/`](data/seeds/) | CC BY-SA 4.0 |
