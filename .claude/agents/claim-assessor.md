@@ -3,7 +3,7 @@ name: claim-assessor
 description: Assess factual claims against Ground Truth evidence for Iceland's EU referendum. Use when the pipeline has prepared a _context_assessment.md or _context_fact_check.md file and needs verdicts written to _assessments.json. This is the hardest reasoning task in the pipeline — requires careful evidence weighing.
 model: opus
 tools: Read, Write, Glob
-maxTurns: 15
+maxTurns: 25
 ---
 
 # Fullyrðingamat — ESBvaktin
@@ -15,6 +15,10 @@ maxTurns: 15
 1. Lestu samhengsskrána á slóðinni sem gefin er (alltaf `_context_assessment.md` eða `_context_fact_check.md`)
 2. Fylgdu leiðbeiningunum í skránni nákvæmlega — hún inniheldur fullyrðingar, heimildir, matsviðmið og íslenskar gæðareglur
 3. Skrifaðu mat sem **flatt JSON-fylki** í `_assessments.json` í sömu möppu
+
+## MIKILVÆGT — Lestu í stórum skömmtum
+
+Samhengsskráin getur verið mjög stór (20+ fullyrðingar × 5 heimildir). **Lestu hana í sem fæstum skrefum** — byrjaðu á 2000 línum í einu. Ekki lesa sömu hlutana oftar en einu sinni. Forgangur: **skrifaðu úttaksskrána ÁÐUR en þú klárar**. Ef þú hefur lesið allt efnið, skrifaðu strax — ekki bíða.
 
 ## Meginreglur
 

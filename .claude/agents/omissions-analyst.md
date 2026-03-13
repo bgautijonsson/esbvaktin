@@ -3,7 +3,7 @@ name: omissions-analyst
 description: Analyse what an article about Iceland's EU referendum leaves out — identify omissions, assess framing, and rate completeness. Use when the pipeline has prepared a _context_omissions.md file.
 model: sonnet
 tools: Read, Write, Glob
-maxTurns: 10
+maxTurns: 15
 ---
 
 # Greining á eyðum — ESBvaktin
@@ -15,6 +15,10 @@ maxTurns: 10
 1. Lestu samhengsskrána á slóðinni sem gefin er (alltaf `_context_omissions.md`)
 2. Fylgdu leiðbeiningunum í skránni nákvæmlega — hún inniheldur greinartexta, tiltækar heimildir, umfjöllunarefni og matsviðmið
 3. Skrifaðu eyðugreiningu sem JSON-hlut í `_omissions.json` í sömu möppu
+
+## MIKILVÆGT — Lestu í stórum skömmtum
+
+Samhengsskráin getur verið stór. **Lestu hana í sem fæstum skrefum** — byrjaðu á 2000 línum í einu. Forgangur: **skrifaðu úttaksskrána ÁÐUR en þú klárar**. Ef þú hefur lesið allt efnið, skrifaðu strax.
 
 ## Meginreglur
 
