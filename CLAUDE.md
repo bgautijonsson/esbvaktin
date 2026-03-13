@@ -143,6 +143,7 @@ uv run python scripts/improve_evidence_is.py status              # Show IS quali
 uv run python scripts/improve_evidence_is.py translate-caveats   # Translate EN caveats → IS via Málstaður
 uv run python scripts/improve_evidence_is.py correct             # Grammar-correct IS fields via Málstaður
 uv run python scripts/improve_evidence_is.py correct --dry-run   # Preview without API calls
+# Note: `correct` may need 2-3 runs to converge (corrections change text hash → re-eligible)
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 uv run python scripts/curate_speech_evidence.py list        # Find high-value Alþingi speeches for evidence curation
@@ -152,6 +153,7 @@ uv run python scripts/fact_check_speeches.py status            # Show fact-check
 uv run python scripts/reassess_claims.py prepare           # Prepare reassessment batches (unverifiable + partial)
 uv run python scripts/reassess_claims.py update            # Apply subagent reassessments to DB
 uv run python scripts/reassess_claims.py status            # Show verdict distribution
+uv run python scripts/register_article_sightings.py        # Batch-register all unregistered reports into DB sightings
 uv run python scripts/build_article_registry.py --status  # Show processed article registry
 uv run python scripts/check_duplicate.py --url URL        # Check if article already processed
 docker compose up -d       # Start PostgreSQL
