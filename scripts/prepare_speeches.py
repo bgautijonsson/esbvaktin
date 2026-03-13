@@ -273,7 +273,7 @@ def status(conn: sqlite3.Connection) -> None:
 
     # Top 10 by speech count
     top = sorted(debates, key=lambda d: d["speech_count"], reverse=True)[:10]
-    print(f"\nTop 10 debates by speech count:")
+    print("\nTop 10 debates by speech count:")
     for d in top:
         print(f"  {d['session']}-{d['issue_nr']:>4}  {d['speech_count']:>3} speeches  {d['issue_title'][:70]}")
 

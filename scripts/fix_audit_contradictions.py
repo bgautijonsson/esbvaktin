@@ -3,10 +3,7 @@
 Run with: uv run python scripts/fix_audit_contradictions.py
 """
 
-import json
 import os
-import sys
-from pathlib import Path
 
 import psycopg
 from dotenv import load_dotenv

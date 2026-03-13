@@ -172,7 +172,7 @@ def migrate(dry_run: bool = True) -> None:
     conn.close()
 
     action = "Would update" if dry_run else "Updated"
-    print(f"\n=== Done ===")
+    print("\n=== Done ===")
     print(f"{action}: {updated} claims")
     print(f"Skipped: {skipped} claims")
 

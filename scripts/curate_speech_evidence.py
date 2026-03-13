@@ -25,7 +25,6 @@ import json
 import os
 import sqlite3
 import sys
-from datetime import date
 from pathlib import Path
 from textwrap import shorten
 
@@ -73,7 +72,7 @@ def _connect() -> sqlite3.Connection:
 
 
 def _issue_filter_sql() -> tuple[str, list[str]]:
-    clause = " OR ".join(f"s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS)
+    clause = " OR ".join("s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS)
     return clause, list(EU_ISSUE_PATTERNS)
 
 

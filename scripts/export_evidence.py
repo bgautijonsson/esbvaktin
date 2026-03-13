@@ -203,7 +203,7 @@ def _print_status(entries: list[dict]) -> None:
     for s, c in sorted(source_types.items(), key=lambda x: -x[1]):
         print(f"  {s:25s} {c}")
 
-    print(f"\nBy confidence:")
+    print("\nBy confidence:")
     for cf, c in sorted(confidence.items(), key=lambda x: -x[1]):
         print(f"  {cf:25s} {c}")
 

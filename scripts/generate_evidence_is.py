@@ -90,7 +90,7 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
 
     # Evidence entries
     for i, ev in enumerate(batch, 1):
-        lines.append(f"---\n")
+        lines.append("---\n")
         lines.append(f"## Heimild {i}: {ev['evidence_id']}")
         lines.append("")
         lines.append(f"- **Svið (domain):** {ev['domain']}")
@@ -103,7 +103,7 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         if ev.get("source_url"):
             lines.append(f"- **Slóð:** {ev['source_url']}")
         lines.append("")
-        lines.append(f"**Statement (enska):**")
+        lines.append("**Statement (enska):**")
         lines.append(f"> {ev['statement']}")
         lines.append("")
         if ev.get("caveats"):
@@ -207,8 +207,8 @@ def prepare() -> None:
         print(f"    Read:  {ctx}")
         print(f"    Write: {out}")
 
-    print(f"\nAfter all batches are done:")
-    print(f"  uv run python scripts/generate_evidence_is.py write")
+    print("\nAfter all batches are done:")
+    print("  uv run python scripts/generate_evidence_is.py write")
 
 
 # ── Write ──────────────────────────────────────────────────────────────
@@ -293,8 +293,8 @@ def write() -> None:
             # Optional GreynirCorrect post-processing
             try:
                 from esbvaktin.corrections.greynir import (
-                    check_with_library,
                     apply_fixes_to_text,
+                    check_with_library,
                 )
 
                 for label, text in [("statement_is", statement_is), ("source_description_is", source_desc_is)]:
@@ -349,9 +349,9 @@ def write() -> None:
         for ref, err in errors:
             print(f"    - {ref}: {err}")
 
-    print(f"\nNext steps:")
-    print(f"  uv run python scripts/generate_evidence_is.py status")
-    print(f"  uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site")
+    print("\nNext steps:")
+    print("  uv run python scripts/generate_evidence_is.py status")
+    print("  uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site")
 
 
 # ── Status ─────────────────────────────────────────────────────────────
@@ -383,7 +383,7 @@ def status() -> None:
     print(f"  With description_is: {with_desc}/{total} ({desc_pct:.0f}%)")
     print(f"  Remaining:           {total - with_is}")
 
-    print(f"\nBy topic:")
+    print("\nBy topic:")
     for topic, count, has_is in topic_rows:
         done_pct = has_is / count * 100 if count else 0
         bar = "#" * int(done_pct / 5)

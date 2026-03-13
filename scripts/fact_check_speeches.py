@@ -27,10 +27,10 @@ from textwrap import shorten
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from esbvaktin.speeches.fact_check import (
+    _session_for_date,
     get_speech_for_fact_check,
     prepare_speech_work_dir,
     select_speeches_for_batch,
-    _session_for_date,
 )
 
 
@@ -259,7 +259,7 @@ def cmd_status(args: argparse.Namespace) -> None:
                 summary = json.loads(summary_path.read_text(encoding="utf-8"))
                 processed.append(summary)
 
-    print(f"Speech fact-check status")
+    print("Speech fact-check status")
     print(f"  Processed speeches: {len(processed)}")
 
     if processed:
@@ -272,7 +272,7 @@ def cmd_status(args: argparse.Namespace) -> None:
             for v, count in s.get("verdicts", {}).items():
                 all_verdicts[v] = all_verdicts.get(v, 0) + count
         if all_verdicts:
-            print(f"  Verdict breakdown:")
+            print("  Verdict breakdown:")
             for v, count in sorted(all_verdicts.items()):
                 print(f"    {v}: {count}")
 

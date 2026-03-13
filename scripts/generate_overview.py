@@ -467,7 +467,7 @@ def _show_status() -> None:
     print("-" * 50)
 
     for week, articles, sightings in weeks:
-        week_str = week.isoformat()
+        week.isoformat()
         # Convert to ISO week label
         iso_cal = week.isocalendar()
         iso_label = f"{iso_cal[0]}-W{iso_cal[1]:02d}"

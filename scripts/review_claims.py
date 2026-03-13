@@ -198,8 +198,8 @@ def prepare():
         print(f"    Read:  {ctx}")
         print(f"    Write: {out}")
 
-    print(f"\nAfter all batches are reviewed:")
-    print(f"  uv run python scripts/review_claims.py report")
+    print("\nAfter all batches are reviewed:")
+    print("  uv run python scripts/review_claims.py report")
 
 
 def _load_reviews() -> list[dict]:
@@ -245,7 +245,7 @@ def report():
     substantive = [r for r in reviews if r.get("substantive", True)]
 
     print(f"{'=' * 70}")
-    print(f"SUBSTANTIVENESS REVIEW REPORT")
+    print("SUBSTANTIVENESS REVIEW REPORT")
     print(f"{'=' * 70}")
     print(f"  Total reviewed:     {len(reviews)}")
     print(f"  Substantive:        {len(substantive)}")
@@ -270,9 +270,9 @@ def report():
                 if reason:
                     print(f"           → {reason}")
 
-    print(f"\nTo apply these flags:")
-    print(f"  uv run python scripts/review_claims.py apply")
-    print(f"  uv run python scripts/review_claims.py apply --dry-run  # preview only")
+    print("\nTo apply these flags:")
+    print("  uv run python scripts/review_claims.py apply")
+    print("  uv run python scripts/review_claims.py apply --dry-run  # preview only")
 
 
 def apply(*, dry_run: bool = False):
@@ -308,8 +308,8 @@ def apply(*, dry_run: bool = False):
     conn.close()
 
     print(f"Flagged {len(ids)} claims as non-substantive.")
-    print(f"\nNext: re-export entities to update credibility scores:")
-    print(f"  uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site")
+    print("\nNext: re-export entities to update credibility scores:")
+    print("  uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site")
 
 
 def status():
@@ -345,7 +345,7 @@ def status():
     conn.close()
 
     print(f"{'=' * 50}")
-    print(f"SUBSTANTIVENESS STATUS")
+    print("SUBSTANTIVENESS STATUS")
     print(f"{'=' * 50}")
     print(f"  Published:        {published}")
     print(f"    Substantive:    {substantive}")
@@ -353,7 +353,7 @@ def status():
     print(f"  Unpublished:      {unpublished}")
 
     if verdict_rows:
-        print(f"\n  Non-substantive by verdict:")
+        print("\n  Non-substantive by verdict:")
         for verdict, count in verdict_rows:
             print(f"    {verdict}: {count}")
 

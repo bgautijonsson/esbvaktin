@@ -10,7 +10,6 @@ from __future__ import annotations
 import os
 import sqlite3
 from pathlib import Path
-from textwrap import shorten
 
 _DEFAULT_DB = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
 
@@ -49,7 +48,7 @@ def _connect() -> sqlite3.Connection | None:
 
 
 def _issue_filter_sql() -> tuple[str, list[str]]:
-    clause = " OR ".join(f"s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS)
+    clause = " OR ".join("s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS)
     return clause, list(EU_ISSUE_PATTERNS)
 
 

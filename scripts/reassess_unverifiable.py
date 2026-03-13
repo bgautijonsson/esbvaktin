@@ -12,7 +12,6 @@ See also:
     uv run python scripts/reassess_claims.py prepare         # Prepare full reassessment (unverifiable + partial)
 """
 
-import sys
 
 from esbvaktin.ground_truth.operations import get_connection, search_evidence
 
@@ -20,7 +19,6 @@ SIMILARITY_THRESHOLD = 0.45  # Minimum similarity to consider evidence relevant
 
 
 def main():
-    update_mode = "--update" in sys.argv
     conn = get_connection()
 
     # Get all unverifiable claims
@@ -88,7 +86,7 @@ def main():
     assessable = len(now_assessable)
     remaining = len(still_unverifiable)
     print(f"\n{'='*70}")
-    print(f"SUMMARY")
+    print("SUMMARY")
     print(f"{'='*70}")
     print(f"  Total unverifiable: {total}")
     print(f"  Now assessable:     {assessable} ({assessable/total*100:.0f}%)")

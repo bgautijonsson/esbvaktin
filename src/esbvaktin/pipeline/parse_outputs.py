@@ -135,7 +135,7 @@ def _post_process_icelandic(item: dict) -> dict:
     if _greynir_available is False:
         return item
     try:
-        from esbvaktin.corrections.greynir import check_with_library, apply_fixes_to_text
+        from esbvaktin.corrections.greynir import apply_fixes_to_text, check_with_library
         _greynir_available = True
     except ImportError:
         _greynir_available = False

@@ -175,7 +175,7 @@ def main():
     (work_dir / "_article.md").write_text(article_md, encoding="utf-8")
 
     print(f"\nCreated: {work_dir}/_article.md ({len(article_md):,} chars)")
-    print(f"\nNext steps:")
+    print("\nNext steps:")
     print(f"  /analyse-article {work_dir}/_article.md")
 
 

@@ -7,7 +7,6 @@ Scans Icelandic text for:
 """
 
 import re
-from pathlib import Path
 
 # English → Icelandic term mappings (subset of most common errors)
 _ENGLISH_TO_ICELANDIC = {

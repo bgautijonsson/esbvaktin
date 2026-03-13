@@ -84,7 +84,7 @@ def seed_from_report(report: dict, conn, dry_run: bool = False) -> int:
     Returns the number of claims added.
     """
     claims = report.get("claims", [])
-    source_dir = report.get("_source_dir", "unknown")
+    report.get("_source_dir", "unknown")
     added = 0
 
     # Parse Icelandic translations from report_text_is
@@ -157,9 +157,9 @@ def show_status():
     try:
         total = get_total_claims(conn=conn)
         counts = get_claim_counts(conn=conn)
-        print(f"\n=== Claim Bank Status ===")
+        print("\n=== Claim Bank Status ===")
         print(f"Total claims: {total}")
-        print(f"\nBy verdict:")
+        print("\nBy verdict:")
         for verdict, count in counts.items():
             print(f"  {verdict}: {count}")
     except Exception as e:
@@ -218,7 +218,7 @@ def main():
 
     conn.close()
 
-    print(f"\n=== Done ===")
+    print("\n=== Done ===")
     print(f"Total claims added: {total_added}")
     show_status()
 

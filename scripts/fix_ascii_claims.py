@@ -216,7 +216,7 @@ def prepare():
         print(f"  Batch {batch_num} ({len(batch)} claims):")
         print(f"    Read:  {ctx}")
         print(f"    Write: {out}")
-    print(f"\nAfter all batches: uv run python scripts/fix_ascii_claims.py update")
+    print("\nAfter all batches: uv run python scripts/fix_ascii_claims.py update")
 
 
 def update():
@@ -328,7 +328,7 @@ def status():
         else:
             pending += 1
 
-    print(f"ASCII Fix Progress:")
+    print("ASCII Fix Progress:")
     print(f"  Total claims: {total}")
     print(f"  Batches: {done} done, {pending} pending (of {len(manifest)})")
 

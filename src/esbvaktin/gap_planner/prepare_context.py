@@ -8,7 +8,6 @@ from pathlib import Path
 
 from .models import EvidenceGap, GapCategory
 
-
 _CATEGORY_DESCRIPTIONS = {
     GapCategory.MISSING_DATA: "Gögn eru til en vantar í staðreyndagrunn",
     GapCategory.SPECULATIVE: "Fullyrðingin er í eðli sínu óstaðfestanleg (spá/tilgáta)",

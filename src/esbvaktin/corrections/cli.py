@@ -23,28 +23,6 @@ import re
 import sys
 from pathlib import Path
 
-from esbvaktin.corrections.greynir import (
-    check_with_library,
-    check_with_api,
-    apply_fixes,
-    format_results,
-)
-from esbvaktin.corrections.malfridur import (
-    check_with_malfridur,
-    apply_malfridur_fixes,
-    apply_malfridur_fixes_to_file,
-    format_malfridur_results,
-)
-from esbvaktin.corrections.naturalness import (
-    score_naturalness,
-    format_naturalness_results,
-    _HAS_ICEGRAMS,
-)
-from esbvaktin.corrections.inflections import (
-    check_inflections,
-    format_inflection_results,
-    _HAS_ISLENSKA,
-)
 from esbvaktin.corrections.confusables import (
     check_confusables,
     format_confusable_results,
@@ -53,10 +31,32 @@ from esbvaktin.corrections.eu_terms import (
     check_eu_terms,
     format_eu_term_results,
 )
+from esbvaktin.corrections.greynir import (
+    apply_fixes,
+    check_with_api,
+    check_with_library,
+    format_results,
+)
+from esbvaktin.corrections.inflections import (
+    _HAS_ISLENSKA,
+    check_inflections,
+    format_inflection_results,
+)
+from esbvaktin.corrections.malfridur import (
+    apply_malfridur_fixes,
+    apply_malfridur_fixes_to_file,
+    check_with_malfridur,
+    format_malfridur_results,
+)
+from esbvaktin.corrections.naturalness import (
+    _HAS_ICEGRAMS,
+    format_naturalness_results,
+    score_naturalness,
+)
 from esbvaktin.corrections.parsing import (
+    _HAS_GREYNIR,
     deep_parse,
     format_deep_parse_results,
-    _HAS_GREYNIR,
 )
 
 # Icelandic character set for the Unicode check

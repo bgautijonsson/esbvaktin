@@ -181,7 +181,7 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
     n_partial = sum(1 for c in batch if c["reason"] == "partial")
 
     lines = [
-        "# Endurmat fullyrðinga — Lota {}\n".format(batch_num),
+        f"# Endurmat fullyrðinga — Lota {batch_num}\n",
         "Þú ert staðreyndaprófari fyrir ESBvaktin.is, óháðan vettvang um",
         "þjóðaratkvæðagreiðslu Íslands um ESB-aðild (29. ágúst 2026).",
         "Þú metur fullyrðingar jafnt hvort sem þær eru ESB-jákvæðar eða ESB-neikvæðar.",
@@ -347,8 +347,8 @@ def prepare(*, only: str | None = None):
         print(f"    Read:  {ctx}")
         print(f"    Write: {out}")
 
-    print(f"\nAfter all batches are assessed:")
-    print(f"  uv run python scripts/reassess_claims.py update")
+    print("\nAfter all batches are assessed:")
+    print("  uv run python scripts/reassess_claims.py update")
 
 
 def update():
@@ -406,8 +406,8 @@ def update():
             missing_context_is = item.get("missing_context_is")
             try:
                 from esbvaktin.corrections.greynir import (
-                    check_with_library,
                     apply_fixes_to_text,
+                    check_with_library,
                 )
 
                 for field_name, field_val in [
@@ -447,7 +447,7 @@ def update():
     conn.close()
 
     print(f"\n{'='*70}")
-    print(f"RE-ASSESSMENT COMPLETE")
+    print("RE-ASSESSMENT COMPLETE")
     print(f"{'='*70}")
     print(f"  Updated: {updated}")
     print(f"  Skipped: {skipped}")
@@ -456,9 +456,9 @@ def update():
         for ref, err in errors:
             print(f"    - {ref}: {err}")
 
-    print(f"\nNext: check results with")
-    print(f"  uv run python scripts/reassess_claims.py status")
-    print(f"  uv run python scripts/seed_claim_bank.py status")
+    print("\nNext: check results with")
+    print("  uv run python scripts/reassess_claims.py status")
+    print("  uv run python scripts/seed_claim_bank.py status")
 
 
 def status():
@@ -485,7 +485,7 @@ def status():
                     pending_batches += 1
 
     print(f"{'='*50}")
-    print(f"CLAIM BANK STATUS")
+    print("CLAIM BANK STATUS")
     print(f"{'='*50}")
     print(f"  Total claims: {total}")
     print()

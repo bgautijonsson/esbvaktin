@@ -2,7 +2,6 @@
 
 from datetime import date
 from enum import StrEnum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -34,7 +33,7 @@ class EvidenceGap(BaseModel):
     original_quote: str = ""
     category: str = Field(..., description="Topic category (fisheries, trade, etc.)")
     explanation: str = Field(..., description="Why this claim is unverifiable")
-    missing_context: Optional[str] = None
+    missing_context: str | None = None
     gap_category: GapCategory = Field(
         ..., description="Classification of why it's unverifiable"
     )
@@ -56,7 +55,7 @@ class ResearchTask(BaseModel):
     )
     suggested_sources: list[str] = Field(default_factory=list)
     estimated_effort_hours: float = 0
-    notes: Optional[str] = None
+    notes: str | None = None
 
 
 class GapAnalysisReport(BaseModel):

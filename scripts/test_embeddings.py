@@ -194,7 +194,7 @@ def main() -> None:
     all_passed = True
     for i, (claim, expected_topic) in enumerate(zip(TEST_CLAIMS, EXPECTED_TOPICS)):
         results = search_evidence(claim, top_k=3, conn=conn)
-        top_result = results[0]
+        results[0]
         topic_match = any(r.topic == expected_topic for r in results)
 
         status = "✓" if topic_match else "✗"

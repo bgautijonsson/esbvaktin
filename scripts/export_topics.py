@@ -397,7 +397,7 @@ def build_topics(conn) -> tuple[list[dict], dict[str, dict]]:
     source_activity = _fetch_source_activity_for_topic(conn)
 
     # Compute overall diversity score across all topics
-    overall_diversity = diversity_score(sighting_counts)
+    diversity_score(sighting_counts)
 
     listing = []
     details = {}

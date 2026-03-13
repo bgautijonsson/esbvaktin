@@ -83,7 +83,7 @@ def prepare_all() -> None:
         report_path = analysis_dir / "_report_final.json"
         article_path = analysis_dir / "_article.md"
         entities_path = analysis_dir / "_entities.json"
-        context_path = analysis_dir / "_context_entities.md"
+        analysis_dir / "_context_entities.md"
 
         if not report_path.exists() or not article_path.exists():
             continue

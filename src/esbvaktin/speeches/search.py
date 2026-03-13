@@ -10,7 +10,6 @@ import re
 
 import aiosqlite
 
-
 # ── EU topic detection ────────────────────────────────────────────────
 
 EU_KEYWORDS_FTS = (
@@ -41,12 +40,12 @@ class _WhereBuilder:
         self.clauses: list[str] = []
         self.params: list = []
 
-    def add(self, clause: str, *params: object) -> "_WhereBuilder":
+    def add(self, clause: str, *params: object) -> _WhereBuilder:
         self.clauses.append(clause)
         self.params.extend(params)
         return self
 
-    def add_in(self, column: str, values: list | tuple) -> "_WhereBuilder":
+    def add_in(self, column: str, values: list | tuple) -> _WhereBuilder:
         if not values:
             self.clauses.append("0")
             return self

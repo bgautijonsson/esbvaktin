@@ -10,9 +10,8 @@ from __future__ import annotations
 import re
 from collections import Counter
 
-from ..pipeline.models import AnalysisReport, ClaimAssessment, Verdict
+from ..pipeline.models import AnalysisReport, Verdict
 from .models import EvidenceGap, GapCategory
-
 
 # ── Gap classification heuristics ─────────────────────────────────────
 

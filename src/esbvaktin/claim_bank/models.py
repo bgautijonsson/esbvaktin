@@ -1,7 +1,6 @@
 """Pydantic models for the Claim Bank."""
 
 from datetime import date
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -21,7 +20,7 @@ class CanonicalClaim(BaseModel):
     canonical_text_is: str = Field(
         ..., description="Icelandic canonical claim text (primary)"
     )
-    canonical_text_en: Optional[str] = Field(
+    canonical_text_en: str | None = Field(
         default=None, description="English equivalent (optional)"
     )
     category: str = Field(..., description="Topic (fisheries, trade, etc.)")
@@ -37,10 +36,10 @@ class CanonicalClaim(BaseModel):
     explanation_is: str = Field(
         ..., description="2-3 sentence Icelandic explanation"
     )
-    explanation_en: Optional[str] = Field(
+    explanation_en: str | None = Field(
         default=None, description="English explanation (optional)"
     )
-    missing_context_is: Optional[str] = Field(
+    missing_context_is: str | None = Field(
         default=None, description="Icelandic context/caveats"
     )
 
@@ -65,7 +64,7 @@ class ClaimBankMatch(BaseModel):
     explanation_is: str
     supporting_evidence: list[str] = Field(default_factory=list)
     contradicting_evidence: list[str] = Field(default_factory=list)
-    missing_context_is: Optional[str] = None
+    missing_context_is: str | None = None
     confidence: float = Field(..., ge=0, le=1)
     last_verified: date
     is_fresh: bool = Field(

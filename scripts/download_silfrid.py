@@ -27,10 +27,10 @@ import re
 import sys
 import time
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from html import unescape
 from pathlib import Path
-from urllib.request import urlopen, Request
+from urllib.request import Request, urlopen
 
 # ---------------------------------------------------------------------------
 # Constants

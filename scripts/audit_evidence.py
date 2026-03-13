@@ -192,7 +192,7 @@ def _write_topic_batch(
                 lines.append("")
 
     # Cross-topic section if present
-    cross_topic = [tg for tg in topic_groups if tg.get("is_cross_topic")]
+    [tg for tg in topic_groups if tg.get("is_cross_topic")]
     # (handled inline above)
 
     # Output format
@@ -343,8 +343,8 @@ def prepare():
         print(f"    Read:  {ctx}")
         print(f"    Write: {out}")
 
-    print(f"\nAfter all batches are audited:")
-    print(f"  uv run python scripts/audit_evidence.py report")
+    print("\nAfter all batches are audited:")
+    print("  uv run python scripts/audit_evidence.py report")
 
 
 def report():

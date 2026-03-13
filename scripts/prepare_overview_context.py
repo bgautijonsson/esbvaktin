@@ -33,13 +33,13 @@ def _format_date_is(iso_date: str) -> str:
     """Format ISO date to Icelandic style (e.g., '10. mars 2026')."""
     from datetime import date as date_cls
 
-    MONTHS_IS = {
+    months_is = {
         1: "janúar", 2: "febrúar", 3: "mars", 4: "apríl",
         5: "maí", 6: "júní", 7: "júlí", 8: "ágúst",
         9: "september", 10: "október", 11: "nóvember", 12: "desember",
     }
     d = date_cls.fromisoformat(iso_date)
-    return f"{d.day}. {MONTHS_IS[d.month]} {d.year}"
+    return f"{d.day}. {months_is[d.month]} {d.year}"
 
 
 def _delta_arrow(current: float | int, previous: float | int) -> str:
@@ -48,7 +48,7 @@ def _delta_arrow(current: float | int, previous: float | int) -> str:
         return f"↑ (úr {previous})"
     elif current < previous:
         return f"↓ (úr {previous})"
-    return f"— (óbreytt)"
+    return "— (óbreytt)"
 
 
 def _find_previous_editorial(current_slug: str) -> str | None:

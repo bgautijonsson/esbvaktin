@@ -103,8 +103,8 @@ def apply_malfridur_fixes(text: str, results: list[dict]) -> tuple[str, int]:
 
 def apply_malfridur_fixes_to_file(filepath, results: list[dict]) -> int:
     """Apply Málstaður corrections to a file. Returns count of fixes."""
-    from pathlib import Path
     import shutil
+    from pathlib import Path
 
     filepath = Path(filepath)
     text = filepath.read_text(encoding="utf-8")

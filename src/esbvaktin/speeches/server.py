@@ -6,8 +6,6 @@ environment variable or rely on the default ~/althingi/althingi-mcp/data/althing
 
 from __future__ import annotations
 
-import json
-
 from mcp.server.fastmcp import FastMCP
 
 from esbvaktin.speeches import db as database

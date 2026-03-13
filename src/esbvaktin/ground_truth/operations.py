@@ -44,7 +44,7 @@ def init_schema(conn: psycopg.Connection | None = None) -> None:
 
     sql = SCHEMA_PATH.read_text()
     # Remove the CREATE EXTENSION line since we already did it
-    lines = [l for l in sql.split("\n") if "CREATE EXTENSION" not in l]
+    lines = [line for line in sql.split("\n") if "CREATE EXTENSION" not in line]
     conn.execute("\n".join(lines))
     conn.commit()
     if close:

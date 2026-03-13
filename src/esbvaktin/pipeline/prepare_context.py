@@ -474,11 +474,11 @@ def prepare_omission_context(
                 )
 
     # Decide whether to use compact mode: threshold on total evidence text
-    _EVIDENCE_SIZE_THRESHOLD = 50_000  # 50KB
+    evidence_size_threshold = 50_000  # 50KB
     full_evidence_text = "".join(
         stmt for stmt, _, _ in all_evidence.values()
     )
-    compact = len(full_evidence_text.encode("utf-8")) > _EVIDENCE_SIZE_THRESHOLD
+    compact = len(full_evidence_text.encode("utf-8")) > evidence_size_threshold
 
     evidence_lines: list[str] = []
     for eid, (statement, statement_is, caveats) in sorted(all_evidence.items()):
@@ -495,8 +495,8 @@ def prepare_omission_context(
     evidence_section = "\n".join(evidence_lines)
 
     # Truncate article text for very large transcripts
-    _ARTICLE_SIZE_THRESHOLD = 30_000  # 30KB
-    if len(article_text.encode("utf-8")) > _ARTICLE_SIZE_THRESHOLD:
+    article_size_threshold = 30_000  # 30KB
+    if len(article_text.encode("utf-8")) > article_size_threshold:
         article_text = (
             article_text[:5000]
             + "\n\n[…klippt — langur texti stytt…]\n\n"
@@ -1049,7 +1049,7 @@ Write a JSON array inside a code block:
 
 
 def prepare_panel_extraction_context(
-    transcript: "ParsedTranscript",  # noqa: F821
+    transcript: ParsedTranscript,  # noqa: F821
     output_dir: Path,
     language: str = "is",
 ) -> Path:

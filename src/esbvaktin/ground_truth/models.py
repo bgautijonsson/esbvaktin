@@ -1,23 +1,21 @@
 """Pydantic models for the Ground Truth Database."""
 
-from datetime import date
-from enum import Enum
-from typing import Optional
-
 import warnings
+from datetime import date
+from enum import StrEnum
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field, model_validator
 
 
-class Domain(str, Enum):
+class Domain(StrEnum):
     LEGAL = "legal"
     ECONOMIC = "economic"
     POLITICAL = "political"
     PRECEDENT = "precedent"
 
 
-class SourceType(str, Enum):
+class SourceType(StrEnum):
     OFFICIAL_STATISTICS = "official_statistics"
     LEGAL_TEXT = "legal_text"
     ACADEMIC_PAPER = "academic_paper"
@@ -26,7 +24,7 @@ class SourceType(str, Enum):
     PARLIAMENTARY_RECORD = "parliamentary_record"
 
 
-class Confidence(str, Enum):
+class Confidence(StrEnum):
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
@@ -38,16 +36,16 @@ class EvidenceEntry(BaseModel):
     evidence_id: str = Field(..., pattern=r"^[A-Z]+-[A-Z]+-\d{3}$")
     domain: Domain
     topic: str
-    subtopic: Optional[str] = None
+    subtopic: str | None = None
     statement: str
     source_name: str
-    source_url: Optional[str] = None
-    source_date: Optional[date] = None
+    source_url: str | None = None
+    source_date: date | None = None
     source_type: SourceType
     confidence: Confidence = Confidence.HIGH
-    caveats: Optional[str] = None
-    statement_is: Optional[str] = None
-    source_description_is: Optional[str] = None
+    caveats: str | None = None
+    statement_is: str | None = None
+    source_description_is: str | None = None
     related_entries: list[str] = Field(default_factory=list)
     last_verified: date = Field(default_factory=date.today)
 
@@ -74,13 +72,13 @@ class SearchResult(BaseModel):
     evidence_id: str
     domain: str
     topic: str
-    subtopic: Optional[str]
+    subtopic: str | None
     statement: str
     source_name: str
-    source_url: Optional[str]
-    source_date: Optional[date]
+    source_url: str | None
+    source_date: date | None
     source_type: str
     confidence: str
-    caveats: Optional[str]
+    caveats: str | None
     similarity: float
-    statement_is: Optional[str] = None
+    statement_is: str | None = None
