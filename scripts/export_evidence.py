@@ -56,7 +56,7 @@ SELECT
     statement, statement_is,
     source_name, source_url, source_date, source_type,
     source_description_is,
-    confidence, caveats, related_entries,
+    confidence, caveats, caveats_is, related_entries,
     last_verified, created_at
 FROM evidence
 ORDER BY evidence_id
@@ -72,7 +72,7 @@ def _fetch_evidence() -> list[dict]:
         "statement", "statement_is",
         "source_name", "source_url", "source_date", "source_type",
         "source_description_is",
-        "confidence", "caveats", "related_entries",
+        "confidence", "caveats", "caveats_is", "related_entries",
         "last_verified", "created_at",
     ]
     conn.close()

@@ -1,4 +1,8 @@
-# ESBvaktin — CLAUDE.md
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+# ESBvaktin
 
 ## Project Overview
 
@@ -27,7 +31,7 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 | Embeddings | BAAI/bge-m3 (local multilingual, 1024-dim) |
 | Article extraction | trafilatura |
 | Analysis pipeline | Claude Code custom agents (`.claude/agents/`) |
-| Icelandic correction | GreynirCorrect |
+| Icelandic correction | GreynirCorrect + Málstaður API (via MCP) |
 | Email | Mailgun inbound parsing + sending |
 | Polling model | Stan via cmdstanr (later, R) |
 | Data viz | R + ggplot2 + plotly (later) |
@@ -66,8 +70,8 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 | `omissions-analyst` | sonnet | Read, Write, Glob | Identify omissions, assess framing and completeness |
 | `entity-extractor` | haiku | Read, Write, Glob | Extract speakers, authors, organisations with attribution |
 | `site-exporter` | sonnet | Bash, Read, Glob, Grep | Run the 7-script site data export chain |
-| `evidence-summariser` | sonnet | Read, Write, Glob | Write Icelandic summaries for Ground Truth evidence batches |
-| `editorial-writer` | opus | Read, Write, Glob, Grep, MCP morphology | Write Icelandic weekly editorial from overview context |
+| `evidence-summariser` | sonnet | Read, Write, Glob, MCP mideind (check only) | Write Icelandic summaries for Ground Truth evidence batches |
+| `editorial-writer` | opus | Read, Write, Glob, Grep, MCP morphology, MCP mideind | Write Icelandic weekly editorial from overview context |
 
 **Parallelisation:** `claim-assessor` + `omissions-analyst` always run in parallel (independent tasks). Multiple `evidence-summariser` instances can run in parallel across batches.
 
@@ -75,7 +79,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 
 **Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser, editorial-writer) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
 
-**Overview pipeline:** `generate_overview.py` (SQL → data.json) → `prepare_overview_context.py` (→ _context_is.md) → `editorial-writer` agent (opus, → editorial.md) → `correct_icelandic.py check-editorial` (post-processing) → `export_overviews.py`. Editorial writer uses MCP morphology tools and reads `knowledge/exemplars_editorial_is.md` before writing.
+**Overview pipeline:** `generate_overview.py` (SQL → data.json) → `prepare_overview_context.py` (→ _context_is.md) → `editorial-writer` agent (opus, → editorial.md) → `export_overviews.py`. Editorial writer uses MCP morphology tools for inflection and MCP mideind `correct_text` for grammar self-correction (one call per editorial), then reads `knowledge/exemplars_editorial_is.md` before writing. `correct_icelandic.py check-editorial` remains available for additional local checks if needed.
 
 ## Conventions
 
@@ -86,17 +90,36 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 - Valid `source_type` values: `official_statistics`, `legal_text`, `academic_paper`, `expert_analysis`, `international_org`, `parliamentary_record`
 - Seed files go in `data/seeds/*.json` (committed); CSVs in `data/{source}/` (gitignored)
 
-- Python code: type hints, f-strings, async where appropriate
+### Code Style
+- Ruff: line-length 100, target py312, rules E/F/I/N/W/UP
+- Type hints, f-strings, async where appropriate
 - British/international spelling in English text
-- Icelandic output uses GreynirCorrect for quality
+
+### Optional Dependency Groups
+- `uv sync --extra embeddings` — FlagEmbedding + torch (for BAAI/bge-m3)
+- `uv sync --extra icelandic` — GreynirCorrect, Icegrams, Islenska
+- `uv sync --extra dev` — pytest, pytest-asyncio, ruff
+- `uv sync --extra email` — Mailgun integration
+- `uv sync --extra ghost` — Ghost CMS publishing
+
+### Icelandic Output
+- Icelandic output uses GreynirCorrect (local) and Málstaður API (via `mideind` MCP server) for quality
+- **Málstaður MCP cost awareness:** Grammar/correction = ~1 kr per 100 chars. Always send full text in one call, never sentence-by-sentence. Agents should call `correct_text` at most once per document. Use `check_grammar` only when uncertain — don't run it routinely on every batch.
 - Subagent JSON output: always parse with `_extract_json()` (sanitises `„"` quotes, strips markdown fences). Subagent field names may vary (e.g. `verdict` vs `new_verdict`) — handle both.
+- Icelandic language rules auto-load via `.claude/rules/` for `*_is.*` and `data/analyses/**` paths — see `icelandic-core.md` and `icelandic-writing.md`
 - Environment variables for secrets (`.env`, never committed)
-- Tests with pytest
 
 ## Key Commands
 
 ```bash
-uv run --extra dev python -m pytest  # Run tests (pytest is in dev extras)
+# Development
+uv run --extra dev python -m pytest              # Run all tests
+uv run --extra dev python -m pytest tests/test_models.py  # Single test file
+uv run --extra dev python -m pytest -k "test_name"        # Single test by name
+uv run --extra dev ruff check src/ scripts/      # Lint
+uv run --extra dev ruff check --fix src/ scripts/  # Lint with auto-fix
+
+# Export pipeline (run in order)
 uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # 1. Export entities
 uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site  # 2. Export evidence for /heimildir/
 uv run python scripts/export_topics.py --site-dir ~/esbvaktin-site    # 3. Export topics (per-topic aggregations)
@@ -114,6 +137,10 @@ uv run python scripts/export_evidence.py --status        # Show evidence DB summ
 uv run python scripts/generate_evidence_is.py prepare     # Prepare IS summary batches (12 batches × 30)
 uv run python scripts/generate_evidence_is.py write       # Parse subagent output → update DB
 uv run python scripts/generate_evidence_is.py status      # Show IS coverage
+uv run python scripts/improve_evidence_is.py status              # Show IS quality (caveats, proofreading)
+uv run python scripts/improve_evidence_is.py translate-caveats   # Translate EN caveats → IS via Málstaður
+uv run python scripts/improve_evidence_is.py correct             # Grammar-correct IS fields via Málstaður
+uv run python scripts/improve_evidence_is.py correct --dry-run   # Preview without API calls
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 uv run python scripts/curate_speech_evidence.py list        # Find high-value Alþingi speeches for evidence curation

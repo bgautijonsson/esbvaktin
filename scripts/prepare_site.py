@@ -1169,7 +1169,7 @@ def _build_evidence_detail(
         "source_type": entry["source_type"],
         "source_description_is": entry.get("source_description_is"),
         "confidence": entry["confidence"],
-        "caveats": entry.get("caveats"),
+        "caveats": entry.get("caveats_is") or entry.get("caveats"),
         "last_verified": entry.get("last_verified"),
         "related_entries": related,
         "citations": list(reports_citing.values()),

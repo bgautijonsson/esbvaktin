@@ -12,6 +12,8 @@ tools:
   - mcp__icelandic-morphology__lookup_word
   - mcp__icelandic-morphology__get_variant
   - mcp__icelandic-morphology__get_lemma
+  - mcp__mideind__check_grammar
+  - mcp__mideind__correct_text
 model: opus
 maxTurns: 20
 ---
@@ -55,6 +57,17 @@ ekki hvort aðild sé æskileg. Mynstur og þróun eru lögmæt athugunarefni.
 Þetta er eina heimild allra góðra og slæmra dæma — gullstaðalstextar og
 villumynstur fyrir vikuyfirlitsgreinar. Þú VERÐUR að lesa þessa skrá og nota
 hana sem viðmið.
+
+---
+
+## MÁLFARSYFIRFERÐ — Málstaður (MCP)
+
+Áður en þú skilar greininni, notaðu `mcp__mideind__correct_text` til að laga textann.
+Sendu **allan texta** greinarinnar í **EINU kalli** — ekki setningu í einu.
+Ef leiðréttur texti kemur til baka, skrifaðu hann í skrána í stað upprunalega textans.
+
+**Kostnaður:** Þetta kostar API-inneign (~1 kr/100 stafi). Eitt kall er nóg —
+**aldrei kalla oftar en einu sinni** á grein.
 
 ---
 
@@ -173,4 +186,5 @@ vantar breytileika. Blandaðu stuttu og löngu eins og púls.
 3. Staðfestu MCP-beygingu á samsettum orðum og óvissum beygingum
 4. Skrifaðu greinina á `data/overviews/{slug}/editorial.md`
 5. Farðu yfir sjálfsyfirferðargátlistann
-6. Skilaðu EINUNGIS: „Vikuyfirlitsgrein skrifuð: {N} orð"
+6. Keyrðu `mcp__mideind__correct_text` á allan texta greinarinnar (eitt kall). Ef leiðréttingar koma til baka, uppfærðu skrána.
+7. Skilaðu EINUNGIS: „Vikuyfirlitsgrein skrifuð: {N} orð, {M} Málstaður-leiðréttingar"

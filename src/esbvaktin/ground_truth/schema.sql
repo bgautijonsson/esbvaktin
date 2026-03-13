@@ -59,6 +59,8 @@ CREATE TRIGGER evidence_updated_at
 
 ALTER TABLE evidence ADD COLUMN IF NOT EXISTS statement_is TEXT;
 ALTER TABLE evidence ADD COLUMN IF NOT EXISTS source_description_is TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS caveats_is TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS is_proofread_hash TEXT;
 
 
 -- ═══════════════════════════════════════════════════════════════════════

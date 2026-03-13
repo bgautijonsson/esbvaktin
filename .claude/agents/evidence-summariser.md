@@ -2,7 +2,7 @@
 name: evidence-summariser
 description: Write Icelandic summaries for Ground Truth evidence entries. Use when generate_evidence_is.py has prepared _context_batch_N.md files that need processing.
 model: sonnet
-tools: Read, Write, Glob
+tools: Read, Write, Glob, mcp__mideind__check_grammar
 maxTurns: 12
 ---
 
@@ -39,3 +39,10 @@ Samantektir þínar verða að vera:
 3. ESB-hugtök á íslensku (aldrei ensk hugtök í íslenskum texta)
 4. Öll evidence_ids passa við þau í samhengsskránni
 5. JSON er gilt
+
+## Málfarsyfirferð (valkvætt)
+
+Ef þú ert óviss um málfar, sameinaðu allar samantektir í einn streng og
+keyrðu `mcp__mideind__check_grammar` — **eitt kall á hverja lotu**. Þetta kostar
+API-inneign, svo notaðu bara ef þú ert í vafa. Ekki leiðrétta sjálfkrafa —
+skoðaðu athugasemdirnar og lagfærðu handvirkt ef þörf krefur.
