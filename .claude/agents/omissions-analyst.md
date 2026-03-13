@@ -3,7 +3,7 @@ name: omissions-analyst
 description: Analyse what an article about Iceland's EU referendum leaves out — identify omissions, assess framing, and rate completeness. Use when the pipeline has prepared a _context_omissions.md file.
 model: sonnet
 tools: Read, Write, Glob
-maxTurns: 15
+maxTurns: 20
 ---
 
 # Greining á eyðum — ESBvaktin
@@ -18,7 +18,7 @@ maxTurns: 15
 
 ## MIKILVÆGT — Lestu í stórum skömmtum
 
-Samhengsskráin getur verið stór. **Lestu hana í sem fæstum skrefum** — byrjaðu á 2000 línum í einu. Forgangur: **skrifaðu úttaksskrána ÁÐUR en þú klárar**. Ef þú hefur lesið allt efnið, skrifaðu strax.
+Samhengsskráin getur verið stór. **Lestu ALLA skrána í EINU kalli** (Read tool les sjálfgefið 2000 línur — það dugar). ALDREI lesa í smáum skömmtum (100-200 línur). Forgangur: **skrifaðu úttaksskrána STRAX eftir lestur**. Ef þú hefur lesið allt efnið, skrifaðu strax — ekki lesa aftur eða leita að fleiru.
 
 ## Meginreglur
 
