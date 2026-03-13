@@ -24,6 +24,15 @@ uv run python scripts/check_duplicate.py --url "ARTICLE_URL" --title "ARTICLE_TI
 
 If the script exits with code 0 (duplicate found), **stop and inform the user**. Show which analysis directory already contains this article. Only proceed if the user explicitly requests re-analysis.
 
+### Step 0a: Inbox Integration (optional)
+
+If the article URL matches an inbox entry, update its status to `analysing`:
+```bash
+uv run python scripts/manage_inbox.py set-status <inbox_id> analysing
+```
+
+If the inbox entry has cached text (`has_text: true`), the text is at `data/inbox/texts/<inbox_id>.md` — use it in Step 1 instead of re-fetching.
+
 ### Step 0b: Panel Show Fast Path (optional)
 
 If the input is a **fréttasafn article ID** for a panel show, use the fetch script to bypass MCP token limits:
@@ -386,6 +395,13 @@ Always export the final report to the ESB Obsidian vault using the MCP `write_no
 - **Tags:** Include `greining` plus topic-specific tags (e.g. `landbúnaður`, `sjávarútvegur`, `skoðanakannanir`). For panel shows, add `umraeduþáttur` tag.
 
 Print a brief confirmation to terminal with the vault path.
+
+### Step 9: Update Inbox Status
+
+If the article was in the inbox, mark it as processed:
+```bash
+uv run python scripts/manage_inbox.py set-status <inbox_id> processed
+```
 
 ## Files Produced
 

@@ -29,8 +29,23 @@ Never rely on `claim_sightings` alone — the site is often ahead of the DB.
 
 `data/rejected_urls.txt` tracks false positives from `scan_eu`. When discovering articles, filter these out. When a user confirms an article is irrelevant, append its URL to this file.
 
+## Article Inbox
+
+`data/inbox/inbox.json` tracks discovered articles with status, priority, and metadata. Managed by `scripts/manage_inbox.py`. Articles persist between sessions.
+
+```bash
+uv run python scripts/manage_inbox.py status              # Backlog summary
+uv run python scripts/manage_inbox.py list                 # Pending articles
+uv run python scripts/manage_inbox.py list --priority high # High priority only
+uv run python scripts/manage_inbox.py queue ID [ID ...]    # Queue for analysis
+uv run python scripts/manage_inbox.py reject ID [ID ...]   # Reject (also adds to rejected_urls.txt)
+uv run python scripts/manage_inbox.py skip ID [ID ...]     # Skip (not worth analysing)
+```
+
+Article texts cached at `data/inbox/texts/{id}.md` for high/medium priority items.
+
 ## Discovery → Analysis flow
 
-1. `/find-articles` — discover and prioritise new articles
-2. User picks articles from the list
-3. `/analyse-article <url>` — runs the full pipeline (dedup check is built in)
+1. `/find-articles` — discover, prioritise, and **save to inbox**
+2. User picks articles from the list (or from inbox backlog)
+3. `/analyse-article <url>` — runs the full pipeline (dedup + inbox status updates built in)

@@ -114,6 +114,16 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 ## Key Commands
 
 ```bash
+# Article inbox
+uv run python scripts/manage_inbox.py status              # Backlog summary
+uv run python scripts/manage_inbox.py list                 # Pending articles
+uv run python scripts/manage_inbox.py list --priority high # High priority only
+uv run python scripts/manage_inbox.py add-batch FILE.json  # Batch import from scan
+uv run python scripts/manage_inbox.py queue ID [ID ...]    # Queue for analysis
+uv run python scripts/manage_inbox.py reject ID [ID ...]   # Reject + add to rejected_urls.txt
+uv run python scripts/manage_inbox.py skip ID [ID ...]     # Skip (not worth it)
+uv run python scripts/manage_inbox.py prune --days 30      # Clean old entries
+
 # Development
 uv run --extra dev python -m pytest              # Run all tests
 uv run --extra dev python -m pytest tests/test_models.py  # Single test file

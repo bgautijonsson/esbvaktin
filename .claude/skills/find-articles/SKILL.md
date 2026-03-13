@@ -20,9 +20,9 @@ uv run python scripts/build_article_registry.py --status
 
 This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. Note the total count for the user.
 
-### Step 2: Load Filters
+### Step 2: Load Filters + Inbox
 
-Load two filter sets:
+Load filter sets and existing inbox:
 
 **Processed URLs** — read `data/article_registry.json`:
 ```python
@@ -38,6 +38,21 @@ for line in open("data/rejected_urls.txt"):
     line = line.strip()
     if line and not line.startswith("#"):
         rejected.add(line.rstrip("/").lower())
+```
+
+**Inbox URLs** — read `data/inbox/inbox.json` to avoid re-discovering articles already in the inbox:
+```python
+from pathlib import Path
+inbox_path = Path("data/inbox/inbox.json")
+inbox_urls = set()
+if inbox_path.exists():
+    inbox = json.loads(inbox_path.read_text())
+    inbox_urls = {entry["url"].rstrip("/").lower() for entry in inbox}
+```
+
+Also show current inbox status:
+```bash
+uv run python scripts/manage_inbox.py status
 ```
 
 ### Step 3: Scan for EU Articles
@@ -58,6 +73,7 @@ For each article returned by `scan_eu`:
 
 1. **Skip if processed** — URL (normalised) is in `processed_urls`
 2. **Skip if rejected** — URL (normalised) is in `rejected`
+2b. **Skip if already in inbox** — URL (normalised) is in `inbox_urls`
 3. **Title-based false positive filter** — skip articles whose titles clearly have no EU/referendum content. Common false positive patterns from `scan_eu`:
    - Crime/accident reports (kynferðisbrot, slys, lögregla, eld)
    - Sports (ÓL, keppni, leikur)
@@ -81,47 +97,67 @@ After reading, re-evaluate:
 - Does it contain verifiable factual claims? (Not just process/meta commentary)
 - Upgrade or downgrade classification based on actual content
 
-### Step 6: Present Results
+### Step 6: Save to Inbox
 
-Display a table to the user:
+Before presenting results, persist all discovered articles to the inbox. Write a JSON file and import it:
+
+```bash
+# Write classified articles to a batch file, then import
+uv run python scripts/manage_inbox.py add-batch data/inbox/_scan_YYYYMMDD.json
+```
+
+The batch JSON is an array of objects with fields: `url`, `title`, `source`, `date`, `word_count`, `article_type`, `topics` (array), `priority`, `frettasafn_id`, `notes`.
+
+For HIGH and MEDIUM articles where full text was fetched, save it:
+```bash
+# Write the fetched text to a temp file, then:
+uv run python scripts/manage_inbox.py save-text <inbox_id> /path/to/text.md
+```
+
+### Step 7: Present Results
+
+Display a table to the user, now including inbox IDs:
 
 ```markdown
 ## New Articles — [date range]
 
-Registry: X processed articles | Y rejected URLs
+Registry: X processed articles | Inbox: Y pending | Z rejected URLs
 
 ### HIGH PRIORITY
-| # | Title | Source | Words | Type | Key Topics |
-|---|-------|--------|-------|------|------------|
-| 1 | ... | Vísir | 2100 | Opinion (anti-EU) | fisheries, sovereignty |
+| # | ID | Title | Source | Words | Type | Key Topics |
+|---|-----|-------|--------|-------|------|------------|
+| 1 | vsir-abc123 | ... | Vísir | 2100 | Opinion (anti-EU) | fisheries, sovereignty |
 
 ### MEDIUM PRIORITY
-| # | Title | Source | Words | Type | Key Topics |
-|---|-------|--------|-------|------|------------|
+| # | ID | Title | Source | Words | Type | Key Topics |
+|---|-----|-------|--------|-------|------|------------|
 
 ### LOW PRIORITY (probably skip)
-| # | Title | Source | Words | Type | Key Topics |
-|---|-------|--------|-------|------|------------|
+| # | ID | Title | Source | Words | Type | Key Topics |
+|---|-----|-------|--------|-------|------|------------|
 
 ### Filtered Out
 - X already processed
 - Y rejected (known false positives)
-- Z title-filtered (clearly irrelevant)
+- Z already in inbox
+- W title-filtered (clearly irrelevant)
 ```
 
 For HIGH priority articles, include a one-line summary of the main claims/arguments.
 
-### Step 7: Handle User Selection
+### Step 8: Handle User Selection
 
 When the user picks articles to analyse:
 
-1. Confirm selection
+1. Queue them: `uv run python scripts/manage_inbox.py queue <id> [<id> ...]`
 2. For each selected article, launch `/analyse-article <url>`
 
 When the user marks articles as irrelevant/skip:
 
-1. Append their URLs to `data/rejected_urls.txt`
-2. Confirm how many were added
+1. Reject them: `uv run python scripts/manage_inbox.py reject <id> [<id> ...]`
+   (This sets status to "rejected" AND appends URLs to `rejected_urls.txt`)
+
+When articles are neither picked nor rejected, they remain `pending` in the inbox for next session.
 
 ## Notes
 
