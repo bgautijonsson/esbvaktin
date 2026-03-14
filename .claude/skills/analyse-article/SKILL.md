@@ -117,6 +117,8 @@ Prompt: Read $WORK_DIR/_context_extraction.md and extract all factual claims.
         Write the JSON array to $WORK_DIR/_claims.json.
 ```
 
+**Verify output:** Check that `$WORK_DIR/_claims.json` exists after the agent completes. If missing, resume the agent with: "You MUST use the Write tool to write the JSON array to $WORK_DIR/_claims.json NOW." One retry max — if it fails again, stop and report.
+
 ### Step 3: Retrieve Evidence and Prepare Assessment Context (Python)
 
 ```bash
@@ -167,7 +169,11 @@ Prompt: Read $WORK_DIR/_context_omissions.md and analyse omissions and framing.
         Write the JSON object to $WORK_DIR/_omissions.json.
 ```
 
-Wait for both agents to complete before proceeding to Step 6.
+Wait for both agents to complete, then **verify outputs:**
+- Check `$WORK_DIR/_assessments.json` exists. If missing, resume claim-assessor with: "You MUST use the Write tool to write the JSON array to $WORK_DIR/_assessments.json NOW."
+- Check `$WORK_DIR/_omissions.json` exists. If missing, resume omissions-analyst with: "You MUST use the Write tool to write the JSON object to $WORK_DIR/_omissions.json NOW."
+
+One retry max per agent — if still missing after retry, stop and report.
 
 ### Step 6: Assemble Icelandic Report (Python)
 
@@ -340,6 +346,8 @@ Prompt: Read $WORK_DIR/_context_entities.md and extract all entities/speakers.
         Write the JSON object to $WORK_DIR/_entities.json.
 ```
 
+**Verify output:** Check that `$WORK_DIR/_entities.json` exists. If missing, resume with: "You MUST use the Write tool to write the JSON object to $WORK_DIR/_entities.json NOW." One retry max.
+
 ### Step 7c (Optional): Generate English Report
 
 Only if English report is explicitly requested:
@@ -388,6 +396,16 @@ print(f'Sightings registered: {counts}')
 "
 ```
 
+### Step 7d-articles: Register Article Sightings
+
+For **regular articles** (not panel shows), register claim sightings after the report is finalised:
+
+```bash
+uv run python scripts/register_article_sightings.py --work-dir $WORK_DIR
+```
+
+This reads `_report_final.json` and registers all claim sightings with the article URL as source. If the script doesn't exist yet or fails, skip with a note — the batch script `register_article_sightings.py` can be run later.
+
 ### Step 7e: Write Reader's Note (Capsule)
 
 Prepare the capsule context from the final report, then launch the capsule-writer agent:
@@ -412,6 +430,8 @@ Agent: capsule-writer
 Prompt: Lestu $WORK_DIR/_context_capsule.md og skrifaðu lesandanótu.
         Skrifaðu niðurstöðuna í $WORK_DIR/_capsule.txt.
 ```
+
+**Verify output:** Check that `$WORK_DIR/_capsule.txt` exists. If missing, resume with: "Skrifaðu lesandanótuna í $WORK_DIR/_capsule.txt STRAX." One retry max.
 
 After the agent completes, write the capsule back into the final report:
 
