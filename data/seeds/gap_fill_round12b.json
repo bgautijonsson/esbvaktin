@@ -1,0 +1,37 @@
+[
+  {
+    "evidence_id": "AGRI-DATA-023",
+    "domain": "economic",
+    "topic": "agriculture",
+    "subtopic": "eu_farmer_protests_cap_dissatisfaction_2024",
+    "statement": "In 2023–2024, farmer protests swept across at least 12 EU member states (France, Germany, Belgium, Netherlands, Poland, Spain, Italy, Romania, Greece, Portugal, Czech Republic, Ireland). Approximately 1,000 tractors blockaded Brussels during an EU summit on 1 February 2024; a second blockade on 26 March 2024 encircled the European Quarter. Main grievances included low and volatile farm incomes, rising input costs (energy, fertiliser), excessive CAP bureaucracy, environmental regulations (4% fallow land requirement, pesticide reduction targets, nitrogen emission curbs), and cheap imports undercutting EU producers (especially Ukrainian grain into Eastern Europe). The EU responded with unprecedented policy rollbacks: the Sustainable Use Regulation (pesticide reduction) was withdrawn entirely in February 2024; the fallow land requirement (GAEC 8) was suspended for 2024; the new Commission in February 2025 formally set the Green Deal aside in its agri-food vision. These were the largest EU-wide agricultural protests in decades.",
+    "source_name": "NPR — EU Farmer Protests; European Commission press releases; Intereconomics analysis",
+    "source_url": "https://en.wikipedia.org/wiki/2023%E2%80%932024_European_Union_farmers%27_protests",
+    "source_date": "2024-03-26",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Public support for CAP remains high: Eurobarometer (January 2025) showed 56% of EU citizens consider the level of financial support to farmers 'right' (+10pp since 2022) and 88% favour payments for climate-beneficial practices. The protests reflect farmer dissatisfaction specifically, not general public dissatisfaction with agricultural policy. Grievances varied by country: German/French farmers protested diesel tax changes; Dutch farmers targeted nitrogen rules; Polish farmers objected to Ukrainian imports. The policy rollbacks may be seen as responsiveness rather than failure. Iceland's agricultural sector is far smaller than any EU member state's and faces different challenges (high costs, limited arable land, import protection).",
+    "related_entries": [
+      "AGRI-LEGAL-004",
+      "AGRI-COMP-001"
+    ]
+  },
+  {
+    "evidence_id": "PREC-DATA-025",
+    "domain": "economic",
+    "topic": "precedents",
+    "subtopic": "iceland_wealthiest_accession_candidate",
+    "statement": "Iceland would be by far the wealthiest EU accession candidate in history. Iceland's GDP per capita (PPP) of approximately $78,800 (2024) is 3–5 times higher than current candidates: Turkey (~$42,000), Montenegro (~$28,000), Serbia (~$27,000), Albania (~$20,000), Bosnia & Herzegovina (~$19,000), Ukraine (~$16,000), Moldova (~$15,000). All current candidates are at 29–54% of the EU average GDP per capita; Iceland is above the EU average. Iceland would likely be a net contributor to the EU budget, unlike all other current candidates who would be net recipients. The European Parliament Research Service (EPRS) noted Iceland's unique position in a March 2026 briefing. By comparison, the wealthiest countries in the 2004 enlargement (Cyprus, Slovenia) had GDP per capita around $22,000–$24,000 — well below the EU average at the time. Iceland also ranks 1st globally on the UN Human Development Index (0.972).",
+    "source_name": "IMF World Economic Outlook; Eurostat; EPRS Briefing on EU-Iceland Relations",
+    "source_url": "https://www.europarl.europa.eu/thinktank/en/document/EPRS_BRI(2026)782591",
+    "source_date": "2026-03-06",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "GDP per capita does not capture all dimensions of 'shape' — institutional quality, infrastructure, and governance capacity also matter, though Iceland scores highly on those too. Iceland's small population (~390,000) means its absolute economic contribution to the EU would be minimal. Being wealthy does not automatically mean accession would be smooth — fisheries, agriculture, and the króna remain difficult negotiating chapters. The claim that Iceland 'makes the enlargement package better' is a political interpretation; EU enlargement is not a package deal where one country's wealth offsets another's. Turkey's accession talks have been frozen since 2018 for political (not economic) reasons.",
+    "related_entries": [
+      "TRADE-COMP-002",
+      "CURRENCY-DATA-012",
+      "SOV-DATA-023"
+    ]
+  }
+]
