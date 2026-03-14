@@ -49,6 +49,8 @@ data/reassessment/
 data/evidence_is/
 data/speech_checks/
 data/overviews/
+data/audit/
+data/review/
 
 # Claude Code (keep skills, rules, and agents)
 .claude/*
@@ -60,3 +62,4 @@ data/overviews/
 # MCP config (user-local)
 .mcp.json
 data/althingi.db
+althingi.db
