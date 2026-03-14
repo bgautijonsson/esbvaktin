@@ -53,6 +53,23 @@ def _issue_filter_sql(alias: str = "s") -> tuple[str, list[str]]:
     return f"({clause})", list(EU_ISSUE_PATTERNS)
 
 
+def _clean_full_text(text: str) -> str:
+    """Clean speech full text for display.
+
+    Source text uses \\n + indentation for soft line wraps within paragraphs.
+    Join those into flowing text, preserving real paragraph breaks (blank lines).
+    """
+    # Normalise: split into paragraphs on blank lines
+    paragraphs = re.split(r"\n\s*\n", text.strip())
+    # Within each paragraph, join wrapped lines
+    cleaned = []
+    for para in paragraphs:
+        joined = re.sub(r"\n\s+", " ", para).strip()
+        if joined:
+            cleaned.append(joined)
+    return "\n\n".join(cleaned)
+
+
 def _capitalise_first(text: str) -> str:
     """Capitalise the first character of a string (preserving the rest)."""
     if not text:
@@ -76,6 +93,53 @@ def icelandic_slugify(text: str) -> str:
     slug = slug.encode("ascii", "ignore").decode("ascii").lower()
     slug = re.sub(r"[^a-z0-9]+", "-", slug).strip("-")
     return slug
+
+
+# ── Coalition lookup by session ──────────────────────────────────────
+# Maps each Alþingi session to the set of coalition party names.
+# Used to assign speeches to "coalition" or "opposition" side.
+
+_COALITION_RANGES: list[tuple[int, int, set[str]]] = [
+    # 1988-1991: Steingrímur Hermannsson III
+    (114, 115, {"Framsóknarflokkur", "Alþýðuflokkur", "Alþýðubandalagið"}),
+    # 1991-1995: Davíð Oddsson I
+    (116, 120, {"Sjálfstæðisflokkur", "Alþýðuflokkur"}),
+    # 1995-2003: Davíð Oddsson II & III
+    (121, 130, {"Sjálfstæðisflokkur", "Framsóknarflokkur"}),
+    # 2003-2007: Davíð Oddsson IV / Halldór Ásgrímsson
+    (131, 135, {"Sjálfstæðisflokkur", "Framsóknarflokkur"}),
+    # 2007-2009: Geir H. Haarde
+    (136, 138, {"Sjálfstæðisflokkur", "Samfylkingin"}),
+    # 2009-2013: Jóhanna Sigurðardóttir
+    (139, 142, {"Samfylkingin", "Vinstrihreyfingin - grænt framboð"}),
+    # 2013-2017: Sigmundur Davíð / Bjarni Benediktsson I
+    (143, 146, {"Sjálfstæðisflokkur", "Framsóknarflokkur"}),
+    # 2017 (brief): Bjarni Benediktsson II
+    (147, 147, {"Sjálfstæðisflokkur", "Viðreisn", "Björt framtíð"}),
+    # 2017-2024: Katrín Jakobsdóttir / Bjarni Benediktsson III
+    (148, 156, {"Sjálfstæðisflokkur", "Framsóknarflokkur",
+                "Vinstrihreyfingin - grænt framboð"}),
+    # 2024-: Kristrún Frostadóttir
+    (157, 999, {"Samfylkingin", "Viðreisn", "Flokkur fólksins"}),
+]
+
+
+def _coalition_parties(session: int) -> set[str]:
+    """Return the set of coalition party names for a given session."""
+    for start, end, parties in _COALITION_RANGES:
+        if start <= session <= end:
+            return parties
+    return set()
+
+
+def _speech_side(party: str | None, session: int) -> str:
+    """Return 'coalition', 'opposition', or '' for a speech."""
+    if not party:
+        return ""
+    coalition = _coalition_parties(session)
+    if not coalition:
+        return ""
+    return "coalition" if party in coalition else "opposition"
 
 
 # ── Party display names ──────────────────────────────────────────────
@@ -154,7 +218,8 @@ def load_debate_speeches(
         SELECT s.speech_id, s.name AS speaker, s.mp_id, s.date,
                s.started, s.ended, s.speech_type,
                t.party, t.word_count,
-               substr(t.full_text, 1, 500) AS excerpt
+               substr(t.full_text, 1, 500) AS excerpt,
+               t.full_text
         FROM speeches s
         LEFT JOIN speech_texts t ON s.speech_id = t.speech_id
         WHERE s.session = ? AND s.issue_nr = ? AND s.issue_title = ?
@@ -207,10 +272,12 @@ def build_debate_detail(
             f"ferill/?ltg={debate['session']}&mnr={debate['issue_nr']}"
         ),
         "parties": parties,
+        "coalition_parties": sorted(_coalition_parties(debate["session"])),
         "speakers": [
             {
                 "name": s["speaker"],
                 "party": s.get("party", ""),
+                "side": _speech_side(s.get("party"), debate["session"]),
                 "speech_count": s["speech_count"],
                 "total_words": s["total_words"],
             }
@@ -221,11 +288,17 @@ def build_debate_detail(
                 "speech_id": s["speech_id"],
                 "speaker": s["speaker"],
                 "party": s.get("party", ""),
+                "side": _speech_side(s.get("party"), debate["session"]),
                 "date": s.get("date", ""),
                 "started": s.get("started", ""),
                 "speech_type": s.get("speech_type", ""),
                 "word_count": s.get("word_count", 0),
                 "excerpt": s.get("excerpt", ""),
+                **(
+                    {"text": _clean_full_text(s["full_text"])}
+                    if s.get("full_text") and len(s.get("full_text", "")) > 500
+                    else {}
+                ),
             }
             for s in speeches
         ],
