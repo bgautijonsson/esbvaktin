@@ -130,6 +130,11 @@ class OmissionAnalysis(BaseModel):
     overall_completeness: float = Field(
         ..., ge=0, le=1, description="How complete the article's coverage is"
     )
+    capsule: str | None = Field(
+        None,
+        description="2-3 sentence Icelandic editorial insight highlighting the most "
+        "consequential finding — not a mechanical summary of verdict counts",
+    )
 
 
 class EntityType(StrEnum):
@@ -222,6 +227,10 @@ class AnalysisReport(BaseModel):
     omissions: OmissionAnalysis
     evidence_used: list[str] = Field(
         default_factory=list, description="All evidence IDs referenced"
+    )
+    capsule: str | None = Field(
+        None,
+        description="Short Icelandic editorial insight (2-3 sentences) for article cards",
     )
     report_text_is: str = Field(default="", description="Icelandic report (primary)")
     report_text_en: str = Field(default="", description="English report (optional)")

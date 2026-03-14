@@ -538,13 +538,18 @@ Skrifaðu á íslensku. Lýsingarnar (description) skulu vera á íslensku.
     }}
   ],
   "framing_assessment": "leans_anti_eu",
-  "overall_completeness": 0.4
+  "overall_completeness": 0.4,
+  "capsule": "Grein Bergþórs fullyrðir að engar undanþágur séu mögulegar, en sleppir fjórum varanlegum undanþágum Danmerkur og sérstakri landbúnaðarheimild Finnlands. Aðalatriðið er villandi tímalína — «já» í þjóðaratkvæðagreiðslu heimilar aðeins endurupptöku viðræðna, ekki fulla aðlögun «strax í september»."
 }}
 ```
 
 - `framing_assessment`: eitt af `balanced`, `leans_pro_eu`, `leans_anti_eu`,
   `strongly_pro_eu`, `strongly_anti_eu`, `neutral_but_incomplete`
 - `overall_completeness`: 0.0 (fjallar um ekkert) til 1.0 (heildstæð umfjöllun)
+- `capsule`: 2-3 setningar á **íslensku** sem draga fram athyglisverðustu niðurstöðu
+  greiningarinnar. EKKI telja niðurstöður eða endurtaka tölulegar upplýsingar — heldur
+  innsýn: hvaða staðreyndir vantar, hvaða fullyrðing er áhugaverðust, eða hvert helsta
+  villandi atriðið er. Þetta birtist á forsíðu og greinakortum.
 
 ## Meginreglur
 
@@ -597,13 +602,18 @@ evidence. Your job is to identify significant omissions and assess framing.
     }}
   ],
   "framing_assessment": "leans_anti_eu",
-  "overall_completeness": 0.4
+  "overall_completeness": 0.4,
+  "capsule": "The article claims no exemptions are possible but omits Denmark's four permanent opt-outs and Finland's Arctic agriculture provision. The central misleading claim is the timeline — a 'yes' vote only authorises resuming negotiations, not immediate adaptation."
 }}
 ```
 
 - `framing_assessment`: one of `balanced`, `leans_pro_eu`, `leans_anti_eu`,
   `strongly_pro_eu`, `strongly_anti_eu`, `neutral_but_incomplete`
 - `overall_completeness`: 0.0 (covers nothing) to 1.0 (comprehensive)
+- `capsule`: 2-3 sentences highlighting the most consequential finding from the
+  analysis. NOT a mechanical summary of verdict counts — instead, editorial insight:
+  what facts are missing, what's the most interesting claim, or what's the key
+  misleading element. This appears on article cards on the website.
 
 ## Critical Principles
 

@@ -701,6 +701,13 @@ def prepare_report(
         entities_data, enriched_claims, site_entities, is_panel=panel_show,
     )
 
+    # Editorial capsule — from omissions analysis or top-level field
+    capsule = report.get("capsule") or ""
+    if not capsule:
+        omissions = report.get("omissions", {})
+        if isinstance(omissions, dict):
+            capsule = omissions.get("capsule", "")
+
     result = {
         "analysis_id": analysis_id,
         "slug": slug,
@@ -711,6 +718,7 @@ def prepare_report(
         "article_date": article_date,
         "analysis_date": report.get("analysis_date"),
         "summary": summary_is,
+        "capsule": capsule,
         "verdict_counts": verdict_counts,
         "claim_count": len(claims),
         "dominant_category": dominant_category,
@@ -749,6 +757,7 @@ def _listing_entry(report_data: dict) -> dict:
         "article_date": report_data.get("article_date"),
         "analysis_date": report_data.get("analysis_date"),
         "summary": report_data.get("summary", ""),
+        "capsule": report_data.get("capsule", ""),
         "claim_count": report_data.get("claim_count", 0),
         "verdict_counts": report_data.get("verdict_counts", {}),
         "dominant_category": report_data.get("dominant_category"),

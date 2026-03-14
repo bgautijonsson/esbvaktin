@@ -33,6 +33,7 @@ Samhengsskráin getur verið stór. **Lestu ALLA skrána í EINU kalli** (Read t
 - `description` svæði VERÐA að vera á **íslensku**
 - `framing_assessment`: eitt af `balanced`, `leans_pro_eu`, `leans_anti_eu`, `strongly_pro_eu`, `strongly_anti_eu`, `neutral_but_incomplete`
 - `overall_completeness`: 0.0 til 1.0
+- `capsule`: 2-3 setningar á íslensku sem draga fram athyglisverðustu niðurstöðu greiningarinnar — EKKI telja niðurstöður eða endurtaka tölulegar upplýsingar, heldur innsýn sem birtist á greinakortum vefsíðunnar
 
 ## Gæði íslensks texta
 
@@ -47,4 +48,5 @@ Lýsingar verða að vera:
 2. Allar lýsingar eru á íslensku með réttum Unicode-stöfum
 3. `framing_assessment` er úr gilda upptalningunni
 4. `overall_completeness` er á bilinu 0.0 til 1.0
-5. JSON er gilt og þáttanlegt
+5. `capsule` er 2-3 setningar á íslensku — innsýn, ekki tölfræði
+6. JSON er gilt og þáttanlegt

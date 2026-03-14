@@ -270,6 +270,9 @@ print()
 print('=== GREINING LOKIÐ ===')
 print(f'Vinnusvæði: {work_dir}')
 print(f'Yfirlit: {report_data[\"summary\"]}')
+capsule = report_data.get('capsule', '')
+if capsule:
+    print(f'Innsýn: {capsule}')
 print(f'Fullyrðingar metnar: {len(report_data[\"claims\"])}')
 print(f'Heimildir notaðar: {len(report_data[\"evidence_used\"])} færslur')
 print(f'Íslensk skýrsla: {work_dir}/_report_is.md')
@@ -385,18 +388,7 @@ print(f'Sightings registered: {counts}')
 "
 ```
 
-### Step 8: Export to Obsidian
-
-Always export the final report to the ESB Obsidian vault using the MCP `write_note` tool:
-
-- **Path:** `Reports/YYYY-MM-DD — Article Title.md`
-- **Frontmatter:** Include `type: article-analysis`, `date`, `source`, `author`, `url`, `claims` (count), `verdicts` (breakdown), `framing`, `completeness`, `evidence_used` (count), `analysis_dir`, and `tags`. For panel shows, add `type: panel-analysis` and `participants` (list).
-- **Formatting:** Add a `> [!tip] Lykilniðurstaða` callout after the summary highlighting the most important finding. Use a `> [!warning]` callout for the omissions section. Add `[[ESBvaktin]]` wikilink in the footer.
-- **Tags:** Include `greining` plus topic-specific tags (e.g. `landbúnaður`, `sjávarútvegur`, `skoðanakannanir`). For panel shows, add `umraeduþáttur` tag.
-
-Print a brief confirmation to terminal with the vault path.
-
-### Step 9: Update Inbox Status
+### Step 8: Update Inbox Status
 
 If the article was in the inbox, mark it as processed:
 ```bash
