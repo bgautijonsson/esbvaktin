@@ -1355,7 +1355,7 @@ def prepare_capsule_context(
         "uppbyggilegur og forvitnilegur.\n"
         "Dragðu fram það sem greinin fær rétt og bættu við einu "
         "áhugaverðu atriði sem lesandinn getur kannað nánar. "
-        "Vísaðu í heimildir (evidence IDs í svigum).\n\n"
+        "Ekki nota heimildakóða (evidence IDs) — skrifaðu léttlesinn texta.\n\n"
         f"Skrifaðu niðurstöðuna í `{output_dir}/_capsule.txt`.\n"
     )
 
