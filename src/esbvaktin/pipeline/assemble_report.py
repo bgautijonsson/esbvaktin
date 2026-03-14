@@ -301,7 +301,7 @@ def assemble_report(
         article_date=article_date,
         language=language,
         summary=summary,
-        capsule=omissions.capsule,
+        capsule=None,
         claims=claims,
         omissions=omissions,
         evidence_used=evidence_ids,

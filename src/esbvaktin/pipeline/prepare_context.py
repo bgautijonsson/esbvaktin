@@ -538,18 +538,13 @@ Skrifaðu á íslensku. Lýsingarnar (description) skulu vera á íslensku.
     }}
   ],
   "framing_assessment": "leans_anti_eu",
-  "overall_completeness": 0.4,
-  "capsule": "Grein Bergþórs fullyrðir að engar undanþágur séu mögulegar, en sleppir fjórum varanlegum undanþágum Danmerkur og sérstakri landbúnaðarheimild Finnlands. Aðalatriðið er villandi tímalína — «já» í þjóðaratkvæðagreiðslu heimilar aðeins endurupptöku viðræðna, ekki fulla aðlögun «strax í september»."
+  "overall_completeness": 0.4
 }}
 ```
 
 - `framing_assessment`: eitt af `balanced`, `leans_pro_eu`, `leans_anti_eu`,
   `strongly_pro_eu`, `strongly_anti_eu`, `neutral_but_incomplete`
 - `overall_completeness`: 0.0 (fjallar um ekkert) til 1.0 (heildstæð umfjöllun)
-- `capsule`: 2-3 setningar á **íslensku** sem draga fram athyglisverðustu niðurstöðu
-  greiningarinnar. EKKI telja niðurstöður eða endurtaka tölulegar upplýsingar — heldur
-  innsýn: hvaða staðreyndir vantar, hvaða fullyrðing er áhugaverðust, eða hvert helsta
-  villandi atriðið er. Þetta birtist á forsíðu og greinakortum.
 
 ## Meginreglur
 
@@ -602,18 +597,13 @@ evidence. Your job is to identify significant omissions and assess framing.
     }}
   ],
   "framing_assessment": "leans_anti_eu",
-  "overall_completeness": 0.4,
-  "capsule": "The article claims no exemptions are possible but omits Denmark's four permanent opt-outs and Finland's Arctic agriculture provision. The central misleading claim is the timeline — a 'yes' vote only authorises resuming negotiations, not immediate adaptation."
+  "overall_completeness": 0.4
 }}
 ```
 
 - `framing_assessment`: one of `balanced`, `leans_pro_eu`, `leans_anti_eu`,
   `strongly_pro_eu`, `strongly_anti_eu`, `neutral_but_incomplete`
 - `overall_completeness`: 0.0 (covers nothing) to 1.0 (comprehensive)
-- `capsule`: 2-3 sentences highlighting the most consequential finding from the
-  analysis. NOT a mechanical summary of verdict counts — instead, editorial insight:
-  what facts are missing, what's the most interesting claim, or what's the key
-  misleading element. This appears on article cards on the website.
 
 ## Critical Principles
 
@@ -1254,5 +1244,121 @@ Write a JSON array inside a code block. **Note: `speaker_name` is a required fie
             context += f"\n\n{blocks}\n"
 
     output_path = output_dir / "_context_extraction.md"
+    output_path.write_text(context, encoding="utf-8")
+    return output_path
+
+
+# ── Capsule context ──────────────────────────────────────────────────
+
+
+def prepare_capsule_context(
+    report_data: dict,
+    output_dir: Path,
+) -> Path:
+    """Write capsule context for the capsule-writer subagent.
+
+    Assembles a tight summary from the final report: what the article
+    is about, what it gets right, and one interesting thing to explore.
+    The capsule-writer uses this to produce a constructive reader's note.
+
+    Returns path to the context file.
+    """
+    title = report_data.get("article_title", "")
+    source = report_data.get("article_source", "")
+    date = report_data.get("article_date", "")
+
+    claims = report_data.get("claims", [])
+
+    from collections import Counter
+
+    vc = Counter(c.get("verdict", "") for c in claims)
+    verdict_is = {
+        "supported": "stutt af heimildum",
+        "partially_supported": "stutt a\u00f0 hluta",
+        "unsupported": "ekki stutt",
+        "misleading": "villandi",
+        "unverifiable": "ekki h\u00e6gt a\u00f0 sannreyna",
+    }
+    verdict_lines = [
+        f"- {verdict_is.get(v, v)}: {count}" for v, count in vc.most_common()
+    ]
+
+    # Supported and partially supported claims
+    solid_claims: list[str] = []
+    for c in claims:
+        if c.get("verdict") in ("supported", "partially_supported"):
+            claim_obj = c.get("claim", {})
+            claim_text = (
+                claim_obj.get("claim_text", "") if isinstance(claim_obj, dict) else ""
+            )
+            evidence = c.get("supporting_evidence", [])
+            if claim_text:
+                ev_str = ", ".join(evidence[:3]) if evidence else ""
+                solid_claims.append(f"- {claim_text} [{ev_str}]")
+    solid_section = "\n".join(solid_claims[:6])
+
+    # Key omissions reframed as interesting context
+    omissions = report_data.get("omissions", {})
+    omission_list = (
+        omissions.get("omissions", []) if isinstance(omissions, dict) else []
+    )
+    interesting: list[str] = []
+    for om in omission_list[:3]:
+        desc = om.get("description", "")
+        ev = om.get("relevant_evidence", [])
+        ev_str = ", ".join(ev[:2]) if ev else ""
+        if desc:
+            interesting.append(f"- {desc} [{ev_str}]")
+    interesting_section = (
+        "\n".join(interesting)
+        if interesting
+        else "Engar s\u00e9rstakar ey\u00f0ur greindar."
+    )
+
+    framing = (
+        omissions.get("framing_assessment", "")
+        if isinstance(omissions, dict)
+        else ""
+    )
+    completeness = (
+        omissions.get("overall_completeness", 0)
+        if isinstance(omissions, dict)
+        else 0
+    )
+
+    context = (
+        "# Samhengi fyrir lesandan\u00f3tu\n\n"
+        "## Um greinina\n\n"
+        f"- **Titill:** {title}\n"
+        f"- **Heimild:** {source}\n"
+        f"- **Dagsetning:** {date}\n"
+        f"- **Fj\u00f6ldi fullyr\u00f0inga:** {len(claims)}\n"
+        f"- **Sj\u00f3narhorn:** {framing}\n"
+        f"- **Heildst\u00e6\u00f0ni:** {completeness:.0%}\n\n"
+        "## Ni\u00f0urst\u00f6\u00f0ur mats\n\n"
+        + "\n".join(verdict_lines)
+        + "\n\n"
+        "## Fullyr\u00f0ingar sem standa \u2014 \u00fea\u00f0 sem greinin f\u00e6r r\u00e9tt\n\n"
+        + (solid_section or "Engar studdar fullyr\u00f0ingar.")
+        + "\n\n"
+        "## \u00c1hugavert til vi\u00f0b\u00f3tar \u2014 ekki gagn"
+        "r\u00fdni, heldur fr\u00f3\u00f0leikur\n\n"
+        "Eftirfarandi eru atri\u00f0i sem greinin nefnir ekki en "
+        "myndu au\u00f0ga skilning lesanda.\n"
+        "N\u00f3tan \u00e1 a\u00f0 kynna eitt e\u00f0a tv\u00f6 "
+        "\u00feessara sem forvitnileg vi\u00f0b\u00f3t, EKKI sem gagn"
+        "r\u00fdni.\n\n"
+        + interesting_section
+        + "\n\n"
+        "## Lei\u00f0beiningar\n\n"
+        "Skrifaðu 2-3 setningar á íslensku. Tónninn á að vera "
+        "uppbyggilegur og forvitnilegur.\n"
+        "Dragðu fram það sem greinin fær rétt og bættu við einu "
+        "áhugaverðu atriði sem lesandinn getur kannað nánar. "
+        "Vísaðu í heimildir (evidence IDs í svigum).\n\n"
+        f"Skrifaðu niðurstöðuna í `{output_dir}/_capsule.txt`.\n"
+    )
+
+    output_path = output_dir / "_context_capsule.md"
     output_path.write_text(context, encoding="utf-8")
     return output_path

@@ -272,7 +272,7 @@ print(f'Vinnusvæði: {work_dir}')
 print(f'Yfirlit: {report_data[\"summary\"]}')
 capsule = report_data.get('capsule', '')
 if capsule:
-    print(f'Innsýn: {capsule}')
+    print(f'Lesandanóta: {capsule}')
 print(f'Fullyrðingar metnar: {len(report_data[\"claims\"])}')
 print(f'Heimildir notaðar: {len(report_data[\"evidence_used\"])} færslur')
 print(f'Íslensk skýrsla: {work_dir}/_report_is.md')
@@ -388,6 +388,52 @@ print(f'Sightings registered: {counts}')
 "
 ```
 
+### Step 7e: Write Reader's Note (Capsule)
+
+Prepare the capsule context from the final report, then launch the capsule-writer agent:
+
+```bash
+uv run python -c "
+import json
+from pathlib import Path
+from esbvaktin.pipeline.prepare_context import prepare_capsule_context
+
+work_dir = Path('$WORK_DIR')
+report_data = json.loads((work_dir / '_report_final.json').read_text())
+prepare_capsule_context(report_data, work_dir)
+print('Capsule context prepared.')
+"
+```
+
+Use the **capsule-writer** agent:
+
+```
+Agent: capsule-writer
+Prompt: Lestu $WORK_DIR/_context_capsule.md og skrifaðu lesandanótu.
+        Skrifaðu niðurstöðuna í $WORK_DIR/_capsule.txt.
+```
+
+After the agent completes, write the capsule back into the final report:
+
+```bash
+uv run python -c "
+import json
+from pathlib import Path
+
+work_dir = Path('$WORK_DIR')
+capsule_path = work_dir / '_capsule.txt'
+if capsule_path.exists():
+    capsule = capsule_path.read_text().strip()
+    report_path = work_dir / '_report_final.json'
+    report_data = json.loads(report_path.read_text())
+    report_data['capsule'] = capsule
+    report_path.write_text(json.dumps(report_data, indent=2, ensure_ascii=False, default=str))
+    print(f'Capsule written: {capsule[:100]}...')
+else:
+    print('WARNING: _capsule.txt not found — skipping.')
+"
+```
+
 ### Step 8: Update Inbox Status
 
 If the article was in the inbox, mark it as processed:
@@ -406,6 +452,8 @@ uv run python scripts/manage_inbox.py set-status <inbox_id> processed
 | `_context_omissions.md` | Context for omission analysis subagent (Icelandic) |
 | `_assessments.json` | Claim assessments (Icelandic explanations) |
 | `_omissions.json` | Omission analysis (Icelandic descriptions) |
+| `_context_capsule.md` | Context for capsule-writer subagent |
+| `_capsule.txt` | Reader's note — constructive Icelandic summary |
 | `_report_is.md` | Icelandic report — primary output |
 | `_report.json` | Structured report (JSON) |
 | `_report_final.json` | Final complete report (JSON) |

@@ -130,11 +130,6 @@ class OmissionAnalysis(BaseModel):
     overall_completeness: float = Field(
         ..., ge=0, le=1, description="How complete the article's coverage is"
     )
-    capsule: str | None = Field(
-        None,
-        description="2-3 sentence Icelandic editorial insight highlighting the most "
-        "consequential finding — not a mechanical summary of verdict counts",
-    )
 
 
 class EntityType(StrEnum):

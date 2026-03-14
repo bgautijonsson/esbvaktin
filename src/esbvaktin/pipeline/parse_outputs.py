@@ -181,9 +181,6 @@ def _normalise_omissions(raw: dict) -> dict:
         if "evidence_ids" in omission and "relevant_evidence" not in omission:
             omission["relevant_evidence"] = omission.pop("evidence_ids")
         omission.pop("impact", None)
-    # Accept capsule field (new) — also handle alternative key names
-    if "editorial_capsule" in raw and "capsule" not in raw:
-        raw["capsule"] = raw.pop("editorial_capsule")
     return raw
 
 
