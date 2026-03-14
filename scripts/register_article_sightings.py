@@ -51,8 +51,8 @@ def _extract_primary_speaker(claim_entry: dict) -> str | None:
 
     best = min(speakers, key=sort_key)
     name = best.get("name", "")
-    # Skip generic institutional speakers
-    if not name or (best.get("type") in ("institution",) and best.get("attribution") == "mentioned"):
+    # Skip generic institutional speakers and mentioned-only individuals
+    if not name or best.get("attribution") == "mentioned":
         return None
     return name
 

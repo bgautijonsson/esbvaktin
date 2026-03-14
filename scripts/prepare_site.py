@@ -969,6 +969,10 @@ def _build_entity_detail(
             attribution = match.get("attribution", "asserted")
             article_attr_types.add(attribution)
 
+            # Skip claims where entity was only mentioned, not quoted/asserted
+            if attribution not in _ACTIVE_ATTRIBUTIONS:
+                continue
+
             # Prefer Icelandic claim text
             claim_text = claim_item.get("claim", {}).get("claim_text", "")
             verdict = claim_item.get("verdict", "unknown")

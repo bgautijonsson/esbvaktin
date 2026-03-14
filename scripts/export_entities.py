@@ -621,17 +621,18 @@ def _merge_entity(
 
         if 0 <= idx < len(claim_data):
             cd = claim_data[idx]
+            # Only link claims for active attributions (not 'mentioned')
+            if attr_type not in _ACTIVE_ATTRIBUTIONS:
+                continue
             if cd["slug"] not in entity["claims"]:
                 entity["claims"].append(cd["slug"])
-            # Only count verdicts for active attributions (not 'mentioned')
-            # and only for substantive claims (non-substantive excluded from credibility)
-            if attr_type in _ACTIVE_ATTRIBUTIONS:
-                is_non_sub = (
-                    non_substantive_texts
-                    and cd.get("text") in non_substantive_texts
-                )
-                if not is_non_sub:
-                    entity["_verdicts"].append(cd["verdict"])
+            # Only count verdicts for substantive claims
+            is_non_sub = (
+                non_substantive_texts
+                and cd.get("text") in non_substantive_texts
+            )
+            if not is_non_sub:
+                entity["_verdicts"].append(cd["verdict"])
 
     # Update mention count (count of articles)
     entity["mention_count"] = len(entity["articles"])
