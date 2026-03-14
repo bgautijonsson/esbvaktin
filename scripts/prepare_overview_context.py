@@ -182,15 +182,17 @@ def prepare_context(slug: str) -> str:
             lines.append(f'{i}. „{a["title"]}" — {a["source"]}, {_format_date_is(a["date"])} ({a["claim_count"]} fullyrðingar, {cat_is})')
         lines.append("")
 
-    # Notable quotes
-    notable = data.get("notable_quotes", [])
-    if notable:
-        lines.append("## Athyglisverð tilvitnun")
-        for q in notable[:3]:
-            verdict_is = VERDICT_LABELS_IS.get(q["verdict"], q["verdict"])
-            lines.append(f'> „{q["text"]}"')
-            lines.append(f'> — {q["speaker"]}, {q["source"]}')
-            lines.append(f'> Úrskurður: {verdict_is}')
+    # Key facts
+    key_facts = data.get("key_facts", [])
+    if key_facts:
+        lines.append("## Helstu staðreyndir vikunnar")
+        for f in key_facts[:4]:
+            verdict_is = VERDICT_LABELS_IS.get(f["verdict"], f["verdict"])
+            cat_is = f.get("category_is", f.get("category", ""))
+            lines.append(f'- **{cat_is}**: {f["claim_text"]}')
+            lines.append(f'  - Úrskurður: {verdict_is} ({f.get("claim_type", "")})')
+            if f.get("caveat"):
+                lines.append(f'  - Fyrirvari: {f["caveat"][:200]}')
             lines.append("")
 
     # Source breakdown

@@ -29,6 +29,33 @@ REGISTRY_PATH = Path("data/article_registry.json")
 
 SIGHTING_MATCH_THRESHOLD = 0.70
 
+# Attribution types ordered by directness — prefer direct quotes
+_ATTR_PRIORITY = {"quoted": 0, "asserted": 1, "paraphrased": 2, "mentioned": 3}
+
+
+def _extract_primary_speaker(claim_entry: dict) -> str | None:
+    """Pick the most directly attributed individual speaker from a claim.
+
+    Prefers quoted > asserted > paraphrased > mentioned, and individuals
+    over institutions/parties.  Returns None if no suitable speaker found.
+    """
+    speakers = claim_entry.get("speakers", [])
+    if not speakers:
+        return None
+
+    def sort_key(s):
+        # Individuals first, then by attribution directness
+        type_priority = 0 if s.get("type") == "individual" else 1
+        attr_priority = _ATTR_PRIORITY.get(s.get("attribution", ""), 9)
+        return (type_priority, attr_priority)
+
+    best = min(speakers, key=sort_key)
+    name = best.get("name", "")
+    # Skip generic institutional speakers
+    if not name or (best.get("type") in ("institution",) and best.get("attribution") == "mentioned"):
+        return None
+    return name
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s  %(message)s",
@@ -101,6 +128,8 @@ def register_article(
         if not claim_text or not verdict:
             continue
 
+        speaker = _extract_primary_speaker(claim_entry)
+
         # Search claim bank for semantic match
         matches = search_claims(
             query=claim_text,
@@ -122,11 +151,13 @@ def register_article(
                     original_text=claim_text,
                     similarity=match.similarity,
                     speech_verdict=verdict,
+                    speaker_name=speaker,
                 )
             counts["matched"] += 1
             logger.debug(
-                "Match: %.3f '%s' → %s (%s)",
-                match.similarity, claim_text[:50], match.claim_slug, verdict,
+                "Match: %.3f '%s' → %s [%s] (%s)",
+                match.similarity, claim_text[:50], match.claim_slug,
+                speaker or "?", verdict,
             )
 
         elif verdict != "unverifiable":
@@ -157,12 +188,13 @@ def register_article(
                         original_text=claim_text,
                         similarity=1.0,
                         speech_verdict=verdict,
+                        speaker_name=speaker,
                     )
                 except Exception as e:
                     logger.warning("Failed to insert claim '%s': %s", slug, e)
                     continue
             counts["new_claims"] += 1
-            logger.debug("New: '%s' → %s (%s)", claim_text[:50], slug, verdict)
+            logger.debug("New: '%s' → %s [%s] (%s)", claim_text[:50], slug, speaker or "?", verdict)
 
         else:
             counts["discarded"] += 1
@@ -180,6 +212,7 @@ def _insert_sighting(
     original_text: str,
     similarity: float,
     speech_verdict: str,
+    speaker_name: str | None = None,
 ) -> None:
     """Insert a claim sighting for an article."""
     conn.execute(
@@ -187,15 +220,16 @@ def _insert_sighting(
         INSERT INTO claim_sightings (
             claim_id, source_url, source_title, source_date,
             source_type, original_text, similarity,
-            speech_verdict
+            speech_verdict, speaker_name
         ) VALUES (
             %(claim_id)s, %(source_url)s, %(source_title)s, %(source_date)s,
             %(source_type)s, %(original_text)s, %(similarity)s,
-            %(speech_verdict)s
+            %(speech_verdict)s, %(speaker_name)s
         ) ON CONFLICT (claim_id, source_url) DO UPDATE SET
             speech_verdict = EXCLUDED.speech_verdict,
             similarity = EXCLUDED.similarity,
-            original_text = EXCLUDED.original_text
+            original_text = EXCLUDED.original_text,
+            speaker_name = COALESCE(EXCLUDED.speaker_name, claim_sightings.speaker_name)
         """,
         {
             "claim_id": claim_id,
@@ -206,6 +240,7 @@ def _insert_sighting(
             "original_text": original_text,
             "similarity": similarity,
             "speech_verdict": speech_verdict,
+            "speaker_name": speaker_name,
         },
     )
     conn.commit()

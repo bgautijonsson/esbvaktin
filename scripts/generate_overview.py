@@ -102,42 +102,43 @@ def _parse_iso_week(week_str: str) -> tuple[date, date]:
 def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
     """Articles analysed in the period (distinct source URLs from sightings)."""
     rows = conn.execute("""
-        SELECT DISTINCT s.source_url, s.source_title,
-               c.category AS dominant_category,
-               COUNT(*) OVER (PARTITION BY s.source_url) AS claim_count,
-               MIN(s.source_date) OVER (PARTITION BY s.source_url) AS article_date
-        FROM claim_sightings s
-        JOIN claims c ON c.id = s.claim_id
-        WHERE s.source_date BETWEEN %s AND %s
-          AND s.source_url IS NOT NULL
+        WITH per_url_cat AS (
+            SELECT s.source_url,
+                   MAX(s.source_title) AS source_title,
+                   c.category,
+                   COUNT(*) AS cat_count,
+                   MIN(s.source_date) AS article_date,
+                   SUM(COUNT(*)) OVER (PARTITION BY s.source_url) AS claim_count
+            FROM claim_sightings s
+            JOIN claims c ON c.id = s.claim_id
+            WHERE c.published = TRUE
+              AND s.source_date BETWEEN %s AND %s
+              AND s.source_url IS NOT NULL
+            GROUP BY s.source_url, c.category
+        ),
+        dominant AS (
+            SELECT DISTINCT ON (source_url)
+                   source_url, source_title, category AS dominant_category,
+                   claim_count, article_date
+            FROM per_url_cat
+            ORDER BY source_url, cat_count DESC
+        )
+        SELECT source_url, source_title, dominant_category, claim_count, article_date
+        FROM dominant
         ORDER BY article_date
     """, (start, end)).fetchall()
 
-    # Deduplicate by URL, pick dominant category by frequency
-    articles: dict[str, dict] = {}
-    url_categories: dict[str, list[str]] = defaultdict(list)
-
-    for url, title, cat, claim_count, article_date in rows:
-        url_categories[url].append(cat)
-        if url not in articles:
-            articles[url] = {
-                "title": title or url,
-                "source": _domain_from_url(url) or "unknown",
-                "url": url,
-                "date": article_date.isoformat() if isinstance(article_date, (date, datetime)) else article_date,
-                "claim_count": claim_count,
-            }
-
-    # Resolve dominant category per article
-    for url, cats in url_categories.items():
-        # Most frequent category
-        cat_counts = defaultdict(int)
-        for c in cats:
-            cat_counts[c] += 1
-        dominant = max(cat_counts, key=cat_counts.get)
-        articles[url]["dominant_category"] = dominant
-
-    return list(articles.values())
+    return [
+        {
+            "title": title or url,
+            "source": _domain_from_url(url) or "unknown",
+            "url": url,
+            "date": article_date.isoformat() if isinstance(article_date, (date, datetime)) else article_date,
+            "claim_count": claim_count,
+            "dominant_category": dominant_category,
+        }
+        for url, title, dominant_category, claim_count, article_date in rows
+    ]
 
 
 def _fetch_new_claims(conn, start: date, end: date) -> dict:
@@ -227,10 +228,9 @@ def _fetch_topic_activity_with_delta(
 
 def _fetch_active_entities(conn, start: date, end: date) -> list[dict]:
     """Most active entities (speakers) in the period."""
-    rows = conn.execute("""
-        SELECT s.speaker_name,
-               COUNT(*) AS claims_made,
-               ARRAY_AGG(DISTINCT c.category) AS topics
+    # Get speaker claim counts
+    speaker_rows = conn.execute("""
+        SELECT s.speaker_name, COUNT(*) AS claims_made
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         WHERE c.published = TRUE
@@ -241,20 +241,39 @@ def _fetch_active_entities(conn, start: date, end: date) -> list[dict]:
         LIMIT 15
     """, (start, end)).fetchall()
 
+    # Get per-speaker topic counts for ranking
+    topic_rows = conn.execute("""
+        SELECT s.speaker_name, c.category, COUNT(*) AS n
+        FROM claim_sightings s
+        JOIN claims c ON c.id = s.claim_id
+        WHERE c.published = TRUE
+          AND s.source_date BETWEEN %s AND %s
+          AND s.speaker_name IS NOT NULL
+        GROUP BY s.speaker_name, c.category
+    """, (start, end)).fetchall()
+
+    # Build per-speaker topic ranking
+    speaker_topics: dict[str, list[tuple[str, int]]] = defaultdict(list)
+    for name, cat, n in topic_rows:
+        speaker_topics[name].append((cat, n))
+
     return [
         {
             "name": name,
             "claims_made": claims_made,
-            "top_topics": [TOPIC_LABELS_IS.get(t, t) for t in (topics or [])[:3]],
+            "top_topics": [
+                TOPIC_LABELS_IS.get(cat, cat)
+                for cat, _ in sorted(speaker_topics.get(name, []), key=lambda x: -x[1])[:3]
+            ],
         }
-        for name, claims_made, topics in rows
+        for name, claims_made in speaker_rows
     ]
 
 
 def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
     """Most-sighted claims in the period, focusing on notable verdicts."""
     rows = conn.execute("""
-        SELECT c.canonical_text_is, c.verdict, c.category,
+        SELECT c.canonical_text_is, c.claim_slug, c.verdict, c.category,
                COUNT(s.id) AS sighting_count,
                ARRAY_AGG(DISTINCT s.source_title) FILTER (WHERE s.source_title IS NOT NULL) AS sources
         FROM claims c
@@ -277,13 +296,14 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
     return [
         {
             "canonical_text_is": text,
+            "claim_slug": slug,
             "verdict": verdict,
             "category": cat,
             "category_is": TOPIC_LABELS_IS.get(cat, cat),
             "sighting_count": count,
             "sources": sources or [],
         }
-        for text, verdict, cat, count, sources in rows
+        for text, slug, verdict, cat, count, sources in rows
     ]
 
 
@@ -307,34 +327,61 @@ def _fetch_source_breakdown(conn, start: date, end: date) -> dict[str, int]:
     return dict(sorted(domain_counts.items(), key=lambda x: -x[1]))
 
 
-def _fetch_notable_quotes(conn, start: date, end: date) -> list[dict]:
-    """Notable quotes — original text from misleading/unsupported sightings."""
+def _fetch_key_facts(conn, start: date, end: date) -> list[dict]:
+    """Key facts — well-supported, non-political claims seen this week.
+
+    Selects verifiable facts (statistics, legal assertions, comparisons)
+    that are supported or partially supported, with caveats (missing_context),
+    spread across different topic categories.  Excludes political/polling
+    categories to focus on substantive material readers can learn from.
+    """
     rows = conn.execute("""
-        SELECT s.original_text, s.speaker_name, s.source_title,
-               c.verdict, c.category
-        FROM claim_sightings s
-        JOIN claims c ON c.id = s.claim_id
+        SELECT DISTINCT ON (c.category)
+               c.canonical_text_is,
+               c.claim_slug,
+               c.category,
+               c.claim_type,
+               c.verdict,
+               c.explanation_is,
+               c.missing_context_is,
+               c.confidence,
+               c.supporting_evidence,
+               c.contradicting_evidence
+        FROM claims c
+        JOIN claim_sightings s ON c.id = s.claim_id
         WHERE c.published = TRUE
           AND s.source_date BETWEEN %s AND %s
-          AND c.verdict IN ('misleading', 'unsupported')
-          AND s.original_text IS NOT NULL
-          AND LENGTH(s.original_text) > 20
-        ORDER BY
-            CASE c.verdict WHEN 'misleading' THEN 0 ELSE 1 END,
-            LENGTH(s.original_text) DESC
-        LIMIT 5
+          AND c.verdict IN ('supported', 'partially_supported')
+          AND c.claim_type IN ('statistic', 'legal_assertion', 'comparison')
+          AND c.category NOT IN ('party_positions', 'polling', 'org_positions')
+          AND c.missing_context_is IS NOT NULL
+          AND LENGTH(c.missing_context_is) > 10
+          AND c.confidence >= 0.7
+        ORDER BY c.category,
+                 CASE c.claim_type
+                     WHEN 'statistic' THEN 0
+                     WHEN 'comparison' THEN 1
+                     ELSE 2
+                 END,
+                 c.confidence DESC
     """, (start, end)).fetchall()
 
     return [
         {
-            "text": text,
-            "speaker": speaker or "Óþekkt",
-            "source": source or "",
-            "verdict": verdict,
+            "claim_text": text,
+            "claim_slug": slug,
             "category": cat,
             "category_is": TOPIC_LABELS_IS.get(cat, cat),
+            "claim_type": ctype,
+            "verdict": verdict,
+            "explanation": explanation or "",
+            "caveat": caveat or "",
+            "confidence": conf,
+            "supporting_evidence": sup or [],
+            "contradicting_evidence": contra or [],
         }
-        for text, speaker, source, verdict, cat in rows
+        for text, slug, cat, ctype, verdict, explanation, caveat, conf, sup, contra
+        in rows
     ]
 
 
@@ -347,7 +394,9 @@ def _fetch_previous_period_metrics(
         SELECT COUNT(DISTINCT s.source_url)
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
-        WHERE s.source_date BETWEEN %s AND %s AND s.source_url IS NOT NULL
+        WHERE s.source_date BETWEEN %s AND %s
+          AND s.source_url IS NOT NULL
+          AND c.published = TRUE
     """, (prev_start, prev_end)).fetchone()[0]
 
     # New claims
@@ -396,7 +445,7 @@ def generate_overview(start: date, end: date) -> dict:
     active_entities = _fetch_active_entities(conn, start, end)
     top_claims = _fetch_top_claims(conn, start, end)
     source_breakdown = _fetch_source_breakdown(conn, start, end)
-    notable_quotes = _fetch_notable_quotes(conn, start, end)
+    key_facts = _fetch_key_facts(conn, start, end)
     previous_period = _fetch_previous_period_metrics(conn, prev_start, prev_end)
 
     # Compute diversity
@@ -422,7 +471,7 @@ def generate_overview(start: date, end: date) -> dict:
         "active_entities": active_entities,
         "articles": articles,
         "source_breakdown": source_breakdown,
-        "notable_quotes": notable_quotes,
+        "key_facts": key_facts,
     }
 
     conn.close()
@@ -528,7 +577,7 @@ def main() -> None:
     print(f"  Active topics: {kn['topics_active']}")
     print(f"  Diversity score: {kn['diversity_score']:.4f}")
     print(f"  Top claims: {len(overview['top_claims'])}")
-    print(f"  Notable quotes: {len(overview['notable_quotes'])}")
+    print(f"  Key facts: {len(overview['key_facts'])}")
 
 
 if __name__ == "__main__":

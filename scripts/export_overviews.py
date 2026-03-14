@@ -103,29 +103,13 @@ def _load_entity_names() -> set[str]:
     return {e["name"] for e in entities if "name" in e}
 
 
-def _enrich_notable_quotes(
-    quotes: list[dict], known_entities: set[str]
-) -> list[dict]:
-    """Add speaker_slug, category, and source_slug to notable quotes."""
+def _enrich_key_facts(facts: list[dict]) -> list[dict]:
+    """Normalise category to hyphens for key facts."""
     enriched = []
-    for q in quotes:
-        entry = {**q}
-        # #1: speaker_slug — only for known entities
-        speaker = q.get("speaker", "")
-        if speaker and speaker != "Óþekkt" and speaker in known_entities:
-            entry["speaker_slug"] = icelandic_slugify(speaker)
-        # #2: category — pass through from data.json (added in generate_overview)
-        # Already present if data.json was regenerated; handle legacy files
-        if "category" not in entry:
-            # Legacy data.json without category — leave as-is
-            pass
-        else:
-            # Normalise to hyphens for consistency with topic slugs
+    for f in facts:
+        entry = {**f}
+        if "category" in entry:
             entry["category"] = entry["category"].replace("_", "-")
-        # #3: source_slug
-        source = q.get("source", "")
-        if source:
-            entry["source_slug"] = icelandic_slugify(source)
         enriched.append(entry)
     return enriched
 
@@ -179,11 +163,12 @@ def _build_detail(data: dict, known_entities: set[str] | None = None) -> dict:
         "topic_activity": topic_activity,
         "top_claims": _enrich_top_claims(data.get("top_claims", [])),
         "active_entities": active_entities,
-        "articles": data.get("articles", []),
+        "articles": [
+            {**art, "slug": icelandic_slugify(art["title"])}
+            for art in data.get("articles", [])
+        ],
         "source_breakdown": data.get("source_breakdown", {}),
-        "notable_quotes": _enrich_notable_quotes(
-            data.get("notable_quotes", []), known_entities
-        ),
+        "key_facts": _enrich_key_facts(data.get("key_facts", [])),
         "editorial": data.get("editorial", ""),
     }
 
