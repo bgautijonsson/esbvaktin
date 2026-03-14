@@ -23,6 +23,8 @@ from esbvaktin.pipeline.models import TOPIC_LABELS_IS
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OVERVIEWS_DIR = PROJECT_ROOT / "data" / "overviews"
+SITE_DIR = PROJECT_ROOT.parent / "esbvaktin-site"
+ENTITY_DETAILS_DIR = SITE_DIR / "_data" / "entity-details"
 
 
 def _get_connection():
@@ -134,7 +136,7 @@ def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
             "source": _domain_from_url(url) or "unknown",
             "url": url,
             "date": article_date.isoformat() if isinstance(article_date, (date, datetime)) else article_date,
-            "claim_count": claim_count,
+            "claim_count": int(claim_count),
             "dominant_category": dominant_category,
         }
         for url, title, dominant_category, claim_count, article_date in rows
@@ -227,32 +229,90 @@ def _fetch_topic_activity_with_delta(
 
 
 def _fetch_active_entities(conn, start: date, end: date) -> list[dict]:
-    """Most active entities (speakers) in the period."""
-    # Get speaker claim counts
+    """Most active entities (speakers) in the period.
+
+    Uses the site's entity-detail JSONs (same source as /raddirnar/ pages)
+    rather than claim_sightings, so counts match what entity pages show.
+    Falls back to DB sightings if entity-details dir is missing.
+    """
+    if ENTITY_DETAILS_DIR.is_dir():
+        return _active_entities_from_site(start, end)
+    # Fallback: DB sightings (may undercount — see commit message)
+    return _active_entities_from_db(conn, start, end)
+
+
+def _active_entities_from_site(start: date, end: date) -> list[dict]:
+    """Count claims per entity from site entity-detail JSONs, filtered by date."""
+    results: list[dict] = []
+
+    for detail_path in ENTITY_DETAILS_DIR.glob("*.json"):
+        try:
+            detail = json.loads(detail_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        # Only include individuals (skip parties, organisations)
+        if detail.get("type") != "individual":
+            continue
+
+        # Count claims whose article_date falls within the period
+        topic_counts: dict[str, int] = defaultdict(int)
+        claims_in_period = 0
+
+        for claim in detail.get("claims", []):
+            article_date_str = claim.get("article_date")
+            if not article_date_str:
+                continue
+            try:
+                article_date = date.fromisoformat(article_date_str)
+            except ValueError:
+                continue
+
+            if start <= article_date <= end:
+                claims_in_period += 1
+                cat = claim.get("category", "")
+                if cat:
+                    topic_counts[cat] += 1
+
+        if claims_in_period == 0:
+            continue
+
+        results.append({
+            "name": detail["name"],
+            "claims_made": claims_in_period,
+            "top_topics": [
+                TOPIC_LABELS_IS.get(cat, cat)
+                for cat, _ in sorted(topic_counts.items(), key=lambda x: -x[1])[:3]
+            ],
+        })
+
+    # Sort by claims descending, take top 15
+    results.sort(key=lambda x: -x["claims_made"])
+    return results[:15]
+
+
+def _active_entities_from_db(conn, start: date, end: date) -> list[dict]:
+    """Fallback: active entities from claim_sightings (may undercount)."""
     speaker_rows = conn.execute("""
         SELECT s.speaker_name, COUNT(*) AS claims_made
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
-        WHERE c.published = TRUE
-          AND s.source_date BETWEEN %s AND %s
+        WHERE s.source_date BETWEEN %s AND %s
           AND s.speaker_name IS NOT NULL
         GROUP BY s.speaker_name
         ORDER BY claims_made DESC
         LIMIT 15
     """, (start, end)).fetchall()
 
-    # Get per-speaker topic counts for ranking
     topic_rows = conn.execute("""
         SELECT s.speaker_name, c.category, COUNT(*) AS n
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
-        WHERE c.published = TRUE
-          AND s.source_date BETWEEN %s AND %s
+        WHERE s.source_date BETWEEN %s AND %s
           AND s.speaker_name IS NOT NULL
         GROUP BY s.speaker_name, c.category
     """, (start, end)).fetchall()
 
-    # Build per-speaker topic ranking
     speaker_topics: dict[str, list[tuple[str, int]]] = defaultdict(list)
     for name, cat, n in topic_rows:
         speaker_topics[name].append((cat, n))
