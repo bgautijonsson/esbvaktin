@@ -892,15 +892,33 @@ def prepare_entity_details(site_dir: Path) -> None:
             rd = json.load(f)
         reports_map[rd["slug"]] = rd
 
+    # Build details and collect scorecards for write-back to entities.json
+    scorecards: dict[str, dict] = {}
     written = 0
     for entity in entities:
         detail = _build_entity_detail(entity, reports_map, party_members_map)
         out_path = details_dir / f"{entity['slug']}.json"
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(detail, f, ensure_ascii=False, indent=2)
+        scorecards[entity["slug"]] = detail.get("scorecard", {})
         written += 1
 
+    # Write scorecards back into entities.json so tracker cards match detail pages
+    updated = 0
+    for entity in entities:
+        entity["scorecard"] = scorecards.get(entity["slug"], {})
+        if entity["scorecard"]:
+            updated += 1
+    with open(entities_path, "w", encoding="utf-8") as f:
+        json.dump(entities, f, ensure_ascii=False, indent=2)
+    # Also update client-side copy
+    assets_entities = site_dir / "assets" / "data" / "entities.json"
+    if assets_entities.exists():
+        with open(assets_entities, "w", encoding="utf-8") as f:
+            json.dump(entities, f, ensure_ascii=False, indent=2)
+
     print(f"\nWrote {written} entity detail pages to {details_dir}")
+    print(f"Updated {updated} entity scorecards in entities.json")
 
 
 def _build_entity_detail(
