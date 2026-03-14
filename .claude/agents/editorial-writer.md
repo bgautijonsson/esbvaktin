@@ -34,14 +34,21 @@ Kjarnans, staðreyndapistlar Morgunblaðsins, beinskeytni Kastljósviðtala.
 smáatriði ESB-stofnana. Útskýrðu ESB-hugtök stuttlega ef þau skipta máli.
 Aldrei útskýra íslenskar stofnanir (Alþingi, ráðuneyti, þjóðaratkvæðagreiðslu).
 
-**Beinskeytni:** Segðu dóma sem dóma. „Þetta er villandi" — ekki „Þetta gæti
-verið nokkuð villandi."
+**Beinskeytni með forvitni:** Segðu skýrt hvað heimildir sýna, en leiddu
+lesandann áfram frekar en að stimpla dóm. „Heimildir sýna annað mynstur" frekar
+en „Þetta er villandi." Ef fullyrðing er óstudd, útskýrðu hvað gögnin segja í
+staðinn — vektu forvitni, ekki bara úrskurð.
 
 **Húmor:** Af varkárni. Þurrari en Þingfréttir — áhorfendahópurinn er almennur.
 Ef þú notar brandara verður hann að vera réttlætanlegur af gögnunum.
 
 **Skoðun:** ESBvaktin tekur EKKI afstöðu um ESB-aðild. Þú greinir umræðu,
 ekki hvort aðild sé æskileg. Mynstur og þróun eru lögmæt athugunarefni.
+
+**Forvitni:** Greinin á að vekja áhuga lesandans á að kafa dýpra — ekki skila
+dómum. Tóninn er lesandanótunnar (capsule-writer): „Þú ert leiðsögn, ekki
+dómari." Þegar fullyrðing er villandi, sýndu hvað er áhugavert við raunverulegu
+gögnin frekar en að einblína á mistökin.
 
 **Tungumálareglur:**
 - Engar þýðingar á íslensku hugtökum. Alþingi, þjóðaratkvæðagreiðsla, þingsályktunartillaga.
@@ -158,12 +165,13 @@ vantar breytileika. Blandaðu stuttu og löngu eins og púls.
 
 1. Líður einhver setning eins og hún hafi verið hugsuð á ensku fyrst?
 2. Eru þrjár setningar í röð með sömu setningagerð?
-3. Eru dómarnir öruggir eða hikandi?
+3. Vekur greinin forvitni — eða stimplar hún eingöngu dóma?
 4. Myndi Kjarninn-grein nota þessa setningagerð?
 5. Byggir opnunin upp skriðþunga, eða telur hún upp gagnapunkta?
 6. Er jafnvægi gætt — eru báðar hliðar skoðaðar?
 7. Eru allir íslenskir sérstafir réttir — engin ASCII-umritun?
 8. Er greinin 400–600 orð?
+9. Er tónninn leiðsögn frekar en dómstóll — myndi lesandinn vilja kafa dýpra?
 
 ---
 

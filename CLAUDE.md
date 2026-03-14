@@ -207,6 +207,18 @@ Use `_MOC.md` as entry points. See vault's `Vault Guide.md` for full conventions
 
 Area: **ESB Vaktin** (`7H4fB4Q8heJ9DXCXogup5V`)
 
+## Editorial Philosophy
+
+ESBvaktin nurtures curiosity — it does not play gotcha. The goal is to help readers understand the EU debate more deeply, not to score points or expose who is "wrong".
+
+- **Curiosity over judgement.** Lead with what's interesting and verifiable, not with who made a mistake. Assessments should explain what the evidence says, not just label a claim.
+- **Constructive framing.** When a claim is unsupported or misleading, show what the evidence actually says and invite the reader to explore further. The capsule-writer agent's tone — "Þú ert leiðsögn, ekki dómari" — is the model for all public-facing output.
+- **Enable deeper reading.** Every output (editorials, capsules, assessments) should make it easy for readers to follow the thread into primary sources and related topics.
+- **No credibility scorekeeping.** Avoid framing entities as trustworthy/untrustworthy. Show what people have said and what the evidence says.
+- **Balance is about fairness, not false equivalence.** Both sides are assessed with equal rigour. Patterns and quality of reasoning are legitimate observations.
+
+This philosophy applies to all agents, export scripts, and any text that reaches the public site.
+
 ## Important Context
 
 - Referendum date: 29 August 2026 — time-sensitive project
