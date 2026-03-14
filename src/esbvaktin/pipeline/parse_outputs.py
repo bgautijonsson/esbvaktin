@@ -60,6 +60,7 @@ def sanitise_icelandic_quotes(text: str) -> str:
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
+
     return text
 
 
@@ -83,7 +84,35 @@ def _extract_json(text: str) -> str:
     except (json.JSONDecodeError, ValueError):
         pass
     # Sanitise smart/Icelandic quotes before parsing
-    return sanitise_icelandic_quotes(raw)
+    sanitised = sanitise_icelandic_quotes(raw)
+
+    # Try parsing after sanitisation; if it still fails, attempt
+    # iterative repair of unescaped ASCII quotes at error positions.
+    try:
+        json.loads(sanitised)
+        return sanitised
+    except json.JSONDecodeError:
+        pass
+
+    # Phase 3: iterative positional repair.
+    # When an agent writes \"word" the closer is a bare ASCII " that
+    # JSONDecodeError points to. Escape it and retry (up to 10 fixes).
+    repaired = sanitised
+    for _ in range(10):
+        try:
+            json.loads(repaired)
+            return repaired
+        except json.JSONDecodeError as e:
+            pos = e.pos
+            if pos is None or pos >= len(repaired) or repaired[pos] != '"':
+                break
+            # Check the quote at error position looks like content, not structure:
+            # preceded by a word char or punctuation (not a JSON delimiter)
+            if pos > 0 and repaired[pos - 1] not in (",", ":", "[", "{", " ", "\n", "\t"):
+                repaired = repaired[:pos] + '\\"' + repaired[pos + 1:]
+            else:
+                break
+    return repaired
 
 
 def parse_claims(output_path: Path) -> list[Claim]:

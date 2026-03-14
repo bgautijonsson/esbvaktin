@@ -1,0 +1,174 @@
+[
+  {
+    "evidence_id": "PREC-DATA-020",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "croatia_euro_adoption_effects",
+    "statement": "Croatia adopted the euro on 1 January 2023, becoming the 20th eurozone member. In the first two years after adoption, housing loan interest rates in Croatia fell significantly: by September 2025, Croatian housing loan rates averaged approximately 3.0%, compared to 3.71% in Germany (December 2025). Croatian National Bank Governor Boris Vujčić stated at a BIS conference in January 2024 that Croatian mortgage rates had fallen below German rates (3.64% vs 4.22% at the time), and the gap has widened since. Corporate lending rates also fell. Croatia's GDP grew 3.4% in 2023 and an estimated 3.5% in 2024, significantly outperforming the eurozone average (0.4% and 0.8% respectively). Inflation converged with the eurozone: from a peak of 13.1% in early 2023, Croatian HICP fell to approximately 3.4% by late 2024.",
+    "source_name": "ECB Statistical Data Warehouse — MFI Interest Rates; Croatian National Bank; BIS",
+    "source_url": "https://sdw.ecb.europa.eu/",
+    "source_date": "2025-12-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Croatia's strong GDP growth reflects multiple factors beyond euro adoption (EU structural funds, tourism recovery, labour market reforms). Interest rate convergence was expected and accelerated by ECB rate cuts in 2024. Consumer price levels rose initially after euro changeover (rounding effects), though official statistics showed limited impact. Croatia had already closely pegged the kuna to the euro for two decades, reducing the magnitude of the policy shift.",
+    "related_entries": [
+      "CURR-DATA-005",
+      "CURRENCY-DATA-015"
+    ]
+  },
+  {
+    "evidence_id": "CURR-DATA-007",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "iceland_eurozone_interest_rate_spread_2026",
+    "statement": "As of February 2026, the Central Bank of Iceland's key interest rate stands at 7.25%, having been cut in five steps from 9.25% since mid-2024. The ECB deposit facility rate is 2.00% (after cuts from 4.00% beginning June 2024). The spread is 5.25 percentage points. Icelandic non-indexed mortgage rates range from approximately 8.15% to 10.6%, while indexed (inflation-linked) mortgage rates are approximately 4.1% in real terms. In Germany, average mortgage rates are approximately 3.7%. Iceland's inflation (HICP) was 5.2% in February 2026, compared to 1.9% in the eurozone. Over the life of a 25-year mortgage, the difference in total interest paid between Iceland's rates (approximately 9%) and a typical eurozone rate (approximately 3.5%) means Icelandic borrowers pay roughly 3–4 times more in total interest costs.",
+    "source_name": "Central Bank of Iceland; ECB; Eurostat HICP",
+    "source_url": "https://www.sedlabanki.is/",
+    "source_date": "2026-02-28",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Iceland's indexed mortgage system (verðtryggð lán) links principal to CPI, meaning real rates are lower than nominal non-indexed rates but total repayment depends on inflation path. The 3–4x total interest comparison uses nominal non-indexed rates; indexed loans are cheaper but carry inflation risk. Interest rate differentials partly reflect Iceland's higher inflation expectations and currency risk premium, which would not automatically disappear with euro adoption — the Maastricht criteria require convergence first. ECB rate cuts in 2024–2025 reduced the spread from its 2023 peak of ~5.25pp.",
+    "related_entries": [
+      "CURRENCY-DATA-015",
+      "CURRENCY-DATA-017",
+      "CURRENCY-DATA-018"
+    ]
+  },
+  {
+    "evidence_id": "PREC-DATA-021",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "greenland_eec_departure_1985",
+    "statement": "Greenland joined the European Economic Community (EEC) in 1973 as part of Denmark, despite a majority of Greenlanders voting against in the 1972 referendum (70.3% No). After achieving home rule in 1979, Greenland held its own referendum on EEC membership on 23 February 1982, with 52% voting to leave. Greenland formally left the EEC on 1 February 1985, the first (and to date only) territory to withdraw from the European Community. The departure was primarily driven by disagreements over the Common Fisheries Policy — Greenlanders objected to foreign vessels accessing their rich fishing grounds. After withdrawal, Greenland obtained Overseas Countries and Territories (OCT) status, negotiating a 'fish for cash' arrangement where the EC paid for fishing access (approximately ECU 26.5 million annually). This evolved into a Fisheries Partnership Agreement. Greenland lost direct EU structural fund support but gained greater autonomy over fisheries management.",
+    "source_name": "European Parliament — Greenland's withdrawal from the EEC; Treaty amending the Treaties of Rome",
+    "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/170/greenland",
+    "source_date": "1985-02-01",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Greenland was a sub-national territory with home rule, not a sovereign state, making the withdrawal legally simpler than a full member state exit (no Article 50 process). The fishing access payments were smaller than the structural funds Greenland gave up. Greenland's population (~56,000) and economy are tiny compared to Iceland's. The Trump administration's expressed interest in acquiring Greenland (2025) has strengthened Greenland-Denmark-EU solidarity, changing the political dynamics. Greenland is not currently seeking to rejoin the EU.",
+    "related_entries": [
+      "SOV-DATA-001",
+      "FISH-LEGAL-002"
+    ]
+  },
+  {
+    "evidence_id": "PREC-DATA-022",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "brexit_political_aftermath_no_exit_movements",
+    "statement": "Since the United Kingdom's departure from the EU (effective 31 January 2020), no other member state has moved toward exit or initiated Article 50 proceedings. Eurobarometer surveys show EU membership support reaching record highs: in Spring 2025, 74% of EU citizens said their country's EU membership was beneficial — the highest level recorded since the question was first asked in 1983. Eurosceptic parties in several countries (France's Rassemblement National, Italy's Lega, Netherlands' PVV) have dropped explicit exit demands from their platforms, shifting to 'reform from within' positions. The EU has continued deepening integration in areas the UK had previously blocked, including common defence procurement (European Defence Fund, €8bn 2021–2027), fiscal capacity (NextGenerationEU, €807bn), and digital regulation (AI Act, Digital Services Act).",
+    "source_name": "European Commission — Standard Eurobarometer 103, Spring 2025",
+    "source_url": "https://europa.eu/eurobarometer/",
+    "source_date": "2025-07-01",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "High aggregate support for EU membership does not mean Euroscepticism has disappeared. Significant minorities in several countries remain critical. Hungary and Poland have had rule-of-law disputes with EU institutions. The rise of 'reform from within' rhetoric may represent a tactical shift rather than a genuine change of heart. Brexit's economic difficulties (trade barriers, labour shortages) have made exit politically toxic, which is a different dynamic from genuine pro-EU enthusiasm.",
+    "related_entries": [
+      "PREC-DATA-001",
+      "PREC-DATA-017"
+    ]
+  },
+  {
+    "evidence_id": "SOV-DATA-023",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "iceland_accession_negotiations_2010_2013",
+    "statement": "Iceland applied for EU membership on 17 July 2009, during the aftermath of the 2008 financial crisis. Formal accession negotiations opened on 27 July 2010, using a 33-chapter framework (later expanded to 35 for subsequent accessions). By the time negotiations were suspended in May 2013, 27 of 33 chapters had been screened and 11 had been provisionally closed. The six chapters never opened included the most contentious for Iceland: Chapter 11 (Agriculture and Rural Development), Chapter 13 (Fisheries), Chapter 22 (Regional Policy), Chapter 33 (Financial and Budgetary Provisions), Chapter 34 (Institutions), and Chapter 35 (Other Issues). The incoming centre-right government (Progressive Party and Independence Party) suspended negotiations in May 2013. Iceland formally withdrew its application on 12 March 2015. The current government (formed 2025) has proposed a referendum on whether to resume accession talks, not a direct membership vote.",
+    "source_name": "European Commission — Iceland Accession Progress Reports; Icelandic Ministry of Foreign Affairs",
+    "source_url": "https://neighbourhood-enlargement.ec.europa.eu/enlargement-policy/negotiations-status/iceland_en",
+    "source_date": "2015-03-12",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Whether Iceland's previous application can be 'resumed' or would require a fresh application is legally uncertain. The EU's acquis has changed significantly since 2013 (new chapters, new legislation). The chapters that were provisionally closed would likely need review. Some analysts argue the 11 closed chapters represent useful groundwork; others note that the hardest issues were never reached. The 2026 referendum question asks about opening/resuming negotiations, not about membership itself.",
+    "related_entries": [
+      "EEA-LEGAL-011",
+      "SOV-LEGAL-027"
+    ]
+  },
+  {
+    "evidence_id": "PREC-HIST-021",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "denmark_green_tripartite_agricultural_conversion",
+    "statement": "In November 2024, the Danish government, farmers' organisations, and environmental groups signed the Green Tripartite Agreement (Grøn Trepart), committing to convert 390,000 hectares of agricultural land: 250,000 hectares to forest (by 2045) and 140,000 hectares of carbon-rich peatland to wetland (by 2030). This represents approximately 15% of Denmark's total agricultural area of 2.6 million hectares. The agreement's total budget is DKK 43 billion (approximately €5.8 billion). The European Commission approved a EUR 626 million state aid package for the forest conversion component. Denmark also introduced a carbon tax on agriculture starting in 2030 (DKK 300/tonne CO₂e, rising to DKK 750 by 2035), becoming the first country globally to tax agricultural emissions. The agreement is part of Denmark's goal to reduce greenhouse gas emissions by 70% by 2030 relative to 1990.",
+    "source_name": "Danish Ministry of Finance — Grøn Trepart Agreement; European Commission State Aid Decision",
+    "source_url": "https://fm.dk/",
+    "source_date": "2024-11-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The agreement is ambitious but implementation has just begun. The 2030 peatland target is extremely tight. Farmer compensation terms are still being finalised for some components. The carbon tax phases in gradually and will face political pressure. Denmark is an outlier — most EU member states have not undertaken agricultural land conversion at this scale. The agreement was negotiated domestically, not imposed by the EU's Common Agricultural Policy, though it must comply with EU state aid rules.",
+    "related_entries": [
+      "AGRI-DATA-001",
+      "AGRI-COMP-001"
+    ]
+  },
+  {
+    "evidence_id": "PREC-DATA-023",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "eu_accession_economic_impact_pattern",
+    "statement": "Historical data on EU accession shows a broad pattern of economic benefits for joining countries, though results vary. Among the 2004 enlargement states, GDP per capita (PPS) converged significantly: Poland rose from 49% of the EU average in 2004 to 81% in 2024; Estonia from 52% to 85%; Czech Republic from 77% to 93%. FDI inflows surged: the 2004 cohort received approximately €250 billion in cumulative FDI in the first decade of membership. Trade integration deepened: intra-EU trade share for new members rose by 10–20 percentage points in the decade after accession. However, results were uneven: Greece (joined 1981) saw initial growth but long-term debt crisis; Croatia (joined 2013) benefited from structural funds but still faces brain drain. The pattern is strongest for small, open economies with pre-existing EU trade orientation — a category that fits Iceland's profile.",
+    "source_name": "Eurostat GDP per capita in PPS; European Commission Enlargement Reviews",
+    "source_url": "https://ec.europa.eu/eurostat/databrowser/view/sdg_10_10/default/table",
+    "source_date": "2024-12-01",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "Convergence was driven by multiple factors beyond EU membership: globalisation, technology transfer, institutional reforms, EU structural funds. Counterfactual analysis is difficult — non-EU European countries (Norway, Switzerland, Iceland) also grew. Iceland already has very high GDP per capita (second highest in Europe), so convergence dynamics would operate differently. The economic crisis cases (Greece, Cyprus) show that EU membership without sound domestic policy can amplify vulnerabilities. Brain drain from new member states was significant and is not captured in GDP figures.",
+    "related_entries": [
+      "TRADE-COMP-002",
+      "CURRENCY-DATA-006"
+    ]
+  },
+  {
+    "evidence_id": "PREC-DATA-024",
+    "domain": "precedent",
+    "topic": "precedents",
+    "subtopic": "unprecedented_accession_without_majority",
+    "statement": "There is no precedent in EU enlargement history for a country beginning accession negotiations where a clear parliamentary and public majority did not support membership. All previous accessions were initiated by governments with strong parliamentary mandates: Austria's 1994 referendum passed with 66.6%, Finland's with 56.9%, Sweden's with 52.3%. The 2004 enlargement referendums all passed (Hungary 83.8%, Lithuania 91.1%, Slovakia 92.5%, Czech Republic 77.3%, Poland 77.5%, though turnout varied). Croatia's 2012 referendum passed with 66.3%. Iceland's 2009 application was controversial even at the time — the Althingi vote was 33-28 (54%). The 2026 approach of holding a referendum on whether to negotiate (rather than on a completed treaty) is novel: no other country has submitted the question of whether to negotiate to a public vote, as this is typically a government/parliamentary decision.",
+    "source_name": "European Parliament — Accession Referendums Database; Alþingi Parliamentary Records",
+    "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/167/the-enlargement-of-the-union",
+    "source_date": "2024-01-01",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "Some accession states did not hold referendums at all (e.g., Bulgaria and Romania in 2007 — parliamentary ratification only). Montenegro and other Western Balkan candidates have opened negotiations without guaranteed public support. The distinction between negotiating and joining is important — entering talks does not commit to membership. Iceland's novel approach may establish a new model. The claim about 'no majority in parliament' requires clarification: the current Althingi has a coalition that supports the referendum, though not all coalition partners support membership itself.",
+    "related_entries": [
+      "SOV-DATA-023",
+      "POLL-DATA-012"
+    ]
+  },
+  {
+    "evidence_id": "CURR-DATA-008",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "eurozone_inflation_2026",
+    "statement": "Eurozone annual HICP inflation was 1.9% in February 2026, having fallen steadily from its peak of 10.6% in October 2022. The ECB's inflation target is 2.0% over the medium term. Key components: energy prices declined (-0.2% y/y), food inflation moderated to 2.1%, while services inflation remained elevated at 3.8%. The ECB cut its deposit facility rate seven times from June 2024, reducing it from 4.00% to 2.00% by February 2026. Core inflation (excluding energy and food) was 2.5%. For context, Iceland's HICP was 5.2% in February 2026 — 3.3 percentage points above the eurozone. Iceland's inflation has not been below the ECB's 2% target since 2014.",
+    "source_name": "Eurostat HICP Flash Estimate; ECB Monetary Policy Decisions",
+    "source_url": "https://ec.europa.eu/eurostat/web/hicp",
+    "source_date": "2026-02-28",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The eurozone's low headline inflation partly reflects base effects from the 2022 energy crisis. Services inflation at 3.8% remains above target, suggesting underlying price pressures persist. Iceland's higher inflation reflects its smaller, more volatile economy and independent monetary policy — euro adoption would not automatically align Iceland's inflation with the eurozone, as domestic factors (housing costs, imported goods pricing, wage bargaining) play a major role. The Maastricht criteria require Iceland's inflation to converge before euro adoption, not after.",
+    "related_entries": [
+      "CURRENCY-DATA-013",
+      "CURRENCY-DATA-017"
+    ]
+  },
+  {
+    "evidence_id": "FISH-DATA-032",
+    "domain": "economic",
+    "topic": "fisheries",
+    "subtopic": "cfp_member_state_internal_quota_sovereignty",
+    "statement": "Under the EU Common Fisheries Policy, once the Council of Ministers sets Total Allowable Catches (TACs) and allocates national shares via relative stability keys, each member state has full sovereignty over how it distributes its quota internally. Article 16(6) of Regulation 1380/2013 states that member states 'shall decide on the allocation of the fishing opportunities' among their vessels. Several member states use transferable quota systems similar to Iceland's ITQ model: Denmark uses individual transferable quotas (ITQs) for most commercial species (since 2007); the Netherlands operates a co-management ITQ system (since 1976); Estonia introduced ITQs after EU accession. Germany uses non-transferable individual quotas. The CFP does not prescribe any particular internal allocation mechanism — it is entirely a national competence. Iceland's ITQ system is therefore structurally compatible with CFP internal allocation rules.",
+    "source_name": "EU Regulation 1380/2013 on the Common Fisheries Policy, Article 16(6); OECD Review of Fisheries 2024",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32013R1380",
+    "source_date": "2013-12-28",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "While internal allocation is a national competence, the CFP imposes requirements that interact with quota systems: the discard ban (landing obligation), vessel monitoring, reporting requirements, and fleet capacity ceilings. The equal access principle means non-national EU vessels can fish in a member state's EEZ (beyond 12nm), even if that state's internal quota system is protected. The key loss of sovereignty for Iceland would be over TAC-setting and EEZ access decisions, not over the internal distribution mechanism. Ireland's experience shows that having an ITQ-like system does not protect against receiving a small national share.",
+    "related_entries": [
+      "FISH-LEGAL-005",
+      "FISH-DATA-030",
+      "FISH-COMP-004"
+    ]
+  }
+]

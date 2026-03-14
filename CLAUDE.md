@@ -160,7 +160,7 @@ uv run python scripts/curate_speech_evidence.py list        # Find high-value Al
 uv run python scripts/fact_check_speeches.py select --limit 5  # Rank speeches for fact-checking
 uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a single speech (run outside Claude Code session)
 uv run python scripts/fact_check_speeches.py status            # Show fact-check progress
-uv run python scripts/reassess_claims.py prepare           # Prepare reassessment batches (unverifiable + partial)
+uv run python scripts/reassess_claims.py prepare           # Prepare reassessment batches (auto-cleans stale output)
 uv run python scripts/reassess_claims.py prepare --only overconfident --limit 30  # Verdict audit candidates
 uv run python scripts/reassess_claims.py update            # Apply subagent reassessments to DB
 uv run python scripts/reassess_claims.py status            # Show verdict distribution

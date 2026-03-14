@@ -463,6 +463,13 @@ def prepare(*, only: str | None = None, limit: int = 30):
 
     WORK_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Clean stale output files from previous runs
+    stale = list(WORK_DIR.glob("_assessments_batch_*.json"))
+    if stale:
+        for f in stale:
+            f.unlink()
+        print(f"Cleaned {len(stale)} stale assessment file(s) from previous run.")
+
     conn = get_connection()
     types = []
     if include_unverifiable:
@@ -698,7 +705,8 @@ def status():
 def main():
     if len(sys.argv) < 2:
         print("Usage: uv run python scripts/reassess_claims.py [prepare|update|status]")
-        print("  prepare [--only unverifiable|partial]  Prepare context files")
+        print("  prepare [--only unverifiable|partial|overconfident] [--limit N]")
+        print("          Prepare context files (auto-cleans stale output files)")
         print("  update                                 Parse subagent output → DB")
         print("  status                                 Show verdict distribution")
         sys.exit(1)
