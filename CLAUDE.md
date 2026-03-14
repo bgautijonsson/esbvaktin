@@ -161,8 +161,12 @@ uv run python scripts/fact_check_speeches.py select --limit 5  # Rank speeches f
 uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a single speech (run outside Claude Code session)
 uv run python scripts/fact_check_speeches.py status            # Show fact-check progress
 uv run python scripts/reassess_claims.py prepare           # Prepare reassessment batches (unverifiable + partial)
+uv run python scripts/reassess_claims.py prepare --only overconfident --limit 30  # Verdict audit candidates
 uv run python scripts/reassess_claims.py update            # Apply subagent reassessments to DB
 uv run python scripts/reassess_claims.py status            # Show verdict distribution
+uv run python scripts/audit_claims.py report               # Full claim verdict audit (4 patterns)
+uv run python scripts/audit_claims.py candidates           # Priority reassessment list
+uv run python scripts/audit_claims.py status               # Quick audit summary
 uv run python scripts/register_article_sightings.py        # Batch-register all unregistered reports into DB sightings
 uv run python scripts/build_article_registry.py --status  # Show processed article registry
 uv run python scripts/check_duplicate.py --url URL        # Check if article already processed

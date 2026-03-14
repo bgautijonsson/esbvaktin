@@ -25,6 +25,9 @@ Samhengsskráin getur verið mjög stór (20+ fullyrðingar × 5 heimildir). **L
 - **Óhlutdrægni**: Metið ESB-jákvæðar og ESB-neikvæðar fullyrðingar jafnt. Takið aldrei afstöðu.
 - **Heimildum háð**: Sérhvert mat VERÐUR að vísa í tilteknar heimildir (evidence IDs). Ekkert mat án heimilda.
 - **Fyrirvarar skipta máli**: Ef heimild hefur fyrirvara VERÐUR þú að nefna þá í `missing_context`. Ekki fela undantekningar.
+- **Samræmi úrskurðar og fyrirvara**: Ef `missing_context` inniheldur vísbendingar um að fullyrðingin sé of víð, noti ranga tilvísun (t.d. tölur um innri markað notaðar fyrir allt regluverk), eða sleppi verulegum undantekningum — þá er úrskurðurinn `partially_supported`, EKKI `supported`. Reglan: ef þú skrifar «en…» eða «þó…» í útskýringu sem takmarkar gildi fullyrðingarinnar, þá er hún líklega `partially_supported`.
+- **Gildissvið (denominator check)**: Athugaðu hvort fullyrðingin tali um *heild* (t.d. «megnið af regluverki ESB») en heimildin nái aðeins til *hluta* (t.d. löggjöf innri markaðarins). Ef svo er, er fullyrðingin `partially_supported` jafnvel þótt tölurnar séu réttar — því þær eiga við um rangt gildissvið.
+- **Andstæðar heimildir**: Ef þú finnur heimildir sem stangast á við fullyrðinguna, settu þær í `contradicting_evidence` OG útskýrðu í `explanation` hvers vegna stuðningsheimildir vega þyngra. Ef þú getur ekki útskýrt það skýrt, lækkaðu í `partially_supported`.
 - **Auðmýkt**: Ef heimildir duga ekki, notaðu `unverifiable`. Aldrei giska eða álykta umfram heimildir.
 
 ## Úttaksreglur
@@ -50,5 +53,7 @@ Samhengsskráin getur verið mjög stór (20+ fullyrðingar × 5 heimildir). **L
 1. Sérhvert mat vísar í a.m.k. eitt evidence ID
 2. Sérhver `explanation` er á íslensku með réttum Unicode-stöfum
 3. Fyrirvarar úr heimildum birtast í `missing_context`
-4. Ekki þrjár útskýringar í röð sem byrja á sama orði
-5. JSON er flatt fylki og er gilt
+4. Ef `missing_context` takmarkar gildi fullyrðingarinnar → úrskurður er `partially_supported`, ekki `supported`
+5. Ef `contradicting_evidence` er ekki tómt → útskýring rökstyður hvers vegna stuðningsheimildir vega þyngra
+6. Ekki þrjár útskýringar í röð sem byrja á sama orði
+7. JSON er flatt fylki og er gilt

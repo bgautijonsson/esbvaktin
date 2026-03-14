@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
-"""Re-assess claims that may benefit from new evidence.
+"""Re-assess claims that may benefit from new evidence or verdict correction.
 
-Two categories of claims are targeted:
+Three categories of claims are targeted:
   1. **Unverifiable** — previously lacked evidence, may now have matches
   2. **Partially supported** — had some evidence, may now have additional
      evidence that upgrades (or changes) the verdict
+  3. **Overconfident** — 'supported' claims flagged by the verdict audit
+     (sighting drift, contradicting evidence, or substantial caveats)
 
 Retrieves evidence for each claim, writes context files for subagent
 assessment, then parses subagent output and updates the DB.
 
 Usage:
     # Step 1: Prepare context files (batches of ~10 claims each)
-    uv run python scripts/reassess_claims.py prepare           # both types
+    uv run python scripts/reassess_claims.py prepare           # unverifiable + partial
     uv run python scripts/reassess_claims.py prepare --only unverifiable
     uv run python scripts/reassess_claims.py prepare --only partial
+    uv run python scripts/reassess_claims.py prepare --only overconfident  # verdict audit
+    uv run python scripts/reassess_claims.py prepare --only overconfident --limit 30
 
     # Step 2: Run subagent assessment (Claude Code reads each batch context
     #         and writes _assessments_batch_N.json)
@@ -57,11 +61,18 @@ def _search_evidence_dual(text_is: str | None, text_en: str | None, conn, top_k:
     return results
 
 
-def _get_reassessable_claims(conn, *, include_unverifiable: bool = True, include_partial: bool = True):
+def _get_reassessable_claims(
+    conn, *,
+    include_unverifiable: bool = True,
+    include_partial: bool = True,
+    include_overconfident: bool = False,
+    overconfident_limit: int = 30,
+):
     """Fetch claims that may benefit from (re-)assessment with current evidence.
 
     For unverifiable claims: any strong evidence match qualifies.
     For partially_supported claims: must have NEW evidence not already linked.
+    For overconfident claims: flagged by verdict audit (sighting drift, contradicting evidence, caveats).
     """
     assessable = []
 
@@ -70,6 +81,9 @@ def _get_reassessable_claims(conn, *, include_unverifiable: bool = True, include
 
     if include_partial:
         assessable.extend(_get_partial_with_new_evidence(conn))
+
+    if include_overconfident:
+        assessable.extend(_get_overconfident_supported(conn, limit=overconfident_limit))
 
     return assessable
 
@@ -141,6 +155,138 @@ def _get_partial_with_new_evidence(conn) -> list[dict]:
     return assessable
 
 
+def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
+    """Supported claims flagged by the verdict audit — multi-pattern and high-score.
+
+    Prioritises claims that are:
+    1. Supported + sighting drift (speech verdicts disagree)
+    2. Supported + contradicting evidence listed
+    3. Supported + substantial missing_context + high confidence
+
+    Returns the top N by a composite score.
+    """
+    # Get claims with sighting drift (Pattern 3)
+    drift_claims = {}
+    rows = conn.execute(
+        """
+        SELECT c.id, c.claim_slug, c.canonical_text_is, c.canonical_text_en,
+               c.category, c.confidence,
+               COUNT(CASE WHEN cs.speech_verdict != c.verdict THEN 1 END) as mismatches,
+               COUNT(*) as total_sightings
+        FROM claims c
+        JOIN claim_sightings cs ON c.id = cs.claim_id
+        WHERE c.verdict = 'supported' AND cs.speech_verdict IS NOT NULL
+        GROUP BY c.id, c.claim_slug, c.canonical_text_is, c.canonical_text_en,
+                 c.category, c.confidence
+        HAVING COUNT(CASE WHEN cs.speech_verdict != c.verdict THEN 1 END) > 0
+        """,
+    ).fetchall()
+    for r in rows:
+        drift_claims[r[0]] = {
+            "claim_id": r[0], "slug": r[1], "text_is": r[2], "text_en": r[3],
+            "category": r[4], "confidence": r[5],
+            "mismatches": r[6], "total_sightings": r[7],
+            "score": 2.0 * (r[6] / max(r[7], 1)) * (1 + r[6]),  # drift weight
+        }
+
+    # Get claims with contradicting evidence (Pattern 4)
+    contra_claims = {}
+    rows = conn.execute(
+        """
+        SELECT id, claim_slug, canonical_text_is, canonical_text_en,
+               category, confidence,
+               array_length(contradicting_evidence, 1) as contra_count
+        FROM claims
+        WHERE verdict = 'supported'
+          AND contradicting_evidence IS NOT NULL
+          AND array_length(contradicting_evidence, 1) > 0
+        """,
+    ).fetchall()
+    for r in rows:
+        contra_claims[r[0]] = {
+            "claim_id": r[0], "slug": r[1], "text_is": r[2], "text_en": r[3],
+            "category": r[4], "confidence": r[5],
+            "contra_count": r[6],
+            "score": 1.5 * r[6],
+        }
+
+    # Get overconfident claims (Pattern 1) — top by missing_context length
+    overconf_claims = {}
+    rows = conn.execute(
+        """
+        SELECT id, claim_slug, canonical_text_is, canonical_text_en,
+               category, confidence, length(missing_context_is) as ctx_len
+        FROM claims
+        WHERE verdict = 'supported' AND confidence >= 0.85
+          AND missing_context_is IS NOT NULL AND length(missing_context_is) >= 80
+        ORDER BY confidence DESC, length(missing_context_is) DESC
+        """,
+    ).fetchall()
+    for r in rows:
+        overconf_claims[r[0]] = {
+            "claim_id": r[0], "slug": r[1], "text_is": r[2], "text_en": r[3],
+            "category": r[4], "confidence": r[5],
+            "ctx_len": r[6],
+            "score": 1.0 * (r[6] / 200) * r[5],
+        }
+
+    # Merge and score — claims in multiple patterns get combined scores
+    all_ids = set(drift_claims) | set(contra_claims) | set(overconf_claims)
+    scored = []
+    for cid in all_ids:
+        # Take base info from whichever pattern found it
+        info = drift_claims.get(cid) or contra_claims.get(cid) or overconf_claims[cid]
+        total_score = sum(
+            d.get("score", 0) for d in
+            [drift_claims.get(cid, {}), contra_claims.get(cid, {}), overconf_claims.get(cid, {})]
+        )
+        # Published claims get priority
+        is_published = conn.execute(
+            "SELECT published FROM claims WHERE id = %s", (cid,)
+        ).fetchone()[0]
+        if is_published:
+            total_score *= 1.5
+
+        patterns = []
+        if cid in drift_claims:
+            patterns.append("sighting_drift")
+        if cid in contra_claims:
+            patterns.append("contradicting_ignored")
+        if cid in overconf_claims:
+            patterns.append("overconfident")
+
+        scored.append({
+            **info,
+            "total_score": total_score,
+            "patterns": patterns,
+            "published": is_published,
+        })
+
+    scored.sort(key=lambda x: -x["total_score"])
+    top = scored[:limit]
+
+    # Retrieve evidence for each claim
+    assessable = []
+    for claim in top:
+        results = _search_evidence_dual(claim["text_is"], claim["text_en"], conn)
+        strong = sorted(
+            [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
+            key=lambda r: r.similarity, reverse=True,
+        )[:8]
+
+        if not strong:
+            continue
+
+        assessable.append(_make_claim_entry(
+            claim["claim_id"], claim["text_is"], claim["text_en"],
+            claim["category"], claim["slug"],
+            strong, reason="overconfident",
+            current_confidence=claim["confidence"],
+        ))
+
+    return assessable
+
+
 def _make_claim_entry(
     claim_id, text_is, text_en, category, slug, results, *,
     reason: str, new_evidence_ids: set[str] | None = None,
@@ -179,6 +325,7 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
     # Classify the batch
     n_unverifiable = sum(1 for c in batch if c["reason"] == "unverifiable")
     n_partial = sum(1 for c in batch if c["reason"] == "partial")
+    n_overconfident = sum(1 for c in batch if c["reason"] == "overconfident")
 
     lines = [
         f"# Endurmat fullyrðinga — Lota {batch_num}\n",
@@ -188,7 +335,30 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         "",
     ]
 
-    if n_unverifiable and n_partial:
+    if n_overconfident:
+        lines.extend([
+            "## Gæðaendurskoðun — of örugg «supported» mat",
+            "",
+            f"Þessi lota inniheldur **{n_overconfident} fullyrðingar** sem voru áður metnar `supported`",
+            "en eru nú flaggaðar af gæðaendurskoðun vegna eins eða fleiri vandamála:",
+            "",
+            "- **Fyrirvarar í útskýringu** sem takmarka gildi fullyrðingarinnar en komu ekki fram í úrskurði",
+            "- **Misræmi við heimildamat** — sama fullyrðing fékk annað mat í öðru samhengi",
+            "- **Andstæðar heimildir** voru skráðar en úrskurður var samt `supported`",
+            "",
+            "**Reglur fyrir þessa lotu:**",
+            "",
+            "1. Lestu hverja fullyrðingu og heimildir vandlega",
+            "2. Ef fyrirvarar/takmarkanir í heimildum takmarka gildi fullyrðingarinnar → `partially_supported`",
+            "3. Ef fullyrðingin notar of vítt gildissvið (t.d. «megnið af regluverki ESB» þegar",
+            "   heimildir ná aðeins til innri markaðar) → `partially_supported`",
+            "4. Ef andstæðar heimildir eru til staðar og þú getur ekki útskýrt af hverju",
+            "   stuðningsheimildir vega þyngra → `partially_supported`",
+            "5. Aðeins halda `supported` ef fullyrðingin er nákvæm og heimildir staðfesta hana",
+            "   án verulegra fyrirvara",
+            "",
+        ])
+    elif n_unverifiable and n_partial:
         lines.extend([
             "Þessi lota inniheldur tvenns konar fullyrðingar:",
             f"- **{n_unverifiable} óstaðfestanlegar** — áður skorti heimildir, nú eru nýjar komnar",
@@ -214,7 +384,12 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         ])
 
     for i, claim in enumerate(batch, 1):
-        reason_tag = "óstaðfestanleg" if claim["reason"] == "unverifiable" else "að hluta staðfest"
+        reason_tags = {
+            "unverifiable": "óstaðfestanleg",
+            "partial": "að hluta staðfest",
+            "overconfident": "gæðaendurskoðun — of örugg",
+        }
+        reason_tag = reason_tags.get(claim["reason"], claim["reason"])
         conf_tag = ""
         if claim.get("current_confidence") is not None:
             conf_tag = f" · traust: {claim['current_confidence']:.2f}"
@@ -278,12 +453,13 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
     return path
 
 
-def prepare(*, only: str | None = None):
+def prepare(*, only: str | None = None, limit: int = 30):
     """Prepare context files for subagent re-assessment."""
     from esbvaktin.ground_truth.operations import get_connection
 
     include_unverifiable = only in (None, "unverifiable")
     include_partial = only in (None, "partial")
+    include_overconfident = only == "overconfident"
 
     WORK_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -293,15 +469,29 @@ def prepare(*, only: str | None = None):
         types.append("unverifiable")
     if include_partial:
         types.append("partially_supported")
+    if include_overconfident:
+        types.append(f"overconfident (top {limit})")
     print(f"Retrieving evidence for {' + '.join(types)} claims...")
     assessable = _get_reassessable_claims(
-        conn, include_unverifiable=include_unverifiable, include_partial=include_partial,
+        conn,
+        include_unverifiable=include_unverifiable,
+        include_partial=include_partial,
+        include_overconfident=include_overconfident,
+        overconfident_limit=limit,
     )
     conn.close()
 
     n_unv = sum(1 for c in assessable if c["reason"] == "unverifiable")
     n_par = sum(1 for c in assessable if c["reason"] == "partial")
-    print(f"Found {len(assessable)} assessable claims ({n_unv} unverifiable, {n_par} partial)")
+    n_over = sum(1 for c in assessable if c["reason"] == "overconfident")
+    parts = []
+    if n_unv:
+        parts.append(f"{n_unv} unverifiable")
+    if n_par:
+        parts.append(f"{n_par} partial")
+    if n_over:
+        parts.append(f"{n_over} overconfident")
+    print(f"Found {len(assessable)} assessable claims ({', '.join(parts)})")
 
     # Split into batches
     batches = [
@@ -516,14 +706,19 @@ def main():
     cmd = sys.argv[1]
     if cmd == "prepare":
         only = None
+        limit = 30
         if "--only" in sys.argv:
             idx = sys.argv.index("--only")
             if idx + 1 < len(sys.argv):
                 only = sys.argv[idx + 1]
-                if only not in ("unverifiable", "partial"):
-                    print(f"Unknown --only value: {only} (use 'unverifiable' or 'partial')")
+                if only not in ("unverifiable", "partial", "overconfident"):
+                    print(f"Unknown --only value: {only} (use 'unverifiable', 'partial', or 'overconfident')")
                     sys.exit(1)
-        prepare(only=only)
+        if "--limit" in sys.argv:
+            idx = sys.argv.index("--limit")
+            if idx + 1 < len(sys.argv):
+                limit = int(sys.argv[idx + 1])
+        prepare(only=only, limit=limit)
     elif cmd == "update":
         update()
     elif cmd == "status":
