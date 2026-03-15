@@ -41,7 +41,8 @@ def _load_db_verdicts() -> dict[str, dict]:
     """Load current verdicts from the DB, keyed by claim text (IS and EN).
 
     Returns a dict mapping claim text → {verdict, explanation_is,
-    confidence, supporting_evidence, contradicting_evidence, missing_context_is}.
+    confidence, supporting_evidence, contradicting_evidence, missing_context_is,
+    published}.
     Used to overlay reassessed verdicts on top of _report_final.json snapshots.
     """
     try:
@@ -51,7 +52,7 @@ def _load_db_verdicts() -> dict[str, dict]:
         rows = conn.execute(
             "SELECT canonical_text_is, canonical_text_en, verdict, "
             "explanation_is, confidence, supporting_evidence, "
-            "contradicting_evidence, missing_context_is "
+            "contradicting_evidence, missing_context_is, published "
             "FROM claims"
         ).fetchall()
         conn.close()
@@ -59,7 +60,7 @@ def _load_db_verdicts() -> dict[str, dict]:
         return {}
 
     lookup: dict[str, dict] = {}
-    for text_is, text_en, verdict, expl_is, conf, sup, contra, missing in rows:
+    for text_is, text_en, verdict, expl_is, conf, sup, contra, missing, published in rows:
         entry = {
             "verdict": verdict,
             "explanation_is": expl_is,
@@ -67,6 +68,7 @@ def _load_db_verdicts() -> dict[str, dict]:
             "supporting_evidence": sup or [],
             "contradicting_evidence": contra or [],
             "missing_context_is": missing,
+            "published": bool(published),
         }
         if text_is:
             lookup[text_is] = entry
@@ -471,13 +473,17 @@ def _build_participants(
         if not active_attrs:
             continue
 
-        # Compute verdicts from active attributions
+        # Compute verdicts from active attributions (skip unpublished claims)
         verdicts: dict[str, int] = {}
+        published_attrs = []
         for attr in active_attrs:
             idx = attr["claim_index"]
             if idx < len(claims):
+                if not claims[idx].get("_published", True):
+                    continue
                 v = claims[idx].get("verdict", "unknown")
                 verdicts[v] = verdicts.get(v, 0) + 1
+                published_attrs.append(attr)
 
         # Compute dominant attribution type
         attr_counts: Counter[str] = Counter(
@@ -485,13 +491,16 @@ def _build_participants(
         )
         attribution_type = attr_counts.most_common(1)[0][0] if attr_counts else "asserted"
 
+        if not published_attrs:
+            continue
+
         p: dict = {
             "name": speaker["name"],
             "role": speaker.get("role"),
             "party": speaker.get("party"),
             "role_in_article": role_in_article,
             "attribution_type": attribution_type,
-            "claim_count": len(active_attrs),
+            "claim_count": len(published_attrs),
             "verdicts": verdicts,
             "stance": speaker.get("stance"),
         }
@@ -619,15 +628,6 @@ def prepare_report(
     # Parse Icelandic report text
     is_data = _parse_icelandic_report(report.get("report_text_is", ""))
 
-    # Compute dominant category from claims
-    category_counts = Counter(
-        item.get("claim", {}).get("category", "")
-        for item in report.get("claims", [])
-        if item.get("claim", {}).get("category")
-    )
-    dominant_category = category_counts.most_common(1)[0][0] if category_counts else None
-    categories = sorted(set(category_counts.keys()))
-
     # Enrich claims with Icelandic text and evidence links
     claims = report.get("claims", [])
     claims_is = is_data.get("claims_is", [])
@@ -648,6 +648,8 @@ def prepare_report(
         sup_evidence = item.get("supporting_evidence", [])
         contra_evidence = item.get("contradicting_evidence", [])
 
+        # Default: assume published (claims not in DB are from before claim bank)
+        is_published = True
         if db_verdicts:
             db_entry = db_verdicts.get(claim_text_raw) or db_verdicts.get(claim_text_is)
             if db_entry:
@@ -659,6 +661,7 @@ def prepare_report(
                     explanation_is = db_entry["explanation_is"]
                 if db_entry["missing_context_is"]:
                     missing_context_is = db_entry["missing_context_is"]
+                is_published = db_entry["published"]
 
         # Linkify evidence IDs in text fields
         explanation_is = _linkify_evidence_ids(explanation_is, evidence_meta)
@@ -684,22 +687,35 @@ def prepare_report(
             "missing_context": missing_context_is,
             "confidence": confidence,
             "speakers": _speakers_for_claim(entities_data, i),
+            "_published": is_published,
         })
-
-    # Count verdicts from enriched claims (reflects DB reassessments)
-    verdict_counts: dict[str, int] = {}
-    for ec in enriched_claims:
-        v = ec.get("verdict", "unknown")
-        verdict_counts[v] = verdict_counts.get(v, 0) + 1
 
     # Use Icelandic summary or generate one
     summary_is = is_data.get("summary_is") or report.get("summary", "")
 
-    # Build participant data for all report types
+    # Build participant data for all report types (needs full indexed list)
     panel_show = _is_panel_show(report_path.parent)
     participants = _build_participants(
         entities_data, enriched_claims, site_entities, is_panel=panel_show,
     )
+
+    # Filter out unpublished claims and strip internal _published flag
+    published_claims = [ec for ec in enriched_claims if ec.pop("_published", True)]
+
+    # Count verdicts from published claims only
+    verdict_counts: dict[str, int] = {}
+    for ec in published_claims:
+        v = ec.get("verdict", "unknown")
+        verdict_counts[v] = verdict_counts.get(v, 0) + 1
+
+    # Recompute dominant category from published claims
+    category_counts = Counter(
+        ec.get("claim", {}).get("category", "")
+        for ec in published_claims
+        if ec.get("claim", {}).get("category")
+    )
+    dominant_category = category_counts.most_common(1)[0][0] if category_counts else None
+    categories = sorted(set(category_counts.keys()))
 
     # Editorial capsule — from omissions analysis or top-level field
     capsule = report.get("capsule") or ""
@@ -720,10 +736,10 @@ def prepare_report(
         "summary": summary_is,
         "capsule": capsule,
         "verdict_counts": verdict_counts,
-        "claim_count": len(claims),
+        "claim_count": len(published_claims),
         "dominant_category": dominant_category,
         "categories": categories,
-        "claims": enriched_claims,
+        "claims": published_claims,
         "participants": participants,
     }
 

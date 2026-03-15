@@ -1356,6 +1356,13 @@ def prepare_capsule_context(
         "Dragðu fram það sem greinin fær rétt og bættu við einu "
         "áhugaverðu atriði sem lesandinn getur kannað nánar. "
         "Ekki nota heimildakóða (evidence IDs) — skrifaðu léttlesinn texta.\n\n"
+        "**ALDREI byrja á «Rétt er að»** — notaðu fjölbreyttar opnanir.\n\n"
+        "**Nákvæmni:** Ekki einfalda tölur eða staðreyndir. "
+        "EES-samningurinn nær yfir innri markaðsreglur ESB "
+        "(um 70–75% miðað við fjölda lagagerða) en EKKI "
+        "sjávarútveg, landbúnað, tollabandalag, utanríkisstefnu "
+        "eða gjaldmiðil. Segðu aldrei «X% af ESB-lögum gilda á "
+        "Íslandi» — þetta er of einföld alhæfing.\n\n"
         f"Skrifaðu niðurstöðuna í `{output_dir}/_capsule.txt`.\n"
     )
 
