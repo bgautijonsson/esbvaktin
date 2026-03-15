@@ -6,6 +6,7 @@ string correction (used by the pipeline, not just files).
 """
 
 import re
+import signal
 import shutil
 import sys
 from pathlib import Path
@@ -62,7 +63,22 @@ def check_with_library(sentences: list[tuple[str, int]]) -> list[dict]:
 
     results = []
     for text, line_num in sentences:
-        sent = check_single(text)
+        # Timeout guard: check_single can hang on complex legal/regulatory text
+        def _timeout_handler(signum, frame):
+            raise TimeoutError(f"check_single timed out on: {text[:80]}...")
+
+        old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+        signal.alarm(10)
+        try:
+            sent = check_single(text)
+        except TimeoutError as e:
+            print(f"WARNING: {e} — skipping", file=sys.stderr)
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old_handler)
+            continue
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old_handler)
         for ann in sent.annotations:
             results.append(
                 {

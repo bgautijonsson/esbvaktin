@@ -154,40 +154,11 @@ def _normalise_assessment(item: dict) -> dict:
     return item
 
 
-_greynir_available: bool | None = None
-
-
-def _post_process_icelandic(item: dict) -> dict:
-    """Run optional Icelandic corrections on explanation/missing_context fields."""
-    global _greynir_available
-    # Check once and cache — avoids noisy ImportError per field per claim
-    if _greynir_available is False:
-        return item
-    try:
-        from esbvaktin.corrections.greynir import apply_fixes_to_text, check_with_library
-        _greynir_available = True
-    except ImportError:
-        _greynir_available = False
-        return item
-
-    for field in ("explanation", "missing_context"):
-        text = item.get(field)
-        if text and isinstance(text, str) and len(text) > 10:
-            sents = [(text, 1)]
-            results = check_with_library(sents)
-            if results:
-                fixed, _ = apply_fixes_to_text(text, results)
-                item[field] = fixed
-    return item
-
-
 def parse_assessments(output_path: Path) -> list[ClaimAssessment]:
     """Parse claim assessment output into ClaimAssessment objects."""
     text = output_path.read_text(encoding="utf-8")
     raw = json.loads(_extract_json(text))
     normalised = [_normalise_assessment(item) for item in raw]
-    # Optional: post-process Icelandic text fields
-    normalised = [_post_process_icelandic(item) for item in normalised]
     return [ClaimAssessment.model_validate(item) for item in normalised]
 
 

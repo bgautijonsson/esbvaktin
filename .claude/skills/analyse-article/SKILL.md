@@ -234,7 +234,7 @@ print(report.report_text_is[:500])
 "
 ```
 
-### Step 7: Finalise + GreynirCorrect (Python)
+### Step 7: Finalise Report (Python)
 
 ```bash
 uv run python -c "
@@ -246,26 +246,10 @@ work_dir = Path('$WORK_DIR')
 # Read report
 report_data = json.loads((work_dir / '_report.json').read_text())
 
-# Try GreynirCorrect if available
+# Write Icelandic report text
 report_is = report_data.get('report_text_is', '')
-try:
-    from reynir_correct import check_single
-    # Light correction pass — only fix obvious errors
-    lines = report_is.split('\n')
-    corrected = []
-    for line in lines:
-        if line.startswith('#') or line.startswith('*') or line.startswith('-') or line.startswith('>') or line.startswith('|'):
-            corrected.append(line)
-        elif line.strip():
-            result = check_single(line)
-            corrected.append(str(result))
-        else:
-            corrected.append(line)
-    report_data['report_text_is'] = '\n'.join(corrected)
-    (work_dir / '_report_is.md').write_text('\n'.join(corrected))
-    print('GreynirCorrect applied.')
-except ImportError:
-    print('GreynirCorrect not available — skipping correction.')
+if report_is:
+    (work_dir / '_report_is.md').write_text(report_is)
 
 # Write final report
 (work_dir / '_report_final.json').write_text(json.dumps(report_data, indent=2, ensure_ascii=False, default=str))
@@ -282,6 +266,8 @@ if capsule:
 print(f'Fullyrðingar metnar: {len(report_data[\"claims\"])}')
 print(f'Heimildir notaðar: {len(report_data[\"evidence_used\"])} færslur')
 print(f'Íslensk skýrsla: {work_dir}/_report_is.md')
+print()
+print('Optional QA: uv run python scripts/correct_icelandic.py check $WORK_DIR --fix')
 "
 ```
 

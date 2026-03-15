@@ -49,14 +49,22 @@ src/esbvaktin/          # Main package
     fact_check.py       # Speech selection, loading, work dir setup for fact-checking
     register_sightings.py  # Post-assessment: match→sighting, new→unpublished claim
   ground_truth/         # Evidence database operations
+  claim_bank/           # Canonical claims storage with verdicts for reuse across articles
+  gap_planner/          # Evidence gap identification and research task generation
+  corrections/          # Icelandic text correction pipeline (greynir, naturalness, inflections, EU terms)
   utils/                # Shared utilities (embeddings, Icelandic NLP)
 tests/                  # Tests
-scripts/                # One-off scripts (seeding DB, etc.)
+scripts/                # One-off and pipeline scripts
 data/seeds/             # Evidence JSON seed files (committed)
+data/analyses/          # Article analysis work directories (gitignored)
+data/reassessment/      # Verdict reassessment outputs (gitignored)
+data/evidence_is/       # Icelandic evidence summary outputs (gitignored)
+data/overviews/         # Weekly overview generation (gitignored)
+data/inbox/             # Article discovery inbox with persistent state
 data/{source}/          # CSV outputs from R scripts (gitignored)
 R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
 .claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification
-.claude/agents/         # Custom agents: claim-extractor, claim-assessor, omissions-analyst, entity-extractor, site-exporter, evidence-summariser, editorial-writer, claim-reviewer, evidence-auditor
+.claude/agents/         # Custom agents (10 total, see table below)
 ```
 
 ## Custom Agents
@@ -73,13 +81,14 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 | `evidence-summariser` | sonnet | Read, Write, Glob, MCP mideind (check only) | Write Icelandic summaries for Ground Truth evidence batches |
 | `editorial-writer` | opus | Read, Write, Glob, Grep, MCP morphology, MCP mideind | Write Icelandic weekly editorial from overview context |
 | `claim-reviewer` | sonnet | Read, Write, Glob | Review published claims for substantiveness |
+| `capsule-writer` | sonnet | Read, Write, Glob, MCP mideind | Write short Icelandic reader's note (constructive, curiosity-building) |
 | `evidence-auditor` | sonnet | Read, Write, Glob | Audit Ground Truth entries for internal contradictions |
 
 **Parallelisation:** `claim-assessor` + `omissions-analyst` always run in parallel (independent tasks). Multiple `evidence-summariser` instances can run in parallel across batches.
 
 **Context flow:** Python `prepare_context.py` writes `_context_*.md` files with full instructions + data → agent reads context file → agent writes JSON output → Python parses output.
 
-**Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser, editorial-writer) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
+**Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser, editorial-writer, capsule-writer) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
 
 **Overview pipeline:** `generate_overview.py` (SQL → data.json) → `prepare_overview_context.py` (→ _context_is.md) → `editorial-writer` agent (opus, → editorial.md) → `export_overviews.py`. Editorial writer uses MCP morphology tools for inflection and MCP mideind `correct_text` for grammar self-correction (one call per editorial), then reads `knowledge/exemplars_editorial_is.md` before writing. `correct_icelandic.py check-editorial` remains available for additional local checks if needed.
 

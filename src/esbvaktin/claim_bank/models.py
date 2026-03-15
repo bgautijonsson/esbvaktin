@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class CanonicalClaim(BaseModel):
@@ -70,3 +70,8 @@ class ClaimBankMatch(BaseModel):
     is_fresh: bool = Field(
         ..., description="True if last_verified < 30 days ago"
     )
+
+    @field_validator("supporting_evidence", "contradicting_evidence", mode="before")
+    @classmethod
+    def _coerce_none_to_list(cls, v: list[str] | None) -> list[str]:
+        return v if v is not None else []
