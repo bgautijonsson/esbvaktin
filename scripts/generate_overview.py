@@ -17,7 +17,6 @@ import sys
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from urllib.parse import urlparse
 
 from esbvaktin.pipeline.models import TOPIC_LABELS_IS
 
@@ -30,30 +29,6 @@ ENTITY_DETAILS_DIR = SITE_DIR / "_data" / "entity-details"
 def _get_connection():
     from esbvaktin.ground_truth.operations import get_connection
     return get_connection()
-
-
-_DOMAIN_ALIASES: dict[str, str] = {
-    "shows.acast.com": "ruv.is",         # Silfrið (RÚV) hosted on Acast
-    "ruv-radio.akamaized.net": "ruv.is", # Víkulokin (RÚV) hosted on RÚV CDN
-    "podcasters.spotify.com": "mbl.is",   # Spursmál (mbl.is) hosted on Spotify
-    "anchor.fm": "mbl.is",               # Spursmál (mbl.is) old Anchor feed
-}
-
-
-def _domain_from_url(url: str | None) -> str | None:
-    """Extract domain from a URL, stripping www. prefix.
-
-    Podcast platform domains are mapped to the actual broadcaster.
-    """
-    if not url:
-        return None
-    try:
-        host = urlparse(url).hostname or ""
-        if host.startswith("www."):
-            host = host[4:]
-        return _DOMAIN_ALIASES.get(host, host) or None
-    except Exception:
-        return None
 
 
 def diversity_score(topic_counts: dict[str, int]) -> float:
@@ -118,10 +93,19 @@ def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
         ORDER BY article_date
     """, (start, end)).fetchall()
 
+    # Look up source_domain from DB for each URL
+    url_to_domain: dict[str, str] = {}
+    if rows:
+        domain_rows = conn.execute(
+            "SELECT DISTINCT source_url, source_domain FROM claim_sightings "
+            "WHERE source_domain IS NOT NULL"
+        ).fetchall()
+        url_to_domain = {u: d for u, d in domain_rows}
+
     return [
         {
             "title": title or url,
-            "source": _domain_from_url(url) or "unknown",
+            "source": url_to_domain.get(url, "unknown"),
             "url": url,
             "date": article_date.isoformat() if isinstance(article_date, (date, datetime)) else article_date,
             "claim_count": int(claim_count),
@@ -358,21 +342,17 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
 def _fetch_source_breakdown(conn, start: date, end: date) -> dict[str, int]:
     """Source domain breakdown (distinct articles) in the period."""
     rows = conn.execute("""
-        SELECT DISTINCT s.source_url
+        SELECT s.source_domain, COUNT(DISTINCT s.source_url) AS articles
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         WHERE c.published = TRUE
           AND s.source_date BETWEEN %s AND %s
-          AND s.source_url IS NOT NULL
+          AND s.source_domain IS NOT NULL
+        GROUP BY s.source_domain
+        ORDER BY articles DESC
     """, (start, end)).fetchall()
 
-    domain_counts: dict[str, int] = defaultdict(int)
-    for (url,) in rows:
-        domain = _domain_from_url(url)
-        if domain:
-            domain_counts[domain] += 1
-
-    return dict(sorted(domain_counts.items(), key=lambda x: -x[1]))
+    return {domain: articles for domain, articles in rows}
 
 
 def _fetch_key_facts(conn, start: date, end: date) -> list[dict]:

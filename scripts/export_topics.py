@@ -17,7 +17,6 @@ import sys
 from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
-from urllib.parse import urlparse
 
 from esbvaktin.ground_truth.operations import get_connection
 from esbvaktin.pipeline.models import TOPIC_LABELS_IS
@@ -29,30 +28,6 @@ EXPORT_DIR = PROJECT_ROOT / "data" / "export"
 
 def _get_connection():
     return get_connection()
-
-
-_DOMAIN_ALIASES: dict[str, str] = {
-    "shows.acast.com": "ruv.is",         # Silfrið (RÚV) hosted on Acast
-    "ruv-radio.akamaized.net": "ruv.is", # Víkulokin (RÚV) hosted on RÚV CDN
-    "podcasters.spotify.com": "mbl.is",   # Spursmál (mbl.is) hosted on Spotify
-    "anchor.fm": "mbl.is",               # Spursmál (mbl.is) old Anchor feed
-}
-
-
-def _domain_from_url(url: str | None) -> str | None:
-    """Extract domain from a URL, stripping www. prefix.
-
-    Podcast platform domains are mapped to the actual broadcaster.
-    """
-    if not url:
-        return None
-    try:
-        host = urlparse(url).hostname or ""
-        if host.startswith("www."):
-            host = host[4:]
-        return _DOMAIN_ALIASES.get(host, host) or None
-    except Exception:
-        return None
 
 
 def diversity_score(topic_counts: dict[str, int]) -> float:
@@ -155,20 +130,17 @@ def _fetch_source_breakdown(conn) -> dict[str, dict[str, int]]:
     """Per-topic source domain breakdown (distinct articles)."""
     rows = conn.execute("""
         SELECT c.category,
-               s.source_url,
+               s.source_domain,
                COUNT(DISTINCT s.source_url) AS articles
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
-        WHERE c.published = TRUE AND s.source_url IS NOT NULL
-        GROUP BY c.category, s.source_url
+        WHERE c.published = TRUE AND s.source_domain IS NOT NULL
+        GROUP BY c.category, s.source_domain
     """).fetchall()
 
-    # Aggregate by domain
     result: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
-    for cat, url, _articles in rows:
-        domain = _domain_from_url(url)
-        if domain:
-            result[cat][domain] += 1
+    for cat, domain, articles in rows:
+        result[cat][domain] += articles
 
     return {cat: dict(domains) for cat, domains in result.items()}
 
@@ -332,33 +304,25 @@ def _fetch_entity_details_for_topic(conn) -> dict[str, list[dict]]:
 def _fetch_source_activity_for_topic(conn) -> dict[str, list[dict]]:
     """Per-topic source activity: domain, article count, claim count."""
     rows = conn.execute("""
-        SELECT c.category, s.source_url, COUNT(*) AS claim_count
+        SELECT c.category, s.source_domain,
+               COUNT(DISTINCT s.source_url) AS article_count,
+               COUNT(*) AS claim_count
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
-        WHERE c.published = TRUE AND s.source_url IS NOT NULL
-        GROUP BY c.category, s.source_url
+        WHERE c.published = TRUE AND s.source_domain IS NOT NULL
+        GROUP BY c.category, s.source_domain
+        ORDER BY c.category, claim_count DESC
     """).fetchall()
 
-    # Aggregate by domain per topic
-    topic_sources: dict[str, dict[str, dict]] = defaultdict(lambda: defaultdict(
-        lambda: {"articles": set(), "claims": 0}
-    ))
-    for cat, url, claim_count in rows:
-        domain = _domain_from_url(url)
-        if domain:
-            topic_sources[cat][domain]["articles"].add(url)
-            topic_sources[cat][domain]["claims"] += claim_count
+    result: dict[str, list[dict]] = defaultdict(list)
+    for cat, domain, article_count, claim_count in rows:
+        result[cat].append({
+            "source": domain,
+            "articles": article_count,
+            "claims": claim_count,
+        })
 
-    result: dict[str, list[dict]] = {}
-    for cat, domains in topic_sources.items():
-        source_list = [
-            {"source": domain, "articles": len(data["articles"]), "claims": data["claims"]}
-            for domain, data in domains.items()
-        ]
-        source_list.sort(key=lambda s: -s["claims"])
-        result[cat] = source_list
-
-    return result
+    return dict(result)
 
 
 def build_topics(conn) -> tuple[list[dict], dict[str, dict]]:
