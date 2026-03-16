@@ -38,7 +38,7 @@ claims_raw = [
 claims = [Claim.model_validate(c) for c in claims_raw]
 print(f'Checking {len(claims)} claim(s)...')
 
-claims_with_evidence, bank_matches = retrieve_evidence_for_claims(claims, top_k=5)
+claims_with_evidence, bank_matches = retrieve_evidence_for_claims(claims, top_k=8)
 for cwe in claims_with_evidence:
     print(f'  {cwe.claim.claim_text[:60]}... — {len(cwe.evidence)} evidence matches')
 

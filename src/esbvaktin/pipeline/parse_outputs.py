@@ -211,6 +211,22 @@ def parse_omissions_safe(output_path: Path) -> OmissionAnalysis:
     return parse_omissions(output_path)
 
 
+def parse_assessments_safe(output_path: Path) -> list[ClaimAssessment]:
+    """Parse claim assessment output, returning an empty list if the file is missing.
+
+    Use this instead of ``parse_assessments()`` when the assessment agent may
+    have silently failed or timed out.
+    """
+    if not output_path.exists():
+        import logging
+        logging.getLogger(__name__).warning(
+            "Assessments file missing (%s) — returning empty list",
+            output_path,
+        )
+        return []
+    return parse_assessments(output_path)
+
+
 def parse_entities(output_path: Path) -> ArticleEntities:
     """Parse entity extraction output into ArticleEntities."""
     text = output_path.read_text(encoding="utf-8")

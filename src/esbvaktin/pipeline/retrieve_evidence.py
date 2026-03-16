@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 # Similarity thresholds for claim bank matching
 BANK_EXACT_THRESHOLD = 0.85  # Reuse verdict directly (cache hit)
 BANK_FUZZY_THRESHOLD = 0.70  # Show as context to assessment subagent
+MIN_SIMILARITY = 0.35  # Floor for evidence retrieval (filter noise)
 
 
 def _search_result_to_match(result: SearchResult) -> EvidenceMatch:
@@ -107,8 +108,12 @@ def retrieve_evidence_for_claim(
         if r.evidence_id not in results:
             results[r.evidence_id] = r
 
-    # Sort by similarity, take top_k
-    sorted_results = sorted(results.values(), key=lambda r: r.similarity, reverse=True)[:top_k]
+    # Filter out low-similarity noise, then sort and take top_k
+    sorted_results = sorted(
+        (r for r in results.values() if r.similarity >= MIN_SIMILARITY),
+        key=lambda r: r.similarity,
+        reverse=True,
+    )[:top_k]
 
     return ClaimWithEvidence(
         claim=claim,

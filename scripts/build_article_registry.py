@@ -22,8 +22,6 @@ ANALYSES_DIR = Path("data/analyses")
 SITE_REPORTS_DIR = Path.home() / "esbvaktin-site" / "_data" / "reports"
 REGISTRY_PATH = Path("data/article_registry.json")
 
-# DB connection string
-DB_DSN = "dbname=esbvaktin user=esb password=localdev host=localhost"
 
 
 def _normalise_url(url: str) -> str:
@@ -87,9 +85,9 @@ def _load_db_sightings() -> dict[str, dict]:
     """Load distinct source URLs from claim_sightings table."""
     entries: dict[str, dict] = {}
     try:
-        import psycopg
+        from esbvaktin.ground_truth.operations import get_connection
 
-        conn = psycopg.connect(DB_DSN)
+        conn = get_connection()
         cur = conn.cursor()
         cur.execute(
             "SELECT DISTINCT source_url, source_title, source_date "

@@ -140,7 +140,9 @@ uv run --extra dev python -m pytest -k "test_name"        # Single test by name
 uv run --extra dev ruff check src/ scripts/      # Lint
 uv run --extra dev ruff check --fix src/ scripts/  # Lint with auto-fix
 
-# Export pipeline (run in order)
+# Export pipeline (all 7 steps with validation)
+./scripts/run_export.sh --site-dir ~/esbvaktin-site   # Run full pipeline
+# Or run individual steps:
 uv run python scripts/export_entities.py --site-dir ~/esbvaktin-site  # 1. Export entities
 uv run python scripts/export_evidence.py --site-dir ~/esbvaktin-site  # 2. Export evidence for /heimildir/
 uv run python scripts/export_topics.py --site-dir ~/esbvaktin-site    # 3. Export topics (per-topic aggregations)
@@ -148,6 +150,10 @@ uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site    # 4. Expor
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # 5. Prepare site data (overlays DB verdicts)
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # 6. Export Alþingi debate data
 uv run python scripts/export_overviews.py --site-dir ~/esbvaktin-site # 7. Export weekly overviews
+
+# Database backup (daily via launchd, syncs to iCloud)
+./scripts/backup_db.sh            # Manual backup
+./scripts/backup_db.sh --status   # Show existing backups
 uv run python scripts/export_topics.py --status        # Show topic distribution
 uv run python scripts/generate_overview.py --week 2026-W11  # Generate weekly overview data
 uv run python scripts/generate_overview.py --status         # Show overview coverage

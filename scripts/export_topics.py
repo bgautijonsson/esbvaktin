@@ -19,31 +19,16 @@ from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
+from esbvaktin.ground_truth.operations import get_connection
 from esbvaktin.pipeline.models import TOPIC_LABELS_IS
+from esbvaktin.utils.slugify import icelandic_slugify
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 EXPORT_DIR = PROJECT_ROOT / "data" / "export"
 
-# Import icelandic_slugify from export_entities to avoid duplication
-sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-from export_entities import icelandic_slugify  # noqa: E402
-
 
 def _get_connection():
-    """Get a psycopg connection using standard project config."""
-    from dotenv import load_dotenv
-
-    load_dotenv(PROJECT_ROOT / ".env")
-
-    import psycopg
-
-    return psycopg.connect(
-        host="localhost",
-        port=5432,
-        dbname="esbvaktin",
-        user="esb",
-        password="localdev",
-    )
+    return get_connection()
 
 
 _DOMAIN_ALIASES: dict[str, str] = {

@@ -13,10 +13,8 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sqlite3
 import sys
-import unicodedata
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -25,29 +23,7 @@ EXPORT_DIR = PROJECT_ROOT / "data" / "export"
 DEFAULT_SITE_DIR = PROJECT_ROOT.parent / "esbvaktin-site"
 
 
-def icelandic_slugify(text: str) -> str:
-    """Create a URL-safe slug from Icelandic text."""
-    replacements = {
-        "þ": "th", "Þ": "th",
-        "ð": "d", "Ð": "d",
-        "æ": "ae", "Æ": "ae",
-        "ö": "o", "Ö": "o",
-        "á": "a", "Á": "a",
-        "é": "e", "É": "e",
-        "í": "i", "Í": "i",
-        "ó": "o", "Ó": "o",
-        "ú": "u", "Ú": "u",
-        "ý": "y", "Ý": "y",
-    }
-    slug = text
-    for orig, repl in replacements.items():
-        slug = slug.replace(orig, repl)
-    slug = unicodedata.normalize("NFKD", slug)
-    slug = slug.encode("ascii", "ignore").decode("ascii")
-    slug = slug.lower()
-    slug = re.sub(r"[^a-z0-9]+", "-", slug)
-    slug = slug.strip("-")
-    return slug
+from esbvaktin.utils.slugify import icelandic_slugify  # noqa: F401 — re-exported
 
 
 def _get_report_slug(report_path: Path) -> str:

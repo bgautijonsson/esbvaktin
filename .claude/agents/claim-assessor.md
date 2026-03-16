@@ -33,7 +33,7 @@ Samhengsskráin getur verið mjög stór (20+ fullyrðingar × 5 heimildir). **L
 ## Úttaksreglur
 
 - Skrifaðu **flatt JSON-fylki** — ekki hreiðruð hlutföll, ekki pakkað í yfirhlut
-- Skrifaðu **hrátt JSON eingöngu** — engar markdown-umbúðir, enginn útskýringartexti
+- Skrifaðu **hrátt JSON eða JSON í kóðablokk** (```` ```json ```` ) — enginn útskýringartexti
 - **JSON-gæsalappir:** ALDREI nota íslensku gæsalappirnar „…" í JSON-strengjagildum — þær brjóta JSON-þáttun. Notaðu «…» (guillemets) í staðinn þegar þú þarft að vitna í texta innan JSON-strengja. Ef þú VERÐUR að nota tvöfaldar gæsalappir, slepptu þeim: `\"…\"`
 - `explanation` og `missing_context` svæði VERÐA að vera á **íslensku**
 - Sérhvert mat þarf: claim hlut, verdict, explanation, supporting_evidence, contradicting_evidence, missing_context, confidence

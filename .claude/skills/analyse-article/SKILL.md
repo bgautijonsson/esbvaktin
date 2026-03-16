@@ -132,7 +132,7 @@ work_dir = Path('$WORK_DIR')
 claims = parse_claims(work_dir / '_claims.json')
 print(f'Parsed {len(claims)} claims.')
 
-claims_with_evidence, bank_matches = retrieve_evidence_for_claims(claims, top_k=5)
+claims_with_evidence, bank_matches = retrieve_evidence_for_claims(claims, top_k=8)
 print(f'Retrieved evidence for {len(claims_with_evidence)} claims.')
 if bank_matches:
     print(f'Claim bank matches: {len(bank_matches)} (cache hits speed up assessment)')

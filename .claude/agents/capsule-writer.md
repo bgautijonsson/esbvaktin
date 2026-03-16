@@ -2,7 +2,7 @@
 name: capsule-writer
 description: Write a short Icelandic reader's note for an analysed article — constructive, curiosity-building, evidence-grounded. Use after report assembly when _context_capsule.md is ready.
 model: sonnet
-tools: Read, Write, Glob, mcp__mideind__check_grammar, mcp__mideind__correct_text
+tools: Read, Write, Glob, mcp__mideind__correct_text
 maxTurns: 10
 ---
 

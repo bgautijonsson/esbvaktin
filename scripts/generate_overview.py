@@ -28,20 +28,8 @@ ENTITY_DETAILS_DIR = SITE_DIR / "_data" / "entity-details"
 
 
 def _get_connection():
-    """Get a psycopg connection using standard project config."""
-    from dotenv import load_dotenv
-
-    load_dotenv(PROJECT_ROOT / ".env")
-
-    import psycopg
-
-    return psycopg.connect(
-        host="localhost",
-        port=5432,
-        dbname="esbvaktin",
-        user="esb",
-        password="localdev",
-    )
+    from esbvaktin.ground_truth.operations import get_connection
+    return get_connection()
 
 
 _DOMAIN_ALIASES: dict[str, str] = {

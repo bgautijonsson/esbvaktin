@@ -42,19 +42,8 @@ _BACKOFF_BASE = 10  # seconds — doubles each retry
 # ── DB connection ─────────────────────────────────────────────────────
 
 def _get_connection():
-    from dotenv import load_dotenv
-
-    load_dotenv(PROJECT_ROOT / ".env")
-
-    import psycopg
-
-    return psycopg.connect(
-        host="localhost",
-        port=5432,
-        dbname="esbvaktin",
-        user="esb",
-        password="localdev",
-    )
+    from esbvaktin.ground_truth.operations import get_connection
+    return get_connection()
 
 
 # ── API helpers ───────────────────────────────────────────────────────

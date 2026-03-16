@@ -18,7 +18,7 @@ maxTurns: 10
 
 ## Úttaksreglur
 
-- Skrifaðu **hrátt JSON eingöngu** — engar markdown-umbúðir, enginn útskýringartexti, ekkert inngangsorð
+- Skrifaðu **hrátt JSON eða JSON í kóðablokk** (```` ```json ```` ) — enginn útskýringartexti, ekkert inngangsorð
 - **JSON-gæsalappir:** ALDREI nota íslensku gæsalappirnar „…" í JSON-strengjagildum — þær brjóta JSON-þáttun. Notaðu «…» (guillemets) í staðinn þegar þú þarft að vitna í texta innan JSON-strengja. Ef þú VERÐUR að nota tvöfaldar gæsalappir, slepptu þeim: `\"…\"`
 - Sérhver fullyrðing þarf: `claim_text` (íslenska), `original_quote`, `category`, `claim_type`, `confidence`
 - Fyrir umræðuþætti: `speaker_name` er skylda (nákvæmt fullt nafn úr umræðunni)

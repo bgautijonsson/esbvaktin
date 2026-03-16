@@ -17,13 +17,14 @@ from __future__ import annotations
 import json
 import re
 import sys
-import unicodedata
 from collections import Counter
 from pathlib import Path
 from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from export_entities import _NAME_ALIASES, _OUTLET_SOURCE_ALIASES  # noqa: E402
+
+from esbvaktin.utils.slugify import icelandic_slugify  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ANALYSES_DIR = PROJECT_ROOT / "data" / "analyses"
@@ -56,7 +57,12 @@ def _load_db_verdicts() -> dict[str, dict]:
             "FROM claims"
         ).fetchall()
         conn.close()
-    except Exception:
+    except Exception as exc:
+        print(
+            f"WARNING: Could not load DB verdicts — site will use stale report verdicts. "
+            f"Error: {exc}",
+            file=sys.stderr,
+        )
         return {}
 
     lookup: dict[str, dict] = {}
@@ -264,32 +270,6 @@ def _parse_article_meta(analysis_dir: Path) -> dict:
         meta["article_date"] = _parse_is_date(text[:500])
 
     return meta
-
-
-def icelandic_slugify(text: str) -> str:
-    """Create a URL-safe slug from Icelandic text."""
-    replacements = {
-        "þ": "th", "Þ": "th",
-        "ð": "d", "Ð": "d",
-        "æ": "ae", "Æ": "ae",
-        "ö": "o", "Ö": "o",
-        "á": "a", "Á": "a",
-        "é": "e", "É": "e",
-        "í": "i", "Í": "i",
-        "ó": "o", "Ó": "o",
-        "ú": "u", "Ú": "u",
-        "ý": "y", "Ý": "y",
-    }
-    slug = text
-    for orig, repl in replacements.items():
-        slug = slug.replace(orig, repl)
-
-    slug = unicodedata.normalize("NFKD", slug)
-    slug = slug.encode("ascii", "ignore").decode("ascii")
-    slug = slug.lower()
-    slug = re.sub(r"[^a-z0-9]+", "-", slug)
-    slug = slug.strip("-")
-    return slug
 
 
 # ── Icelandic text extraction from report_text_is ────────────────────

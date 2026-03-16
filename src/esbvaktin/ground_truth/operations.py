@@ -15,9 +15,13 @@ from .models import EvidenceEntry, SearchResult
 SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 
 
+_DEFAULT_DATABASE_URL = "postgresql://esb:localdev@localhost/esbvaktin"
+
+
 def get_connection(autocommit: bool = False) -> psycopg.Connection:
     load_dotenv()
-    conn = psycopg.connect(os.environ["DATABASE_URL"], autocommit=autocommit)
+    dsn = os.environ.get("DATABASE_URL", _DEFAULT_DATABASE_URL)
+    conn = psycopg.connect(dsn, autocommit=autocommit)
     try:
         register_vector(conn)
     except psycopg.ProgrammingError:

@@ -77,8 +77,13 @@ def patch_caveats(conn, eid: str, old_fragment: str, new_fragment: str, label: s
     return True
 
 
+_ALLOWED_METADATA_FIELDS = {"subtopic", "source_type", "confidence", "topic"}
+
+
 def fix_metadata(conn, eid: str, field: str, old_val: str, new_val: str, label: str):
     """Fix a metadata field (subtopic, source_type)."""
+    if field not in _ALLOWED_METADATA_FIELDS:
+        raise ValueError(f"Field {field!r} not in allowed metadata fields: {_ALLOWED_METADATA_FIELDS}")
     cur = conn.execute(
         f"SELECT {field} FROM evidence WHERE evidence_id = %s", (eid,)
     )

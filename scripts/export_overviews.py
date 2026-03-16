@@ -21,9 +21,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OVERVIEWS_DIR = PROJECT_ROOT / "data" / "overviews"
 EXPORT_DIR = PROJECT_ROOT / "data" / "export"
 
-# Import icelandic_slugify from export_entities for entity slug resolution
-sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-from export_entities import icelandic_slugify  # noqa: E402
+from esbvaktin.utils.slugify import icelandic_slugify
 
 
 def _load_overview(slug_dir: Path) -> dict | None:

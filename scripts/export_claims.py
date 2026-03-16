@@ -28,20 +28,8 @@ EXPORT_DIR = PROJECT_ROOT / "data" / "export"
 
 
 def _get_connection():
-    """Get a psycopg connection using standard project config."""
-    from dotenv import load_dotenv
-
-    load_dotenv(PROJECT_ROOT / ".env")
-
-    import psycopg
-
-    return psycopg.connect(
-        host="localhost",
-        port=5432,
-        dbname="esbvaktin",
-        user="esb",
-        password="localdev",
-    )
+    from esbvaktin.ground_truth.operations import get_connection
+    return get_connection()
 
 
 def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
@@ -231,6 +219,13 @@ def main() -> None:
     site_dir = _parse_site_dir()
 
     claims = _fetch_claims(include_unpublished=include_all or status_only)
+
+    if not status_only and not include_all and len(claims) < 10:
+        print(
+            f"WARNING: Only {len(claims)} published claims fetched — expected 10+. "
+            "DB may be unreachable or empty.",
+            file=sys.stderr,
+        )
 
     if status_only:
         _show_status(claims)
