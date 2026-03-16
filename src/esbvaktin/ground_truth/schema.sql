@@ -28,11 +28,11 @@ CREATE INDEX IF NOT EXISTS idx_evidence_domain ON evidence(domain);
 CREATE INDEX IF NOT EXISTS idx_evidence_topic ON evidence(topic);
 CREATE INDEX IF NOT EXISTS idx_evidence_evidence_id ON evidence(evidence_id);
 
--- Vector similarity index (ivfflat with ~20 lists for <1000 entries)
--- NOTE: ivfflat requires rows to exist before building; create after seeding
--- For small datasets, exact search (no index) is fine — add this later:
--- CREATE INDEX idx_evidence_embedding ON evidence
---     USING ivfflat (embedding vector_cosine_ops) WITH (lists = 20);
+-- Vector similarity index (ivfflat).
+-- Rebuild after large batch inserts: DROP INDEX idx_evidence_embedding; then re-CREATE.
+-- lists = sqrt(n): 20 for ~400 rows, increase to 30 at ~900 rows.
+CREATE INDEX IF NOT EXISTS idx_evidence_embedding ON evidence
+    USING ivfflat (embedding vector_cosine_ops) WITH (lists = 20);
 
 -- Full-text search (Icelandic isn't in pg's built-in configs, so use 'simple')
 CREATE INDEX IF NOT EXISTS idx_evidence_fts ON evidence
@@ -93,6 +93,11 @@ CREATE INDEX IF NOT EXISTS idx_claims_slug ON claims(claim_slug);
 CREATE INDEX IF NOT EXISTS idx_claims_category ON claims(category);
 CREATE INDEX IF NOT EXISTS idx_claims_verdict ON claims(verdict);
 CREATE INDEX IF NOT EXISTS idx_claims_published ON claims(published);
+
+-- Vector similarity index for claim bank matching.
+-- lists = sqrt(n): 31 for ~961 rows. Rebuild after large batch inserts.
+CREATE INDEX IF NOT EXISTS idx_claims_embedding ON claims
+    USING ivfflat (embedding vector_cosine_ops) WITH (lists = 31);
 
 DROP TRIGGER IF EXISTS claims_updated_at ON claims;
 CREATE TRIGGER claims_updated_at
