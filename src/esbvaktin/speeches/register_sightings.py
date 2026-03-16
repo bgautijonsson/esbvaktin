@@ -14,6 +14,7 @@ from datetime import date
 from esbvaktin.claim_bank.models import CanonicalClaim
 from esbvaktin.claim_bank.operations import add_claim, generate_slug, search_claims
 from esbvaktin.pipeline.models import ClaimAssessment
+from esbvaktin.utils.domain import extract_domain as _extract_domain
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ def register_speech_sightings(
     source_url: str,
     source_title: str,
     source_date: date | None = None,
+    speaker_name: str | None = None,
     conn=None,
 ) -> dict[str, int]:
     """Register sightings from assessed speech claims.
@@ -67,6 +69,7 @@ def register_speech_sightings(
                 similarity=match.similarity,
                 speech_verdict=verdict,
                 speech_id=speech_id,
+                speaker_name=speaker_name,
             )
             counts["matched"] += 1
             logger.info(
@@ -107,6 +110,7 @@ def register_speech_sightings(
                     similarity=1.0,
                     speech_verdict=verdict,
                     speech_id=speech_id,
+                    speaker_name=speaker_name,
                 )
                 counts["new_claims"] += 1
                 logger.info(
@@ -140,22 +144,28 @@ def _insert_sighting(
     similarity: float,
     speech_verdict: str,
     speech_id: str,
+    speaker_name: str | None = None,
 ) -> None:
     """Insert a claim sighting row."""
+    # Derive source_domain from URL
+    source_domain = _extract_domain(source_url)
+
     conn.execute(
         """
         INSERT INTO claim_sightings (
             claim_id, source_url, source_title, source_date,
             source_type, original_text, similarity,
-            speech_verdict, speech_id
+            speech_verdict, speech_id, speaker_name, source_domain
         ) VALUES (
             %(claim_id)s, %(source_url)s, %(source_title)s, %(source_date)s,
             %(source_type)s, %(original_text)s, %(similarity)s,
-            %(speech_verdict)s, %(speech_id)s
+            %(speech_verdict)s, %(speech_id)s, %(speaker_name)s, %(source_domain)s
         ) ON CONFLICT (claim_id, source_url) DO UPDATE SET
             speech_verdict = EXCLUDED.speech_verdict,
             similarity = EXCLUDED.similarity,
-            original_text = EXCLUDED.original_text
+            original_text = EXCLUDED.original_text,
+            speaker_name = COALESCE(EXCLUDED.speaker_name, claim_sightings.speaker_name),
+            source_domain = COALESCE(EXCLUDED.source_domain, claim_sightings.source_domain)
         """,
         {
             "claim_id": claim_id,
@@ -167,6 +177,8 @@ def _insert_sighting(
             "similarity": similarity,
             "speech_verdict": speech_verdict,
             "speech_id": speech_id,
+            "speaker_name": speaker_name,
+            "source_domain": source_domain,
         },
     )
     conn.commit()

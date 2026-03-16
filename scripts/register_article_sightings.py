@@ -24,6 +24,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+from esbvaktin.utils.domain import extract_domain as _extract_domain
+
 ANALYSES_DIR = Path("data/analyses")
 REGISTRY_PATH = Path("data/article_registry.json")
 
@@ -215,21 +217,24 @@ def _insert_sighting(
     speaker_name: str | None = None,
 ) -> None:
     """Insert a claim sighting for an article."""
+    source_domain = _extract_domain(source_url)
+
     conn.execute(
         """
         INSERT INTO claim_sightings (
             claim_id, source_url, source_title, source_date,
             source_type, original_text, similarity,
-            speech_verdict, speaker_name
+            speech_verdict, speaker_name, source_domain
         ) VALUES (
             %(claim_id)s, %(source_url)s, %(source_title)s, %(source_date)s,
             %(source_type)s, %(original_text)s, %(similarity)s,
-            %(speech_verdict)s, %(speaker_name)s
+            %(speech_verdict)s, %(speaker_name)s, %(source_domain)s
         ) ON CONFLICT (claim_id, source_url) DO UPDATE SET
             speech_verdict = EXCLUDED.speech_verdict,
             similarity = EXCLUDED.similarity,
             original_text = EXCLUDED.original_text,
-            speaker_name = COALESCE(EXCLUDED.speaker_name, claim_sightings.speaker_name)
+            speaker_name = COALESCE(EXCLUDED.speaker_name, claim_sightings.speaker_name),
+            source_domain = COALESCE(EXCLUDED.source_domain, claim_sightings.source_domain)
         """,
         {
             "claim_id": claim_id,
@@ -241,6 +246,7 @@ def _insert_sighting(
             "similarity": similarity,
             "speech_verdict": speech_verdict,
             "speaker_name": speaker_name,
+            "source_domain": source_domain,
         },
     )
     conn.commit()

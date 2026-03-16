@@ -17,6 +17,7 @@ from datetime import date
 from esbvaktin.claim_bank.models import CanonicalClaim
 from esbvaktin.claim_bank.operations import add_claim, generate_slug, search_claims
 from esbvaktin.pipeline.models import ClaimAssessment
+from esbvaktin.utils.domain import extract_domain as _extract_domain
 
 logger = logging.getLogger(__name__)
 
@@ -146,21 +147,24 @@ def _insert_sighting(
     speaker_name: str | None = None,
 ) -> None:
     """Insert a claim sighting row with optional speaker_name."""
+    source_domain = _extract_domain(source_url)
+
     conn.execute(
         """
         INSERT INTO claim_sightings (
             claim_id, source_url, source_title, source_date,
             source_type, original_text, similarity,
-            speech_verdict, speaker_name
+            speech_verdict, speaker_name, source_domain
         ) VALUES (
             %(claim_id)s, %(source_url)s, %(source_title)s, %(source_date)s,
             %(source_type)s, %(original_text)s, %(similarity)s,
-            %(speech_verdict)s, %(speaker_name)s
+            %(speech_verdict)s, %(speaker_name)s, %(source_domain)s
         ) ON CONFLICT (claim_id, source_url) DO UPDATE SET
             speech_verdict = EXCLUDED.speech_verdict,
             similarity = EXCLUDED.similarity,
             original_text = EXCLUDED.original_text,
-            speaker_name = EXCLUDED.speaker_name
+            speaker_name = EXCLUDED.speaker_name,
+            source_domain = COALESCE(EXCLUDED.source_domain, claim_sightings.source_domain)
         """,
         {
             "claim_id": claim_id,
@@ -172,6 +176,7 @@ def _insert_sighting(
             "similarity": similarity,
             "speech_verdict": speech_verdict,
             "speaker_name": speaker_name,
+            "source_domain": source_domain,
         },
     )
     conn.commit()

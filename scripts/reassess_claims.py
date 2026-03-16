@@ -170,23 +170,23 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
     rows = conn.execute(
         """
         SELECT c.id, c.claim_slug, c.canonical_text_is, c.canonical_text_en,
-               c.category, c.confidence,
+               c.category, c.confidence, c.published,
                COUNT(CASE WHEN cs.speech_verdict != c.verdict THEN 1 END) as mismatches,
                COUNT(*) as total_sightings
         FROM claims c
         JOIN claim_sightings cs ON c.id = cs.claim_id
         WHERE c.verdict = 'supported' AND cs.speech_verdict IS NOT NULL
         GROUP BY c.id, c.claim_slug, c.canonical_text_is, c.canonical_text_en,
-                 c.category, c.confidence
+                 c.category, c.confidence, c.published
         HAVING COUNT(CASE WHEN cs.speech_verdict != c.verdict THEN 1 END) > 0
         """,
     ).fetchall()
     for r in rows:
         drift_claims[r[0]] = {
             "claim_id": r[0], "slug": r[1], "text_is": r[2], "text_en": r[3],
-            "category": r[4], "confidence": r[5],
-            "mismatches": r[6], "total_sightings": r[7],
-            "score": 2.0 * (r[6] / max(r[7], 1)) * (1 + r[6]),  # drift weight
+            "category": r[4], "confidence": r[5], "published": r[6],
+            "mismatches": r[7], "total_sightings": r[8],
+            "score": 2.0 * (r[7] / max(r[8], 1)) * (1 + r[7]),  # drift weight
         }
 
     # Get claims with contradicting evidence (Pattern 4)
@@ -194,7 +194,7 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
     rows = conn.execute(
         """
         SELECT id, claim_slug, canonical_text_is, canonical_text_en,
-               category, confidence,
+               category, confidence, published,
                array_length(contradicting_evidence, 1) as contra_count
         FROM claims
         WHERE verdict = 'supported'
@@ -205,9 +205,9 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
     for r in rows:
         contra_claims[r[0]] = {
             "claim_id": r[0], "slug": r[1], "text_is": r[2], "text_en": r[3],
-            "category": r[4], "confidence": r[5],
-            "contra_count": r[6],
-            "score": 1.5 * r[6],
+            "category": r[4], "confidence": r[5], "published": r[6],
+            "contra_count": r[7],
+            "score": 1.5 * r[7],
         }
 
     # Get overconfident claims (Pattern 1) — top by missing_context length
@@ -215,7 +215,7 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
     rows = conn.execute(
         """
         SELECT id, claim_slug, canonical_text_is, canonical_text_en,
-               category, confidence, length(missing_context_is) as ctx_len
+               category, confidence, published, length(missing_context_is) as ctx_len
         FROM claims
         WHERE verdict = 'supported' AND confidence >= 0.85
           AND missing_context_is IS NOT NULL AND length(missing_context_is) >= 80
@@ -225,9 +225,9 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
     for r in rows:
         overconf_claims[r[0]] = {
             "claim_id": r[0], "slug": r[1], "text_is": r[2], "text_en": r[3],
-            "category": r[4], "confidence": r[5],
-            "ctx_len": r[6],
-            "score": 1.0 * (r[6] / 200) * r[5],
+            "category": r[4], "confidence": r[5], "published": r[6],
+            "ctx_len": r[7],
+            "score": 1.0 * (r[7] / 200) * r[5],
         }
 
     # Merge and score — claims in multiple patterns get combined scores
@@ -240,10 +240,8 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
             d.get("score", 0) for d in
             [drift_claims.get(cid, {}), contra_claims.get(cid, {}), overconf_claims.get(cid, {})]
         )
-        # Published claims get priority
-        is_published = conn.execute(
-            "SELECT published FROM claims WHERE id = %s", (cid,)
-        ).fetchone()[0]
+        # Published claims get priority (published already fetched in initial queries)
+        is_published = info.get("published", False)
         if is_published:
             total_score *= 1.5
 

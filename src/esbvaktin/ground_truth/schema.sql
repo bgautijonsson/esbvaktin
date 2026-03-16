@@ -149,7 +149,22 @@ CREATE INDEX IF NOT EXISTS idx_sightings_speech_id ON claim_sightings(speech_id)
 ALTER TABLE claims ADD COLUMN IF NOT EXISTS substantive BOOLEAN DEFAULT TRUE;
 
 
--- View: claim frequency for prioritisation
+-- ═══════════════════════════════════════════════════════════════════════
+-- Migration: source_domain + speaker_stance for analytics
+-- ═══════════════════════════════════════════════════════════════════════
+
+ALTER TABLE claim_sightings ADD COLUMN IF NOT EXISTS source_domain TEXT;
+ALTER TABLE claim_sightings ADD COLUMN IF NOT EXISTS speaker_stance TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_sightings_domain ON claim_sightings(source_domain);
+CREATE INDEX IF NOT EXISTS idx_sightings_stance ON claim_sightings(speaker_stance);
+
+
+-- ═══════════════════════════════════════════════════════════════════════
+-- Views: analytical queries for editorial workflow
+-- ═══════════════════════════════════════════════════════════════════════
+
+-- Claim frequency for prioritisation
 CREATE OR REPLACE VIEW claim_frequency AS
 SELECT
     c.id AS claim_id,
@@ -165,3 +180,85 @@ FROM claims c
 LEFT JOIN claim_sightings s ON c.id = s.claim_id
 GROUP BY c.id, c.claim_slug, c.canonical_text_is, c.category, c.verdict, c.published
 ORDER BY sighting_count DESC;
+
+-- Verdict trend: cumulative weekly verdict distribution
+CREATE OR REPLACE VIEW verdict_weekly_trend AS
+SELECT
+    week, verdict, new_claims,
+    SUM(new_claims) OVER (PARTITION BY verdict ORDER BY week) AS cumulative
+FROM (
+    SELECT
+        DATE_TRUNC('week', created_at)::date AS week,
+        verdict,
+        COUNT(*) AS new_claims
+    FROM claims
+    WHERE published = TRUE
+    GROUP BY DATE_TRUNC('week', created_at)::date, verdict
+) sub
+ORDER BY week, verdict;
+
+-- Evidence utilisation: citation counts + staleness
+CREATE OR REPLACE VIEW evidence_utilisation AS
+SELECT *, supporting_count + contradicting_count AS total_citations
+FROM (
+    SELECT
+        e.evidence_id,
+        e.topic,
+        e.source_name,
+        e.confidence,
+        e.last_verified,
+        (CURRENT_DATE - e.last_verified) AS days_since_verified,
+        (SELECT COUNT(*) FROM claims c
+         WHERE e.evidence_id = ANY(c.supporting_evidence) AND c.published = TRUE
+        ) AS supporting_count,
+        (SELECT COUNT(*) FROM claims c
+         WHERE e.evidence_id = ANY(c.contradicting_evidence) AND c.published = TRUE
+        ) AS contradicting_count
+    FROM evidence e
+) sub
+ORDER BY total_citations DESC;
+
+-- Stale evidence: entries not verified in 90+ days
+CREATE OR REPLACE VIEW stale_evidence AS
+SELECT evidence_id, topic, source_name, last_verified,
+       (CURRENT_DATE - last_verified) AS days_stale
+FROM evidence
+WHERE last_verified < CURRENT_DATE - INTERVAL '90 days'
+ORDER BY days_stale DESC;
+
+-- Claim velocity: weekly new published claims per topic
+CREATE OR REPLACE VIEW claim_velocity AS
+SELECT
+    DATE_TRUNC('week', created_at)::date AS week,
+    category,
+    COUNT(*) AS new_claims
+FROM claims
+WHERE published = TRUE
+GROUP BY DATE_TRUNC('week', created_at)::date, category
+ORDER BY week, category;
+
+-- Balance audit: verdict distribution by speaker stance
+CREATE OR REPLACE VIEW balance_audit AS
+SELECT
+    speaker_stance,
+    c.verdict,
+    COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / NULLIF(SUM(COUNT(*)) OVER (PARTITION BY speaker_stance), 0), 1) AS pct
+FROM claim_sightings s
+JOIN claims c ON c.id = s.claim_id
+WHERE c.published = TRUE AND s.speaker_stance IS NOT NULL
+GROUP BY s.speaker_stance, c.verdict
+ORDER BY s.speaker_stance, c.verdict;
+
+-- Per-outlet verdict breakdown
+CREATE OR REPLACE VIEW outlet_verdicts AS
+SELECT
+    s.source_domain,
+    c.verdict,
+    COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / NULLIF(SUM(COUNT(*)) OVER (PARTITION BY s.source_domain), 0), 1) AS pct
+FROM claim_sightings s
+JOIN claims c ON c.id = s.claim_id
+WHERE c.published = TRUE AND s.source_domain IS NOT NULL
+GROUP BY s.source_domain, c.verdict
+ORDER BY s.source_domain, c.verdict;
