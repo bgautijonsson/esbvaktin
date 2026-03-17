@@ -14,6 +14,7 @@ Usage:
     uv run python scripts/manage_inbox.py queue ID [ID ...]
     uv run python scripts/manage_inbox.py set-status ID STATUS
     uv run python scripts/manage_inbox.py save-text ID TEXT_FILE
+    uv run python scripts/manage_inbox.py known-ids --json
     uv run python scripts/manage_inbox.py prune --days 30
 """
 
@@ -349,6 +350,34 @@ def cmd_save_text(args: argparse.Namespace) -> None:
     print(f"Text saved: {text_path} ({text_path.stat().st_size} bytes)")
 
 
+def cmd_known_ids(args: argparse.Namespace) -> None:
+    """Output all known frettasafn article IDs (for scan_eu exclude_ids)."""
+    ids: set[str] = set()
+
+    # From inbox (all statuses — pending, processed, rejected, skipped, etc.)
+    inbox = _load_inbox()
+    for e in inbox:
+        fid = e.get("frettasafn_id", "")
+        if fid:
+            ids.add(fid)
+
+    # From article registry
+    if REGISTRY_PATH.exists():
+        registry = json.loads(REGISTRY_PATH.read_text())
+        for e in registry:
+            fid = e.get("frettasafn_id", "")
+            if fid:
+                ids.add(fid)
+
+    if args.json:
+        print(json.dumps(sorted(ids)))
+    else:
+        for fid in sorted(ids):
+            print(fid)
+    if not args.json:
+        print(f"\n{len(ids)} known frettasafn IDs", file=sys.stderr)
+
+
 def cmd_prune(args: argparse.Namespace) -> None:
     inbox = _load_inbox()
     cutoff = datetime.now(UTC) - timedelta(days=args.days)
@@ -421,6 +450,10 @@ def main():
     p_text.add_argument("id", help="Article ID")
     p_text.add_argument("text_file", help="Path to text file")
 
+    # known-ids
+    p_known = sub.add_parser("known-ids", help="Output all known frettasafn article IDs")
+    p_known.add_argument("--json", action="store_true", help="Output as JSON array")
+
     # prune
     p_prune = sub.add_parser("prune", help="Remove old processed/rejected entries")
     p_prune.add_argument("--days", type=int, default=30, help="Prune entries older than N days")
@@ -440,6 +473,7 @@ def main():
         "queue": cmd_queue,
         "set-status": cmd_set_status,
         "save-text": cmd_save_text,
+        "known-ids": cmd_known_ids,
         "prune": cmd_prune,
     }
     commands[args.command](args)

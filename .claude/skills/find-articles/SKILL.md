@@ -20,18 +20,18 @@ uv run python scripts/build_article_registry.py --status
 
 This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. Note the total count for the user.
 
-### Step 2: Load Filters + Inbox
+### Step 2: Collect Known IDs + Show Status
 
-Load filter sets and existing inbox:
+Get all frettasafn article IDs already known to the inbox/registry, and show current inbox status:
 
-**Processed URLs** — read `data/article_registry.json`:
-```python
-import json
-registry = json.loads(open("data/article_registry.json").read())
-processed_urls = {entry["url"].rstrip("/").lower() for entry in registry}
+```bash
+uv run python scripts/manage_inbox.py known-ids --json
+uv run python scripts/manage_inbox.py status
 ```
 
-**Rejected URLs** — read `data/rejected_urls.txt`:
+Save the JSON array output from `known-ids` — these will be passed to `scan_eu` as `exclude_ids` so that already-discovered articles are filtered server-side.
+
+Also load rejected URLs for URL-based filtering of any articles not in the inbox:
 ```python
 rejected = set()
 for line in open("data/rejected_urls.txt"):
@@ -40,41 +40,24 @@ for line in open("data/rejected_urls.txt"):
         rejected.add(line.rstrip("/").lower())
 ```
 
-**Inbox URLs** — read `data/inbox/inbox.json` to avoid re-discovering articles already in the inbox:
-```python
-from pathlib import Path
-inbox_path = Path("data/inbox/inbox.json")
-inbox_urls = set()
-if inbox_path.exists():
-    inbox = json.loads(inbox_path.read_text())
-    inbox_urls = {entry["url"].rstrip("/").lower() for entry in inbox}
-```
-
-Also show current inbox status:
-```bash
-uv run python scripts/manage_inbox.py status
-```
-
 ### Step 3: Scan for EU Articles
 
-Use the Fréttasafn MCP `scan_eu` tool:
+Use the Fréttasafn MCP `scan_eu` tool with `exclude_ids` to skip already-known articles:
 
 ```
-scan_eu(date_from=<start_date>, date_to=<today>, limit=50)
+scan_eu(date_from=<start_date>, date_to=<today>, exclude_ids=<known_ids>, limit=50)
 ```
 
-Where `start_date` is determined by the argument (default: 7 days ago).
+Where `start_date` is determined by the argument (default: 7 days ago) and `known_ids` is the JSON array from Step 2.
 
 If the scan returns many results, also run a second pass with a narrower date range or higher limit if needed to ensure coverage.
 
 ### Step 4: Filter and Classify
 
-For each article returned by `scan_eu`:
+For each article returned by `scan_eu` (already filtered by `exclude_ids`):
 
-1. **Skip if processed** — URL (normalised) is in `processed_urls`
-2. **Skip if rejected** — URL (normalised) is in `rejected`
-2b. **Skip if already in inbox** — URL (normalised) is in `inbox_urls`
-3. **Title-based false positive filter** — skip articles whose titles clearly have no EU/referendum content. Common false positive patterns from `scan_eu`:
+1. **Skip if rejected** — URL (normalised) is in `rejected`
+2. **Title-based false positive filter** — skip articles whose titles clearly have no EU/referendum content. Common false positive patterns from `scan_eu`:
    - Crime/accident reports (kynferðisbrot, slys, lögregla, eld)
    - Sports (ÓL, keppni, leikur)
    - Celebrity/entertainment news
