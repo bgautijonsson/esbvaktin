@@ -1,0 +1,50 @@
+[
+  {
+    "evidence_id": "PREC-DATA-026",
+    "domain": "political",
+    "topic": "precedents",
+    "statement": "By 2024–2026, every major European far-right party that once advocated EU exit has abandoned or downgraded that position. The Dutch PVV removed its 'binding Nexit referendum' pledge from its European Parliament manifesto despite retaining it domestically. France's National Rally leader Jordan Bardella stated in March 2024: 'You don't leave the table when you're about to win the game.' Germany's AfD treats 'Dexit' as a last resort if reforms fail. Sweden Democrats abandoned 'Swexit' in 2019 citing insufficient public support. The European Social Survey shows support for leaving the EU has fallen in every member state for which data is available since the 2016 Brexit referendum.",
+    "source_name": "The Local — European far-right parties ditch EU exit plans; European Social Survey",
+    "source_url": "https://www.thelocal.com/20240506/from-swexit-to-frexit-how-europes-far-right-parties-have-ditched-plans-to-leave-eu",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Party positions on EU exit can shift rapidly with political crises. Euroscepticism has not disappeared — it has pivoted from 'leave the EU' to 'reform the EU from within', which still implies significant dissatisfaction. Some smaller parties (e.g. Finland's Finns Party) still view exit as a long-term objective.",
+    "related_entries": ["PREC-DATA-017", "PREC-HIST-004"]
+  },
+  {
+    "evidence_id": "SOV-DATA-024",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "The Arctic Circle Rome Forum — Polar Dialogue was held on 3–4 March 2026 in Rome, hosted by Italy's National Research Council in association with Italy's Ministry of University and Research and coordinated with Italy's Ministry of Foreign Affairs. Over 500 participants from 40+ countries attended. The event was chaired by Katrín Jakobsdóttir (former Prime Minister of Iceland, 2017–2024) as Senior Emissary of Arctic Circle. A high-level seminar followed at the Vatican in collaboration with the Pontifical Academy of Sciences, and a Polar Dialogue Roundtable convened at the Accademia dei Lincei. Iceland's Ólafur Ragnar Grímsson, as Arctic Circle Chairman, opened the forum with Italy's Minister of Universities and Research.",
+    "source_name": "Arctic Circle — Rome Forum 2026",
+    "source_url": "https://www.arcticcircle.org/forums/arctic-circle-rome-forum",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The Arctic Circle is a non-governmental organisation founded by a former Icelandic president, not an intergovernmental body with binding authority. Its events demonstrate Iceland's soft-power role in Arctic diplomacy but do not constitute formal geopolitical leverage. The forum's impact on Iceland's 'standing' is a matter of interpretation.",
+    "related_entries": ["SOV-DATA-001"]
+  },
+  {
+    "evidence_id": "FISH-DATA-033",
+    "domain": "political",
+    "topic": "fisheries",
+    "statement": "Under EU Treaty rules, each member state nominates one European Commissioner, but the Commission President assigns portfolios with significant discretion. Small EU member states have held the fisheries portfolio: Malta's Karmenu Vella served as Commissioner for Environment, Maritime Affairs and Fisheries (2014–2019), and Cyprus's Costas Kadis was appointed Commissioner for Fisheries and Oceans in 2024. There is no treaty provision guaranteeing any member state a specific portfolio based on its economic profile or sectoral importance.",
+    "source_name": "European Commission — College of Commissioners; EUR-Lex — Commission composition",
+    "source_url": "https://commission.europa.eu/about/organisation/college-commissioners_en",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "While no portfolio is guaranteed, the Commission President typically considers a nominee's expertise and national priorities when assigning roles. Iceland's outsized fishing sector would likely be a strong argument for a fisheries-related portfolio, but this remains a political negotiation, not a right.",
+    "related_entries": ["FISH-DATA-021"]
+  },
+  {
+    "evidence_id": "AGRI-DATA-024",
+    "domain": "economic",
+    "topic": "agriculture",
+    "statement": "The agriculture chapter (Chapter 11) was never opened during Iceland's EU accession negotiations (2010–2013), reflecting deep domestic divisions over subsidies, market protections, and alignment with EU rules. The European Commission's screening report found that Iceland lacked the required administrative structures for CAP implementation, specifically a certified paying agency for distributing direct aid to farmers and the Integrated Administration and Control System (IACS). As of the 2011 assessment, the majority of Iceland's agricultural policy was still not aligned with EU provisions, and no new legislative measures had been undertaken to close the gap.",
+    "source_name": "EUR-Lex — Iceland agriculture assessment; European Commission screening reports",
+    "source_url": "https://eur-lex.europa.eu/EN/legal-content/summary/iceland-agriculture-fisheries-and-food-safety.html",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Iceland's accession negotiations were suspended in 2013 and its application withdrawn in 2015. Administrative capacity can change — new negotiations would require fresh assessment. The institutional requirements for CAP compliance have themselves evolved since 2013 (CAP 2014–2020 and 2023–2027 reforms).",
+    "related_entries": ["AGRI-DATA-019", "EEA-LEGAL-008"]
+  }
+]
