@@ -64,6 +64,15 @@ ALTER TABLE evidence ADD COLUMN IF NOT EXISTS is_proofread_hash TEXT;
 
 
 -- ═══════════════════════════════════════════════════════════════════════
+-- Migration: source link health tracking
+-- ═══════════════════════════════════════════════════════════════════════
+
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS source_excerpt TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS source_url_status TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS source_url_checked DATE;
+
+
+-- ═══════════════════════════════════════════════════════════════════════
 -- Claim Bank: canonical claims with pre-processed assessments
 -- ═══════════════════════════════════════════════════════════════════════
 
