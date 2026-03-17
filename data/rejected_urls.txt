@@ -1,3 +1,4 @@
 # URLs seen during article discovery that are not relevant to the EU referendum.
 # One URL per line. Lines starting with # are comments.
 # Append new URLs when /find-articles flags false positives.
+https://xd.is/2026/03/16/hvad-gerist-ef-meirihlutinn-segir-ja-i-sumar/

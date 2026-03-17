@@ -63,7 +63,8 @@ data/overviews/         # Weekly overview generation (gitignored)
 data/inbox/             # Article discovery inbox with persistent state
 data/{source}/          # CSV outputs from R scripts (gitignored)
 R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
-.claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification
+.claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification, health, db, evidence-hunt, reassess, tidy
+.claude/hooks/          # Pre-export validation hook
 .claude/agents/         # Custom agents (10 total, see table below)
 ```
 
@@ -96,7 +97,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 
 | Table | Key Columns | Notes |
 |---|---|---|
-| `evidence` | `evidence_id` (PK text), `domain`, `topic`, `statement`, `statement_is`, `source_name`, `source_url`, `source_type`, `confidence` (high/medium/low text), `caveats`, `caveats_is`, `related_entries TEXT[]`, `last_verified`, `embedding vector(1024)` | `related_entries` has no FK integrity |
+| `evidence` | `evidence_id` (PK text), `domain`, `topic`, `statement`, `statement_is`, `source_name`, `source_url`, `source_type`, `confidence` (high/medium/low text), `caveats`, `caveats_is`, `related_entries TEXT[]`, `last_verified`, `source_excerpt`, `source_url_status`, `source_url_checked`, `embedding vector(1024)` | `related_entries` has no FK integrity. `source_excerpt` = content fingerprint for link health checks. |
 | `claims` | `claim_slug` (unique), `canonical_text_is`, `category`, `verdict`, `published`, `substantive`, `confidence FLOAT`, `supporting_evidence TEXT[]`, `contradicting_evidence TEXT[]`, `embedding vector(1024)`, `version`, `last_verified` | Use `evidence_id = ANY(supporting_evidence)` for cross-join |
 | `claim_sightings` | `claim_id` FK, `source_url`, `source_domain`, `source_date`, `source_type`, `speaker_name`, `speaker_stance`, `speech_id`, `speech_verdict` | `speaker_name` may be NULL for older althingi sightings |
 | `article_claims` | `analysis_id`, `claim_id`, `similarity`, `cache_hit` | Populated but rarely queried — use `claim_sightings` for linkage |
@@ -139,6 +140,25 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 - Subagent JSON output: always parse with `_extract_json()` (sanitises `„"` quotes, strips markdown fences). Subagent field names may vary (e.g. `verdict` vs `new_verdict`) — handle both.
 - Icelandic language rules auto-load via `.claude/rules/` for `*_is.*` and `data/analyses/**` paths — see `icelandic-core.md` and `icelandic-writing.md`
 - Environment variables for secrets (`.env`, never committed)
+
+## Skills (Slash Commands)
+
+```
+/health                    # Unified project health dashboard
+/health db                 # Database section only
+/db                        # Quick DB summary (verdicts, counts)
+/db stale evidence         # Query stale evidence
+/db "SELECT ..."           # Run raw SQL (read-only)
+/evidence-hunt             # Find and draft evidence for gaps
+/evidence-hunt fisheries   # Research specific topic
+/reassess                  # Full reassessment cycle (unverifiable + partial)
+/reassess overconfident    # Reassess audit-flagged claims only
+/tidy                      # Full codebase quality audit
+/tidy lint                 # Ruff lint only
+/link-check                # Check evidence source URLs for link rot + content drift
+/link-check populate       # Auto-populate source excerpts (content fingerprints)
+/link-check report         # Show link health report
+```
 
 ## Key Commands
 
@@ -205,6 +225,10 @@ uv run python scripts/audit_claims.py status               # Quick audit summary
 uv run python scripts/register_article_sightings.py        # Batch-register all unregistered reports into DB sightings
 uv run python scripts/build_article_registry.py --status  # Show processed article registry
 uv run python scripts/check_duplicate.py --url URL        # Check if article already processed
+uv run python scripts/check_evidence_urls.py status        # Link health summary
+uv run python scripts/check_evidence_urls.py check         # Check all evidence URLs (3-tier)
+uv run python scripts/check_evidence_urls.py populate      # Auto-populate source excerpts
+uv run python scripts/check_evidence_urls.py report        # Detailed link health report
 docker compose up -d       # Start PostgreSQL
 Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
