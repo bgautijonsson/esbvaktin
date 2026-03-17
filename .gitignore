@@ -52,11 +52,13 @@ data/overviews/
 data/audit/
 data/review/
 
-# Claude Code (keep skills, rules, and agents)
+# Claude Code (keep skills, rules, agents, hooks, and shared settings)
 .claude/*
 !.claude/skills/
 !.claude/rules/
 !.claude/agents/
+!.claude/hooks/
+!.claude/settings.json
 .claude/skills/**/.fuse_hidden*
 
 # MCP config (user-local)
