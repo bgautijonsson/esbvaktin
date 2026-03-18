@@ -384,7 +384,7 @@ def _load_mp_roster() -> dict[str, dict]:
         return {}
 
     sql = """
-        SELECT m.name, m.id AS mp_id, ms.party, ms.session
+        SELECT m.name, m.id AS mp_id, ms.party, ms.seat_type, ms.session
         FROM member_sessions ms
         JOIN members m ON ms.mp_id = m.id AND ms.session = m.session
         WHERE ms.session IN (155, 156, 157)
@@ -406,6 +406,7 @@ def _load_mp_roster() -> dict[str, dict]:
             "name": row["name"],
             "mp_id": row["mp_id"],
             "party": row["party"],
+            "seat_type": row["seat_type"],
         }
     return roster
 
@@ -414,7 +415,7 @@ def _enrich_party_affiliations(
     entities: dict[str, dict],
     roster: dict[str, dict],
 ) -> int:
-    """Override free-text party with canonical DB party, add party_slug.
+    """Override free-text party/role with canonical DB data, add party_slug.
 
     Only processes subtype='politician' entities.
     Returns the number of entities enriched with authoritative party data.
@@ -439,6 +440,8 @@ def _enrich_party_affiliations(
             slug = _DB_PARTY_TO_SLUG.get(db_party)
             if slug:
                 entity["party_slug"] = slug
+            # Override role with authoritative "þingmaður" for roster MPs
+            entity["role"] = "þingmaður"
             enriched += 1
         else:
             # Non-roster politician (foreign, former, etc.) — resolve from free text
