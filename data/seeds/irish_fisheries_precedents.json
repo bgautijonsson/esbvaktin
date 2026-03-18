@@ -1,0 +1,68 @@
+[
+  {
+    "evidence_id": "FISH-PREC-001",
+    "domain": "precedent",
+    "topic": "fisheries",
+    "statement": "The Hague Preferences were established in November 1976 as part of EU fisheries policy to protect highly dependent fishing nations like Ireland. When total allowable catches (TACs) for designated stocks fall below a specific level, Ireland receives an increased share of those quotas. The mechanism was created to counter the impact of granting other EU member states access to Irish waters and to account for Ireland's then-underdeveloped fishing fleet.",
+    "source_name": "European Movement Ireland / The Fishing Daily",
+    "source_url": "https://www.europeanmovement.ie/40-years-of-ireland-common-fisheries-policy/",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The Hague Preferences are part of the CFP's relative stability framework, not a separate treaty. Their legal status and enforceability have been contested."
+  },
+  {
+    "evidence_id": "FISH-PREC-002",
+    "domain": "precedent",
+    "topic": "fisheries",
+    "statement": "In December 2025, four EU member states — France, Germany, Poland, and the Netherlands — blocked Ireland's invocation of the Hague Preferences at the EU Fisheries Council, the first time in nearly 50 years that this protection mechanism was blocked. This resulted in Ireland facing approximately 57,000 tonnes less quota for 2026, with mackerel cut by 70%, blue whiting by 41%, and boarfish by 22%. Ireland's Minister of State for Fisheries Timmy Dooley described it as an 'act of betrayal' by those who benefit most from access to Irish waters.",
+    "source_name": "RTÉ News / The Fishing Daily / The Skipper",
+    "source_url": "https://www.rte.ie/news/ireland/2025/1213/1548841-fishing-quota-agreement/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The quota reductions were partly driven by scientific advice (ICES) on depleted stocks, particularly mackerel overfished by non-EU third countries. The blocking of Hague Preferences was one factor among several. Legal questions remain about whether four states can constitute a valid blocking minority under EU voting rules."
+  },
+  {
+    "evidence_id": "FISH-PREC-003",
+    "domain": "precedent",
+    "topic": "fisheries",
+    "statement": "The economic impact of the December 2025 EU fisheries quota cuts on Ireland was estimated at €94 million in direct quota value, rising to approximately €200 million when including processing, logistics, and export value. The Seafood Ireland Alliance warned that 2,300 jobs in coastal communities were at risk. Irish fishing industry leaders described 2026 as the 'toughest ever year' for the sector.",
+    "source_name": "RTÉ News / Donegal Daily / Connacht Tribune",
+    "source_url": "https://www.rte.ie/news/2025/1231/1550957-fishing-industry/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The €200m figure includes indirect multiplier effects and represents an upper estimate. Some quota reductions were scientifically necessary regardless of the Hague Preferences dispute."
+  },
+  {
+    "evidence_id": "FISH-PREC-004",
+    "domain": "precedent",
+    "topic": "fisheries",
+    "statement": "Ireland's share of fish catches in its own Exclusive Economic Zone (EEZ) is approximately 35.5% by weight and 38.8% by value, according to Marine Institute data. Before joining the EU in 1973, Irish vessels took only about 12% of catches from Irish waters; EU membership increased this to an average of approximately 30%, reaching as high as 40%. Ireland's EEZ represents approximately 12% of total EU waters (post-Brexit), but Ireland receives only about 3.5% of EU quotas allocated in Irish waters.",
+    "source_name": "European Commission Representation in Ireland / Marine Institute",
+    "source_url": "https://ireland.representation.ec.europa.eu/news-and-events/news/facts-and-figures-impact-eu-membership-irelands-fisheries-2024-06-06_en",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The 3.5% figure is contested: the EU Commission's own data shows Ireland's catch share increased substantially after joining. The disparity between waters owned (12%) and quota received (3.5%) is cited by critics but reflects the relative stability principle based on historical fishing patterns, not current geography alone. The EU Commission argues Ireland's catch increased from 12% to ~30-40% of catches in Irish waters after joining."
+  },
+  {
+    "evidence_id": "FISH-PREC-005",
+    "domain": "precedent",
+    "topic": "fisheries",
+    "statement": "When Ireland joined the European Economic Community (EEC) on 1 January 1973, fisheries caused the greatest strain in accession negotiations. Political agreement on Regulation 2141/70 establishing the principle of equal access to fishing waters occurred on 30 June 1970, the same day Ireland's accession negotiations began. Ireland and the UK received a temporary 10-year derogation reserving their 12-mile coastal waters for local fleets. In 1976, EU member states collectively extended fishing limits to 200 miles, and the Common Fisheries Policy was formally adopted on 25 January 1983 with the 'relative stability' principle — a fixed allocation key based on historical fishing patterns that critics say disadvantaged Ireland.",
+    "source_name": "European Movement Ireland / European Parliament Factsheet",
+    "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/114/the-common-fisheries-policy-origins-and-development",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The timing of Regulation 2141/70 on the same day as accession talks has been characterised by critics as deliberately locking in access rights before new members could negotiate. Supporters note the regulation pre-dates Ireland's application. The 'relative stability' principle was intended to provide certainty but has been criticised for freezing an inequitable allocation."
+  },
+  {
+    "evidence_id": "FISH-PREC-006",
+    "domain": "precedent",
+    "topic": "fisheries",
+    "statement": "Irish politician Pat the Cope Gallagher (Fianna Fáil) characterised the blocking of Ireland's Hague Preferences in December 2025 as 'an open act of aggression toward a small state' and called for a legal challenge by the Irish government. Other Irish politicians described the outcome as 'fisheries apartheid' against Ireland. Ireland's population of 5.4 million gives it limited voting weight in the EU Council, where qualified majority voting requires 55% of member states representing 65% of the EU population.",
+    "source_name": "The Skipper / The Fishing Daily / Donegal Daily",
+    "source_url": "https://theskipper.ie/blocking-irelands-hague-preferences-open-act-of-agression/",
+    "source_type": "parliamentary_record",
+    "confidence": "high",
+    "caveats": "The 'act of aggression' and 'apartheid' characterisations are strong political language from Irish opposition politicians, not neutral analysis. Legal experts have questioned whether the blocking was procedurally valid under EU treaty voting rules, as four states may not constitute a sufficient blocking minority. The dispute is ongoing and legal proceedings may clarify the situation."
+  }
+]
