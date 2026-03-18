@@ -485,12 +485,14 @@ def _build_participants(
             "stance": speaker.get("stance"),
         }
 
-        # Enrich from site-wide entity data
+        # Enrich from site-wide entity data (authoritative party, slug, etc.)
         entity = site_entities.get(speaker["name"])
         if entity:
             p["slug"] = entity.get("slug")
             p["mention_count"] = entity.get("mention_count")
             p["credibility"] = entity.get("credibility")
+            if entity.get("party"):
+                p["party"] = entity["party"]
             stats = entity.get("althingi_stats")
             if stats:
                 p["speech_count"] = stats.get("speech_count")
@@ -534,10 +536,15 @@ def _resolve_speaker_attributions(speaker: dict) -> list[dict]:
     ]
 
 
-def _speakers_for_claim(entities_data: dict | None, claim_index: int) -> list[dict]:
+def _speakers_for_claim(
+    entities_data: dict | None,
+    claim_index: int,
+    site_entities: dict[str, dict] | None = None,
+) -> list[dict]:
     """Get speakers attributed to a claim by index.
 
     Returns a list of {name, type, role, party, stance, attribution} dicts.
+    Party is overridden from site_entities when available (authoritative).
     """
     if not entities_data:
         return []
@@ -547,11 +554,17 @@ def _speakers_for_claim(entities_data: dict | None, claim_index: int) -> list[di
     def _check_speaker(speaker: dict) -> None:
         for attr in _resolve_speaker_attributions(speaker):
             if attr["claim_index"] == claim_index:
+                party = speaker.get("party")
+                # Override with authoritative party from entity export
+                if site_entities:
+                    entity = site_entities.get(speaker["name"])
+                    if entity and entity.get("party"):
+                        party = entity["party"]
                 speakers.append({
                     "name": speaker["name"],
                     "type": speaker.get("type", "individual"),
                     "role": speaker.get("role"),
-                    "party": speaker.get("party"),
+                    "party": party,
                     "stance": speaker.get("stance", "neutral"),
                     "attribution": attr["attribution"],
                     "stance_score": speaker.get("stance_score"),
@@ -666,7 +679,7 @@ def prepare_report(
             "contradicting_evidence": contradicting,
             "missing_context": missing_context_is,
             "confidence": confidence,
-            "speakers": _speakers_for_claim(entities_data, i),
+            "speakers": _speakers_for_claim(entities_data, i, site_entities),
             "_published": is_published,
         })
 
