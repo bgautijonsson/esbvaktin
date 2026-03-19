@@ -89,8 +89,23 @@ def _find_previous_editorial(current_slug: str) -> str | None:
     return "\n\n".join(paragraphs) if paragraphs else None
 
 
+def _truncate_caveat(text: str, max_chars: int = 200) -> str:
+    """Truncate caveat at word boundary."""
+    if len(text) <= max_chars:
+        return text
+    truncated = text[:max_chars]
+    last_space = truncated.rfind(" ")
+    if last_space > max_chars * 0.6:
+        truncated = truncated[:last_space]
+    return truncated + "…"
+
+
 def prepare_context(slug: str) -> str:
-    """Assemble all-Icelandic context markdown from data.json."""
+    """Assemble all-Icelandic context markdown from data.json.
+
+    Structured as a news digest: what was discussed, what context readers need,
+    how the rhetoric has evolved, and what's missing from the debate.
+    """
     data_path = OVERVIEWS_DIR / slug / "data.json"
     if not data_path.exists():
         print(f"Error: {data_path} not found. Run generate_overview.py first.")
@@ -109,13 +124,15 @@ def prepare_context(slug: str) -> str:
     # Header with instructions
     lines.append("> **Samhengsskjal:** Vikuyfirlitsgrein ESBvaktin. Skrifaðu 400–600 orða grein.")
     lines.append(">")
-    lines.append('> Greinin birtist \u00e1 esbvaktin.is undir \u201eVikuyfirlit\u201c. H\u00fan \u00e1 a\u00f0 vera')
-    lines.append("> upplýsandi, hlutlaus og byggð á gögnum. Nefndu einstaklinga og tölur.")
+    lines.append("> Greinin er fréttayfirlit — hún hjálpar lesendum að skilja hvað var rætt,")
+    lines.append("> hvaða samhengi skiptir máli, og hvað vantar í umræðuna.")
+    lines.append('> Ekki merkja fullyrðingar sem \u201evillandi\u201c eða \u201eósannar\u201c — sýndu samhengið')
+    lines.append("> og láttu lesandann draga ályktanir.")
     lines.append("")
-    lines.append(f"# Vikuyfirlit — {start_is} til {end_is}")
+    lines.append(f"# Tímabil: {start_is} til {end_is}")
     lines.append("")
 
-    # Key numbers
+    # ── Section 1: Key numbers ──
     lines.append("## Lykilstærðir")
     articles_delta = _delta_arrow(kn["articles_analysed"], prev.get("articles_analysed", 0))
     claims_delta = _delta_arrow(
@@ -124,50 +141,47 @@ def prepare_context(slug: str) -> str:
     )
     diversity_delta = _delta_arrow(kn["diversity_score"], prev.get("diversity_score", 0))
 
-    lines.append(f"- Greiningar birtar: {kn['articles_analysed']} {articles_delta}")
-    lines.append(f"- Nýjar fullyrðingar: {kn['new_claims']} ({kn['new_claims_published']} birtar) {claims_delta}")
-    lines.append(f"- Virk efni: {kn['topics_active']}")
+    lines.append(f"- Greiningar: {kn['articles_analysed']} {articles_delta}")
+    lines.append(f"- Fullyrðingar í umræðunni: {kn['new_claims_published']} birtar {claims_delta}")
+    lines.append(f"- Virk málefni: {kn['topics_active']}")
     lines.append(f"- Virkir aðilar: {kn['entities_active']}")
     lines.append(f"- Fjölbreytni umræðu: {kn['diversity_score']:.2f} {diversity_delta}")
     lines.append("")
 
-    # Verdict breakdown
-    vb = kn.get("verdict_breakdown", {})
-    if vb:
-        total_verdicts = sum(vb.values())
-        lines.append("## Úrskurðardreifing nýrra fullyrðinga")
-        for verdict_key in ["supported", "partially_supported", "misleading", "unsupported", "unverifiable"]:
-            count = vb.get(verdict_key, 0)
-            pct = round(100 * count / total_verdicts, 0) if total_verdicts else 0
-            label = VERDICT_LABELS_IS.get(verdict_key, verdict_key)
-            lines.append(f"- {label}: {count} ({pct:.0f}%)")
-        lines.append("")
-
-    # Topic activity
+    # ── Section 2: Topic activity with evolution ──
     topic_activity = data.get("topic_activity", [])
     if topic_activity:
-        lines.append("## Efnisyfirlit")
-        lines.append("| Efni | Tilvísanir | Nýjar fullyrðingar | Breyting |")
-        lines.append("|------|-----------|--------------------|---------| ")
+        lines.append("## Hvað var rætt? — Efnisþróun")
+        lines.append("| Efni | Tilvísanir | Breyting frá síðustu viku |")
+        lines.append("|------|-----------|--------------------------|")
         for t in topic_activity:
             label = t.get("label_is", t["topic"])
-            lines.append(f"| {label} | {t['sightings']} | {t['new_claims']} | {t.get('delta', '—')} |")
+            lines.append(f"| {label} | {t['sightings']} | {t.get('delta', '—')} |")
         lines.append("")
 
-    # Top claims
+    # ── Section 3: Most-discussed claims with context ──
     top_claims = data.get("top_claims", [])
     if top_claims:
-        lines.append("## Athyglisverðustu fullyrðingar")
+        lines.append("## Umræðuefni vikunnar — helstu fullyrðingar")
+        lines.append('> Ekki nota úrskurðarorð eins og \u201evillandi\u201c eða \u201eóstudd\u201c í greininni.')
+        lines.append("> Segðu í staðinn hvað heimildir sýna og hvaða samhengi lesandinn þarf.")
+        lines.append("")
         for i, c in enumerate(top_claims[:8], 1):
-            verdict_is = VERDICT_LABELS_IS.get(c["verdict"], c["verdict"])
             cat_is = c.get("category_is", TOPIC_LABELS_IS.get(c["category"], c["category"]))
             sources_str = ", ".join(c.get("sources", [])[:3])
-            lines.append(f'{i}. „{c["canonical_text_is"]}" — {verdict_is} ({c["sighting_count"]} tilvísanir, {cat_is})')
+            lines.append(f'{i}. „{c["canonical_text_is"]}"')
+            lines.append(f"   Efni: {cat_is} · Fjöldi tilvísana: {c['sighting_count']}")
+            if c.get("missing_context"):
+                ctx = _truncate_caveat(c["missing_context"], 250)
+                lines.append(f"   Samhengi sem skiptir máli: {ctx}")
+            elif c.get("explanation"):
+                ctx = _truncate_caveat(c["explanation"], 250)
+                lines.append(f"   Hvað heimildir segja: {ctx}")
             if sources_str:
                 lines.append(f"   Heimildir: {sources_str}")
-        lines.append("")
+            lines.append("")
 
-    # Active entities
+    # ── Section 4: Active entities ──
     active_entities = data.get("active_entities", [])
     if active_entities:
         lines.append("## Virkustu raddirnar")
@@ -176,39 +190,51 @@ def prepare_context(slug: str) -> str:
             lines.append(f"- {e['name']}: {e['claims_made']} fullyrðingar ({topics_str})")
         lines.append("")
 
-    # Articles
+    # ── Section 5: Articles ──
     articles = data.get("articles", [])
     if articles:
         lines.append("## Greiningarnar")
         for i, a in enumerate(articles, 1):
-            cat_is = TOPIC_LABELS_IS.get(a.get("dominant_category", ""), a.get("dominant_category", ""))
-            lines.append(f'{i}. „{a["title"]}" — {a["source"]}, {_format_date_is(a["date"])} ({a["claim_count"]} fullyrðingar, {cat_is})')
+            cat_is = TOPIC_LABELS_IS.get(
+                a.get("dominant_category", ""), a.get("dominant_category", ""),
+            )
+            lines.append(
+                f'{i}. „{a["title"]}" — {a["source"]},'
+                f" {_format_date_is(a['date'])} ({a['claim_count']} fullyrðingar, {cat_is})"
+            )
         lines.append("")
 
-    # Key facts
+    # ── Section 6: Key facts — learnable context ──
     key_facts = data.get("key_facts", [])
     if key_facts:
-        lines.append("## Helstu staðreyndir vikunnar")
+        lines.append("## Staðreyndir sem gott er að þekkja")
+        lines.append("> Veldu 1–2 af þessum staðreyndum til að útskýra í greininni —")
+        lines.append("> þær hjálpa lesendum að skilja umræðuna betur.")
+        lines.append("")
         for f in key_facts[:4]:
-            verdict_is = VERDICT_LABELS_IS.get(f["verdict"], f["verdict"])
             cat_is = f.get("category_is", f.get("category", ""))
             lines.append(f'- **{cat_is}**: {f["claim_text"]}')
-            lines.append(f'  - Úrskurður: {verdict_is} ({f.get("claim_type", "")})')
             if f.get("caveat"):
-                caveat = f["caveat"]
-                if len(caveat) > 200:
-                    caveat = caveat[:200]
-                    last_space = caveat.rfind(" ")
-                    if last_space > 120:
-                        caveat = caveat[:last_space]
-                    caveat += "…"
-                lines.append(f"  - Fyrirvari: {caveat}")
+                lines.append(f"  - Gott að vita: {_truncate_caveat(f['caveat'])}")
             lines.append("")
 
-    # Source breakdown omitted — data is in data.json but not rendered on the
-    # site page, so the agent should not cite statistics readers cannot verify.
+    # ── Section 7: Under-discussed topics ──
+    under_discussed = data.get("under_discussed", [])
+    if under_discussed:
+        lines.append("## Hvað vantar í umræðuna?")
+        lines.append("> Þessi efni hafa mikilvægar heimildir í gagnagrunni ESBvaktin")
+        lines.append("> en komu varla við sögu í umræðunni þessa viku.")
+        lines.append("")
+        for ud in under_discussed[:5]:
+            sightings = ud["sightings_this_period"]
+            sighting_str = f"{sightings} tilvísun(ir)" if sightings else "ekkert rætt"
+            lines.append(
+                f"- **{ud['label_is']}**: {ud['evidence_entries']} heimildir"
+                f" í gagnagrunni, {sighting_str} þessa viku"
+            )
+        lines.append("")
 
-    # Previous editorial opening (for variety tracking)
+    # ── Previous editorial opening (for variety tracking) ──
     prev_editorial = _find_previous_editorial(slug)
     if prev_editorial:
         lines.append("## Síðasta vikuyfirlit (upphaf)")
@@ -217,16 +243,17 @@ def prepare_context(slug: str) -> str:
         lines.append(prev_editorial)
         lines.append("")
 
-    # Writing instructions
+    # ── Writing instructions ──
     lines.append("## Leiðbeiningar")
-    lines.append("- Lestu knowledge/exemplars_editorial_is.md áður en þú byrjar að skrifa")
-    lines.append("- Byrjaðu á áhrifamestu staðreyndinni")
+    lines.append("- Lestu knowledge/exemplars_editorial_is.md áður en þú byrjar")
+    lines.append("- Greinin er fréttayfirlit, ekki staðreyndamat — hjálpaðu lesendum að skilja")
+    lines.append("- Byrjaðu á áhugaverðasta atriðinu — staðreynd, spurning eða þróun")
     lines.append("- Nefndu einstaklinga og tölur — ekki skrifa almennt")
-    lines.append("- Leggðu mat á hvort umræðan var fjölbreytt eða einsleit")
-    lines.append("- Ef villandi fullyrðingar voru áberandi, nefndu þær sérstaklega")
-    lines.append("- Gættu jafnvægis — ef villandi fullyrðing frá ESB-andstæðingi er nefnd, nefndu einnig villandi frá ESB-sinni (ef gögnin gefa tilefni)")
-    lines.append('- Notaðu ekki orðalag eins og „Þessi vika var áhugaverð" eða „Umræðan var fjörleg"')
+    lines.append("- Segðu hvað heimildir sýna frekar en að merkja fullyrðingar sem réttar eða rangar")
+    lines.append("- Nefndu hvort umræðan þéttist eða breikkist — samanborið við fyrri vikur")
+    lines.append('- Nefndu ef mikilvæg málefni fá lítið rými (sjá \u201eHvað vantar í umræðuna?\u201c)')
     lines.append('- BANNAÐAR opnanir: „Einnig var...", „Í vikunni sem leið...", „Hvað X varðar..."')
+    lines.append('- BANNAÐ: orðin \u201evillandi\u201c, \u201eóstudd\u201c, \u201eósönn\u201c um fullyrðingar einstaklinga')
     lines.append("- Engin emoji, engin upphrópunarmerki")
     lines.append("- Skrifaðu eins og blaðamaður á fréttastofu — ekki eins og gervigreind")
     lines.append("- Textinn á að vera 400–600 orð")

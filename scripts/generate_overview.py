@@ -309,9 +309,14 @@ def _active_entities_from_db(conn, start: date, end: date) -> list[dict]:
 
 
 def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
-    """Most-sighted claims in the period, focusing on notable verdicts."""
+    """Most-discussed claims in the period, ranked by discussion volume.
+
+    Includes missing_context_is so the editorial can explain what readers
+    should know, rather than labelling claims as right or wrong.
+    """
     rows = conn.execute("""
         SELECT c.canonical_text_is, c.claim_slug, c.verdict, c.category,
+               c.missing_context_is, c.explanation_is,
                COUNT(s.id) AS sighting_count,
                ARRAY_AGG(DISTINCT s.source_title) FILTER (WHERE s.source_title IS NOT NULL) AS sources
         FROM claims c
@@ -319,15 +324,7 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
         WHERE c.published = TRUE
           AND s.source_date BETWEEN %s AND %s
         GROUP BY c.id
-        ORDER BY
-            CASE c.verdict
-                WHEN 'misleading' THEN 0
-                WHEN 'unsupported' THEN 1
-                WHEN 'partially_supported' THEN 2
-                WHEN 'unverifiable' THEN 3
-                WHEN 'supported' THEN 4
-            END,
-            sighting_count DESC
+        ORDER BY sighting_count DESC, c.canonical_text_is
         LIMIT 10
     """, (start, end)).fetchall()
 
@@ -338,10 +335,12 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
             "verdict": verdict,
             "category": cat,
             "category_is": TOPIC_LABELS_IS.get(cat, cat),
+            "missing_context": missing_ctx or "",
+            "explanation": explanation or "",
             "sighting_count": count,
             "sources": sources or [],
         }
-        for text, slug, verdict, cat, count, sources in rows
+        for text, slug, verdict, cat, missing_ctx, explanation, count, sources in rows
     ]
 
 
@@ -419,6 +418,50 @@ def _fetch_key_facts(conn, start: date, end: date) -> list[dict]:
     ]
 
 
+def _fetch_under_discussed(conn, start: date, end: date) -> list[dict]:
+    """Topics with substantial evidence in the Ground Truth DB but few sightings.
+
+    Helps the editorial highlight what the public debate is NOT covering.
+    """
+    # Count evidence entries per topic
+    evidence_rows = conn.execute("""
+        SELECT topic, COUNT(*) AS evidence_count
+        FROM evidence
+        GROUP BY topic
+    """).fetchall()
+
+    evidence_map = {topic: count for topic, count in evidence_rows}
+
+    # Count sightings per topic this period
+    sighting_rows = conn.execute("""
+        SELECT c.category, COUNT(*) AS sightings
+        FROM claim_sightings s
+        JOIN claims c ON c.id = s.claim_id
+        WHERE c.published = TRUE
+          AND s.source_date BETWEEN %s AND %s
+        GROUP BY c.category
+    """, (start, end)).fetchall()
+
+    sighting_map = {cat: n for cat, n in sighting_rows}
+
+    # Find topics with evidence but few or no sightings
+    results = []
+    for topic, ev_count in evidence_map.items():
+        if ev_count < 5:
+            continue  # Skip topics with thin evidence
+        sightings = sighting_map.get(topic, 0)
+        if sightings <= 2:  # Under-discussed threshold
+            results.append({
+                "topic": topic,
+                "label_is": TOPIC_LABELS_IS.get(topic, topic),
+                "evidence_entries": ev_count,
+                "sightings_this_period": sightings,
+            })
+
+    results.sort(key=lambda x: -x["evidence_entries"])
+    return results
+
+
 def _fetch_previous_period_metrics(
     conn, prev_start: date, prev_end: date
 ) -> dict:
@@ -481,6 +524,7 @@ def generate_overview(start: date, end: date) -> dict:
     top_claims = _fetch_top_claims(conn, start, end)
     source_breakdown = _fetch_source_breakdown(conn, start, end)
     key_facts = _fetch_key_facts(conn, start, end)
+    under_discussed = _fetch_under_discussed(conn, start, end)
     previous_period = _fetch_previous_period_metrics(conn, prev_start, prev_end)
 
     # Compute diversity
@@ -507,6 +551,7 @@ def generate_overview(start: date, end: date) -> dict:
         "articles": articles,
         "source_breakdown": source_breakdown,
         "key_facts": key_facts,
+        "under_discussed": under_discussed,
     }
 
     conn.close()
