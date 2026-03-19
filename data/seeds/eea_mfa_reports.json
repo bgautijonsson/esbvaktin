@@ -1,0 +1,30 @@
+[
+  {
+    "evidence_id": "EEA-DATA-017",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "acquis_adoption_ratio",
+    "statement": "A 2018 report by the Icelandic Ministry of Foreign Affairs ('Gengið til góðs — Skref í átt að bættri framkvæmd EES-samningsins') found that from 1994 to year-end 2016, Iceland adopted 9,028 EU legal acts through the EEA Agreement out of 67,158 total binding acts adopted by the EU in the same period — a ratio of 13.4%. The report counted all binding acts (directives, regulations, decisions) recorded in EUR-Lex against the EFTA Secretariat's EEA incorporation database. Annual adoption ratios ranged from 5.6% (2000) to 43.9% (1994, reflecting the large initial batch at EEA entry into force).",
+    "source_name": "Utanríkisráðuneytið — Gengið til góðs: Skref í átt að bættri framkvæmd EES-samningsins (apríl 2018)",
+    "source_url": "https://www.government.is/library/01-Ministries/Ministry-for-Foreign-Affairs/PDF-skjol/EES_skyrsla_15.pdf",
+    "source_date": "2018-04-01",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "This figure (13.4%) measures the share of total EU regulatory output incorporated into the EEA, including areas outside the EEA's scope (fisheries, agriculture, customs, CFSP, justice, monetary union). It is not directly comparable to the EFTA Surveillance Authority's '70% of internal market legislation' figure, which measures adoption within the EEA's intended scope. Both figures are methodologically valid but answer different questions: the 13.4% answers 'how much of the full EU acquis has Iceland adopted?' while the 70% answers 'how well has Iceland implemented the EEA-relevant portion?' The count includes acts that have since been repealed or superseded.",
+    "related_entries": ["EEA-LEGAL-001", "EEA-LEGAL-006", "EEA-LEGAL-008", "EEA-DATA-018"]
+  },
+  {
+    "evidence_id": "EEA-DATA-018",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "legislation_eea_origin",
+    "statement": "A 2019 working group report commissioned by the Icelandic Ministry of Foreign Affairs ('Skýrsla starfshóps um EES-samstarfið') surveyed all 3,100 laws passed by Alþingi from 1992 to 2019 (legislative sessions 116–145) and found that 485 laws — 16% of the total — had their direct origin in the EEA Agreement. The working group was chaired by Björn Bjarnason and appointed by Foreign Minister Guðlaugur Þór Þórðarson on 30 August 2018. The 301-page report also includes analysis of Iceland's EEA participation, constitutional implications, and the democratic deficit in EEA decision-making.",
+    "source_name": "Utanríkisráðuneytið — Skýrsla starfshóps um EES-samstarfið (september 2019)",
+    "source_url": "https://www.government.is/library/01-Ministries/Ministry-for-Foreign-Affairs/PDF-skjol/Sky%CC%81rsla%20starfsho%CC%81ps%20um%20EES-samstarfi%C3%B0%200919.pdf",
+    "source_date": "2019-09-01",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The 16% figure counts only laws with direct EEA origin. An earlier study (1992–2006) found an additional 21.7% with indirect EEA origin, suggesting the total EEA-influenced legislation may be substantially higher. The working group's methodology counted parliamentary acts (lög) only — not regulations (reglugerðir) issued by ministries, which account for a larger share of EEA transposition. The English executive summary is available at https://www.government.is/library/01-Ministries/Ministry-for-Foreign-Affairs/PDF-skjol/EEA%20report%20executive%20summary.pdf",
+    "related_entries": ["EEA-DATA-017", "EEA-LEGAL-001", "EEA-LEGAL-002", "EEA-LEGAL-006"]
+  }
+]
