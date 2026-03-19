@@ -777,9 +777,9 @@ _KNOWN_OUTLETS: set[str] = {
 # Map outlet entity slugs → all article_source values that belong to them.
 # Panel shows and podcasts fold into their parent outlet.
 _OUTLET_SOURCE_ALIASES: dict[str, list[str]] = {
-    "morgunbladid": ["Morgunblaðið", "Spursmál (mbl.is)"],
+    "morgunbladid": ["Morgunblaðið", "Morgunbladid", "mbl", "Spursmál (mbl.is)"],
     "ruv": ["RÚV", "Silfrið (RÚV)", "Vikulokin (RÚV)", "Ríkisútvarpið"],
-    "visir": ["Vísir", "Vísir/Bylgjan"],
+    "visir": ["Vísir", "Visir", "Vísir/Bylgjan"],
     "dv": ["DV"],
     "heimildin": ["Heimildin"],
     "kjarninn": ["Kjarninn"],

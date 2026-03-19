@@ -34,6 +34,15 @@ DEFAULT_SITE_DIR = PROJECT_ROOT.parent / "esbvaktin-site"
 # Evidence ID pattern: e.g. FISH-DATA-001, SOV-LEGAL-006
 _EVIDENCE_ID_RE = re.compile(r"\b([A-Z]+-[A-Z]+-\d{3})\b")
 
+# Normalise ASCII-transliterated source names from trafilatura metadata
+_SOURCE_NAME_CANONICAL: dict[str, str] = {
+    "Morgunbladid": "Morgunblaðið",
+    "Visir": "Vísir",
+    "Baendabladid": "Bændablaðið",
+    "Sjalfstaedisflokkurinn": "Sjálfstæðisflokkurinn",
+    "mbl": "Morgunblaðið",
+}
+
 
 # ── DB verdict overlay ──────────────────────────────────────────────
 
@@ -641,6 +650,7 @@ def prepare_report(
 
     # Prefer report JSON fields (structured), fall back to _article.md parsing (legacy)
     article_source = report.get("article_source") or article_meta["article_source"]
+    article_source = _SOURCE_NAME_CANONICAL.get(article_source, article_source)
     article_url = report.get("article_url") or article_meta["article_url"]
     article_author = report.get("article_author") or article_meta["article_author"]
     article_date = report.get("article_date") or article_meta["article_date"]
