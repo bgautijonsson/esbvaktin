@@ -40,6 +40,7 @@ _SOURCE_NAME_CANONICAL: dict[str, str] = {
     "Visir": "Vísir",
     "Baendabladid": "Bændablaðið",
     "Sjalfstaedisflokkurinn": "Sjálfstæðisflokkurinn",
+    "xd.is": "Sjálfstæðisflokkurinn",
     "mbl": "Morgunblaðið",
 }
 
