@@ -118,7 +118,10 @@ def prepare_context(slug: str) -> str:
     # Key numbers
     lines.append("## Lykilstærðir")
     articles_delta = _delta_arrow(kn["articles_analysed"], prev.get("articles_analysed", 0))
-    claims_delta = _delta_arrow(kn["new_claims_published"], prev.get("new_claims", 0))
+    claims_delta = _delta_arrow(
+        kn["new_claims_published"],
+        prev.get("new_claims_published", prev.get("new_claims", 0)),
+    )
     diversity_delta = _delta_arrow(kn["diversity_score"], prev.get("diversity_score", 0))
 
     lines.append(f"- Greiningar birtar: {kn['articles_analysed']} {articles_delta}")
@@ -192,16 +195,18 @@ def prepare_context(slug: str) -> str:
             lines.append(f'- **{cat_is}**: {f["claim_text"]}')
             lines.append(f'  - Úrskurður: {verdict_is} ({f.get("claim_type", "")})')
             if f.get("caveat"):
-                lines.append(f'  - Fyrirvari: {f["caveat"][:200]}')
+                caveat = f["caveat"]
+                if len(caveat) > 200:
+                    caveat = caveat[:200]
+                    last_space = caveat.rfind(" ")
+                    if last_space > 120:
+                        caveat = caveat[:last_space]
+                    caveat += "…"
+                lines.append(f"  - Fyrirvari: {caveat}")
             lines.append("")
 
-    # Source breakdown
-    sources = data.get("source_breakdown", {})
-    if sources:
-        lines.append("## Heimildadreifing")
-        for domain, count in sources.items():
-            lines.append(f"- {domain}: {count} greining(ar)")
-        lines.append("")
+    # Source breakdown omitted — data is in data.json but not rendered on the
+    # site page, so the agent should not cite statistics readers cannot verify.
 
     # Previous editorial opening (for variety tracking)
     prev_editorial = _find_previous_editorial(slug)

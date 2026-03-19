@@ -63,6 +63,7 @@ TOPIC_LABELS_IS: dict[str, str] = {
     "polling": "Könnanir og þjóðarvilji",
     "party_positions": "Afstaða stjórnmálaflokka",
     "org_positions": "Afstaða stofnana og samtaka",
+    "other": "Annað",
 }
 
 

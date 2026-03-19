@@ -40,7 +40,14 @@ def _load_overview(slug_dir: Path) -> dict | None:
 
     editorial = ""
     if editorial_path.exists():
-        editorial = editorial_path.read_text(encoding="utf-8").strip()
+        raw = editorial_path.read_text(encoding="utf-8").strip()
+        # Strip the markdown heading to avoid duplicate H1 on the site
+        # (the template already renders its own <h1> from period dates)
+        lines = raw.splitlines()
+        editorial = "\n".join(
+            line for line in lines
+            if not line.startswith("# ")
+        ).strip()
 
     data["editorial"] = editorial
     data["slug"] = slug_dir.name

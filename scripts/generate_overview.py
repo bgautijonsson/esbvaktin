@@ -116,11 +116,16 @@ def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
 
 
 def _fetch_new_claims(conn, start: date, end: date) -> dict:
-    """New claims created in the period with verdict breakdown."""
+    """Claims sighted in the period with verdict breakdown.
+
+    Uses source_date (article publication) not created_at (DB insertion),
+    so claim counts align with the article counts for the same period.
+    """
     rows = conn.execute("""
-        SELECT c.verdict, c.published, COUNT(*) AS n
+        SELECT c.verdict, c.published, COUNT(DISTINCT c.id) AS n
         FROM claims c
-        WHERE c.created_at::date BETWEEN %s AND %s
+        JOIN claim_sightings s ON c.id = s.claim_id
+        WHERE s.source_date BETWEEN %s AND %s
         GROUP BY c.verdict, c.published
     """, (start, end)).fetchall()
 
@@ -154,10 +159,11 @@ def _fetch_topic_activity(conn, start: date, end: date) -> list[dict]:
     """, (start, end)).fetchall()
 
     new_claim_rows = conn.execute("""
-        SELECT c.category, COUNT(*) AS new_claims
+        SELECT c.category, COUNT(DISTINCT c.id) AS new_claims
         FROM claims c
+        JOIN claim_sightings s ON c.id = s.claim_id
         WHERE c.published = TRUE
-          AND c.created_at::date BETWEEN %s AND %s
+          AND s.source_date BETWEEN %s AND %s
         GROUP BY c.category
     """, (start, end)).fetchall()
 
@@ -427,11 +433,12 @@ def _fetch_previous_period_metrics(
           AND c.published = TRUE
     """, (prev_start, prev_end)).fetchone()[0]
 
-    # New claims
+    # Published claims sighted in the period (aligned with _fetch_new_claims)
     claim_count = conn.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(DISTINCT c.id)
         FROM claims c
-        WHERE c.published = TRUE AND c.created_at::date BETWEEN %s AND %s
+        JOIN claim_sightings s ON c.id = s.claim_id
+        WHERE c.published = TRUE AND s.source_date BETWEEN %s AND %s
     """, (prev_start, prev_end)).fetchone()[0]
 
     # Topic sighting counts for diversity
@@ -447,7 +454,7 @@ def _fetch_previous_period_metrics(
 
     return {
         "articles_analysed": article_count,
-        "new_claims": claim_count,
+        "new_claims_published": claim_count,
         "diversity_score": diversity_score(topic_counts),
     }
 
@@ -593,6 +600,18 @@ def main() -> None:
     out_dir = OVERVIEWS_DIR / slug
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "data.json"
+
+    # Warn if editorial already exists (data/editorial drift risk)
+    editorial_path = out_dir / "editorial.md"
+    if editorial_path.exists() and out_path.exists():
+        print(f"\n⚠  editorial.md already exists for {slug}.")
+        print("   Overwriting data.json will make the editorial stale.")
+        print("   The editorial references numbers from the previous data.json.")
+        if "--force" not in sys.argv:
+            print("   Use --force to overwrite, or delete editorial.md first.")
+            sys.exit(1)
+        print("   --force specified, overwriting.")
+
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(overview, f, ensure_ascii=False, indent=2)
 

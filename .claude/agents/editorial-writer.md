@@ -179,7 +179,8 @@ vantar breytileika. Blandaðu stuttu og löngu eins og púls.
 
 - Skrifaðu **hráan markdown** — engar JSON-umbúðir
 - Textinn á að vera 400–600 orð
-- Fyrirsögn: `# Vikuyfirlit — {dagsetning}`
+- **Engin fyrirsögn** — vefsíðan bætir sinni eigin `<h1>` fyrirsögn sjálfkrafa.
+  Byrjaðu beint á fyrstu málsgrein textans.
 - Engar undirfyrirsagnir innan greinarinnar — samfelldur texti í málsgreinum
 - Engin emoji, engin upphrópunarmerki
 - Ekki vísa til ESBvaktin sjálfs eða þess sem vaktin gerir
