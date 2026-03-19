@@ -1,0 +1,50 @@
+[
+  {
+    "evidence_id": "TRADE-DATA-031",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "Iceland's total goods exports in 2024 were 959.0 billion ISK (fob), according to Hagstofa Íslands final figures. Of total exports, 77% went to EU/EEA countries. Industrial goods comprised 54% of export value (up 3% year-on-year), while marine products comprised 36% (down 2%). Aluminium and aluminium products alone accounted for 33% of total goods export value. Total goods imports were 1,286.1 billion ISK, yielding a trade deficit of 397.7 billion ISK.",
+    "source_name": "Hagstofa Íslands — Vöruviðskipti árið 2024, lokatölur",
+    "source_url": "https://www.hagstofa.is/utgafur/frettasafn/utanrikisverslun/voruvidskipti-arid-2024-lokatolur/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The 77% EU/EEA figure includes EFTA partners (Norway, Switzerland, Liechtenstein) alongside EU-27. Earlier estimates may use different breakdowns (e.g. ~50% to EU-27 alone vs 77% to EU/EEA combined). Marine products share declined slightly from 2023.",
+    "related_entries": ["TRADE-DATA-001", "TRADE-DATA-003", "TRADE-DATA-016"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-032",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "Iceland's silicon and ferrosilicon exports (primarily from Elkem Iceland and PCC BakkiSilicon) had a combined export value of approximately 40 billion ISK in 2024. Iceland exported approximately 71,000 metric tons of ferrosilicon annually (2022-2024 average), and approximately 106,000 metric tons in 2024 including silicon metal. Iceland and Norway together supplied 47% of total EU ferroalloy imports in 2024 (Norway 535,000 mt, Iceland 71,000 mt). The ferrosilicon sector in Iceland employs approximately 350 workers. By comparison, the EU's ferroalloy industry employs approximately 1,800 workers, and Norway's ferrosilicon sector employs approximately 2,400 workers.",
+    "source_name": "Eurostat COMEXT / EU Commission Safeguard Investigation (2024-2025)",
+    "source_url": "https://eurometal.net/eu-imposes-safeguards-on-silicon-and-manganese-based-ferroalloy-imports/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The 40 billion ISK export value figure is from Icelandic media reporting based on Hagstofa data; the exact figure may vary slightly depending on classification (HS 7202 vs broader categories). The 47% market share and employment figures come from the EU Commission's safeguard investigation (2024). Employment figures are approximate and may include part-time or contract workers.",
+    "related_entries": ["TRADE-DATA-031", "TRADE-DATA-003", "TRADE-COMP-006"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-033",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "According to Eurostat data (March 2025), Iceland supplied EUR 2.1 billion of aluminium to the EU in 2024, representing 7.3% of total EU aluminium imports (EUR 29.5 billion). Norway was the largest supplier at EUR 4.4 billion (15.0%), followed by China at EUR 3.9 billion (13.1%), Turkiye at EUR 2.8 billion (9.4%), and Iceland fourth. Imports from Iceland more than doubled compared to 2019 (+104.9%). The EU recorded a total aluminium trade deficit of EUR 11.1 billion in 2024.",
+    "source_name": "Eurostat — EU recorded a trade deficit of EUR 11.1 billion in aluminium (March 2025)",
+    "source_url": "https://ec.europa.eu/eurostat/web/products-eurostat-news/w/ddn-20250326-1",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The 7.3% share refers to value (EUR), not volume (tonnes). Volume share may differ due to price variations. The +104.9% growth since 2019 partly reflects expansion of aluminium smelting capacity in Iceland (Norðurál expansion). The 'aluminium' category includes both raw aluminium and aluminium articles.",
+    "related_entries": ["TRADE-DATA-031", "TRADE-DATA-003", "TRADE-DATA-016"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-034",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "Iceland's total services exports in 2024 were 982.7 billion ISK, virtually unchanged from 2023. Services imports were 712.5 billion ISK, yielding a services trade surplus of 270.2 billion ISK (down from 325.9 billion in 2023). Travel services were the largest category at 447.8 billion ISK (up 4%). Services exports to the United States were 315.3 billion ISK (up 3%), to the United Kingdom 86.1 billion ISK (down 13%), and to Germany 62.8 billion ISK (down 3%). Combined goods and services exports thus totalled approximately 1,942 billion ISK in 2024.",
+    "source_name": "Hagstofa Íslands — Trade in services by classification and countries 2024",
+    "source_url": "https://statice.is/publications/news-archive/external-trade/trade-in-services-by-classification-and-countries-2024",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The Hagstofa release does not provide a combined 'EU services exports' total — only country-by-country breakdowns. The article's claim of 368 billion ISK in services exports to EU countries cannot be directly verified from this release but may come from a different Hagstofa table. Travel services dominate and are driven primarily by tourism.",
+    "related_entries": ["TRADE-DATA-020", "TRADE-DATA-031", "TRADE-DATA-005"]
+  }
+]

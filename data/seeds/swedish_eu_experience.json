@@ -1,0 +1,98 @@
+[
+  {
+    "evidence_id": "PREC-DATA-027",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "The Swedish Riksdag's Committee on European Union Affairs (EU-nämnden) has 17 members from all parliamentary parties. The Government must consult the committee before each Council of Ministers meeting. After consultation, the Government receives a mandate it is expected to follow in EU negotiations. Consultations typically take place on Fridays before the following week's Council meetings (approximately 56-57 meetings per parliamentary year). Council of Ministers consultations are held behind closed doors, but records are public documents. Prime Minister consultations before European Council meetings are normally open to the public and broadcast. If the Government ignores the committee's mandate, it risks a vote of no confidence, though it is not legally bound to comply.",
+    "source_name": "Sveriges Riksdag — The Committee on European Union Affairs at work",
+    "source_url": "https://www.riksdagen.se/en/how-the-riksdag-works/committees/the-committee-on-european-union-affairs-at-work/",
+    "source_type": "parliamentary_record",
+    "confidence": "high",
+    "caveats": "The committee system provides democratic oversight but operates largely behind closed doors for Council consultations. The number of meetings (56-57/year) is from the 2020-2022 parliamentary years. Additionally, sectoral Riksdag committees examine EU proposals in their respective areas, so EU-nämnden is not the only parliamentary body involved in EU scrutiny.",
+    "related_entries": ["SOV-LEGAL-014", "PREC-HIST-001"]
+  },
+  {
+    "evidence_id": "PREC-DATA-028",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "Sweden transposes EU directives through a formal process: the Government appoints an inquiry commission (utredning) that produces a report in the SOU (Statens offentliga utredningar) series. The inquiry consults stakeholders and proposes how to implement the directive while preserving Swedish legal traditions. The report goes to the Government, then the Council on Legislation (Lagrådet) for legal review, then to the Riksdag for approval. A key principle is that transposition should follow Swedish labour market and legal traditions 'as far as possible'. For example, the EU Pay Transparency Directive became SOU 2024:40, and the minimum wage directive became SOU 2023:36. Sweden emphasises protecting social partner autonomy and collective bargaining rights during transposition.",
+    "source_name": "Swedish Government — EU Directive Transposition Process (multiple SOU examples)",
+    "source_url": "https://trusaic.com/blog/sweden-intends-to-finalize-eu-pay-transparency-directive-transposition-in-january-2026/",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The SOU process applies to directives (which require national transposition), not EU regulations (which apply directly). The increasing use of regulations vs directives in recent years has reduced Sweden's ability to adapt EU law to national traditions. The source URL is about one specific directive; the general process description is synthesised from multiple Swedish government sources.",
+    "related_entries": ["PREC-DATA-027", "EEA-DATA-001", "LABOUR-DATA-015"]
+  },
+  {
+    "evidence_id": "PREC-DATA-029",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "Sweden deregulated its electricity market on 1 January 1996, ahead of most European countries. Consumers can now choose from over 100 electricity retailers on the NordPool Spot market. However, Sweden's integration into the EU's internal energy market linked Swedish electricity prices to continental European prices, particularly German wholesale prices. In 2024, German day-ahead wholesale electricity averaged EUR 78.51/MWh. Southern Sweden (bidding zone SE4) regularly experienced significantly higher prices than northern Sweden (SE1/SE2) due to transmission constraints and the price-coupling mechanism with Denmark and Germany. The EU Energy Union framework (established 2015) deepened this integration, limiting Sweden's ability to maintain price differentials across bidding zones.",
+    "source_name": "Energimarknadsinspektionen (Ei) — The electricity market; Riksbank 2023 report on Swedish electricity market",
+    "source_url": "https://ei.se/ei-in-english/electricity/the-electricity-market",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Sweden's electricity deregulation in 1996 predated EU membership-driven requirements; Sweden chose to liberalise earlier than the EU directives required. The price linkage to Germany is strongest in southern Sweden; northern Sweden benefits from abundant hydropower and generally has lower prices. The EUR 78.51/MWh German average for 2024 was down 17.5% from 2023. The causal link between EU Energy Union and Swedish price increases is debated — transmission constraints and weather patterns also play major roles.",
+    "related_entries": ["ENERGY-DATA-001", "ENERGY-TREATY-001"]
+  },
+  {
+    "evidence_id": "PREC-DATA-030",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "The Laval case (C-341/05, 2007) and subsequent 'Lex Laval' legislation significantly affected Swedish labour rights in the EU context. The ECJ ruled in 2007 that Swedish unions' blockade of a Latvian construction company (Laval un Partneri) violated EU free movement of services. Sweden responded with 'Lex Laval' (2010), restricting union action against foreign posted workers. After criticism that Lex Laval weakened union rights, it was revised on 1 June 2017: the 'Rule of Proof' was deleted (employers could no longer block union action by proving equivalent conditions), and unions regained the right to require Swedish collective agreements for all posted workers. The 2017 revision effectively restored most pre-Laval union rights while remaining technically compliant with EU law.",
+    "source_name": "Nordic Labour Journal — Lex Laval revised in Sweden (2017); Eurofound — Sweden: Impact of the Laval ruling",
+    "source_url": "http://www.nordiclabourjournal.org/nyheter/news-2017/article.2017-03-01.0991266340",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The 2017 revision was a political compromise that restored some but not all pre-Laval union powers. Academic debate continues on whether the revision fully satisfies the European Social Charter. The Laval case is frequently cited in Icelandic EU debate as evidence that EU membership constrains Nordic labour models, though Sweden's 2017 revision shows adaptation is possible. A further revision was debated in 2021 (the 'latest revision of Lex Laval') with additional strengthening of union rights.",
+    "related_entries": ["LABOUR-DATA-015", "LABOUR-DATA-001", "PREC-DATA-028"]
+  },
+  {
+    "evidence_id": "PREC-DATA-031",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "In 2011, Sweden reformed its municipal housing company (allmännyttan) legislation to comply with EU competition law. The new law requires municipal housing companies (MHCs) to operate in 'a business-like manner' and not compete with private housing companies on unequal terms. Unlike the Netherlands (which restricted social housing to low-income tenants), Sweden maintained the universal character of MHCs — they continue to serve the entire population — but removed special advantages and subsidies. Critics argue the reform reduced incentives for new affordable housing construction, as projects that were not 'profitable in the short term' became harder to justify. The reform resulted from negotiations between the Swedish Tenants' Union (Hyresgästföreningen) and the Swedish Property Federation, prompted by EU state aid rules.",
+    "source_name": "Academic research — Swedish municipal housing and EU competition law (multiple sources)",
+    "source_url": "https://www.scup.com/doi/10.18261/tfb.7.1.6",
+    "source_type": "academic_paper",
+    "confidence": "high",
+    "caveats": "The 2011 reform was partly driven by domestic policy choices, not solely by EU pressure. Sweden could have sought a derogation or adopted a different model (as Denmark did). The impact on housing construction is debated — other factors (building regulations, land costs, interest rates) also affect supply. The Netherlands model is a useful comparator but involved different political dynamics.",
+    "related_entries": ["HOUSING-PRECEDENT-001", "HOUSING-DATA-001"]
+  },
+  {
+    "evidence_id": "PREC-DATA-032",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "Sweden opened its postal market to full competition on 1 January 1993, abolishing the Posten monopoly. This preceded the EU's First Postal Directive (97/67/EC) by four years — Sweden liberalised voluntarily, not due to EU requirements. The former state monopoly was converted into Posten AB, a for-profit state-owned company. In 2009, Posten AB merged with Denmark's Post Danmark to form PostNord. Sweden and Finland remain the only EU countries with fully liberalised postal markets. The EU's Third Postal Directive (2008/6/EC) required full liberalisation for all member states by 2011 (2013 for some), bringing the rest of the EU to the model Sweden had already adopted.",
+    "source_name": "PostNord / EU Postal Services Directive — Historical overview",
+    "source_url": "https://en.wikipedia.org/wiki/PostNord",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Sweden's early liberalisation was a domestic policy choice, not an EU requirement. Attributing postal market changes to EU membership would be misleading for Sweden's case — though the EU directives did harmonise the regulatory framework across all member states. PostNord's formation was a Nordic corporate decision, not an EU mandate.",
+    "related_entries": ["PREC-DATA-029", "PREC-DATA-028"]
+  },
+  {
+    "evidence_id": "PREC-DATA-033",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "The number of agricultural enterprises in Sweden declined from approximately 90,000 in 1995 (year of EU accession) to approximately 59,000 in 2023, a decline of roughly 34%. There are 72,000 agricultural businesses if broader definitions are used (including forestry operations). Average farm size increased to approximately 50 hectares. This consolidation trend predated EU membership — the number had already halved from 1970 to 1995 — and is consistent with broader European and global trends. Between 2010 and 2020, the EU as a whole lost 3 million farms (24.8% decline), with nearly all losses among farms under 5 hectares. Sweden's rate of decline was not exceptional compared to other Nordic or Western European countries.",
+    "source_name": "Jordbruksverket — Agricultural Statistics; Eurostat 2020 Agricultural Census",
+    "source_url": "https://en.wikipedia.org/wiki/Agriculture_in_Sweden",
+    "source_type": "official_statistics",
+    "confidence": "medium",
+    "caveats": "The 90,000 figure for 1995 is approximate and depends on the definition used (the Farm Register changed cut-off thresholds in 2010, adding ~3,000 enterprises). The Wikipedia source synthesises data from Jordbruksverket; the original Jordbruksstatistisk sammanställning would be the primary source. Attributing the full decline to EU membership is misleading given the pre-existing trend, though CAP implementation did change agricultural incentives.",
+    "related_entries": ["AGRI-DATA-001", "AGRI-LEGAL-001"]
+  },
+  {
+    "evidence_id": "PREC-DATA-034",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "Baltic herring stocks in Swedish waters have declined sharply under the EU Common Fisheries Policy (CFP). The central Baltic herring stock declined by 40% in just four years (approximately 2019-2023), and the Bothnian Sea herring stock reached one of its lowest levels on record. In August 2023, the European Commission recommended stopping targeted herring fishing in the central Baltic Sea and the Gulf of Bothnia. Sweden's fishing is largely governed by the EU CFP, with quotas set by the Council of Ministers. Swedish critics argue that the government has favoured large industrial trawlers over small-scale fishers in quota distribution, with most herring catch going to fishmeal factories rather than human consumption. The shortage has affected surströmming (fermented Baltic herring) production, a traditional Swedish food.",
+    "source_name": "Stockholm University Baltic Sea Centre; Eurofish; BalticWaters Foundation (2022-2024)",
+    "source_url": "https://www.su.se/stockholm-university-baltic-sea-centre/news/a-hot-autumn-for-the-baltic-herring-1.666339",
+    "source_type": "academic_paper",
+    "confidence": "high",
+    "caveats": "The herring stock decline is caused by multiple factors including climate change, eutrophication, and overfishing — not solely by CFP management failures. Quota allocation between industrial and small-scale fishers is a national Swedish decision within the CFP framework, not directly dictated by the EU. Finland manages its herring quota differently within the same CFP framework, suggesting national policy choices matter significantly. The surströmming angle, while culturally resonant, represents a tiny fraction of the economic impact.",
+    "related_entries": ["FISH-DATA-001", "FISH-PREC-001"]
+  }
+]
