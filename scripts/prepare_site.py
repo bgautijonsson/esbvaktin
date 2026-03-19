@@ -867,11 +867,22 @@ def main() -> None:
 
     all_reports = []
     written = 0
+    seen_slugs: dict[str, int] = {}
     for report_path in report_files:
         report_data = prepare_report(
             report_path, evidence_meta, site_entities, db_verdicts, registered_claims,
         )
-        out_path = reports_dir / f"{report_data['slug']}.json"
+
+        # Disambiguate duplicate slugs (different articles with same title)
+        slug = report_data["slug"]
+        if slug in seen_slugs:
+            seen_slugs[slug] += 1
+            slug = f"{slug}-{seen_slugs[slug]}"
+            report_data["slug"] = slug
+        else:
+            seen_slugs[slug] = 1
+
+        out_path = reports_dir / f"{slug}.json"
 
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, ensure_ascii=False, indent=2)
