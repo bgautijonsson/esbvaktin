@@ -24,6 +24,14 @@ uv run python scripts/check_duplicate.py --url "ARTICLE_URL" --title "ARTICLE_TI
 
 If the script prints a duplicate match, **stop and inform the user**. Show which analysis directory already contains this article. Only proceed if the user explicitly requests re-analysis. **Exception:** when called in batch from `/find-articles`, silently skip duplicates and continue to the next article — do not halt the batch.
 
+**Cross-publication dedup:** After fetching the article text (Step 1), run a content-based dedup check. This catches cases where the same article is published on a news site and later reposted on a party website or blog with a different title:
+
+```bash
+uv run python scripts/check_duplicate.py --text-file $WORK_DIR/_article.md
+```
+
+If this prints a content match, inform the user (showing the similarity percentage and the matching analysis). Skip unless the user explicitly wants both versions analysed.
+
 ### Step 0a: Inbox Integration (optional)
 
 If the article URL matches an inbox entry, update its status to `analysing`:
