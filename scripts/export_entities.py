@@ -490,6 +490,7 @@ def _ensure_party_entities(entities: dict[str, dict]) -> int:
             "role": None,
             "party": None,
             "mention_count": 0,
+            "claim_count": 0,
             "articles": [],
             "claims": [],
             "stance_score": 0.0,
@@ -565,6 +566,7 @@ def _merge_entity(
             "role": speaker.get("role"),
             "party": speaker.get("party"),
             "mention_count": 0,
+            "claim_count": 0,
             "articles": [],
             "claims": [],
             # Intermediate tracking — finalised by _compute_scores()
@@ -613,8 +615,9 @@ def _merge_entity(
             if not is_non_sub:
                 entity["_verdicts"].append(cd["verdict"])
 
-    # Update mention count (count of articles)
+    # Update mention count (count of articles) and claim count
     entity["mention_count"] = len(entity["articles"])
+    entity["claim_count"] = len(entity.get("claims") or [])
 
 
 _STANCE_SCORES = {
@@ -889,7 +892,7 @@ def export_entities(
     # Sort by mention count (descending), then name
     sorted_entities = sorted(
         entities.values(),
-        key=lambda e: (-e["mention_count"], e["name"]),
+        key=lambda e: (-e["claim_count"], -e["mention_count"], e["name"]),
     )
 
     # Export to data/export/
