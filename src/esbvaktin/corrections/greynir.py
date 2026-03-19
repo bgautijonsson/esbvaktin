@@ -6,8 +6,8 @@ string correction (used by the pipeline, not just files).
 """
 
 import re
-import signal
 import shutil
+import signal
 import sys
 from pathlib import Path
 

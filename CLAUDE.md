@@ -158,6 +158,10 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 /link-check                # Check evidence source URLs for link rot + content drift
 /link-check populate       # Auto-populate source excerpts (content fingerprints)
 /link-check report         # Show link health report
+/ci                        # Latest CI run status
+/ci list                   # Recent runs (last 10)
+/ci failures               # Show only failed runs
+/ci logs <run-id>          # Download and show failure logs
 ```
 
 ## Key Commands

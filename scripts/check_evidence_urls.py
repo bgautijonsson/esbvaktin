@@ -26,7 +26,6 @@ import re
 import sys
 import time
 from collections import Counter
-from datetime import date
 from difflib import SequenceMatcher
 from urllib.parse import urlparse
 
