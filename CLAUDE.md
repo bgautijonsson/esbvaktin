@@ -91,7 +91,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 
 **Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser, editorial-writer, capsule-writer) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
 
-**Overview pipeline:** `generate_overview.py` (SQL → data.json) → `prepare_overview_context.py` (→ _context_is.md) → `editorial-writer` agent (opus, → editorial.md) → `export_overviews.py`. Editorial writer uses MCP morphology tools for inflection and MCP mideind `correct_text` for grammar self-correction (one call per editorial), then reads `knowledge/exemplars_editorial_is.md` before writing. `correct_icelandic.py check-editorial` remains available for additional local checks if needed.
+**Overview pipeline:** `generate_overview.py` (SQL → data.json, includes under-discussed topics) → `prepare_overview_context.py` (→ _context_is.md, digest-structured) → `editorial-writer` agent (opus, → editorial.md) → `export_overviews.py` (strips heading, enriches slugs). Editorial writer uses MCP morphology tools for inflection and MCP mideind `correct_text` for grammar self-correction (one call per editorial), then reads `knowledge/exemplars_editorial_is.md` before writing. `correct_icelandic.py check-editorial` remains available for additional local checks if needed. Note: `generate_overview.py` refuses to overwrite data.json when editorial.md exists (use `--force`).
 
 ## DB Schema Quick Reference
 
@@ -167,6 +167,8 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 uv run python scripts/manage_inbox.py status              # Backlog summary
 uv run python scripts/manage_inbox.py list                 # Pending articles
 uv run python scripts/manage_inbox.py list --priority high # High priority only
+uv run python scripts/manage_inbox.py next --high-only     # Next articles ready for analysis
+uv run python scripts/manage_inbox.py next --limit 10      # Next N articles (HIGH + MEDIUM)
 uv run python scripts/manage_inbox.py add-batch FILE.json  # Batch import from scan
 uv run python scripts/manage_inbox.py queue ID [ID ...]    # Queue for analysis
 uv run python scripts/manage_inbox.py reject ID [ID ...]   # Reject + add to rejected_urls.txt
@@ -277,6 +279,8 @@ ESBvaktin nurtures curiosity — it does not play gotcha. The goal is to help re
 - **Balance is about fairness, not false equivalence.** Both sides are assessed with equal rigour. Patterns and quality of reasoning are legitimate observations.
 
 This philosophy applies to all agents, export scripts, and any text that reaches the public site.
+
+**Weekly editorials** are news digests, not fact-check reports. They answer: What was discussed? What context do readers need? How has the rhetoric evolved? What's missing from the debate? They never label individual claims as "villandi" or "óstudd" — they show what evidence says and let the reader draw conclusions.
 
 ## Important Context
 
