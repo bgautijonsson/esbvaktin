@@ -1,0 +1,38 @@
+[
+  {
+    "evidence_id": "EEA-DATA-019",
+    "domain": "economic",
+    "topic": "eea_eu_law",
+    "statement": "The EEA EFTA states (Iceland, Norway, Liechtenstein) participate in 15 EU programmes during the 2021-2027 period. Iceland participates in 12 of these: Horizon Europe, Digital Europe, LIFE, Erasmus+, European Solidarity Corps, ESF+/EaSI, Single Market Programme, Union Civil Protection Mechanism, European Space Program, Creative Europe, EU4Health, and InvestEU. Financial contributions are proportional to GDP. Participation gives Icelandic entities the right to apply for funding on equal terms with EU member state applicants, though EEA EFTA states have no vote on programme design or budget allocation.",
+    "source_name": "EFTA — EU Programmes with EEA EFTA Participation (2021-2027)",
+    "source_url": "https://www.efta.int/eea-relations-eu/policy-areas/horizontal-policies/eu-programmes-eea-efta-participation",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Participation is negotiated programme by programme and is not automatic. Some programmes (e.g. European Defence Fund) are only open to Norway, not Iceland. EEA EFTA states contribute financially but have no formal influence on programme rules. The 'equal terms' principle applies to applications but not to governance or budget decisions.",
+    "related_entries": ["EEA-LEGAL-001", "TRADE-COMP-005", "EEA-LEGAL-020"]
+  },
+  {
+    "evidence_id": "EEA-DATA-020",
+    "domain": "economic",
+    "topic": "eea_eu_law",
+    "statement": "Carbfix, an Icelandic carbon capture and mineral storage company, received EUR 115 million from the EU Innovation Fund in 2022 for the Coda Terminal project in Straumsvík — the largest EU grant ever awarded to an Icelandic entity. Carbfix also received EUR 3.9 million from the Innovation Fund for the Silfurberg project at Hellisheiði Geothermal Plant. Separately, the EU's LIFE Programme awarded approximately EUR 6 million to 'Terraforming LIFE', the first Icelandic-led LIFE project, focused on producing fertilisers and biogas from organic waste. These grants demonstrate that EEA/EFTA states can access major EU funding instruments despite not being EU members.",
+    "source_name": "Northstack / EEAS / EU Innovation Fund project database (2022-2024)",
+    "source_url": "https://northstack.is/2022/07/19/the-biggest-eu-grant-to-iceland-so-far-goes-to-carbfix/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The EUR 115 million Carbfix grant (approximately 16 billion ISK) is disbursed over the project lifetime, not as a lump sum. Iceland pays into the EU Innovation Fund through its EEA EFTA contributions. The LIFE Programme grant of EUR 6 million is for a consortium, not solely for Icelandic entities. Article claims of '3.5 billion ISK' for Umhverfisstofnun could not be verified from available sources — the LIFE grant is approximately EUR 6 million (~900 million ISK).",
+    "related_entries": ["EEA-DATA-019", "ENERGY-DATA-001", "TRADE-COMP-005"]
+  },
+  {
+    "evidence_id": "EEA-DATA-021",
+    "domain": "political",
+    "topic": "eea_eu_law",
+    "statement": "The EEA EFTA states have periodically raised concerns about diminishing awareness within EU institutions of EEA states' rights to equal programme access. In a 2024 position paper, the EEA EFTA states urged the EU to ensure 'equal access' when designing the next Multiannual Financial Framework (MFF, 2028-2034) and associated programmes. Historically, the Evrópunefnd Alþingis (Icelandic Parliament's European Affairs Committee) has documented cases where EFTA/EEA states had to remind EU institutions of their participation rights, and where new EU programme designs inadvertently excluded or disadvantaged EEA EFTA participants. Jens Stoltenberg, then Norwegian Finance Minister, notably stated that 'the difference between being in and being outside the EU is greater than many Norwegians think' regarding programme influence.",
+    "source_name": "EFTA — EEA EFTA States seek to help shape next EU programmes based on equal access (2024)",
+    "source_url": "https://www.efta.int/media-resources/news/eea-efta-states-seek-help-shape-next-eu-programmes-based-equal-access",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "The specific 2007 Evrópunefnd Alþingis report referenced in articles could not be located online. The Stoltenberg quote is widely cited in Nordic EU debate but predates the current programme period. 'Equal access' applies to applications but not to governance — EEA EFTA states cannot vote on programme design, which is the structural concern. The 2024 EFTA position paper confirms ongoing friction but does not document specific cases of exclusion.",
+    "related_entries": ["EEA-DATA-019", "EEA-DATA-020", "EEA-LEGAL-024"]
+  }
+]

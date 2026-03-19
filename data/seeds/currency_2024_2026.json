@@ -1,0 +1,26 @@
+[
+  {
+    "evidence_id": "CURR-DATA-009",
+    "domain": "economic",
+    "topic": "currency",
+    "statement": "The EUR/USD exchange rate strengthened significantly from late 2024 through early 2026. From a low of approximately 1.035 USD/EUR on 31 December 2024, the euro rose to approximately 1.18-1.20 by early 2026, a gain of roughly 14-16%. The average EUR/USD rate in 2025 was 1.1306, up 13.3% over the year. The strengthening reflected expectations for eurozone growth recovery, lower energy prices, and US dollar depreciation. ING forecast EUR/USD 'fair value' moving from the 1.15 area towards 1.20 over 2026. This trend is relevant to the Icelandic EU debate because euro adoption would have exposed Iceland to this currency's recent strength against the dollar.",
+    "source_name": "ECB exchange rate data / exchangerates.org.uk (2024-2026)",
+    "source_url": "https://www.exchangerates.org.uk/EUR-USD-spot-exchange-rates-history-2026.html",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Exchange rate movements are inherently volatile and past trends do not predict future movements. The 13-16% euro strengthening partly reversed an earlier period of dollar strength in 2022-2024. Whether euro adoption would benefit Iceland depends on trade patterns (EU vs US exposure) and cannot be determined from exchange rate data alone. The ING forecast is one institution's view, not a consensus.",
+    "related_entries": ["TRADE-DATA-007", "TRADE-COMP-004", "CURR-DATA-001"]
+  },
+  {
+    "evidence_id": "CURR-DATA-010",
+    "domain": "economic",
+    "topic": "currency",
+    "statement": "As of March 2026, the EUR/ISK exchange rate was approximately 143-145 ISK per euro, showing relatively low recent volatility (0.2-0.4% over 30-90 day periods). This compares to extreme historical volatility: the ISK collapsed from approximately 90 ISK/EUR in early 2008 to approximately 340 ISK/EUR by late 2008 during the financial crisis. The ISK has gradually stabilised since capital controls were lifted (2017), with annualised volatility declining from the 10-12% range to lower levels. The Central Bank of Iceland (Seðlabanki Íslands) manages monetary policy independently, setting interest rates to target inflation at 2.5%. Euro adoption would eliminate ISK exchange rate risk but also remove independent monetary policy.",
+    "source_name": "Central Bank of Iceland — Official exchange rate; Wise/XE historical data",
+    "source_url": "https://cb.is/statistics/official-exchange-rate/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Recent low volatility reflects benign conditions (tourism recovery, stable commodity prices). Historical volatility can return during external shocks. The 2008 collapse was an extreme event linked to banking sector collapse, not normal currency fluctuation. The trade-off between exchange rate flexibility and stability is at the core of the EU currency debate and has no objectively correct answer — it depends on economic structure and shock exposure.",
+    "related_entries": ["CURR-DATA-009", "TRADE-DATA-007", "TRADE-COMP-004"]
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "evidence_id": "TRADE-LEGAL-001",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "On 17 November 2025, the European Commission imposed definitive safeguard measures on imports of four categories of ferroalloys into the EU: ferro-manganese, ferro-silicon, ferro-silico-manganese, and ferro-silico-magnesium. The investigation found EU imports of these ferroalloys increased 17% between 2019 and 2024, while EU producers' market share fell from 38% to 24%. Country-specific tariff rate quotas (TRQs) limit duty-free imports to 75% of historical volumes: Norway 401,410 mt, India 197,030 mt, Iceland 53,060 mt. Above-quota imports face duties based on minimum price thresholds (e.g. ferro-silicon: EUR 2,408/mt). The measures last three years (to November 2028), with trimonthly consultations with Norway and Iceland.",
+    "source_name": "European Commission — Definitive Safeguard Regulation on Ferroalloys (November 2025)",
+    "source_url": "https://eurometal.net/eu-imposes-safeguards-on-silicon-and-manganese-based-ferroalloy-imports/",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Norway and Iceland argued for EEA exemption but were not granted one. The safeguard is a WTO-compatible measure (not an anti-dumping measure) and technically separate from EEA obligations, though it affects EEA partners. The quotas are set at 75% of 2022-2024 average volumes, meaning they reduce but do not eliminate duty-free access. The EUR 2,408/mt minimum price threshold for ferro-silicon is a floor price, not a fixed tariff.",
+    "related_entries": ["TRADE-DATA-032", "TRADE-COMP-006", "EEA-LEGAL-024"]
+  },
+  {
+    "evidence_id": "TRADE-LEGAL-002",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "Iceland and Norway formally argued that they should be exempt from the EU ferroalloy safeguard measures under the EEA Agreement, which guarantees free movement of goods between EEA states. The European Commission rejected this argument, classifying the safeguard as a WTO-compatible trade defence measure outside the scope of EEA single market rules. Norway and Iceland announced they would seek dispute resolution through the EEA Joint Committee and potentially the EFTA Court. This is a significant test case for the limits of EEA single market access: it demonstrates that EEA membership does not protect against EU trade defence measures that the EU applies globally.",
+    "source_name": "Iceland Monitor — Iceland and Norway not granted exemption (November 2025)",
+    "source_url": "https://icelandmonitor.mbl.is/news/news/2025/11/18/iceland_and_norway_not_granted_exemption/",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The legal arguments are still unresolved. Whether EEA states should be exempt from EU safeguard measures is a novel legal question with no clear precedent. The EFTA Court has not yet ruled on this specific issue. Iceland Monitor is a news source summarising the dispute, not a primary legal document. The Commission's position may evolve during the trimonthly consultations.",
+    "related_entries": ["TRADE-LEGAL-001", "EEA-LEGAL-024", "TRADE-COMP-006"]
+  }
+]
