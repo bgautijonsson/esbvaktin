@@ -1,0 +1,50 @@
+[
+  {
+    "evidence_id": "SOV-DATA-025",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "The EU and Iceland signed a Security and Defence Partnership on 18 March 2026 in Brussels. The agreement was signed by EU High Representative Kaja Kallas and Iceland's Foreign Minister Thorgerður Katrín Gunnarsdóttir. It covers support to Ukraine, Arctic matters, maritime security, cyber issues, emerging technologies, economic security, and climate-security nexus. It includes an annual Security and Defence Dialogue. Iceland's foreign ministry explicitly stated the declaration is non-binding and entails no obligations or financial contributions. Iceland is the 12th country to sign such a partnership with the EU.",
+    "source_name": "EEAS Joint Press Release",
+    "source_url": "https://www.eeas.europa.eu/eeas/eu-iceland-joint-press-release-signature-security-and-defence-partnership_en",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The partnership is a political declaration, not a legally binding treaty. It does not constitute a step in EU accession proceedings. Content details come from the EEAS press release; the full text of the declaration has not been published separately.",
+    "related_entries": ["SOV-LEGAL-014", "SOV-HIST-002", "SOV-HIST-003"]
+  },
+  {
+    "evidence_id": "SOV-DATA-026",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "As of March 2026, the EU has signed Security and Defence Partnerships with 12 countries: Moldova (May 2024), Norway (May 2024), South Korea (September 2024), Japan (November 2024), North Macedonia (November 2024), Albania (December 2024), United Kingdom (May 2025), Canada (June 2025), India (January 2026), Iceland (March 2026), Australia (March 2026), and Ghana (March 2026). Norway, Canada, and the UK — none of which are EU members — have partnerships comparable to Iceland's. Norway's partnership (signed May 2024) is notably more detailed and specific than Iceland's, reflecting Norway's existing active participation in EU defence structures.",
+    "source_name": "Council of the EU — Security and Defence Partnerships Timeline",
+    "source_url": "https://www.consilium.europa.eu/en/policies/security-defence-partnerships/timeline-security-defence-partnerships/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The list grows as new partnerships are signed. The comparison between Norway's and Iceland's partnership depth is based on RÚV analysis (18 March 2026) and EU press releases, not a formal comparative assessment by the EU itself.",
+    "related_entries": ["SOV-DATA-025", "SOV-LEGAL-014"]
+  },
+  {
+    "evidence_id": "POLITICAL-DATA-015",
+    "domain": "political",
+    "topic": "party_positions",
+    "statement": "Marta Kos is the European Commissioner for Enlargement in the second von der Leyen Commission (2024-2029). She is Slovenian. On 7 March 2026, following Iceland's announcement of the 29 August referendum, Kos stated: 'A significant decision now lies ahead for the Icelandic people.' She added: 'Accession negotiations always reflect the specific realities of each candidate country.' On 18 March 2026, after meeting Foreign Minister Thorgerður Katrín Gunnarsdóttir in Brussels, Kos stated that if Icelanders vote to proceed, the EU is 'determined to fast-track negotiations on Iceland's priority issues.' She described having discussed 'Iceland's specific realities' with the foreign minister.",
+    "source_name": "European Commission — Commissioner Profile + New Union Post",
+    "source_url": "https://commission.europa.eu/about/organisation/college-commissioners/marta-kos_en",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Kos's March 18 statements are from her X (Twitter) posts and were reported by Icelandic media. They represent political signalling, not a formal Commission decision on fast-tracking. The phrase 'specific realities' is standard EU enlargement language used for all candidate countries.",
+    "related_entries": ["TRADE-DATA-022", "EEA-LEGAL-020", "PARTY-DATA-016"]
+  },
+  {
+    "evidence_id": "PREC-HIST-022",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "As of 17 March 2026, Montenegro has provisionally closed 14 of 33 EU accession negotiation chapters. All 33 chapters have been opened. The most recent closures: Chapter 21 (Trans-European Networks) on 17 March 2026, Chapter 32 (Financial Control) on 26 January 2026, and Chapters 3, 4, 6, 11, and 13 on 16 December 2025. Montenegro began accession negotiations in June 2012 and is described by the EU as its 'frontrunner' candidate. Montenegro's Prime Minister Milojko Spajić aims to close all chapters in 2026 and achieve membership by 2028, though analysts consider this highly ambitious given 19 chapters remain open.",
+    "source_name": "Council of the EU — 26th Accession Conference with Montenegro",
+    "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/03/17/eu-and-montenegro-provisionally-close-chapter-on-trans-european-networks-in-accession-negotiations/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Provisionally closed chapters can be reopened if backsliding occurs, particularly in rule-of-law areas. Montenegro's accession timeline (2028) is the government's aspiration, not an EU commitment. The article in today's batch claimed 14 closed chapters, which is now confirmed correct as of 17 March 2026 (our PREC-HIST-016 showing only 3 was outdated).",
+    "related_entries": ["PREC-HIST-004", "PREC-HIST-016", "EEA-LEGAL-020"]
+  }
+]

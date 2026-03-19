@@ -23,11 +23,19 @@ This is a **lightweight claim harvesting** pipeline: it extracts and catalogues 
 
 ### Step 0: Prepare Working Directory
 
+Generate the timestamp and create the directory using Python (do not use `$()` command substitution — it triggers security prompts):
+
 ```bash
-BATCH_ID=$(date +%Y%m%d_%H%M%S)
-WORK_DIR="data/inbox/${BATCH_ID}"
-mkdir -p "$WORK_DIR"
+uv run python -c "
+from datetime import datetime
+from pathlib import Path
+d = Path('data/inbox') / datetime.now().strftime('%Y%m%d_%H%M%S')
+d.mkdir(parents=True, exist_ok=True)
+print(d)
+"
 ```
+
+Save the printed path as `WORK_DIR` for subsequent steps.
 
 ### Step 1: Gather Articles
 
@@ -45,7 +53,7 @@ search_news("sjávarútvegsstefna ESB", date_from=<last_run_date>, limit=30)
 search_news("fullveldi Íslands ESB", date_from=<last_run_date>, limit=30)
 ```
 
-**Finding last_run_date:** Check the ESB Obsidian vault for `Knowledge/Discourse Tracking/Log.md` — the most recent entry's date is the last run date. If no log exists, use 7 days ago as default.
+**Finding last_run_date:** Try to read `Knowledge/Discourse Tracking/Log.md` from the ESB Obsidian vault. The most recent entry's date is the last run date. **If the MCP call errors or the note doesn't exist, use 7 days ago as default** — do not stall or ask the user.
 
 For each article returned, call `get_article(article_id)` to get the full text. Deduplicate by URL against articles already in `$WORK_DIR`.
 
@@ -219,13 +227,7 @@ Prompt: Read $WORK_DIR/entities/{article_stem}/_context_entities.md and extract 
         Write the JSON object to $WORK_DIR/entities/{article_stem}/_entities.json.
 ```
 
-This step can run **in parallel** with Step 3 if desired. After all entity subagents complete, re-export entities to the site:
-
-```bash
-uv run python scripts/export_entities.py --inbox-dir "$WORK_DIR/entities"
-```
-
-**Note:** This requires `export_entities.py` to scan both `data/analyses/` and the inbox entity dirs. If the `--inbox-dir` flag is not yet supported, the entity files can be copied to `data/analyses/` directories manually, or the export script can be extended.
+This step can run **in parallel** with Step 3 if desired. After all entity subagents complete, entity data will be picked up by the next full export run (`export_entities.py` scans `data/analyses/`). No additional export step is needed here — `/process-inbox` is a lightweight claim harvesting pipeline, not a full site publish.
 
 ### Step 3: Match Claims Against Claim Bank (Python)
 

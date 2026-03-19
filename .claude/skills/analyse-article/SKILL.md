@@ -22,7 +22,7 @@ Before creating a working directory, check if this article has already been anal
 uv run python scripts/check_duplicate.py --url "ARTICLE_URL" --title "ARTICLE_TITLE"
 ```
 
-If the script exits with code 0 (duplicate found), **stop and inform the user**. Show which analysis directory already contains this article. Only proceed if the user explicitly requests re-analysis.
+If the script prints a duplicate match, **stop and inform the user**. Show which analysis directory already contains this article. Only proceed if the user explicitly requests re-analysis. **Exception:** when called in batch from `/find-articles`, silently skip duplicates and continue to the next article — do not halt the batch.
 
 ### Step 0a: Inbox Integration (optional)
 
@@ -45,19 +45,56 @@ This creates a `panel_*` work directory with `_article.md` already written. Set 
 
 ### Step 1: Prepare Working Directory
 
+Generate the timestamp and create the directory using Python (do not use `$()` command substitution — it triggers security prompts):
+
 ```bash
-ANALYSIS_ID=$(date +%Y%m%d_%H%M%S)
-WORK_DIR="data/analyses/${ANALYSIS_ID}"
-mkdir -p "$WORK_DIR"
+uv run python -c "
+from datetime import datetime
+from pathlib import Path
+d = Path('data/analyses') / datetime.now().strftime('%Y%m%d_%H%M%S')
+d.mkdir(parents=True, exist_ok=True)
+print(d)
+"
 ```
+
+Save the printed path as `WORK_DIR` for subsequent steps.
 
 Get the article text:
 - If a **fréttasafn article ID** is provided: fetch via `get_article` MCP tool
-- If a **URL** is provided: use `uv run python -c "import trafilatura; print(trafilatura.fetch_url('URL'))" | uv run python -c "import trafilatura, sys; print(trafilatura.extract(sys.stdin.read()))"` as a fallback. Prefer fréttasafn MCP if available.
+- If a **URL** is provided: use `uv run python -c "import trafilatura; downloaded = trafilatura.fetch_url('URL'); print(trafilatura.extract(downloaded) or '')"` as a fallback. Prefer fréttasafn MCP if available. **Do not pipe between two processes** — this triggers permission prompts.
 - If a **file path** is provided: read the file
 - If **pasted text** is provided: use it directly
 
-Write the article text to `$WORK_DIR/_article.md`.
+**Use the Write tool** to write the article text to `$WORK_DIR/_article.md`. Do not use shell heredocs or `cat >` — these trigger permission prompts.
+
+**Write `_metadata.json`** — resolve metadata from all available sources (inbox, URL patterns, article text):
+
+```bash
+uv run python -c "
+import json
+from pathlib import Path
+from esbvaktin.utils.metadata import resolve_metadata
+
+work_dir = Path('$WORK_DIR')
+url = '$ARTICLE_URL'  # The URL being analysed (empty string if file/pasted)
+article_text = (work_dir / '_article.md').read_text()
+
+# resolve_metadata cascades: inbox → URL patterns → article text parsing
+meta = resolve_metadata(url, article_text=article_text) if url else None
+
+metadata = {
+    'title': (meta.title if meta else None),
+    'date': (str(meta.date) if meta and meta.date else None),
+    'source': (meta.source if meta else None),
+    'url': url or None,
+}
+
+(work_dir / '_metadata.json').write_text(json.dumps(metadata, indent=2, ensure_ascii=False, default=str))
+print(f'Metadata: date={metadata.get(\"date\")}, title={(metadata.get(\"title\") or \"?\")[:50]}, source={metadata.get(\"source\")}')
+"
+```
+
+If the fetch source provided richer metadata (trafilatura `doc.get('title')`, fréttasafn `article['title']`, inbox `entry.get('title')`), override the resolved values before writing `_metadata.json`. The resolved values are fallbacks.
 
 ### Step 1b: Detect Panel Show and Prepare Extraction Context
 
@@ -93,14 +130,21 @@ print('Panel extraction context prepared (Icelandic).')
 
 ```bash
 uv run python -c "
+import json
 from pathlib import Path
 from esbvaktin.pipeline.prepare_context import prepare_extraction_context
 
-article = Path('$WORK_DIR/_article.md').read_text()
+work_dir = Path('$WORK_DIR')
+article = (work_dir / '_article.md').read_text()
+
+# Read metadata from Step 1 (falls back to empty dict if missing)
+meta_path = work_dir / '_metadata.json'
+metadata = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+
 prepare_extraction_context(
     article_text=article,
-    output_dir=Path('$WORK_DIR'),
-    metadata={'title': None, 'source': None, 'date': None},
+    output_dir=work_dir,
+    metadata=metadata,
     language='is',
 )
 print('Extraction context prepared (Icelandic).')
@@ -180,6 +224,7 @@ One retry max per agent — if still missing after retry, stop and report.
 ```bash
 uv run python -c "
 import json
+from datetime import date
 from pathlib import Path
 from esbvaktin.pipeline.parse_outputs import parse_assessments, parse_omissions_safe
 from esbvaktin.pipeline.assemble_report import assemble_report
@@ -187,6 +232,16 @@ from esbvaktin.pipeline.assemble_report import assemble_report
 work_dir = Path('$WORK_DIR')
 assessments = parse_assessments(work_dir / '_assessments.json')
 omissions = parse_omissions_safe(work_dir / '_omissions.json')
+
+# Read metadata from Step 1
+meta_path = work_dir / '_metadata.json'
+raw_meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+article_date = None
+if raw_meta.get('date'):
+    try:
+        article_date = date.fromisoformat(raw_meta['date'])
+    except (ValueError, TypeError):
+        pass
 
 # Generate summary from assessments
 verdicts = [a.verdict.value for a in assessments]
@@ -221,8 +276,10 @@ report = assemble_report(
     claims=assessments,
     omissions=omissions,
     summary=summary,
-    article_title=None,  # Set from metadata if available
-    article_url=None,    # Set from input URL if available
+    article_title=raw_meta.get('title'),
+    article_url=raw_meta.get('url'),
+    article_source=raw_meta.get('source'),
+    article_date=article_date,
     language='is',
 )
 
@@ -451,6 +508,7 @@ uv run python scripts/manage_inbox.py set-status <inbox_id> processed
 
 | File | Description |
 |------|-------------|
+| `_metadata.json` | Article metadata (title, date, source, url) from Step 1 |
 | `_article.md` | Raw article/transcript text |
 | `_context_extraction.md` | Context for claim extraction subagent (Icelandic) |
 | `_claims.json` | Extracted claims (Icelandic claim_text, +speaker_name for panels) |

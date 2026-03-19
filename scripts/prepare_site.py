@@ -82,6 +82,35 @@ def _load_db_verdicts() -> dict[str, dict]:
             lookup[text_en] = entry
     return lookup
 
+
+def _load_registered_claims() -> set[tuple[str, str]]:
+    """Load (source_url, original_text) pairs for all registered claim sightings.
+
+    Used only to determine whether a report claim has been registered in the DB
+    (i.e. it's not an orphan). Does NOT load verdicts — sighting matches link
+    to canonical claims via embedding similarity, and low-similarity matches
+    can point to factually different claims. Verdict overlay stays text-based
+    (exact match against canonical_text_is/en) which is always safe.
+    """
+    try:
+        from esbvaktin.ground_truth.operations import get_connection
+
+        conn = get_connection()
+        rows = conn.execute(
+            "SELECT source_url, original_text "
+            "FROM claim_sightings "
+            "WHERE original_text IS NOT NULL"
+        ).fetchall()
+        conn.close()
+    except Exception as exc:
+        print(
+            f"WARNING: Could not load registered claims. Error: {exc}",
+            file=sys.stderr,
+        )
+        return set()
+
+    return {(url, text) for url, text in rows}
+
 # ── Article metadata extraction ──────────────────────────────────────
 
 _SOURCE_FROM_DOMAIN: dict[str, str] = {
@@ -589,6 +618,7 @@ def prepare_report(
     evidence_meta: dict[str, dict],
     site_entities: dict[str, dict] | None = None,
     db_verdicts: dict[str, dict] | None = None,
+    registered_claims: set[tuple[str, str]] | None = None,
 ) -> dict:
     """Extract site-ready fields from a _report_final.json file.
 
@@ -597,8 +627,8 @@ def prepare_report(
     - Icelandic text parsed from report_text_is
     - Evidence source metadata (names + URLs) for linking
     - Speaker attributions from entity extraction
-    - DB verdict overlay (if db_verdicts provided, reassessed verdicts
-      replace the pipeline snapshot verdicts)
+    - DB verdict overlay via text match (exact match against canonical_text_is/en)
+    - Registered claim check (was this claim registered via sightings?)
     """
     with open(report_path, encoding="utf-8") as f:
         report = json.load(f)
@@ -641,20 +671,34 @@ def prepare_report(
         sup_evidence = item.get("supporting_evidence", [])
         contra_evidence = item.get("contradicting_evidence", [])
 
-        # Default: assume published (claims not in DB are from before claim bank)
-        is_published = True
+        # Overlay DB verdict if text matches exactly (safe: identical claim text)
+        db_entry = None
         if db_verdicts:
             db_entry = db_verdicts.get(claim_text_raw) or db_verdicts.get(claim_text_is)
-            if db_entry:
-                verdict = db_entry["verdict"]
-                confidence = db_entry["confidence"] or confidence
-                sup_evidence = db_entry["supporting_evidence"]
-                contra_evidence = db_entry["contradicting_evidence"]
-                if db_entry["explanation_is"]:
-                    explanation_is = db_entry["explanation_is"]
-                if db_entry["missing_context_is"]:
-                    missing_context_is = db_entry["missing_context_is"]
-                is_published = db_entry["published"]
+
+        # Published logic:
+        # - Text match → use DB published flag
+        # - Registered sighting but no text match → show (claim is in DB, just
+        #   different canonical text due to embedding-based matching)
+        # - Not registered + unverifiable → hide (discarded during registration)
+        # - Not registered + substantive → show (pre-claim-bank or text-drift)
+        is_registered = (
+            registered_claims is not None
+            and article_url
+            and (article_url, claim_text_raw) in registered_claims
+        )
+        is_published = verdict != "unverifiable" or is_registered
+        if db_entry:
+            verdict = db_entry["verdict"]
+            confidence = db_entry["confidence"] or confidence
+            sup_evidence = db_entry["supporting_evidence"]
+            contra_evidence = db_entry["contradicting_evidence"]
+            if db_entry["explanation_is"]:
+                explanation_is = db_entry["explanation_is"]
+            if db_entry["missing_context_is"]:
+                missing_context_is = db_entry["missing_context_is"]
+            if db_entry["published"]:
+                is_published = True
 
         # Linkify evidence IDs in text fields
         explanation_is = _linkify_evidence_ids(explanation_is, evidence_meta)
@@ -809,6 +853,11 @@ def main() -> None:
     if db_verdicts:
         print(f"DB verdict overlay: {len(db_verdicts)} claim texts loaded")
 
+    # Load registered claim pairs (for hiding unregistered unverifiable claims)
+    registered_claims = _load_registered_claims()
+    if registered_claims:
+        print(f"Registered claims: {len(registered_claims)} (url, text) pairs loaded")
+
     # Find all completed analysis reports
     report_files = sorted(ANALYSES_DIR.glob("*/_report_final.json"))
 
@@ -819,7 +868,9 @@ def main() -> None:
     all_reports = []
     written = 0
     for report_path in report_files:
-        report_data = prepare_report(report_path, evidence_meta, site_entities, db_verdicts)
+        report_data = prepare_report(
+            report_path, evidence_meta, site_entities, db_verdicts, registered_claims,
+        )
         out_path = reports_dir / f"{report_data['slug']}.json"
 
         with open(out_path, "w", encoding="utf-8") as f:

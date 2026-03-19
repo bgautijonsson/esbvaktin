@@ -119,6 +119,28 @@ def register_article(
     source_date = _parse_date(report.get("article_date"))
     source_type = _determine_source_type(report)
 
+    # Fallback: resolve missing metadata from inbox, URL patterns, and article text
+    if (source_date is None or not source_title) and source_url:
+        from esbvaktin.utils.metadata import resolve_metadata
+
+        # Try to load article text for text-based date extraction (last resort)
+        article_text = None
+        article_path = ANALYSES_DIR / analysis_dir / "_article.md"
+        if source_date is None and article_path.exists():
+            try:
+                article_text = article_path.read_text()
+            except OSError:
+                pass
+
+        meta = resolve_metadata(source_url, article_text=article_text)
+        if source_date is None and meta.date:
+            source_date = meta.date
+        if not source_title and meta.title:
+            source_title = meta.title
+
+    if source_date is None:
+        logger.warning("NULL source_date for %s — invisible to overviews", source_url[:60])
+
     claims = report.get("claims", [])
     counts = {"matched": 0, "new_claims": 0, "discarded": 0}
 

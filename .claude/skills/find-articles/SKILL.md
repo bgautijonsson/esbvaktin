@@ -1,16 +1,38 @@
 # Find Articles
 
-Discover new EU referendum articles, filter out already-processed and irrelevant ones, and present a prioritised list for analysis.
+Discover new EU referendum articles, filter out already-processed and irrelevant ones, and **automatically analyse HIGH priority articles**. Also surfaces backlog from previous sessions.
 
 ## Usage
 
 ```
-/find-articles              # Scan last 7 days
-/find-articles 3            # Scan last 3 days
+/find-articles              # Scan last 7 days + check backlog
+/find-articles 3            # Scan last 3 days + check backlog
 /find-articles 2026-03-01   # Scan from specific date
+/find-articles backlog      # Skip scanning, just work the backlog
 ```
 
+## Autonomy Model
+
+- **HIGH priority** articles (verified by full-text read) → auto-queue and auto-analyse. No user confirmation needed.
+- **MEDIUM priority** articles → present to user, wait for selection.
+- **LOW priority** → note in summary, leave as pending.
+- **Backlog** → always check for pending HIGH priority articles from previous sessions before scanning.
+
+The user can override by saying "stop after scanning" or "don't analyse yet".
+
 ## Steps
+
+### Step 0: Check Backlog
+
+Before scanning for new articles, check the existing inbox for unprocessed HIGH priority articles:
+
+```bash
+uv run python scripts/manage_inbox.py next --high-only --limit 10
+```
+
+Note any backlog articles. These will be included in the analysis batch alongside newly discovered HIGH articles.
+
+If the argument is `backlog`, **skip Steps 1–7** and go directly to Step 8 with the backlog articles.
 
 ### Step 1: Rebuild Article Registry
 
@@ -18,7 +40,7 @@ Discover new EU referendum articles, filter out already-processed and irrelevant
 uv run python scripts/build_article_registry.py --status
 ```
 
-This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. Note the total count for the user.
+This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. Note the total count.
 
 ### Step 2: Collect Known IDs + Show Status
 
@@ -31,14 +53,7 @@ uv run python scripts/manage_inbox.py status
 
 Save the JSON array output from `known-ids` — these will be passed to `scan_eu` as `exclude_ids` so that already-discovered articles are filtered server-side.
 
-Also load rejected URLs for URL-based filtering of any articles not in the inbox:
-```python
-rejected = set()
-for line in open("data/rejected_urls.txt"):
-    line = line.strip()
-    if line and not line.startswith("#"):
-        rejected.add(line.rstrip("/").lower())
-```
+Also load rejected URLs for URL-based filtering. **Use the Read tool** to read `data/rejected_urls.txt` (do NOT use shell commands like `wc`, `grep`, or input redirection — these trigger permission prompts). Parse the lines in your response: non-empty lines that don't start with `#` are rejected URLs.
 
 ### Step 3: Scan for EU Articles
 
@@ -82,55 +97,77 @@ After reading, re-evaluate:
 
 ### Step 6: Save to Inbox
 
-Before presenting results, persist all discovered articles to the inbox. Write a JSON file and import it:
+Before presenting results, persist all discovered articles to the inbox.
 
+1. **Use the Write tool** (not Bash heredoc/cat) to write the classified articles as a JSON array to `data/inbox/_scan_YYYYMMDD.json`. Fields: `url`, `title`, `source`, `date`, `word_count`, `article_type`, `topics` (array), `priority`, `frettasafn_id`, `notes`.
+
+2. Import the batch:
 ```bash
-# Write classified articles to a batch file, then import
 uv run python scripts/manage_inbox.py add-batch data/inbox/_scan_YYYYMMDD.json
 ```
 
-The batch JSON is an array of objects with fields: `url`, `title`, `source`, `date`, `word_count`, `article_type`, `topics` (array), `priority`, `frettasafn_id`, `notes`.
-
-For HIGH and MEDIUM articles where full text was fetched, save it:
+3. For HIGH and MEDIUM articles where full text was fetched, **use the Write tool** to save the text to `data/inbox/texts/<inbox_id>.md`, then mark it:
 ```bash
-# Write the fetched text to a temp file, then:
-uv run python scripts/manage_inbox.py save-text <inbox_id> /path/to/text.md
+uv run python scripts/manage_inbox.py set-status <inbox_id> pending
 ```
+(The `has_text` flag is set by `save-text`, but since we wrote the file directly, update the inbox entry manually if needed.)
 
-### Step 7: Present Results
+**Never use shell heredocs, `cat >`, or `echo >` to write data files** — these trigger permission prompts.
 
-Display a table to the user, now including inbox IDs:
+### Step 7: Present Summary
+
+Display a brief summary (not a full table for HIGH — those are about to be analysed):
 
 ```markdown
-## New Articles — [date range]
+## Scan Results — [date range]
 
-Registry: X processed articles | Inbox: Y pending | Z rejected URLs
+Registry: X processed | Inbox: Y pending (Z high) | W rejected
 
-### HIGH PRIORITY
-| # | ID | Title | Source | Words | Type | Key Topics |
-|---|-----|-------|--------|-------|------|------------|
-| 1 | vsir-abc123 | ... | Vísir | 2100 | Opinion (anti-EU) | fisheries, sovereignty |
+**Proceeding to analyse N HIGH priority articles** (M new + K backlog):
+1. [source] Title (date) — key topics
+2. ...
 
-### MEDIUM PRIORITY
-| # | ID | Title | Source | Words | Type | Key Topics |
-|---|-----|-------|--------|-------|------|------------|
+### MEDIUM (awaiting your selection)
+| # | ID | Title | Source | Date | Topics |
+|---|-----|-------|--------|------|--------|
 
-### LOW PRIORITY (probably skip)
-| # | ID | Title | Source | Words | Type | Key Topics |
-|---|-----|-------|--------|-------|------|------------|
-
-### Filtered Out
-- X already processed
-- Y rejected (known false positives)
-- Z already in inbox
-- W title-filtered (clearly irrelevant)
+### LOW (skipped)
+- N articles noted, left as pending
 ```
 
-For HIGH priority articles, include a one-line summary of the main claims/arguments.
+If there are MEDIUM articles, note them but do not wait — proceed with HIGH articles first. The user can queue MEDIUM articles while HIGH analyses run.
 
-### Step 8: Handle User Selection
+### Step 8: Auto-Analyse HIGH Priority Articles
 
-When the user picks articles to analyse:
+**Do not stop and wait.** For each HIGH priority article (both newly discovered and backlog), automatically:
+
+1. Queue it: `uv run python scripts/manage_inbox.py queue <id>`
+2. Launch `/analyse-article <url>` with the article URL
+
+**Ordering:** Analyse articles from the most recent date first — current news has higher time-sensitivity than backlog. Within the same date, prefer articles with cached text (faster start).
+
+**Parallelisation:** Run analyses **sequentially** (each analysis spawns parallel subagents internally). This avoids context window pressure and makes error recovery simpler.
+
+After each analysis completes:
+- Note the verdict summary
+- Continue to the next article
+
+After all HIGH articles are analysed, present a batch summary:
+
+```markdown
+## Analysis Batch Complete
+
+| # | Title | Verdicts | Completeness |
+|---|-------|----------|-------------|
+| 1 | ... | 3 supported, 1 partial | 78% |
+| 2 | ... | 2 supported, 2 misleading | 65% |
+
+Remaining: N MEDIUM articles pending your selection.
+```
+
+### Step 9: Handle MEDIUM Articles (if user responds)
+
+When the user picks MEDIUM articles to analyse:
 
 1. Queue them: `uv run python scripts/manage_inbox.py queue <id> [<id> ...]`
 2. For each selected article, launch `/analyse-article <url>`
@@ -148,3 +185,6 @@ When articles are neither picked nor rejected, they remain `pending` in the inbo
 - **Parallel fetching**: Fetch multiple articles in parallel using concurrent MCP calls to speed up Step 5.
 - **Date range**: Default 7 days balances thoroughness with speed. For catch-up after a break, use a longer range.
 - **The registry is the authority**: Never check only `data/analyses/` or only the DB. Always use the registry.
+- **Backlog priority**: Articles older than 7 days are flagged as backlog in `manage_inbox.py next` output. They are still analysed — age does not reduce importance, only time-sensitivity.
+- **Session efficiency**: A typical session should be: run `/find-articles` → Claude scans, finds 2–4 HIGH articles, analyses them all, presents results + MEDIUM list. User reviews MEDIUM, optionally queues some. Minimal keyboard time.
+- **Avoid permission prompts**: Use dedicated tools (Read, Write, Grep, Glob) instead of shell commands for all file I/O. Never use input redirection (`<`), heredocs (`<< EOF`), `cat >`, `echo >`, `wc`, or `grep` on data files — these trigger security prompts that require user interaction. Only use Bash for `uv run python` commands.

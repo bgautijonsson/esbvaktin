@@ -5,6 +5,13 @@ globs: ["scripts/check_duplicate.py", "scripts/build_article_registry.py", "data
 
 # Article Workflow
 
+## Autonomy Model
+
+- **HIGH priority** articles → auto-analyse after discovery. No user confirmation needed.
+- **MEDIUM priority** → present to user, wait for selection.
+- **Backlog** → always check `manage_inbox.py next --high-only` before scanning for new articles.
+- `/find-articles` scans + analyses HIGH articles in one session. User only needs to approve MEDIUM.
+
 ## Dedup: Always check all three sources
 
 Processed articles exist in THREE places that can diverge:
@@ -37,6 +44,7 @@ Never rely on `claim_sightings` alone — the site is often ahead of the DB.
 uv run python scripts/manage_inbox.py status              # Backlog summary
 uv run python scripts/manage_inbox.py list                 # Pending articles
 uv run python scripts/manage_inbox.py list --priority high # High priority only
+uv run python scripts/manage_inbox.py next --high-only     # Next articles ready for analysis
 uv run python scripts/manage_inbox.py queue ID [ID ...]    # Queue for analysis
 uv run python scripts/manage_inbox.py reject ID [ID ...]   # Reject (also adds to rejected_urls.txt)
 uv run python scripts/manage_inbox.py skip ID [ID ...]     # Skip (not worth analysing)
@@ -46,6 +54,7 @@ Article texts cached at `data/inbox/texts/{id}.md` for high/medium priority item
 
 ## Discovery → Analysis flow
 
-1. `/find-articles` — discover, prioritise, and **save to inbox**
-2. User picks articles from the list (or from inbox backlog)
+1. `/find-articles` — discover, prioritise, save to inbox, **auto-analyse HIGH priority**
+2. Claude presents MEDIUM articles for user selection (while HIGH analyses run)
 3. `/analyse-article <url>` — runs the full pipeline (dedup + inbox status updates built in)
+4. `/find-articles backlog` — skip scanning, just work pending HIGH priority articles

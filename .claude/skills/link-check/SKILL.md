@@ -24,19 +24,13 @@ If excerpt coverage is low (<50%), suggest running populate first to build finge
 
 ### Step 2: Populate Excerpts (if needed)
 
-If excerpts are missing, populate them by fetching source pages and extracting the sentence most similar to the evidence statement:
-
-```bash
-uv run python scripts/check_evidence_urls.py populate --dry-run
-```
-
-Review the dry run output. If the excerpts look reasonable:
+If excerpts are missing, populate them directly (the operation is idempotent — safe to re-run):
 
 ```bash
 uv run python scripts/check_evidence_urls.py populate
 ```
 
-This fetches each source URL via trafilatura, finds the best-matching sentence, and stores it as `source_excerpt` in the DB. Rate-limited at 0.5s between requests.
+This fetches each source URL via trafilatura, finds the best-matching sentence, and stores it as `source_excerpt` in the DB. Rate-limited at 0.5s between requests. **Do not run `--dry-run` first** — it adds an unnecessary confirmation step. Just run `populate` directly.
 
 ### Step 3: Run URL Checks
 

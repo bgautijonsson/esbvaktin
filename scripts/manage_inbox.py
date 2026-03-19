@@ -15,6 +15,7 @@ Usage:
     uv run python scripts/manage_inbox.py set-status ID STATUS
     uv run python scripts/manage_inbox.py save-text ID TEXT_FILE
     uv run python scripts/manage_inbox.py known-ids --json
+    uv run python scripts/manage_inbox.py next --high-only --limit 5
     uv run python scripts/manage_inbox.py prune --days 30
 """
 
@@ -152,9 +153,15 @@ def cmd_list(args: argparse.Namespace) -> None:
         print(f"No articles matching filters (status={args.status}, priority={args.priority}).")
         return
 
-    # Sort: priority (high first), then date (newest first)
+    # Sort: priority (high first), then date (newest first within each tier)
     priority_order = {"high": 0, "medium": 1, "low": 2}
-    filtered.sort(key=lambda e: (priority_order.get(e.get("priority", "low"), 3), e.get("date", "")))
+    filtered.sort(
+        key=lambda e: (
+            priority_order.get(e.get("priority", "low"), 3),
+            # Negate date for descending sort — pad missing dates to sort last
+            "".join(chr(0x10FFFF - ord(c)) for c in e.get("date", "") or "0000-00-00"),
+        )
+    )
 
     # Group by priority
     current_priority = None
@@ -378,6 +385,79 @@ def cmd_known_ids(args: argparse.Namespace) -> None:
         print(f"\n{len(ids)} known frettasafn IDs", file=sys.stderr)
 
 
+def cmd_next(args: argparse.Namespace) -> None:
+    """Output the next batch of articles ready for analysis.
+
+    Returns HIGH priority pending/queued articles, preferring those with
+    cached text. Outputs JSON for programmatic consumption or a human
+    table. Newest articles first, but articles older than --backlog-days
+    are flagged as backlog (still included, just annotated).
+    """
+    inbox = _load_inbox()
+    limit = args.limit
+
+    # Filter to actionable articles
+    actionable = [
+        e for e in inbox
+        if e["status"] in ("pending", "queued")
+        and e.get("priority") in ("high", "medium")
+    ]
+
+    if args.high_only:
+        actionable = [e for e in actionable if e.get("priority") == "high"]
+
+    if not actionable:
+        if args.json:
+            print("[]")
+        else:
+            print("No actionable articles in inbox.")
+        return
+
+    # Sort: text-cached first, then by date (newest first)
+    def sort_key(e: dict) -> tuple:
+        has_text = 0 if e.get("has_text") else 1
+        # Negate date for descending
+        date_str = e.get("date", "") or "0000-00-00"
+        neg_date = "".join(chr(0x10FFFF - ord(c)) for c in date_str)
+        return (has_text, neg_date)
+
+    actionable.sort(key=sort_key)
+
+    # HIGH before MEDIUM within the text/no-text groups
+    priority_order = {"high": 0, "medium": 1}
+    actionable.sort(
+        key=lambda e: (
+            0 if e.get("has_text") else 1,
+            priority_order.get(e.get("priority", "medium"), 1),
+            "".join(chr(0x10FFFF - ord(c)) for c in (e.get("date", "") or "0000-00-00")),
+        )
+    )
+
+    batch = actionable[:limit]
+
+    if args.json:
+        print(json.dumps(batch, indent=2, ensure_ascii=False, default=str))
+    else:
+        print(f"Next {len(batch)} articles for analysis:\n")
+        for i, e in enumerate(batch, 1):
+            text_marker = "T" if e.get("has_text") else " "
+            age = ""
+            if e.get("date"):
+                try:
+                    d = datetime.fromisoformat(e["date"])
+                    days_old = (datetime.now(UTC) - d.replace(tzinfo=UTC)).days
+                    if days_old > 7:
+                        age = f" (backlog: {days_old}d old)"
+                except (ValueError, TypeError):
+                    pass
+            print(
+                f"  {i}. [{e.get('priority', '?').upper()}] {text_marker} "
+                f"{e['id']}  {e.get('date', '?'):10}  "
+                f"{e.get('title', '?')[:50]}{age}"
+            )
+        print(f"\n{len(actionable)} total actionable ({len(actionable) - len(batch)} more)")
+
+
 def cmd_prune(args: argparse.Namespace) -> None:
     inbox = _load_inbox()
     cutoff = datetime.now(UTC) - timedelta(days=args.days)
@@ -454,6 +534,12 @@ def main():
     p_known = sub.add_parser("known-ids", help="Output all known frettasafn article IDs")
     p_known.add_argument("--json", action="store_true", help="Output as JSON array")
 
+    # next
+    p_next = sub.add_parser("next", help="Show next articles ready for analysis")
+    p_next.add_argument("--limit", type=int, default=5, help="Max articles to return")
+    p_next.add_argument("--high-only", action="store_true", help="Only HIGH priority")
+    p_next.add_argument("--json", action="store_true", help="Output as JSON")
+
     # prune
     p_prune = sub.add_parser("prune", help="Remove old processed/rejected entries")
     p_prune.add_argument("--days", type=int, default=30, help="Prune entries older than N days")
@@ -474,6 +560,7 @@ def main():
         "set-status": cmd_set_status,
         "save-text": cmd_save_text,
         "known-ids": cmd_known_ids,
+        "next": cmd_next,
         "prune": cmd_prune,
     }
     commands[args.command](args)

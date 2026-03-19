@@ -74,32 +74,27 @@ Library code should use logging, not print()
 
 Verify that CLAUDE.md reflects the current state:
 
-1. **Script commands** — check that all commands listed in CLAUDE.md's "Key Commands" actually work:
+1. **Script commands** — check that all commands listed in CLAUDE.md's "Key Commands" actually work. **Use the Glob tool** to check for `scripts/*.py` and compare against the expected list. Do not use shell `for` loops or `[ -f ]` tests.
+
+2. **DB schema** — verify table/column names mentioned in CLAUDE.md match the actual schema. **Use Python with `get_connection()`**, not `psql`:
    ```bash
-   # Verify key scripts exist
-   for script in manage_inbox seed_evidence verify_db audit_claims reassess_claims export_claims export_evidence export_topics export_entities export_overviews prepare_site prepare_speeches generate_overview prepare_overview_context generate_evidence_is improve_evidence_is build_article_registry check_duplicate correct_icelandic fact_check_speeches; do
-       if [ -f "scripts/${script}.py" ]; then
-           echo "OK: scripts/${script}.py"
-       else
-           echo "MISSING: scripts/${script}.py"
-       fi
-   done
+   uv run python -c "
+   from dotenv import load_dotenv; load_dotenv()
+   from esbvaktin.ground_truth.operations import get_connection
+   conn = get_connection()
+   tables = conn.execute(\"SELECT tablename FROM pg_tables WHERE schemaname='public'\").fetchall()
+   views = conn.execute(\"SELECT viewname FROM pg_views WHERE schemaname='public'\").fetchall()
+   print('Tables:', [t[0] for t in tables])
+   print('Views:', [v[0] for v in views])
+   conn.close()
+   "
    ```
 
-2. **DB schema** — verify table/column names mentioned in CLAUDE.md match the actual schema:
-   ```bash
-   psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -c "\dt" -c "\dv"
-   ```
+3. **Agent definitions** — verify all 10 agents listed in CLAUDE.md exist. **Use the Glob tool** with pattern `.claude/agents/*.md`.
 
-3. **Agent definitions** — verify all 10 agents listed in CLAUDE.md exist:
-   ```bash
-   ls .claude/agents/
-   ```
+4. **Skill definitions** — verify all skills listed exist. **Use the Glob tool** with pattern `.claude/skills/*/SKILL.md`.
 
-4. **Skill definitions** — verify all skills listed exist:
-   ```bash
-   ls .claude/skills/
-   ```
+**Never use `ls`, `psql`, shell `for` loops, or `[ -f ]` tests** — these trigger permission prompts.
 
 ### Step 5: Find Duplicated Patterns
 

@@ -176,12 +176,17 @@ print('Review and then run: uv run python scripts/seed_evidence.py insert data/s
 - Number: sequential within topic-type, check existing max:
 
 ```bash
-psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -c "
-SELECT evidence_id FROM evidence
-WHERE evidence_id LIKE 'TOPIC-TYPE-%'
-ORDER BY evidence_id DESC LIMIT 3;
+uv run python -c "
+from dotenv import load_dotenv; load_dotenv()
+from esbvaktin.ground_truth.operations import get_connection
+conn = get_connection()
+rows = conn.execute(\"SELECT evidence_id FROM evidence WHERE evidence_id LIKE 'TOPIC-TYPE-%' ORDER BY evidence_id DESC LIMIT 3\").fetchall()
+for r in rows: print(r[0])
+conn.close()
 "
 ```
+
+**Do not use `psql`** — it requires separate permission approval and hardcodes credentials.
 
 ### Step 5: Review and Insert
 

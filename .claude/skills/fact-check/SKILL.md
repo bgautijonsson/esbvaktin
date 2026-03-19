@@ -17,11 +17,19 @@ Parse the user's input into Claim objects, retrieve evidence, and prepare contex
 
 For each claim provided, infer the most likely `category` from the text (fisheries, trade, sovereignty, eea_eu_law, agriculture, precedents, currency, labour, housing, polling, party_positions, org_positions, or other) and `claim_type` (statistic, legal_assertion, comparison, prediction, opinion).
 
+Generate the timestamp and create the directory using Python (do not use `$()` command substitution — it triggers security prompts):
+
 ```bash
-ANALYSIS_ID=$(date +%Y%m%d_%H%M%S)_fc
-WORK_DIR="data/analyses/${ANALYSIS_ID}"
-mkdir -p "$WORK_DIR"
+uv run python -c "
+from datetime import datetime
+from pathlib import Path
+d = Path('data/analyses') / (datetime.now().strftime('%Y%m%d_%H%M%S') + '_fc')
+d.mkdir(parents=True, exist_ok=True)
+print(d)
+"
 ```
+
+Save the printed path as `WORK_DIR` for subsequent steps.
 
 ```bash
 uv run python -c "

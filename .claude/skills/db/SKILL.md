@@ -34,24 +34,24 @@ load_dotenv()
 from esbvaktin.ground_truth.operations import get_connection
 
 conn = get_connection()
-rows = conn.execute('''USER_SQL_HERE''').fetchall()
+cur = conn.cursor()
+cur.execute('''USER_SQL_HERE''')
+rows = cur.fetchall()
 
-# Get column names from cursor description
-cols = [desc[0] for desc in conn.cursor().description] if hasattr(conn, 'cursor') else []
-
+# Get column names
+cols = [desc[0] for desc in cur.description] if cur.description else []
+if cols:
+    print('\t'.join(cols))
+    print('\t'.join('-' * len(c) for c in cols))
 for row in rows:
-    print(row)
+    print('\t'.join(str(v) for v in row))
 conn.close()
 "
 ```
 
 **Safety:** Only allow SELECT statements. If the SQL contains INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, or CREATE, **refuse** and tell the user to use the appropriate script instead.
 
-Alternatively, use `psql` for simpler formatting:
-
-```bash
-psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -c "USER_SQL_HERE"
-```
+**Do not use `psql`** — it requires separate permission approval and hardcodes credentials. Always use `get_connection()` via Python.
 
 ### Step 2b: Pre-built Query Templates
 
@@ -179,26 +179,36 @@ conn.close()
 
 ### Step 2d: Quick Summary
 
-If no argument, show:
+If no argument, show the summary via Python (do not use `psql`):
 
 ```bash
-psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -c "
-SELECT 'Evidence' as table_name, COUNT(*) as total FROM evidence
-UNION ALL
-SELECT 'Claims', COUNT(*) FROM claims
-UNION ALL
-SELECT 'Published claims', COUNT(*) FROM claims WHERE published = TRUE
-UNION ALL
-SELECT 'Sightings', COUNT(*) FROM claim_sightings
-UNION ALL
-SELECT 'Stale evidence', COUNT(*) FROM evidence WHERE last_verified < CURRENT_DATE - INTERVAL '90 days';
-"
-```
+uv run python -c "
+from dotenv import load_dotenv
+load_dotenv()
+from esbvaktin.ground_truth.operations import get_connection
 
-Then show verdict distribution:
-```bash
-psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -c "
-SELECT verdict, COUNT(*) as n FROM claims WHERE published = TRUE GROUP BY verdict ORDER BY n DESC;
+conn = get_connection()
+cur = conn.cursor()
+
+cur.execute('''
+SELECT 'Evidence' as item, COUNT(*) as total FROM evidence
+UNION ALL SELECT 'Claims', COUNT(*) FROM claims
+UNION ALL SELECT 'Published claims', COUNT(*) FROM claims WHERE published = TRUE
+UNION ALL SELECT 'Sightings', COUNT(*) FROM claim_sightings
+UNION ALL SELECT 'Stale evidence', COUNT(*) FROM evidence WHERE last_verified < CURRENT_DATE - INTERVAL '90 days'
+''')
+print('=== DB Summary ===')
+for item, total in cur.fetchall():
+    print(f'  {item:20} {total}')
+
+cur.execute('''
+SELECT verdict, COUNT(*) as n FROM claims WHERE published = TRUE GROUP BY verdict ORDER BY n DESC
+''')
+print('\n=== Verdict Distribution ===')
+for verdict, n in cur.fetchall():
+    print(f'  {verdict:25} {n}')
+
+conn.close()
 "
 ```
 
@@ -210,5 +220,5 @@ Present results as formatted tables in the terminal. For large result sets (>30 
 
 - **Read-only.** This skill never modifies data. Block any mutating SQL.
 - **Available views:** `balance_audit`, `outlet_verdicts`, `verdict_weekly_trend`, `evidence_utilisation`, `stale_evidence`, `claim_velocity`, `claim_frequency`. Use these instead of writing complex JOINs.
-- **psql vs Python:** Use `psql` for simple queries with nice table formatting. Use Python when semantic search or post-processing is needed.
+- **Always use Python with `get_connection()`** — never use `psql` or hardcoded credentials. This avoids shell binary permission prompts and respects `.env` configuration.
 - **Topic names:** fisheries, trade, eea_eu_law, sovereignty, agriculture, precedents, currency, labour, energy, housing, polling, party_positions, org_positions.
