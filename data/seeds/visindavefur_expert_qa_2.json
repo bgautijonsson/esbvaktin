@@ -1,0 +1,74 @@
+[
+  {
+    "evidence_id": "EEA-DATA-029",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "statement": "Gold-plating occurs when Iceland implements EEA directives with stricter requirements than the EU minimum. Since directives allow 'choice of form and method' (EEA Agreement Article 7) and often establish minimum harmonisation, Iceland can exceed EU standards. A documented example: Iceland implemented the Non-Financial Disclosure Directive (2014/94) with a 250-employee threshold instead of the required 500-employee minimum, affecting significantly more Icelandic firms and increasing compliance costs. A Foreign Minister task force (established January 2024) now requires transparent disclosure and justification when stricter rules are adopted beyond EU minimums.",
+    "source_name": "Vísindavefurinn — Margrét Einarsdóttir, Professor, Law Faculty, University of Iceland (March 2026)",
+    "source_url": "https://www.visindavefur.is/svar.php?id=88538",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Published March 2026 specifically for the referendum debate. The gold-plating concept is well-established in EU/EEA law but its significance for Iceland depends on how frequently it occurs and the cumulative regulatory burden. The non-financial disclosure example is illustrative but may not represent the norm. The 2024 task force initiative suggests the government considers gold-plating a real concern.",
+    "related_entries": ["EEA-DATA-023", "EEA-DATA-024", "EEA-DATA-025"]
+  },
+  {
+    "evidence_id": "CURR-DATA-015",
+    "domain": "economic",
+    "topic": "currency",
+    "statement": "EU membership alone would cause minimal change to Iceland's housing loan market since Iceland already participates in the EEA framework. However, eurozone membership could decrease interest rates by 3-4 percentage points in the long term. Variable-rate loans (tied to rates up to one year) are the dominant form in the eurozone, with only Germany, France, Belgium, and the Netherlands favouring fixed rates. Icelandic króna volatility has prevented European banks from establishing Icelandic operations for mortgage lending. Iceland's indexed equal-payment loan structure is unique and would likely diminish under euro adoption, as indexation is uncommon in the eurozone.",
+    "source_name": "Vísindavefurinn — Jón Þór Sturluson, Associate Professor of Economics, Reykjavík University School of Business (2012)",
+    "source_url": "https://www.visindavefur.is/svar.php?id=60906",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Written in 2012 before the European sovereign debt crisis fully resolved. The 3-4 percentage point interest rate decrease estimate is based on pre-crisis conditions and may overstate the benefit given that Iceland's rates have declined substantially since 2012. Variable-rate dominance in the eurozone means households face interest rate risk directly — this is a trade-off, not a pure benefit. The analysis predates Iceland's post-crisis financial reforms.",
+    "related_entries": ["CURR-DATA-011", "CURR-DATA-014", "HOUSING-DATA-001"]
+  },
+  {
+    "evidence_id": "CURR-DATA-016",
+    "domain": "economic",
+    "topic": "currency",
+    "statement": "Interest rate spreads among eurozone members initially narrowed dramatically after euro adoption (2002), but the convergence was illusory: rapid rate decreases fuelled credit bubbles in Ireland, Portugal, and Spain, while Greece and Italy masked public sector mismanagement. During the 2010-2012 crisis, capital flight shifted funds toward safer economies (Germany, Switzerland, Norway, Sweden), increasing rates in vulnerable countries while lowering them in stable ones — despite sharing the same currency. The Maastricht criteria require long-term interest rates not to exceed two percentage points above the average of the three lowest-inflation eurozone states.",
+    "source_name": "Vísindavefurinn — Ólafur Margeirsson, doctoral student in economics, University of Exeter (2012)",
+    "source_url": "https://www.visindavefur.is/svar.php?id=60990",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Written during the eurozone crisis (2012), which may colour the analysis toward crisis risks. Post-2012 institutional reforms (Banking Union, ESM, ECB interventions) have significantly changed the eurozone's crisis management capacity. The Maastricht convergence criteria remain unchanged but their practical enforcement has evolved. Interest rate convergence has partially returned since the crisis, though spreads remain wider than the pre-crisis period.",
+    "related_entries": ["CURR-DATA-011", "CURR-DATA-013", "CURR-DATA-015"]
+  },
+  {
+    "evidence_id": "CURR-DATA-017",
+    "domain": "economic",
+    "topic": "currency",
+    "statement": "EU membership alone would have limited effect on Iceland's inflation, as EEA regulations regarding economic policy have largely already been adopted. Euro adoption would more significantly reduce inflation through Maastricht compliance requirements: public debt must remain below 60% of GDP (Iceland's was 111% at the time of writing in 2012), inflation cannot exceed 1.5 percentage points above the three lowest eurozone rates, and the króna would require a fixed exchange rate peg to the euro for minimum two years (ERM II) before adoption. Inflation reduction would come primarily from fiscal discipline requirements and exchange rate stability rather than from the currency itself.",
+    "source_name": "Vísindavefurinn — Ólafur Margeirsson, doctoral student in economics, University of Exeter (2012)",
+    "source_url": "https://www.visindavefur.is/svar.php?id=60635",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Written in 2012 when Iceland's debt-to-GDP was 111% — it has since declined substantially (below 70% by 2020s). The Maastricht criteria analysis remains structurally valid but the specific numbers are dated. The argument that discipline requirements matter more than the currency itself is a mainstream economic view but debated. The two-year ERM II requirement creates a vulnerable transition period where Iceland would face speculative pressure on a semi-fixed exchange rate.",
+    "related_entries": ["CURR-DATA-011", "CURR-DATA-015", "CURR-DATA-016"]
+  },
+  {
+    "evidence_id": "SOV-DATA-033",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "The Lisbon Treaty (effective November 2014) changed EU Council voting from weighted votes requiring 74% approval to a 'double majority' system requiring both 55% of member states and 65% of EU population. This slightly increased small states' blocking power (13 states needed to block instead of 14) but reduced their percentage-based influence due to population weighting. Germany's voting weight increased from 8.4% to 16.41% and France's from 8.4% to 12.88%, reflecting their larger populations. For Iceland, this means its Council voting weight as a potential member would be among the smallest but its blocking coalition threshold was lowered.",
+    "source_name": "Vísindavefurinn — Vilborg Ása Guðjónsdóttir & Þorsteinn Vilhjálmsson, University of Iceland (2011)",
+    "source_url": "https://www.visindavefur.is/svar.php?id=60120",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The analysis is from 2011 and the Lisbon Treaty voting rules have now been fully in effect since 2017 (after a transition period). The practical impact of voting weights depends on coalition-building dynamics, which are not captured by formal weight calculations. Small states often wield disproportionate influence through agenda-setting, committee work, and informal negotiations rather than through formal voting power.",
+    "related_entries": ["SOV-DATA-027", "SOV-DATA-030", "EEA-DATA-022"]
+  },
+  {
+    "evidence_id": "SOV-DATA-034",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "EEA membership has already strengthened the Icelandic language through the Foreign Ministry's translation centre, where a large portion of EU laws and regulations are translated into Icelandic. Iceland participated in the EU's META-NET project (2011-2013) creating electronic language databases for machine translation. If Iceland joined the EU, Icelandic would automatically become an official EU language with full interpretation rights. The precedent of Irish — which became an official EU language in 2007 — was described as 'probably the strongest vitamin injection Irish has received in decades if not centuries' (scholar Gauti Kristmannsson). Full EU membership would likely strengthen rather than weaken Icelandic language status.",
+    "source_name": "Vísindavefurinn — Eiríkur Rögnvaldsson, Professor Emeritus of Icelandic, University of Iceland (March 2026)",
+    "source_url": "https://www.visindavefur.is/svar.php?id=88510",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The Irish comparison is notable but imperfect — Irish had declined to minority-language status before EU officialisation, while Icelandic remains a thriving national language. The claim that EU membership would 'strengthen' Icelandic is the expert's assessment but counterarguments exist (increased English usage in EU institutions, immigration pressure on language). The article is by a linguistics professor who may prioritise institutional language status over everyday usage patterns. Published March 2026 for the referendum debate.",
+    "related_entries": ["SOV-DATA-032", "SOV-DATA-027"]
+  }
+]
