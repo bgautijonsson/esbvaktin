@@ -3,6 +3,9 @@
 Groups similar claim instances into canonical claims using LLM-based
 clustering. Works per-topic to keep context manageable.
 
+Uses stable instance_id ("{speech_id}:{n}") instead of positional indices,
+so adding/removing speeches doesn't invalidate canonical assignments.
+
 Usage:
     uv run python scripts/heimildin/canonicalise.py prepare [--era esb]
     uv run python scripts/heimildin/canonicalise.py parse [--era esb]
@@ -30,7 +33,7 @@ CLUSTERING_INSTRUCTIONS = """\
 ## Task
 
 You are given a list of claim summaries extracted from Alþingi speeches about
-Iceland's EU membership debate. Each claim has an index number.
+Iceland's EU membership debate. Each claim has a stable ID (format: speech_id:n).
 
 Your job: group claims that express **the same core argument** into canonical
 clusters. Two claims belong in the same cluster if a reader would recognise
@@ -46,7 +49,7 @@ them as "the same point being made."
   - "EES virkar vel" (anti-EU) vs "EES er ófullnægjandi" (pro-EU) = different
 - When in doubt, **keep clusters separate** — it's better to have too many
   canonical claims than to merge genuinely different arguments
-- A claim can only belong to one cluster
+- **A claim can only belong to ONE cluster** — never assign a claim to multiple clusters
 
 ## Output format
 
@@ -58,7 +61,7 @@ Write a JSON array where each element is one canonical claim:
         "canonical_id": "SOV-01",
         "canonical_text": "Aðild að ESB felur í sér fullveldistap og framsal ákvörðunarvalds til Brussel.",
         "stance": "anti_eu",
-        "instance_indices": [3, 7, 15, 22]
+        "instance_ids": ["rad20260309T171000:3", "rad20260309T175023:7"]
     }}
 ]
 ```
@@ -68,8 +71,8 @@ Write a JSON array where each element is one canonical claim:
 - `canonical_id`: `TOPIC_PREFIX-NN` (e.g. `DEM-01`, `SOV-01`, `EEA-01`)
 - `canonical_text`: A clean, neutral summary of the core argument (Icelandic, 1 sentence)
 - `stance`: The dominant stance of claims in this cluster (pro_eu / anti_eu / neutral)
-- `instance_indices`: List of claim indices that belong to this cluster
-- Every claim index must appear in exactly one cluster
+- `instance_ids`: List of claim IDs that belong to this cluster
+- **Every claim ID must appear in EXACTLY ONE cluster — no duplicates**
 - Use correct Icelandic Unicode (þ, ð, á, é, í, ó, ú, ý, æ, ö)
 - NEVER use „…" quotes in JSON — use «…» or escaped \\"…\\"
 
@@ -99,8 +102,7 @@ def prepare(era: str) -> None:
 
     # Group by topic
     by_topic: dict[str, list[dict]] = {}
-    for i, claim in enumerate(claims):
-        claim["_index"] = i
+    for claim in claims:
         topic = claim.get("topic", "other")
         by_topic.setdefault(topic, []).append(claim)
 
@@ -118,28 +120,22 @@ def prepare(era: str) -> None:
             print(f"  skip {topic} (already canonicalised)")
             continue
 
-        # Build context
+        # Build context using stable instance_ids
         context = CLUSTERING_INSTRUCTIONS.format(
             topic=topic, count=len(topic_claims)
         )
 
         for claim in topic_claims:
+            iid = claim.get("instance_id", "?")
             stance_tag = claim.get("stance", "?")
             speaker = claim.get("speaker", "?")
             context += (
-                f"[{claim['_index']}] ({stance_tag}, {speaker}): "
+                f"[{iid}] ({stance_tag}, {speaker}): "
                 f"{claim['claim_summary']}\n"
             )
 
         context_file = out_dir / f"_context_{topic}.md"
         context_file.write_text(context, encoding="utf-8")
-
-        # Also write the claims subset for reference
-        subset_file = out_dir / f"_claims_{topic}.json"
-        subset_file.write_text(
-            json.dumps(topic_claims, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
 
         prepared += 1
         print(f"  prepared {topic}: {len(topic_claims)} claims → {context_file.name}")
@@ -158,9 +154,17 @@ def parse(era: str) -> None:
     raw_file = WORK_DIR / f"{era}_claims_raw.json"
     claims = json.loads(raw_file.read_text(encoding="utf-8"))
 
+    # Build instance_id → claim index lookup
+    id_to_idx: dict[str, int] = {}
+    for i, claim in enumerate(claims):
+        iid = claim.get("instance_id")
+        if iid:
+            id_to_idx[iid] = i
+
     canonical_claims = []
-    instance_map: dict[int, str] = {}  # claim_index → canonical_id
+    instance_map: dict[str, str] = {}  # instance_id → canonical_id
     errors = []
+    duplicates = 0
 
     for canon_file in sorted(canon_dir.glob("*_canonical.json")):
         raw = canon_file.read_text(encoding="utf-8")
@@ -182,49 +186,63 @@ def parse(era: str) -> None:
 
         for group in groups:
             cid = group.get("canonical_id", "?")
+            # Support both "instance_ids" (new) and "instance_indices" (old)
+            ids = group.get("instance_ids", group.get("instance_indices", []))
+
+            # Deduplicate: skip IDs already assigned (P3.3)
+            clean_ids = []
+            for iid in ids:
+                iid_str = str(iid)
+                if iid_str in instance_map:
+                    duplicates += 1
+                    continue
+                clean_ids.append(iid_str)
+                instance_map[iid_str] = cid
+
             canonical_claims.append({
                 "canonical_id": cid,
                 "canonical_text": group.get("canonical_text", ""),
                 "stance": group.get("stance", "neutral"),
-                "instance_count": len(group.get("instance_indices", [])),
-                "instance_indices": group.get("instance_indices", []),
+                "instance_count": len(clean_ids),
+                "instance_ids": clean_ids,
             })
 
-            for idx in group.get("instance_indices", []):
-                if idx in instance_map:
-                    errors.append(
-                        f"Claim {idx} assigned to both {instance_map[idx]} and {cid}"
-                    )
-                instance_map[idx] = cid
-
-    # Check coverage
-    unmapped = [i for i in range(len(claims)) if i not in instance_map]
+    # Handle unmapped claims (single-instance topics, or missed by clustering)
+    all_ids = {c.get("instance_id") for c in claims if c.get("instance_id")}
+    unmapped = all_ids - set(instance_map.keys())
     if unmapped:
-        # Some might be in single-claim topics (skipped during prepare)
         single_topics = set()
-        for i in unmapped:
-            single_topics.add(claims[i].get("topic", "other"))
+        for iid in unmapped:
+            idx = id_to_idx.get(iid)
+            if idx is not None:
+                single_topics.add(claims[idx].get("topic", "other"))
         if single_topics:
-            print(f"Note: {len(unmapped)} claims from single-instance topics "
+            print(f"Note: {len(unmapped)} unmapped claims "
                   f"({', '.join(single_topics)}) — creating singleton canonicals")
 
-        for i in unmapped:
-            claim = claims[i]
+        for iid in sorted(unmapped):
+            idx = id_to_idx.get(iid)
+            if idx is None:
+                continue
+            claim = claims[idx]
             topic = claim.get("topic", "other")
             prefix = _topic_prefix(topic)
-            cid = f"{prefix}-S{i:03d}"
+            # Use speech_id fragment for readable singleton IDs
+            short_id = iid.split(":")[0][-6:] if ":" in iid else iid[-6:]
+            cid = f"{prefix}-S{short_id}"
             canonical_claims.append({
                 "canonical_id": cid,
                 "canonical_text": claim.get("claim_summary", ""),
                 "stance": claim.get("stance", "neutral"),
                 "instance_count": 1,
-                "instance_indices": [i],
+                "instance_ids": [iid],
             })
-            instance_map[i] = cid
+            instance_map[iid] = cid
 
     # Enrich raw claims with canonical_id
-    for i, claim in enumerate(claims):
-        claim["canonical_id"] = instance_map.get(i, "UNMAPPED")
+    for claim in claims:
+        iid = claim.get("instance_id")
+        claim["canonical_id"] = instance_map.get(iid, "UNMAPPED") if iid else "UNMAPPED"
 
     # Sort canonical claims by instance count descending
     canonical_claims.sort(key=lambda c: c["instance_count"], reverse=True)
@@ -245,6 +263,8 @@ def parse(era: str) -> None:
     print(f"Canonical claims: {len(canonical_claims)}")
     print(f"  Output: {canonical_file}")
     print(f"  Enriched claims: {enriched_file}")
+    if duplicates:
+        print(f"  Fixed {duplicates} double-assignments (kept first)")
 
     # Show top canonical claims by frequency
     print(f"\nTop 20 canonical claims:")

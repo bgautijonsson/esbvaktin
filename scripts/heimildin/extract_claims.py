@@ -1,8 +1,8 @@
 """Extract rhetorical claims from Alþingi speeches for Heimildin analysis.
 
 Usage:
-    uv run python scripts/heimildin/extract_claims.py list-speeches [--era esb|ees] [--issue ISSUE]
-    uv run python scripts/heimildin/extract_claims.py prepare [--era esb] [--issue 516] [--limit 10]
+    uv run python scripts/heimildin/extract_claims.py list-speeches [--era esb|ees] [--issue ISSUE] [--include-replies]
+    uv run python scripts/heimildin/extract_claims.py prepare [--era esb] [--issue 516] [--limit 10] [--include-replies]
     uv run python scripts/heimildin/extract_claims.py parse [--era esb]
     uv run python scripts/heimildin/extract_claims.py status
 """
@@ -17,13 +17,32 @@ from pathlib import Path
 from config import (
     DEBATES,
     DELIVERABLES_DIR,
+    EU_TITLE_PATTERNS,
     KNOWN_TOPICS,
+    MIN_WORDS_REPLY,
+    MIN_WORDS_SPEECH,
+    REPLY_TYPES,
     SUBSTANTIVE_TYPES,
     WORK_DIR,
     connect,
-    party_name,
+    is_eu_relevant,
     speech_url,
 )
+
+
+def _speech_types(include_replies: bool) -> set[str]:
+    """Get the set of speech types to include."""
+    types = set(SUBSTANTIVE_TYPES)
+    if include_replies:
+        types |= REPLY_TYPES
+    return types
+
+
+def _min_words(speech_type: str) -> int:
+    """Get minimum word count for a speech type."""
+    if speech_type in REPLY_TYPES:
+        return MIN_WORDS_REPLY
+    return MIN_WORDS_SPEECH
 
 
 # ---------------------------------------------------------------------------
@@ -31,13 +50,15 @@ from config import (
 # ---------------------------------------------------------------------------
 
 
-def list_speeches(era: str, issue_nr: str | None = None) -> None:
+def list_speeches(era: str, issue_nr: str | None = None,
+                  include_replies: bool = False) -> None:
     """List substantive speeches from target debates."""
     debates = DEBATES.get(era, [])
     if not debates:
         print(f"Unknown era: {era}")
         sys.exit(1)
 
+    types = _speech_types(include_replies)
     conn = connect()
     try:
         for debate in debates:
@@ -47,34 +68,52 @@ def list_speeches(era: str, issue_nr: str | None = None) -> None:
             rows = conn.execute(
                 """
                 SELECT s.speech_id, s.name, s.date, s.speech_type,
-                       t.word_count, t.party, s.session
+                       s.issue_title, t.word_count, t.party, s.session
                 FROM speeches s
                 LEFT JOIN speech_texts t ON s.speech_id = t.speech_id
                 WHERE s.issue_nr = ?
                   AND s.session = ?
                   AND s.speech_type IN ({})
-                  AND (t.word_count IS NULL OR t.word_count >= 200)
                 ORDER BY s.date, s.started
-                """.format(",".join("?" for _ in SUBSTANTIVE_TYPES)),
-                [debate["issue_nr"], debate["session"], *SUBSTANTIVE_TYPES],
+                """.format(",".join("?" for _ in types)),
+                [debate["issue_nr"], debate["session"], *types],
             ).fetchall()
+
+            # Filter by word count and EU relevance
+            filtered = []
+            skipped_offtopic = 0
+            skipped_short = 0
+            for row in rows:
+                wc = row["word_count"] or 0
+                min_wc = _min_words(row["speech_type"])
+                if wc < min_wc:
+                    skipped_short += 1
+                    continue
+                if not is_eu_relevant(row["issue_title"] or ""):
+                    skipped_offtopic += 1
+                    continue
+                filtered.append(row)
 
             print(f"\n## {debate['title']} (issue {debate['issue_nr']}, "
                   f"session {debate['session']})")
-            print(f"{'ID':<28} {'Speaker':<35} {'Party':<8} {'Words':>6} "
+            print(f"{'ID':<28} {'Speaker':<35} {'Party':<25} {'Words':>6} "
                   f"{'Date':<12} {'Type'}")
-            print("-" * 110)
+            print("-" * 130)
 
             total_words = 0
-            for row in rows:
+            for row in filtered:
                 wc = row["word_count"] or 0
                 total_words += wc
                 date = row["date"][:10] if row["date"] else "?"
-                pname = party_name(row["party"] or "?")
+                party = row["party"] or "?"
                 print(f"{row['speech_id']:<28} {row['name']:<35} "
-                      f"{pname:<8} {wc:>6} {date:<12} {row['speech_type']}")
+                      f"{party:<25} {wc:>6} {date:<12} {row['speech_type']}")
 
-            print(f"\nTotal: {len(rows)} speeches, {total_words:,} words")
+            print(f"\nTotal: {len(filtered)} speeches, {total_words:,} words")
+            if skipped_short:
+                print(f"  Skipped {skipped_short} below word minimum")
+            if skipped_offtopic:
+                print(f"  Skipped {skipped_offtopic} off-topic")
     finally:
         conn.close()
 
@@ -155,13 +194,15 @@ for frequency counting.
 """
 
 
-def prepare(era: str, issue_nr: str | None = None, limit: int | None = None) -> None:
+def prepare(era: str, issue_nr: str | None = None, limit: int | None = None,
+            include_replies: bool = False) -> None:
     """Fetch speeches and write context files for extraction."""
     debates = DEBATES.get(era, [])
     if not debates:
         print(f"Unknown era: {era}")
         sys.exit(1)
 
+    types = _speech_types(include_replies)
     conn = connect()
     prepared = 0
 
@@ -180,10 +221,9 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None) -> 
                 WHERE s.issue_nr = ?
                   AND s.session = ?
                   AND s.speech_type IN ({})
-                  AND t.word_count >= 200
                 ORDER BY t.word_count DESC
-                """.format(",".join("?" for _ in SUBSTANTIVE_TYPES)),
-                [debate["issue_nr"], debate["session"], *SUBSTANTIVE_TYPES],
+                """.format(",".join("?" for _ in types)),
+                [debate["issue_nr"], debate["session"], *types],
             ).fetchall()
 
             for row in rows:
@@ -191,12 +231,23 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None) -> 
                     break
 
                 sid = row["speech_id"]
+                wc = row["word_count"] or 0
+                min_wc = _min_words(row["speech_type"])
+
+                # Skip short speeches
+                if wc < min_wc:
+                    continue
+
+                # P1.4: Skip off-topic speeches
+                if not is_eu_relevant(row["issue_title"] or ""):
+                    print(f"  skip {sid} (off-topic: {row['issue_title'][:50]})")
+                    continue
+
                 work = WORK_DIR / era / f"issue_{debate['issue_nr']}" / sid
                 claims_file = work / "_claims.json"
 
                 # Skip if already extracted
                 if claims_file.exists():
-                    print(f"  skip {sid} (already extracted)")
                     continue
 
                 work.mkdir(parents=True, exist_ok=True)
@@ -205,17 +256,17 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None) -> 
                 date = row["date"][:10] if row["date"] else "?"
                 session = row["session"] or debate["session"]
                 url = speech_url(session, sid)
-                pname = party_name(row["party"] or "?")
+                party = row["party"] or "?"
 
                 topics_str = ", ".join(KNOWN_TOPICS)
                 instructions = EXTRACTION_INSTRUCTIONS.format(topics=topics_str)
 
                 metadata = (
-                    f"- **Ræðumaður**: {row['name']}, {pname}\n"
+                    f"- **Ræðumaður**: {row['name']}, {party}\n"
                     f"- **Dagsetning**: {date}\n"
                     f"- **Umræðuefni**: {row['issue_title']}\n"
                     f"- **Tegund**: {row['speech_type']}\n"
-                    f"- **Orðafjöldi**: {row['word_count']}\n"
+                    f"- **Orðafjöldi**: {wc}\n"
                     f"- **Heimild**: {url}\n"
                     f"- **Tímabil**: {'ESB-umræða (2024–2026)' if era == 'esb' else 'EES-umræða (1991–1993)'}\n"
                 )
@@ -231,18 +282,17 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None) -> 
                     context, encoding="utf-8"
                 )
 
-                # Also write metadata JSON for later assembly
+                # Write metadata JSON for later assembly
                 meta = {
                     "speech_id": sid,
                     "speaker": row["name"],
-                    "party_abbrev": row["party"] or "?",
-                    "party": pname,
+                    "party": party,
                     "date": date,
                     "session": session,
                     "issue_nr": debate["issue_nr"],
                     "issue_title": row["issue_title"],
                     "speech_type": row["speech_type"],
-                    "word_count": row["word_count"] or 0,
+                    "word_count": wc,
                     "url": url,
                     "era": era,
                 }
@@ -252,8 +302,7 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None) -> 
                 )
 
                 prepared += 1
-                wc = row["word_count"] or 0
-                print(f"  prepared {sid} — {row['name']} ({wc} words)")
+                print(f"  prepared {sid} — {row['name']} ({wc} words, {row['speech_type']})")
 
             if limit and prepared >= limit:
                 break
@@ -267,6 +316,7 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None) -> 
 
 # ---------------------------------------------------------------------------
 # parse: read extraction outputs and merge into unified format
+# Uses stable instance_id = "{speech_id}:{n}" instead of global array index
 # ---------------------------------------------------------------------------
 
 
@@ -279,6 +329,7 @@ def parse(era: str) -> None:
 
     all_claims = []
     speech_count = 0
+    total_words = 0
     errors = []
 
     for claims_file in sorted(era_dir.rglob("_claims.json")):
@@ -288,6 +339,7 @@ def parse(era: str) -> None:
             continue
 
         meta = json.loads(meta_file.read_text(encoding="utf-8"))
+        sid = meta["speech_id"]
 
         raw = claims_file.read_text(encoding="utf-8")
         # Sanitise Icelandic quotes (same as esbvaktin pipeline)
@@ -311,13 +363,15 @@ def parse(era: str) -> None:
             continue
 
         speech_count += 1
+        total_words += meta.get("word_count", 0)
 
-        for claim in claims:
+        for n, claim in enumerate(claims):
+            instance_id = f"{sid}:{n}"
             all_claims.append({
+                "instance_id": instance_id,
                 "speech_id": meta["speech_id"],
                 "speaker": meta["speaker"],
                 "party": meta["party"],
-                "party_abbrev": meta["party_abbrev"],
                 "date": meta["date"],
                 "session": meta["session"],
                 "speech_url": meta["url"],
@@ -335,7 +389,19 @@ def parse(era: str) -> None:
         encoding="utf-8",
     )
 
+    # Write era stats for normalisation (P1.3)
+    stats = {
+        "era": era,
+        "speeches": speech_count,
+        "total_words": total_words,
+        "total_claims": len(all_claims),
+        "unique_speakers": len({c["speaker"] for c in all_claims}),
+    }
+    stats_file = WORK_DIR / f"{era}_stats.json"
+    stats_file.write_text(json.dumps(stats, indent=2), encoding="utf-8")
+
     print(f"Parsed {speech_count} speeches → {len(all_claims)} claim instances")
+    print(f"  Words: {total_words:,}, Speakers: {stats['unique_speakers']}")
     print(f"Output: {output_file}")
 
     if errors:
@@ -401,6 +467,8 @@ def main() -> None:
     ls = sub.add_parser("list-speeches", help="List available speeches")
     ls.add_argument("--era", default="esb", choices=["esb", "ees"])
     ls.add_argument("--issue", default=None, help="Filter to specific issue number")
+    ls.add_argument("--include-replies", action="store_true",
+                    help="Include andsvör/svar (≥150 words)")
 
     # prepare
     prep = sub.add_parser("prepare", help="Prepare context files for extraction")
@@ -408,6 +476,8 @@ def main() -> None:
     prep.add_argument("--issue", default=None, help="Filter to specific issue number")
     prep.add_argument("--limit", type=int, default=None,
                       help="Max speeches to prepare")
+    prep.add_argument("--include-replies", action="store_true",
+                      help="Include andsvör/svar (≥150 words)")
 
     # parse
     p = sub.add_parser("parse", help="Parse extraction outputs into unified format")
@@ -419,9 +489,9 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "list-speeches":
-        list_speeches(args.era, args.issue)
+        list_speeches(args.era, args.issue, args.include_replies)
     elif args.command == "prepare":
-        prepare(args.era, args.issue, args.limit)
+        prepare(args.era, args.issue, args.limit, args.include_replies)
     elif args.command == "parse":
         parse(args.era)
     elif args.command == "status":

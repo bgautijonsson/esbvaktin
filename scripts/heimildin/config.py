@@ -31,15 +31,19 @@ DEBATES: dict[str, list[dict]] = {
             "title": "þjóðaratkvæðagreiðsla um framhald viðræðna um aðild Íslands að ESB",
             "dates": ["2026-03-09", "2026-03-10", "2026-03-16"],
         },
-        # EEA review debate — add if needed
-        # {"issue_nr": "85", "session": 156, ...},
     ],
     "ees": [
+        {
+            "issue_nr": "1",
+            "session": 116,
+            "title": "Evrópskt efnahagssvæði (aðalumræða)",
+            "dates": None,
+        },
         {
             "issue_nr": "21",
             "session": 115,
             "title": "skýrsla utanrrh. um niðurstöður samninga um EES",
-            "dates": None,  # fetch all dates
+            "dates": None,
         },
         {
             "issue_nr": "440",
@@ -56,8 +60,20 @@ DEBATES: dict[str, list[dict]] = {
     ],
 }
 
-# Speech types to include (skip andsvör and procedural)
+# Speech types to include
 SUBSTANTIVE_TYPES = {"ræða", "flutningsræða", "ráðherraræða"}
+REPLY_TYPES = {"andsvar", "svar"}
+
+# Minimum word count for inclusion
+MIN_WORDS_SPEECH = 200
+MIN_WORDS_REPLY = 150
+
+# Issue title patterns for filtering off-topic speeches (P1.4)
+EU_TITLE_PATTERNS = [
+    "evróp", "ees", "esb", "evrópubandalag", "evrópusamband",
+    "efnahagssvæð", "fríverslunarsamtök", "aðild", "tvíhliða",
+    "þjóðaratkvæðagreiðsl",
+]
 
 # ---------------------------------------------------------------------------
 # Topic taxonomy (shared with esbvaktin where applicable)
@@ -79,28 +95,6 @@ KNOWN_TOPICS = [
     "environment",
     "other",
 ]
-
-# ---------------------------------------------------------------------------
-# Party abbreviation → full name (covers both eras)
-# ---------------------------------------------------------------------------
-
-PARTY_NAMES = {
-    # Current parties
-    "D": "Sjálfstæðisflokkur",
-    "B": "Framsóknarflokkur",
-    "S": "Samfylkingin",
-    "V": "Vinstri-Grænir",
-    "C": "Viðreisn",
-    "M": "Miðflokkurinn",
-    "F": "Flokkur fólksins",
-    "P": "Píratar",
-    "J": "Sóknarflokkur",
-    # Historical parties (1990s)
-    "A": "Alþýðuflokkur",
-    "AB": "Alþýðubandalag",
-    "K": "Kvennalistinn",
-    "T": "Borgaraflokkurinn",
-}
 
 
 # ---------------------------------------------------------------------------
@@ -125,5 +119,7 @@ def speech_url(session: int, speech_id: str) -> str:
     return f"https://www.althingi.is/altext/raeda/{session}/{speech_id}.html"
 
 
-def party_name(abbrev: str) -> str:
-    return PARTY_NAMES.get(abbrev, abbrev)
+def is_eu_relevant(issue_title: str) -> bool:
+    """Check if an issue title is EU/EES-relevant (filters off-topic speeches)."""
+    title_lower = issue_title.lower()
+    return any(pat in title_lower for pat in EU_TITLE_PATTERNS)
