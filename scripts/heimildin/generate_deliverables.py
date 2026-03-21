@@ -381,6 +381,119 @@ def generate_cross_era_summary(
     return "\n".join(lines)
 
 
+def generate_party_speaker_analysis(
+    eras: list[str],
+    canonical_by_era: dict[str, list[dict]],
+    instances_by_era: dict[str, list[dict]],
+    lookup_by_era: dict[str, dict],
+    stats_by_era: dict[str, dict],
+) -> str:
+    """D5: Party and speaker analysis — who said what, party positioning."""
+    lines = [
+        "# Flokka- og þingmannagreining",
+        "",
+        "Hvernig skiptast röksemdafærslur eftir flokkum og þingmönnum?",
+        "",
+    ]
+
+    for era in eras:
+        era_label = "ESB (2024–2026)" if era == "esb" else "EES (1991–1993)"
+        instances = instances_by_era[era]
+        canonical = canonical_by_era[era]
+        lookup = lookup_by_era[era]
+        stats = stats_by_era.get(era, {})
+
+        lines.append(f"## {era_label}")
+        lines.append("")
+
+        # ── Party stance breakdown ──
+        party_stats: dict[str, dict] = {}
+        for inst in instances:
+            party = inst.get("party", "?")
+            stance = inst.get("stance", "neutral")
+            party_stats.setdefault(party, {
+                "pro_eu": 0, "anti_eu": 0, "neutral": 0,
+                "total": 0, "speakers": set()
+            })
+            party_stats[party][stance] = party_stats[party].get(stance, 0) + 1
+            party_stats[party]["total"] += 1
+            party_stats[party]["speakers"].add(inst.get("speaker", "?"))
+
+        lines.append("### Flokkar — afstaða")
+        lines.append("")
+        lines.append(
+            "| Flokkur | Þingmenn | Fullyrðingar | Fylgjandi | Andvíg | Hlutlaus | % fylgjandi |"
+        )
+        lines.append(
+            "|---------|----------|-------------|-----------|--------|----------|-------------|"
+        )
+
+        for party, ps in sorted(party_stats.items(), key=lambda x: -x[1]["total"]):
+            n_speakers = len(ps["speakers"])
+            total = ps["total"]
+            pro = ps["pro_eu"]
+            anti = ps["anti_eu"]
+            neu = ps["neutral"]
+            pct = f"{pro / total * 100:.0f}%" if total else "—"
+            lines.append(
+                f"| {party} | {n_speakers} | {total} | {pro} | {anti} | {neu} | {pct} |"
+            )
+
+        lines.append("")
+
+        # ── Top speakers ──
+        speaker_stats: dict[str, dict] = {}
+        for inst in instances:
+            speaker = inst.get("speaker", "?")
+            party = inst.get("party", "?")
+            stance = inst.get("stance", "neutral")
+            speaker_stats.setdefault(speaker, {
+                "party": party, "pro_eu": 0, "anti_eu": 0, "neutral": 0, "total": 0,
+                "top_claims": {},
+            })
+            speaker_stats[speaker][stance] = speaker_stats[speaker].get(stance, 0) + 1
+            speaker_stats[speaker]["total"] += 1
+            cid = inst.get("canonical_id", "?")
+            speaker_stats[speaker]["top_claims"][cid] = (
+                speaker_stats[speaker]["top_claims"].get(cid, 0) + 1
+            )
+
+        lines.append("### Þingmenn — yfirlit")
+        lines.append("")
+        lines.append(
+            "| Þingmaður | Flokkur | Fullyrðingar | Fylgjandi | Andvíg | Hlutlaus |"
+        )
+        lines.append(
+            "|-----------|---------|-------------|-----------|--------|----------|"
+        )
+
+        for speaker, ss in sorted(speaker_stats.items(), key=lambda x: -x[1]["total"]):
+            lines.append(
+                f"| {speaker} | {ss['party']} | {ss['total']} | "
+                f"{ss['pro_eu']} | {ss['anti_eu']} | {ss['neutral']} |"
+            )
+
+        lines.append("")
+
+        # ── Speaker detail: top claims per speaker ──
+        canon_lookup = {cc["canonical_id"]: cc["canonical_text"] for cc in canonical}
+
+        lines.append("### Þingmenn — helstu röksemdafærslur")
+        lines.append("")
+
+        for speaker, ss in sorted(speaker_stats.items(), key=lambda x: -x[1]["total"]):
+            if ss["total"] < 3:
+                continue
+            top = sorted(ss["top_claims"].items(), key=lambda x: -x[1])[:5]
+            lines.append(f"**{speaker}** ({ss['party']}, {ss['total']} fullyrðingar)")
+            for cid, count in top:
+                text = canon_lookup.get(cid, cid)[:80]
+                lines.append(f"- {count}× {text}")
+            lines.append("")
+
+    return "\n".join(lines)
+
+
 def _topic_label(canonical_id: str) -> str:
     """Extract topic from canonical_id prefix."""
     prefix = canonical_id.split("-")[0] if "-" in canonical_id else "OTH"
@@ -449,6 +562,14 @@ def main() -> None:
             print(f"D4 written: {cross_file}")
         else:
             print("D4 skipped: no cross_era_themes.json found")
+
+    # D5: Party/speaker analysis
+    d5 = generate_party_speaker_analysis(
+        eras, canonical_by_era, instances_by_era, lookup_by_era, stats_by_era
+    )
+    d5_file = DELIVERABLES_DIR / "D5_party_speaker_analysis.md"
+    d5_file.write_text(d5, encoding="utf-8")
+    print(f"D5 written: {d5_file}")
 
     print(f"\nAll deliverables in {DELIVERABLES_DIR}/")
 
