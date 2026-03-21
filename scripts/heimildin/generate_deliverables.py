@@ -239,6 +239,109 @@ def _topic_label(canonical_id: str) -> str:
     return labels.get(prefix, prefix)
 
 
+def generate_cross_era_summary(
+    canonical_by_era: dict[str, list[dict]],
+    instances_by_era: dict[str, list[dict]],
+) -> str | None:
+    """Generate cross-era comparison summary from theme matching."""
+    themes_file = WORK_DIR / "canonicalise" / "cross_era_themes.json"
+    if not themes_file.exists():
+        return None
+
+    themes = json.loads(themes_file.read_text(encoding="utf-8"))
+
+    # Build lookups
+    esb_lookup = {c["canonical_id"]: c for c in canonical_by_era.get("esb", [])}
+    ees_lookup = {c["canonical_id"]: c for c in canonical_by_era.get("ees", [])}
+
+    lines = [
+        "# Samanburður á ESB- og EES-umræðu á Alþingi",
+        "",
+        "Hvaða röksemdafærslur lifðu af 30 ár? Hverjar hurfu? Hverjar eru nýjar?",
+        "",
+        "Greining á meginfullyrðingum í þingumræðum um Evrópska efnahagssvæðið "
+        "(1991–1993) og þjóðaratkvæðagreiðslu um ESB-aðild (2024–2026).",
+        "",
+    ]
+
+    # Group by type
+    for type_key, type_label, type_desc in [
+        ("perennial", "Röksemdafærslur sem lifðu af 30 ár",
+         "Þessar röksemdafærslur birtast í báðum umræðum — frá EES-samningnum "
+         "1991–1993 og ESB-þjóðaratkvæðagreiðslunni 2026."),
+        ("new_2026", "Nýjar röksemdafærslur 2026",
+         "Þessar röksemdafærslur birtast aðeins í ESB-umræðunni 2026 — "
+         "þær áttu sér enga hliðstæðu í EES-umræðunni."),
+        ("disappeared", "Röksemdafærslur sem hurfu",
+         "Þessar röksemdafærslur voru áberandi í EES-umræðunni 1991–1993 "
+         "en birtast ekki í ESB-umræðunni 2026."),
+    ]:
+        type_themes = [t for t in themes if t.get("type") == type_key]
+        if not type_themes:
+            continue
+
+        lines.append(f"## {type_label}")
+        lines.append("")
+        lines.append(type_desc)
+        lines.append("")
+
+        # Sort by total instances descending
+        def _total(t):
+            esb_n = sum(
+                esb_lookup[i]["instance_count"]
+                for i in t.get("esb_ids", []) if i in esb_lookup
+            )
+            ees_n = sum(
+                ees_lookup[i]["instance_count"]
+                for i in t.get("ees_ids", []) if i in ees_lookup
+            )
+            return esb_n + ees_n
+
+        type_themes.sort(key=_total, reverse=True)
+
+        lines.append(
+            "| Meginfullyrðing | ESB (2026) | EES (1991–93) | Athugasemd |"
+        )
+        lines.append(
+            "|---------------|------------|---------------|------------|"
+        )
+
+        for t in type_themes:
+            theme = t.get("theme", "?")
+            note = t.get("note", "")
+
+            esb_n = sum(
+                esb_lookup[i]["instance_count"]
+                for i in t.get("esb_ids", []) if i in esb_lookup
+            )
+            ees_n = sum(
+                ees_lookup[i]["instance_count"]
+                for i in t.get("ees_ids", []) if i in ees_lookup
+            )
+
+            esb_str = f"{esb_n}×" if esb_n else "—"
+            ees_str = f"{ees_n}×" if ees_n else "—"
+
+            lines.append(
+                f"| {theme} | {esb_str} | {ees_str} | {note} |"
+            )
+
+        lines.append("")
+
+    # Summary stats
+    perennial = [t for t in themes if t.get("type") == "perennial"]
+    new_2026 = [t for t in themes if t.get("type") == "new_2026"]
+    disappeared = [t for t in themes if t.get("type") == "disappeared"]
+
+    lines.append("## Samantekt")
+    lines.append("")
+    lines.append(f"- **{len(perennial)}** röksemdafærslur birtast í báðum umræðum")
+    lines.append(f"- **{len(new_2026)}** röksemdafærslur eru nýjar 2026")
+    lines.append(f"- **{len(disappeared)}** röksemdafærslur hurfu frá 1993")
+
+    return "\n".join(lines)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate Heimildin deliverables"
@@ -278,6 +381,16 @@ def main() -> None:
         d3_file = DELIVERABLES_DIR / f"D3_summary_{era_label}.csv"
         d3_file.write_text(d3, encoding="utf-8")
         print(f"D3 written: {d3_file}")
+
+    # Cross-era summary (if matching data exists)
+    if len(eras) > 1:
+        cross = generate_cross_era_summary(canonical_by_era, instances_by_era)
+        if cross:
+            cross_file = DELIVERABLES_DIR / "D4_cross_era_summary.md"
+            cross_file.write_text(cross, encoding="utf-8")
+            print(f"D4 written: {cross_file}")
+        else:
+            print("D4 skipped: no cross_era_themes.json found")
 
     print(f"\nAll deliverables in {DELIVERABLES_DIR}/")
 
