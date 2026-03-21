@@ -1,0 +1,322 @@
+"""Canonicalise extracted claims into grouped canonical claims.
+
+Groups similar claim instances into canonical claims using LLM-based
+clustering. Works per-topic to keep context manageable.
+
+Usage:
+    uv run python scripts/heimildin/canonicalise.py prepare [--era esb]
+    uv run python scripts/heimildin/canonicalise.py parse [--era esb]
+    uv run python scripts/heimildin/canonicalise.py status
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from config import WORK_DIR
+
+CANONICALISE_DIR = WORK_DIR / "canonicalise"
+
+# ---------------------------------------------------------------------------
+# Context template for LLM clustering
+# ---------------------------------------------------------------------------
+
+CLUSTERING_INSTRUCTIONS = """\
+# Claim Canonicalisation — Heimildin Project
+
+## Task
+
+You are given a list of claim summaries extracted from Alþingi speeches about
+Iceland's EU membership debate. Each claim has an index number.
+
+Your job: group claims that express **the same core argument** into canonical
+clusters. Two claims belong in the same cluster if a reader would recognise
+them as "the same point being made."
+
+## Grouping principles
+
+- **Same argument, different words** → same cluster
+  - "ESB-aðild felur í sér fullveldistap" and "Framsal valds til Brussel" = same
+- **Same topic, different argument** → different clusters
+  - "ESB-samningur er landssérstakur" vs "Ísland er 80% inni í ESB vegna EES" = different
+- **Opposite stances on same issue** → different clusters
+  - "EES virkar vel" (anti-EU) vs "EES er ófullnægjandi" (pro-EU) = different
+- When in doubt, **keep clusters separate** — it's better to have too many
+  canonical claims than to merge genuinely different arguments
+- A claim can only belong to one cluster
+
+## Output format
+
+Write a JSON array where each element is one canonical claim:
+
+```json
+[
+    {{
+        "canonical_id": "SOV-01",
+        "canonical_text": "Aðild að ESB felur í sér fullveldistap og framsal ákvörðunarvalds til Brussel.",
+        "stance": "anti_eu",
+        "instance_indices": [3, 7, 15, 22]
+    }}
+]
+```
+
+### Rules
+
+- `canonical_id`: `TOPIC_PREFIX-NN` (e.g. `DEM-01`, `SOV-01`, `EEA-01`)
+- `canonical_text`: A clean, neutral summary of the core argument (Icelandic, 1 sentence)
+- `stance`: The dominant stance of claims in this cluster (pro_eu / anti_eu / neutral)
+- `instance_indices`: List of claim indices that belong to this cluster
+- Every claim index must appear in exactly one cluster
+- Use correct Icelandic Unicode (þ, ð, á, é, í, ó, ú, ý, æ, ö)
+- NEVER use „…" quotes in JSON — use «…» or escaped \\"…\\"
+
+## Topic prefix mapping
+
+fisheries→FIS, trade→TRA, sovereignty→SOV, eea_eu_law→EEA,
+agriculture→AGR, precedents→PRE, currency→CUR, labour→LAB,
+energy→ENE, housing→HOU, defence→DEF, democracy→DEM,
+environment→ENV, other→OTH
+
+## Claims to cluster
+
+**Topic: {topic}** ({count} claims)
+
+"""
+
+
+def prepare(era: str) -> None:
+    """Group claims by topic and write clustering context files."""
+    raw_file = WORK_DIR / f"{era}_claims_raw.json"
+    if not raw_file.exists():
+        print(f"No raw claims found. Run 'parse --era {era}' first.")
+        sys.exit(1)
+
+    claims = json.loads(raw_file.read_text(encoding="utf-8"))
+    print(f"Loaded {len(claims)} claims from {raw_file}")
+
+    # Group by topic
+    by_topic: dict[str, list[dict]] = {}
+    for i, claim in enumerate(claims):
+        claim["_index"] = i
+        topic = claim.get("topic", "other")
+        by_topic.setdefault(topic, []).append(claim)
+
+    out_dir = CANONICALISE_DIR / era
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    prepared = 0
+    for topic, topic_claims in sorted(by_topic.items(), key=lambda x: -len(x[1])):
+        if len(topic_claims) < 2:
+            print(f"  skip {topic} ({len(topic_claims)} claim — no clustering needed)")
+            continue
+
+        output_file = out_dir / f"{topic}_canonical.json"
+        if output_file.exists():
+            print(f"  skip {topic} (already canonicalised)")
+            continue
+
+        # Build context
+        context = CLUSTERING_INSTRUCTIONS.format(
+            topic=topic, count=len(topic_claims)
+        )
+
+        for claim in topic_claims:
+            stance_tag = claim.get("stance", "?")
+            speaker = claim.get("speaker", "?")
+            context += (
+                f"[{claim['_index']}] ({stance_tag}, {speaker}): "
+                f"{claim['claim_summary']}\n"
+            )
+
+        context_file = out_dir / f"_context_{topic}.md"
+        context_file.write_text(context, encoding="utf-8")
+
+        # Also write the claims subset for reference
+        subset_file = out_dir / f"_claims_{topic}.json"
+        subset_file.write_text(
+            json.dumps(topic_claims, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        prepared += 1
+        print(f"  prepared {topic}: {len(topic_claims)} claims → {context_file.name}")
+
+    print(f"\nPrepared {prepared} topics for canonicalisation in {out_dir}/")
+    print("Run LLM agent on each _context_{topic}.md → {topic}_canonical.json")
+
+
+def parse(era: str) -> None:
+    """Parse canonical clustering outputs and build the full canonical mapping."""
+    canon_dir = CANONICALISE_DIR / era
+    if not canon_dir.exists():
+        print(f"No canonicalisation directory for era '{era}'")
+        sys.exit(1)
+
+    raw_file = WORK_DIR / f"{era}_claims_raw.json"
+    claims = json.loads(raw_file.read_text(encoding="utf-8"))
+
+    canonical_claims = []
+    instance_map: dict[int, str] = {}  # claim_index → canonical_id
+    errors = []
+
+    for canon_file in sorted(canon_dir.glob("*_canonical.json")):
+        raw = canon_file.read_text(encoding="utf-8")
+        # Sanitise Icelandic quotes
+        raw = raw.replace("\u201e", '"').replace("\u201c", '"')
+        if raw.strip().startswith("```"):
+            lines = raw.strip().split("\n")
+            raw = "\n".join(line for line in lines if not line.strip().startswith("```"))
+
+        try:
+            groups = json.loads(raw)
+        except json.JSONDecodeError as e:
+            errors.append(f"JSON error in {canon_file.name}: {e}")
+            continue
+
+        if not isinstance(groups, list):
+            errors.append(f"Expected list in {canon_file.name}")
+            continue
+
+        for group in groups:
+            cid = group.get("canonical_id", "?")
+            canonical_claims.append({
+                "canonical_id": cid,
+                "canonical_text": group.get("canonical_text", ""),
+                "stance": group.get("stance", "neutral"),
+                "instance_count": len(group.get("instance_indices", [])),
+                "instance_indices": group.get("instance_indices", []),
+            })
+
+            for idx in group.get("instance_indices", []):
+                if idx in instance_map:
+                    errors.append(
+                        f"Claim {idx} assigned to both {instance_map[idx]} and {cid}"
+                    )
+                instance_map[idx] = cid
+
+    # Check coverage
+    unmapped = [i for i in range(len(claims)) if i not in instance_map]
+    if unmapped:
+        # Some might be in single-claim topics (skipped during prepare)
+        single_topics = set()
+        for i in unmapped:
+            single_topics.add(claims[i].get("topic", "other"))
+        if single_topics:
+            print(f"Note: {len(unmapped)} claims from single-instance topics "
+                  f"({', '.join(single_topics)}) — creating singleton canonicals")
+
+        for i in unmapped:
+            claim = claims[i]
+            topic = claim.get("topic", "other")
+            prefix = _topic_prefix(topic)
+            cid = f"{prefix}-S{i:03d}"
+            canonical_claims.append({
+                "canonical_id": cid,
+                "canonical_text": claim.get("claim_summary", ""),
+                "stance": claim.get("stance", "neutral"),
+                "instance_count": 1,
+                "instance_indices": [i],
+            })
+            instance_map[i] = cid
+
+    # Enrich raw claims with canonical_id
+    for i, claim in enumerate(claims):
+        claim["canonical_id"] = instance_map.get(i, "UNMAPPED")
+
+    # Sort canonical claims by instance count descending
+    canonical_claims.sort(key=lambda c: c["instance_count"], reverse=True)
+
+    # Write outputs
+    canonical_file = WORK_DIR / f"{era}_canonical.json"
+    canonical_file.write_text(
+        json.dumps(canonical_claims, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    enriched_file = WORK_DIR / f"{era}_claims_enriched.json"
+    enriched_file.write_text(
+        json.dumps(claims, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    print(f"Canonical claims: {len(canonical_claims)}")
+    print(f"  Output: {canonical_file}")
+    print(f"  Enriched claims: {enriched_file}")
+
+    # Show top canonical claims by frequency
+    print(f"\nTop 20 canonical claims:")
+    for cc in canonical_claims[:20]:
+        print(f"  {cc['canonical_id']:8} ({cc['instance_count']:2}×) "
+              f"[{cc['stance']:8}] {cc['canonical_text'][:70]}")
+
+    if errors:
+        print(f"\n{len(errors)} errors:")
+        for err in errors:
+            print(f"  - {err}")
+
+
+def status() -> None:
+    """Show canonicalisation progress."""
+    for era in ["esb", "ees"]:
+        canon_dir = CANONICALISE_DIR / era
+        if not canon_dir.exists():
+            continue
+
+        contexts = list(canon_dir.glob("_context_*.md"))
+        outputs = list(canon_dir.glob("*_canonical.json"))
+
+        print(f"\n## {era.upper()} era")
+        print(f"  Topics prepared: {len(contexts)}")
+        print(f"  Topics canonicalised: {len(outputs)}")
+
+        for ctx in sorted(contexts):
+            topic = ctx.stem.replace("_context_", "")
+            done = (canon_dir / f"{topic}_canonical.json").exists()
+            status_str = "done" if done else "pending"
+            print(f"    {topic}: {status_str}")
+
+
+_TOPIC_PREFIXES = {
+    "fisheries": "FIS", "trade": "TRA", "sovereignty": "SOV",
+    "eea_eu_law": "EEA", "agriculture": "AGR", "precedents": "PRE",
+    "currency": "CUR", "labour": "LAB", "energy": "ENE",
+    "housing": "HOU", "defence": "DEF", "democracy": "DEM",
+    "environment": "ENV", "other": "OTH",
+}
+
+
+def _topic_prefix(topic: str) -> str:
+    return _TOPIC_PREFIXES.get(topic, "OTH")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Canonicalise extracted claims"
+    )
+    sub = parser.add_subparsers(dest="command")
+
+    prep = sub.add_parser("prepare", help="Group claims and write clustering contexts")
+    prep.add_argument("--era", default="esb", choices=["esb", "ees"])
+
+    p = sub.add_parser("parse", help="Parse clustering output into canonical mapping")
+    p.add_argument("--era", default="esb", choices=["esb", "ees"])
+
+    sub.add_parser("status", help="Show canonicalisation progress")
+
+    args = parser.parse_args()
+
+    if args.command == "prepare":
+        prepare(args.era)
+    elif args.command == "parse":
+        parse(args.era)
+    elif args.command == "status":
+        status()
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

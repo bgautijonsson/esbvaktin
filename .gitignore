@@ -51,6 +51,7 @@ data/speech_checks/
 data/overviews/
 data/audit/
 data/review/
+data/heimildin/
 
 # Claude Code (keep skills, rules, agents, hooks, and shared settings)
 .claude/*
