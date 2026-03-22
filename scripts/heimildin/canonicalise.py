@@ -165,6 +165,7 @@ def parse(era: str) -> None:
     instance_map: dict[str, str] = {}  # instance_id → canonical_id
     errors = []
     duplicates = 0
+    fabricated = 0
 
     for canon_file in sorted(canon_dir.glob("*_canonical.json")):
         raw = canon_file.read_text(encoding="utf-8")
@@ -189,16 +190,22 @@ def parse(era: str) -> None:
             # Support both "instance_ids" (new) and "instance_indices" (old)
             ids = group.get("instance_ids", group.get("instance_indices", []))
 
-            # Deduplicate: skip IDs already assigned (P3.3)
+            # Deduplicate and validate: skip IDs already assigned (P3.3)
+            # and strip fabricated IDs that don't exist in the claims set
             clean_ids = []
             for iid in ids:
                 iid_str = str(iid)
                 if iid_str in instance_map:
                     duplicates += 1
                     continue
+                if iid_str not in id_to_idx:
+                    fabricated += 1
+                    continue  # fabricated ID — agent hallucinated it
                 clean_ids.append(iid_str)
                 instance_map[iid_str] = cid
 
+            if not clean_ids:
+                continue  # all IDs were fabricated or duplicated
             canonical_claims.append({
                 "canonical_id": cid,
                 "canonical_text": group.get("canonical_text", ""),
@@ -265,6 +272,8 @@ def parse(era: str) -> None:
     print(f"  Enriched claims: {enriched_file}")
     if duplicates:
         print(f"  Fixed {duplicates} double-assignments (kept first)")
+    if fabricated:
+        print(f"  Stripped {fabricated} fabricated instance IDs")
 
     # Show top canonical claims by frequency
     print(f"\nTop 20 canonical claims:")
