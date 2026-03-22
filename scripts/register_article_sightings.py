@@ -58,6 +58,7 @@ def _extract_primary_speaker(claim_entry: dict) -> str | None:
         return None
     return name
 
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s  %(message)s",
@@ -95,10 +96,7 @@ def load_unregistered_articles() -> list[dict]:
         sys.exit(1)
 
     registry = json.loads(REGISTRY_PATH.read_text())
-    return [
-        a for a in registry
-        if not a.get("in_db") and a.get("analysis_dir")
-    ]
+    return [a for a in registry if not a.get("in_db") and a.get("analysis_dir")]
 
 
 def register_article(
@@ -180,8 +178,11 @@ def register_article(
             counts["matched"] += 1
             logger.debug(
                 "Match: %.3f '%s' → %s [%s] (%s)",
-                match.similarity, claim_text[:50], match.claim_slug,
-                speaker or "?", verdict,
+                match.similarity,
+                claim_text[:50],
+                match.claim_slug,
+                speaker or "?",
+                verdict,
             )
 
         elif verdict != "unverifiable":
@@ -198,7 +199,7 @@ def register_article(
                     supporting_evidence=claim_entry.get("supporting_evidence", []),
                     contradicting_evidence=claim_entry.get("contradicting_evidence", []),
                     confidence=claim_entry.get("confidence", 0.5),
-                    published=False,
+                    published=True,
                 )
                 try:
                     claim_id = add_claim(new_claim, conn=conn)
@@ -336,8 +337,7 @@ def main():
             n_claims = len(report.get("claims", []))
             prefix = "[DRY RUN] " if args.dry_run else ""
             print(
-                f"{prefix}[{i}/{len(articles)}] {a['analysis_dir']}: "
-                f"{n_claims} claims → {counts}"
+                f"{prefix}[{i}/{len(articles)}] {a['analysis_dir']}: {n_claims} claims → {counts}"
             )
 
         print(f"\n{prefix if args.dry_run else ''}Totals: {totals}")

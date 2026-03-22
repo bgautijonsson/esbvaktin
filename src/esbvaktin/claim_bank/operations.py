@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS claims (
     embedding vector(1024),
     version INT DEFAULT 1,
     last_verified DATE NOT NULL DEFAULT CURRENT_DATE,
-    published BOOLEAN DEFAULT FALSE,
+    published BOOLEAN DEFAULT TRUE,
     substantive BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -81,12 +81,30 @@ def init_claims_schema(conn: psycopg.Connection | None = None) -> None:
 # ── Slug generation ───────────────────────────────────────────────────
 
 # Icelandic character mapping for URL-safe slugs
-_ICELANDIC_MAP = str.maketrans({
-    "á": "a", "ð": "d", "é": "e", "í": "i", "ó": "o",
-    "ú": "u", "ý": "y", "þ": "th", "æ": "ae", "ö": "o",
-    "Á": "a", "Ð": "d", "É": "e", "Í": "i", "Ó": "o",
-    "Ú": "u", "Ý": "y", "Þ": "th", "Æ": "ae", "Ö": "o",
-})
+_ICELANDIC_MAP = str.maketrans(
+    {
+        "á": "a",
+        "ð": "d",
+        "é": "e",
+        "í": "i",
+        "ó": "o",
+        "ú": "u",
+        "ý": "y",
+        "þ": "th",
+        "æ": "ae",
+        "ö": "o",
+        "Á": "a",
+        "Ð": "d",
+        "É": "e",
+        "Í": "i",
+        "Ó": "o",
+        "Ú": "u",
+        "Ý": "y",
+        "Þ": "th",
+        "Æ": "ae",
+        "Ö": "o",
+    }
+)
 
 
 def generate_slug(text_is: str) -> str:
@@ -157,9 +175,17 @@ def search_claims(
     ).fetchall()
 
     columns = [
-        "claim_id", "claim_slug", "canonical_text_is", "verdict",
-        "explanation_is", "supporting_evidence", "contradicting_evidence",
-        "missing_context_is", "confidence", "last_verified", "similarity",
+        "claim_id",
+        "claim_slug",
+        "canonical_text_is",
+        "verdict",
+        "explanation_is",
+        "supporting_evidence",
+        "contradicting_evidence",
+        "missing_context_is",
+        "confidence",
+        "last_verified",
+        "similarity",
     ]
 
     cutoff = date.today() - timedelta(days=_FRESHNESS_DAYS)

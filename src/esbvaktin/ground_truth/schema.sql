@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS claims (
     embedding vector(1024),                    -- BAAI/bge-m3 for semantic matching
     version INT DEFAULT 1,                     -- incremented on verdict updates
     last_verified DATE NOT NULL DEFAULT CURRENT_DATE,
-    published BOOLEAN DEFAULT FALSE,           -- visible on esbvaktin.is
+    published BOOLEAN DEFAULT TRUE,            -- visible on esbvaktin.is
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

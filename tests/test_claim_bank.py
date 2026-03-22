@@ -52,7 +52,7 @@ class TestCanonicalClaimModel:
             confidence=0.8,
         )
         assert claim.claim_slug == "sjavarutvegur-kvotakerfi"
-        assert claim.published is False
+        assert claim.published is True
 
     def test_slug_validation(self):
         """Slug must be lowercase alphanumeric with hyphens."""

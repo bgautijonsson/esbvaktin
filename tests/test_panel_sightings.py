@@ -60,7 +60,7 @@ def test_matched_sighting_uses_panel_show_type(mock_search):
 @patch("esbvaktin.pipeline.register_sightings.add_claim", return_value=99)
 @patch("esbvaktin.pipeline.register_sightings.search_claims", return_value=[])
 def test_new_claim_created_for_non_match(mock_search, mock_add):
-    """Non-matching assessable claims create new unpublished claims."""
+    """Non-matching assessable claims create new auto-published claims."""
     conn = MagicMock()
 
     assessments = [_make_assessment("New claim", "Þorgerður Katrín")]
@@ -74,7 +74,7 @@ def test_new_claim_created_for_non_match(mock_search, mock_add):
     assert counts["new_claims"] == 1
     mock_add.assert_called_once()
     new_claim = mock_add.call_args[0][0]
-    assert new_claim.published is False
+    assert new_claim.published is True
 
 
 @patch("esbvaktin.pipeline.register_sightings.search_claims", return_value=[])
@@ -118,8 +118,8 @@ def test_mixed_verdicts_counted_correctly(mock_search, mock_add):
     """Counts are correct across a mix of matched, new, and discarded."""
     mock_search.side_effect = [
         [_FakeMatch(1, "existing", 0.8)],  # match
-        [],                                  # no match → new
-        [],                                  # no match + unverifiable → discard
+        [],  # no match → new
+        [],  # no match + unverifiable → discard
     ]
     conn = MagicMock()
 

@@ -28,6 +28,7 @@ ENTITY_DETAILS_DIR = SITE_DIR / "_data" / "entity-details"
 
 def _get_connection():
     from esbvaktin.ground_truth.operations import get_connection
+
     return get_connection()
 
 
@@ -39,10 +40,7 @@ def diversity_score(topic_counts: dict[str, int]) -> float:
     n_topics = len(topic_counts)
     if n_topics <= 1:
         return 0.0
-    entropy = -sum(
-        (c / total) * math.log2(c / total)
-        for c in topic_counts.values() if c > 0
-    )
+    entropy = -sum((c / total) * math.log2(c / total) for c in topic_counts.values() if c > 0)
     max_entropy = math.log2(n_topics)
     return round(entropy / max_entropy, 4) if max_entropy > 0 else 0.0
 
@@ -66,7 +64,8 @@ def _parse_iso_week(week_str: str) -> tuple[date, date]:
 
 def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
     """Articles analysed in the period (distinct source URLs from sightings)."""
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         WITH per_url_cat AS (
             SELECT s.source_url,
                    MAX(s.source_title) AS source_title,
@@ -76,8 +75,7 @@ def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
                    SUM(COUNT(*)) OVER (PARTITION BY s.source_url) AS claim_count
             FROM claim_sightings s
             JOIN claims c ON c.id = s.claim_id
-            WHERE c.published = TRUE
-              AND s.source_date BETWEEN %s AND %s
+            WHERE s.source_date BETWEEN %s AND %s
               AND s.source_url IS NOT NULL
             GROUP BY s.source_url, c.category
         ),
@@ -91,7 +89,9 @@ def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
         SELECT source_url, source_title, dominant_category, claim_count, article_date
         FROM dominant
         ORDER BY article_date
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     # Look up source_domain from DB for each URL
     url_to_domain: dict[str, str] = {}
@@ -107,7 +107,9 @@ def _fetch_period_articles(conn, start: date, end: date) -> list[dict]:
             "title": title or url,
             "source": url_to_domain.get(url, "unknown"),
             "url": url,
-            "date": article_date.isoformat() if isinstance(article_date, (date, datetime)) else article_date,
+            "date": article_date.isoformat()
+            if isinstance(article_date, (date, datetime))
+            else article_date,
             "claim_count": int(claim_count),
             "dominant_category": dominant_category,
         }
@@ -121,13 +123,16 @@ def _fetch_new_claims(conn, start: date, end: date) -> dict:
     Uses source_date (article publication) not created_at (DB insertion),
     so claim counts align with the article counts for the same period.
     """
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT c.verdict, c.published, COUNT(DISTINCT c.id) AS n
         FROM claims c
         JOIN claim_sightings s ON c.id = s.claim_id
         WHERE s.source_date BETWEEN %s AND %s
         GROUP BY c.verdict, c.published
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     total = 0
     published = 0
@@ -148,7 +153,8 @@ def _fetch_new_claims(conn, start: date, end: date) -> dict:
 
 def _fetch_topic_activity(conn, start: date, end: date) -> list[dict]:
     """Per-topic sighting counts and new claims in the period."""
-    sighting_rows = conn.execute("""
+    sighting_rows = conn.execute(
+        """
         SELECT c.category, COUNT(*) AS sightings
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
@@ -156,27 +162,34 @@ def _fetch_topic_activity(conn, start: date, end: date) -> list[dict]:
           AND s.source_date BETWEEN %s AND %s
         GROUP BY c.category
         ORDER BY sightings DESC
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
-    new_claim_rows = conn.execute("""
+    new_claim_rows = conn.execute(
+        """
         SELECT c.category, COUNT(DISTINCT c.id) AS new_claims
         FROM claims c
         JOIN claim_sightings s ON c.id = s.claim_id
         WHERE c.published = TRUE
           AND s.source_date BETWEEN %s AND %s
         GROUP BY c.category
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     new_claims_map = {cat: n for cat, n in new_claim_rows}
 
     result = []
     for cat, sightings in sighting_rows:
-        result.append({
-            "topic": cat,
-            "label_is": TOPIC_LABELS_IS.get(cat, cat),
-            "sightings": sightings,
-            "new_claims": new_claims_map.get(cat, 0),
-        })
+        result.append(
+            {
+                "topic": cat,
+                "label_is": TOPIC_LABELS_IS.get(cat, cat),
+                "sightings": sightings,
+                "new_claims": new_claims_map.get(cat, 0),
+            }
+        )
 
     return result
 
@@ -187,14 +200,17 @@ def _fetch_topic_activity_with_delta(
     """Topic activity with delta compared to previous period."""
     current = _fetch_topic_activity(conn, start, end)
 
-    prev_rows = conn.execute("""
+    prev_rows = conn.execute(
+        """
         SELECT c.category, COUNT(*) AS sightings
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         WHERE c.published = TRUE
           AND s.source_date BETWEEN %s AND %s
         GROUP BY c.category
-    """, (prev_start, prev_end)).fetchall()
+    """,
+        (prev_start, prev_end),
+    ).fetchall()
 
     prev_map = {cat: n for cat, n in prev_rows}
 
@@ -255,14 +271,16 @@ def _active_entities_from_site(start: date, end: date) -> list[dict]:
         if claims_in_period == 0:
             continue
 
-        results.append({
-            "name": detail["name"],
-            "claims_made": claims_in_period,
-            "top_topics": [
-                TOPIC_LABELS_IS.get(cat, cat)
-                for cat, _ in sorted(topic_counts.items(), key=lambda x: -x[1])[:3]
-            ],
-        })
+        results.append(
+            {
+                "name": detail["name"],
+                "claims_made": claims_in_period,
+                "top_topics": [
+                    TOPIC_LABELS_IS.get(cat, cat)
+                    for cat, _ in sorted(topic_counts.items(), key=lambda x: -x[1])[:3]
+                ],
+            }
+        )
 
     # Sort by claims descending, take top 15
     results.sort(key=lambda x: -x["claims_made"])
@@ -271,7 +289,8 @@ def _active_entities_from_site(start: date, end: date) -> list[dict]:
 
 def _active_entities_from_db(conn, start: date, end: date) -> list[dict]:
     """Fallback: active entities from claim_sightings (may undercount)."""
-    speaker_rows = conn.execute("""
+    speaker_rows = conn.execute(
+        """
         SELECT s.speaker_name, COUNT(*) AS claims_made
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
@@ -280,16 +299,21 @@ def _active_entities_from_db(conn, start: date, end: date) -> list[dict]:
         GROUP BY s.speaker_name
         ORDER BY claims_made DESC
         LIMIT 15
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
-    topic_rows = conn.execute("""
+    topic_rows = conn.execute(
+        """
         SELECT s.speaker_name, c.category, COUNT(*) AS n
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         WHERE s.source_date BETWEEN %s AND %s
           AND s.speaker_name IS NOT NULL
         GROUP BY s.speaker_name, c.category
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     speaker_topics: dict[str, list[tuple[str, int]]] = defaultdict(list)
     for name, cat, n in topic_rows:
@@ -314,7 +338,8 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
     Includes missing_context_is so the editorial can explain what readers
     should know, rather than labelling claims as right or wrong.
     """
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT c.canonical_text_is, c.claim_slug, c.verdict, c.category,
                c.missing_context_is, c.explanation_is,
                COUNT(s.id) AS sighting_count,
@@ -326,7 +351,9 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
         GROUP BY c.id
         ORDER BY sighting_count DESC, c.canonical_text_is
         LIMIT 10
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     return [
         {
@@ -346,7 +373,8 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
 
 def _fetch_source_breakdown(conn, start: date, end: date) -> dict[str, int]:
     """Source domain breakdown (distinct articles) in the period."""
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT s.source_domain, COUNT(DISTINCT s.source_url) AS articles
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
@@ -355,7 +383,9 @@ def _fetch_source_breakdown(conn, start: date, end: date) -> dict[str, int]:
           AND s.source_domain IS NOT NULL
         GROUP BY s.source_domain
         ORDER BY articles DESC
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     return {domain: articles for domain, articles in rows}
 
@@ -368,7 +398,8 @@ def _fetch_key_facts(conn, start: date, end: date) -> list[dict]:
     spread across different topic categories.  Excludes political/polling
     categories to focus on substantive material readers can learn from.
     """
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT DISTINCT ON (c.category)
                c.canonical_text_is,
                c.claim_slug,
@@ -397,7 +428,9 @@ def _fetch_key_facts(conn, start: date, end: date) -> list[dict]:
                      ELSE 2
                  END,
                  c.confidence DESC
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     return [
         {
@@ -413,8 +446,7 @@ def _fetch_key_facts(conn, start: date, end: date) -> list[dict]:
             "supporting_evidence": sup or [],
             "contradicting_evidence": contra or [],
         }
-        for text, slug, cat, ctype, verdict, explanation, caveat, conf, sup, contra
-        in rows
+        for text, slug, cat, ctype, verdict, explanation, caveat, conf, sup, contra in rows
     ]
 
 
@@ -433,14 +465,17 @@ def _fetch_under_discussed(conn, start: date, end: date) -> list[dict]:
     evidence_map = {topic: count for topic, count in evidence_rows}
 
     # Count sightings per topic this period
-    sighting_rows = conn.execute("""
+    sighting_rows = conn.execute(
+        """
         SELECT c.category, COUNT(*) AS sightings
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         WHERE c.published = TRUE
           AND s.source_date BETWEEN %s AND %s
         GROUP BY c.category
-    """, (start, end)).fetchall()
+    """,
+        (start, end),
+    ).fetchall()
 
     sighting_map = {cat: n for cat, n in sighting_rows}
 
@@ -451,47 +486,56 @@ def _fetch_under_discussed(conn, start: date, end: date) -> list[dict]:
             continue  # Skip topics with thin evidence
         sightings = sighting_map.get(topic, 0)
         if sightings <= 2:  # Under-discussed threshold
-            results.append({
-                "topic": topic,
-                "label_is": TOPIC_LABELS_IS.get(topic, topic),
-                "evidence_entries": ev_count,
-                "sightings_this_period": sightings,
-            })
+            results.append(
+                {
+                    "topic": topic,
+                    "label_is": TOPIC_LABELS_IS.get(topic, topic),
+                    "evidence_entries": ev_count,
+                    "sightings_this_period": sightings,
+                }
+            )
 
     results.sort(key=lambda x: -x["evidence_entries"])
     return results
 
 
-def _fetch_previous_period_metrics(
-    conn, prev_start: date, prev_end: date
-) -> dict:
+def _fetch_previous_period_metrics(conn, prev_start: date, prev_end: date) -> dict:
     """Key metrics for the previous period (for comparison deltas)."""
     # Articles analysed
-    article_count = conn.execute("""
+    article_count = conn.execute(
+        """
         SELECT COUNT(DISTINCT s.source_url)
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         WHERE s.source_date BETWEEN %s AND %s
           AND s.source_url IS NOT NULL
           AND c.published = TRUE
-    """, (prev_start, prev_end)).fetchone()[0]
+    """,
+        (prev_start, prev_end),
+    ).fetchone()[0]
 
     # Published claims sighted in the period (aligned with _fetch_new_claims)
-    claim_count = conn.execute("""
+    claim_count = conn.execute(
+        """
         SELECT COUNT(DISTINCT c.id)
         FROM claims c
         JOIN claim_sightings s ON c.id = s.claim_id
         WHERE c.published = TRUE AND s.source_date BETWEEN %s AND %s
-    """, (prev_start, prev_end)).fetchone()[0]
+    """,
+        (prev_start, prev_end),
+    ).fetchone()[0]
 
     # Topic sighting counts for diversity
-    topic_rows = conn.execute("""
+    topic_rows = conn.execute(
+        """
         SELECT c.category, COUNT(*) AS sightings
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         WHERE c.published = TRUE AND s.source_date BETWEEN %s AND %s
         GROUP BY c.category
-    """, (prev_start, prev_end)).fetchall()
+    """,
+        (prev_start, prev_end),
+    ).fetchall()
 
     topic_counts = {cat: n for cat, n in topic_rows}
 
@@ -500,6 +544,165 @@ def _fetch_previous_period_metrics(
         "new_claims_published": claim_count,
         "diversity_score": diversity_score(topic_counts),
     }
+
+
+def check_inbox_coverage(start: date, end: date) -> dict:
+    """Check inbox for unanalysed articles from the target period.
+
+    Returns a dict with:
+      - total_discovered: all inbox articles in the date range
+      - analysed: count of processed articles
+      - pending: list of unanalysed articles with metadata
+      - topic_gaps: topics with pending articles but no/few analysed articles
+      - recommendations: articles recommended for analysis before editorial
+    """
+    inbox_path = PROJECT_ROOT / "data" / "inbox" / "inbox.json"
+    if not inbox_path.exists():
+        return {
+            "total_discovered": 0,
+            "analysed": 0,
+            "pending": [],
+            "topic_gaps": [],
+            "recommendations": [],
+        }
+
+    inbox = json.loads(inbox_path.read_text())
+
+    # Filter to articles from the target period
+    period_articles = []
+    for item in inbox:
+        article_date = item.get("date")
+        if not article_date:
+            continue
+        try:
+            d = date.fromisoformat(str(article_date)[:10])
+        except (ValueError, TypeError):
+            continue
+        if start <= d <= end:
+            period_articles.append(item)
+
+    processed = [a for a in period_articles if a.get("status") == "processed"]
+    pending = [
+        a
+        for a in period_articles
+        if a.get("status") in ("pending", "queued") and a.get("priority") in ("high", "medium")
+    ]
+
+    # Topic coverage: what topics are in analysed articles vs pending
+    analysed_topics: dict[str, int] = defaultdict(int)
+    for a in processed:
+        for t in a.get("topics", []):
+            analysed_topics[t] += 1
+
+    pending_topics: dict[str, int] = defaultdict(int)
+    for a in pending:
+        for t in a.get("topics", []):
+            pending_topics[t] += 1
+
+    # Find topic gaps: topics with pending articles but weak/no analysed coverage
+    topic_gaps = []
+    for topic, pending_count in sorted(pending_topics.items(), key=lambda x: -x[1]):
+        analysed_count = analysed_topics.get(topic, 0)
+        if analysed_count <= 1 and pending_count >= 1:
+            topic_gaps.append(
+                {
+                    "topic": topic,
+                    "label_is": TOPIC_LABELS_IS.get(topic, topic),
+                    "analysed": analysed_count,
+                    "pending": pending_count,
+                }
+            )
+
+    # Recommend articles that would fill topic gaps or are high priority
+    gap_topics = {g["topic"] for g in topic_gaps}
+    recommendations = []
+    for a in pending:
+        article_topics = set(a.get("topics", []))
+        fills_gap = bool(article_topics & gap_topics)
+        is_high = a.get("priority") == "high"
+        is_opinion = a.get("article_type") in ("opinion", "analysis", "interview")
+
+        if is_high or (fills_gap and is_opinion):
+            recommendations.append(
+                {
+                    "id": a.get("id", "?"),
+                    "title": a.get("title", "?"),
+                    "source": a.get("source", "?"),
+                    "date": str(a.get("date", "?")),
+                    "priority": a.get("priority", "?"),
+                    "topics": a.get("topics", []),
+                    "fills_gap": fills_gap,
+                    "gap_topics": sorted(article_topics & gap_topics),
+                }
+            )
+
+    # Sort: HIGH first, then gap-fillers, then by date (newest first)
+    recommendations.sort(
+        key=lambda r: (
+            0 if r["priority"] == "high" else 1,
+            0 if r["fills_gap"] else 1,
+            r["date"],
+        ),
+        reverse=False,
+    )
+    # Reverse date within priority groups — newest first
+    recommendations.sort(key=lambda r: r["date"], reverse=True)
+    recommendations.sort(
+        key=lambda r: (
+            0 if r["priority"] == "high" else 1,
+            0 if r["fills_gap"] else 1,
+        )
+    )
+
+    return {
+        "total_discovered": len(period_articles),
+        "analysed": len(processed),
+        "pending": [
+            {
+                "id": a.get("id"),
+                "title": a.get("title"),
+                "source": a.get("source"),
+                "topics": a.get("topics", []),
+                "priority": a.get("priority"),
+            }
+            for a in pending
+        ],
+        "topic_gaps": topic_gaps,
+        "recommendations": recommendations,
+    }
+
+
+def _print_inbox_check(coverage: dict, slug: str) -> bool:
+    """Print inbox coverage report. Returns True if recommendations exist."""
+    total = coverage["total_discovered"]
+    analysed = coverage["analysed"]
+    pending = coverage["pending"]
+    gaps = coverage["topic_gaps"]
+    recs = coverage["recommendations"]
+
+    print(f"\n{'=' * 60}")
+    print(f"INBOX COVERAGE CHECK — {slug}")
+    print(f"{'=' * 60}")
+    print(f"  Discovered in period: {total}")
+    print(f"  Analysed:             {analysed}")
+    print(f"  Pending (HIGH/MED):   {len(pending)}")
+
+    if gaps:
+        print("\n  Topic gaps (pending articles cover topics with ≤1 analysis):")
+        for g in gaps:
+            print(f"    {g['label_is']:30s}  {g['analysed']} analysed, {g['pending']} pending")
+
+    if recs:
+        print(f"\n  RECOMMENDED for analysis before editorial ({len(recs)}):")
+        for r in recs:
+            gap_note = f" [fills: {', '.join(r['gap_topics'])}]" if r["fills_gap"] else ""
+            print(f"    [{r['priority'].upper():6s}] {r['source']:15s} {r['title'][:50]}{gap_note}")
+        print("\n  Consider running /find-articles backlog or /analyse-article")
+        print("  on these before generating the editorial.")
+        return True
+    else:
+        print("\n  No coverage gaps found — safe to proceed with editorial.")
+        return False
 
 
 def generate_overview(start: date, end: date) -> dict:
@@ -639,6 +842,16 @@ def main() -> None:
         sys.exit(1)
 
     print(f"Generating overview for {start} → {end} (slug: {slug})")
+
+    # Check inbox coverage before generating
+    if "--skip-inbox-check" not in sys.argv:
+        coverage = check_inbox_coverage(start, end)
+        has_recs = _print_inbox_check(coverage, slug)
+        if has_recs and "--force" not in sys.argv:
+            print("\n  Use --force to generate anyway, or --skip-inbox-check to skip.")
+            sys.exit(2)
+        print()
+
     overview = generate_overview(start, end)
 
     # Write output

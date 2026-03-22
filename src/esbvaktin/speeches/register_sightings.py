@@ -81,7 +81,7 @@ def register_speech_sightings(
             )
 
         elif verdict != "unverifiable":
-            # No match, assessable claim → create new unpublished canonical claim
+            # No match, assessable claim → create new canonical claim (auto-published)
             slug = generate_slug(claim_text[:80])
             new_claim = CanonicalClaim(
                 claim_slug=slug,
@@ -94,7 +94,7 @@ def register_speech_sightings(
                 supporting_evidence=assessment.supporting_evidence,
                 contradicting_evidence=assessment.contradicting_evidence,
                 confidence=assessment.confidence,
-                published=False,
+                published=True,
             )
             try:
                 claim_id = add_claim(new_claim, conn=conn)

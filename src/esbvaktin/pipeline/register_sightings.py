@@ -97,7 +97,7 @@ def register_panel_sightings(
                 supporting_evidence=assessment.supporting_evidence,
                 contradicting_evidence=assessment.contradicting_evidence,
                 confidence=assessment.confidence,
-                published=False,
+                published=True,
             )
             try:
                 claim_id = add_claim(new_claim, conn=conn)

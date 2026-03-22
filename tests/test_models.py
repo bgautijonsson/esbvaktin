@@ -1,8 +1,10 @@
-"""Tests for evidence entry Pydantic models."""
+"""Tests for evidence entry and claim bank Pydantic models."""
 
-import pytest
 from datetime import date
 
+import pytest
+
+from esbvaktin.claim_bank.models import CanonicalClaim
 from esbvaktin.ground_truth.models import (
     Confidence,
     Domain,
@@ -101,3 +103,62 @@ def test_json_serialisation():
     # Round-trip
     entry2 = EvidenceEntry(**data)
     assert entry2 == entry
+
+
+# ── CanonicalClaim tests ─────────────────────────────────────────────
+
+
+def _make_claim(**overrides) -> CanonicalClaim:
+    """Helper: minimal valid CanonicalClaim with optional overrides."""
+    defaults = {
+        "claim_slug": "test-claim-slug",
+        "canonical_text_is": "Prófunarfullyrðing.",
+        "category": "trade",
+        "claim_type": "statistic",
+        "verdict": "supported",
+        "explanation_is": "Stutt skýring.",
+        "confidence": 0.8,
+    }
+    defaults.update(overrides)
+    return CanonicalClaim(**defaults)
+
+
+def test_canonical_claim_defaults_to_published():
+    """New claims should be published by default (auto-publish)."""
+    claim = _make_claim()
+    assert claim.published is True
+
+
+def test_canonical_claim_explicit_unpublished():
+    """Explicitly setting published=False should be honoured."""
+    claim = _make_claim(published=False)
+    assert claim.published is False
+
+
+def test_canonical_claim_required_fields():
+    """CanonicalClaim requires slug, text, category, type, verdict, explanation, confidence."""
+    with pytest.raises(ValueError):
+        CanonicalClaim(claim_slug="test")  # missing all other required fields
+
+
+def test_canonical_claim_slug_pattern():
+    """Slugs must be lowercase alphanumeric with hyphens."""
+    with pytest.raises(ValueError):
+        _make_claim(claim_slug="UPPER-CASE")
+    with pytest.raises(ValueError):
+        _make_claim(claim_slug="has spaces")
+
+
+def test_canonical_claim_confidence_bounds():
+    """Confidence must be between 0 and 1."""
+    with pytest.raises(ValueError):
+        _make_claim(confidence=1.5)
+    with pytest.raises(ValueError):
+        _make_claim(confidence=-0.1)
+
+
+def test_canonical_claim_evidence_defaults():
+    """Evidence lists default to empty."""
+    claim = _make_claim()
+    assert claim.supporting_evidence == []
+    assert claim.contradicting_evidence == []

@@ -17,12 +17,8 @@ class CanonicalClaim(BaseModel):
         pattern=r"^[a-z0-9][a-z0-9\-]*[a-z0-9]$",
         description="URL-safe slug for permalink (e.g. 'sjavarutvegur-kvotakerfi')",
     )
-    canonical_text_is: str = Field(
-        ..., description="Icelandic canonical claim text (primary)"
-    )
-    canonical_text_en: str | None = Field(
-        default=None, description="English equivalent (optional)"
-    )
+    canonical_text_is: str = Field(..., description="Icelandic canonical claim text (primary)")
+    canonical_text_en: str | None = Field(default=None, description="English equivalent (optional)")
     category: str = Field(..., description="Topic (fisheries, trade, etc.)")
     claim_type: str = Field(
         ..., description="statistic | legal_assertion | comparison | prediction | opinion"
@@ -33,15 +29,9 @@ class CanonicalClaim(BaseModel):
         ...,
         description="supported | partially_supported | unsupported | misleading | unverifiable",
     )
-    explanation_is: str = Field(
-        ..., description="2-3 sentence Icelandic explanation"
-    )
-    explanation_en: str | None = Field(
-        default=None, description="English explanation (optional)"
-    )
-    missing_context_is: str | None = Field(
-        default=None, description="Icelandic context/caveats"
-    )
+    explanation_is: str = Field(..., description="2-3 sentence Icelandic explanation")
+    explanation_en: str | None = Field(default=None, description="English explanation (optional)")
+    missing_context_is: str | None = Field(default=None, description="Icelandic context/caveats")
 
     # Evidence references
     supporting_evidence: list[str] = Field(default_factory=list)
@@ -50,7 +40,7 @@ class CanonicalClaim(BaseModel):
     # Metadata
     confidence: float = Field(..., ge=0, le=1)
     last_verified: date = Field(default_factory=date.today)
-    published: bool = False
+    published: bool = True
 
 
 class ClaimBankMatch(BaseModel):
@@ -67,9 +57,7 @@ class ClaimBankMatch(BaseModel):
     missing_context_is: str | None = None
     confidence: float = Field(..., ge=0, le=1)
     last_verified: date
-    is_fresh: bool = Field(
-        ..., description="True if last_verified < 30 days ago"
-    )
+    is_fresh: bool = Field(..., description="True if last_verified < 30 days ago")
 
     @field_validator("supporting_evidence", "contradicting_evidence", mode="before")
     @classmethod

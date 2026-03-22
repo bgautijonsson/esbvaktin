@@ -55,6 +55,7 @@ src/esbvaktin/          # Main package
   utils/                # Shared utilities (embeddings, Icelandic NLP)
 tests/                  # Tests
 scripts/                # One-off and pipeline scripts
+  pipeline/             # Standalone scripts for each pipeline step (fetch, extract, evidence, assemble, etc.)
 data/seeds/             # Evidence JSON seed files (committed)
 data/analyses/          # Article analysis work directories (gitignored)
 data/reassessment/      # Verdict reassessment outputs (gitignored)
@@ -91,27 +92,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 
 **Icelandic-only context:** Agents that write Icelandic (extractor, assessor, omissions, summariser, editorial-writer, capsule-writer) have Icelandic system prompts — zero English in the agent's context window. This prevents ASCII transliteration and translated-from-English syntax. Agents that don't write Icelandic prose (entity-extractor, site-exporter) use English.
 
-**Overview pipeline:** `generate_overview.py` (SQL → data.json, includes under-discussed topics) → `prepare_overview_context.py` (→ _context_is.md, digest-structured) → `editorial-writer` agent (opus, → editorial.md) → `export_overviews.py` (strips heading, enriches slugs). Editorial writer uses MCP morphology tools for inflection and MCP mideind `correct_text` for grammar self-correction (one call per editorial), then reads `knowledge/exemplars_editorial_is.md` before writing. `correct_icelandic.py check-editorial` remains available for additional local checks if needed. Note: `generate_overview.py` refuses to overwrite data.json when editorial.md exists (use `--force`).
-
-## DB Schema Quick Reference
-
-| Table | Key Columns | Notes |
-|---|---|---|
-| `evidence` | `evidence_id` (PK text), `domain`, `topic`, `statement`, `statement_is`, `source_name`, `source_url`, `source_type`, `confidence` (high/medium/low text), `caveats`, `caveats_is`, `related_entries TEXT[]`, `last_verified`, `source_excerpt`, `source_url_status`, `source_url_checked`, `embedding vector(1024)` | `related_entries` has no FK integrity. `source_excerpt` = content fingerprint for link health checks. |
-| `claims` | `claim_slug` (unique), `canonical_text_is`, `category`, `verdict`, `published`, `substantive`, `confidence FLOAT`, `supporting_evidence TEXT[]`, `contradicting_evidence TEXT[]`, `embedding vector(1024)`, `version`, `last_verified` | Use `evidence_id = ANY(supporting_evidence)` for cross-join |
-| `claim_sightings` | `claim_id` FK, `source_url`, `source_domain`, `source_date`, `source_type`, `speaker_name`, `speaker_stance`, `speech_id`, `speech_verdict` | `speaker_name` may be NULL for older althingi sightings |
-| `article_claims` | `analysis_id`, `claim_id`, `similarity`, `cache_hit` | Populated but rarely queried — use `claim_sightings` for linkage |
-
-**Analytical views** (all read from published claims):
-- `verdict_weekly_trend` — cumulative verdict distribution over time
-- `evidence_utilisation` — citation counts + days since verification
-- `stale_evidence` — entries not verified in 90+ days
-- `claim_velocity` — new claims per week per topic
-- `balance_audit` — verdict distribution by `speaker_stance`
-- `outlet_verdicts` — verdict distribution by `source_domain`
-- `claim_frequency` — sighting count per claim
-
-**Domain extraction:** `source_domain` is populated on INSERT via `esbvaktin.utils.domain.extract_domain()`. Resolves podcast CDN aliases (acast→RÚV, spotify→mbl). The canonical alias dict is in `src/esbvaktin/utils/domain.py`.
+**Overview pipeline:** `generate_overview.py` (inbox coverage check → SQL → data.json, includes under-discussed topics) → `prepare_overview_context.py` (→ _context_is.md, digest-structured) → `editorial-writer` agent (opus, → editorial.md) → user review → `export_overviews.py` (strips heading, enriches slugs). `generate_overview.py` checks inbox for unanalysed articles from the target week before generating — if HIGH/MEDIUM articles cover gap topics, it blocks with recommendations (exit 2). Use `--force` to proceed anyway. Editorial writer uses MCP morphology tools for inflection and MCP mideind `correct_text` for grammar self-correction (one call per editorial), then reads `knowledge/exemplars_editorial_is.md` before writing. `correct_icelandic.py check-editorial` remains available for additional local checks if needed. **Never push editorials without user review.**
 
 ## Conventions
 
@@ -121,6 +102,13 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 - Topics: fisheries, trade, eea_eu_law, sovereignty, agriculture, precedents, currency, labour, energy, housing, polling, party_positions, org_positions
 - Valid `source_type` values: `official_statistics`, `legal_text`, `academic_paper`, `expert_analysis`, `international_org`, `parliamentary_record`
 - Seed files go in `data/seeds/*.json` (committed); CSVs in `data/{source}/` (gitignored)
+
+### Claim Publishing
+- Claims are **auto-published** at registration time (`published=True` by default)
+- Only `unverifiable` claims stay unpublished (these are discarded at registration, never creating a claim)
+- The `substantive` flag is orthogonal: controls credibility scoring, not site visibility
+- `publish_claims.py` provides manual publish/unpublish for edge cases
+- `review_claims.py` flags trivia as `substantive=False` post-publication
 
 ### Code Style
 - Ruff: line-length 100, target py312, rules E/F/I/N/W/UP
@@ -135,15 +123,22 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 - `uv sync --extra ghost` — Ghost CMS publishing
 
 ### Icelandic Output
-- Icelandic output uses GreynirCorrect (local) and Málstaður API (via `mideind` MCP server) for quality
-- **Málstaður MCP cost awareness:** Grammar/correction = ~1 kr per 100 chars. Always send full text in one call, never sentence-by-sentence. Agents should call `correct_text` at most once per document. Use `check_grammar` only when uncertain — don't run it routinely on every batch.
+- Icelandic output uses GreynirCorrect (local) and Málstaður API (via `mideind` MCP server) for quality — cost rules in `.claude/rules/mcp-costs.md`
 - Subagent JSON output: always parse with `_extract_json()` (sanitises `„"` quotes, strips markdown fences). Subagent field names may vary (e.g. `verdict` vs `new_verdict`) — handle both.
-- Icelandic language rules auto-load via `.claude/rules/` for `*_is.*` and `data/analyses/**` paths — see `icelandic-core.md` and `icelandic-writing.md`
+- Icelandic language rules auto-load via `.claude/rules/` for `*_is.*` and `data/analyses/**` paths
 - Environment variables for secrets (`.env`, never committed)
 
 ## Skills (Slash Commands)
 
 ```
+/find-articles             # Discover new articles (no auto-analysis)
+/find-articles 3           # Scan last 3 days
+/find-articles backlog     # Check inbox backlog only
+/process-articles          # Batch-analyse top 3 pending articles
+/process-articles 5        # Batch-analyse top 5
+/process-articles triage   # Show sorted triage table
+/analyse-article <url>     # Full pipeline for single article
+/process-inbox             # Lightweight claim harvesting (no full assessment)
 /health                    # Unified project health dashboard
 /health db                 # Database section only
 /db                        # Quick DB summary (verdicts, counts)
@@ -155,6 +150,9 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 /reassess overconfident    # Reassess audit-flagged claims only
 /tidy                      # Full codebase quality audit
 /tidy lint                 # Ruff lint only
+/weekly-review              # Generate weekly overview + editorial (checks inbox first)
+/weekly-review 2026-W12    # Specific week
+/weekly-review last        # Previous week
 /link-check                # Check evidence source URLs for link rot + content drift
 /link-check populate       # Auto-populate source excerpts (content fingerprints)
 /link-check report         # Show link health report
@@ -169,6 +167,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 ```bash
 # Article inbox
 uv run python scripts/manage_inbox.py status              # Backlog summary
+uv run python scripts/manage_inbox.py triage               # Sorted triage table for processing decisions
 uv run python scripts/manage_inbox.py list                 # Pending articles
 uv run python scripts/manage_inbox.py list --priority high # High priority only
 uv run python scripts/manage_inbox.py next --high-only     # Next articles ready for analysis
@@ -201,7 +200,8 @@ uv run python scripts/export_overviews.py --site-dir ~/esbvaktin-site # 7. Expor
 ./scripts/backup_db.sh            # Manual backup
 ./scripts/backup_db.sh --status   # Show existing backups
 uv run python scripts/export_topics.py --status        # Show topic distribution
-uv run python scripts/generate_overview.py --week 2026-W11  # Generate weekly overview data
+uv run python scripts/generate_overview.py --week 2026-W11  # Generate weekly overview data (checks inbox first)
+uv run python scripts/generate_overview.py --week 2026-W11 --force  # Skip inbox gap warning
 uv run python scripts/generate_overview.py --status         # Show overview coverage
 uv run python scripts/prepare_overview_context.py 2026-W11  # Prepare editorial context (Icelandic)
 uv run python scripts/correct_icelandic.py check-editorial data/overviews/2026-W11/editorial.md --fix  # Post-process editorial
@@ -228,6 +228,10 @@ uv run python scripts/reassess_claims.py status            # Show verdict distri
 uv run python scripts/audit_claims.py report               # Full claim verdict audit (4 patterns)
 uv run python scripts/audit_claims.py candidates           # Priority reassessment list
 uv run python scripts/audit_claims.py status               # Quick audit summary
+uv run python scripts/publish_claims.py status             # Claim publishing summary (should show 0 eligible)
+uv run python scripts/publish_claims.py eligible           # Show unpublished claims eligible for publishing
+uv run python scripts/publish_claims.py backfill           # One-time: publish all eligible unpublished claims
+uv run python scripts/publish_claims.py unpublish <id>     # Manually suppress a published claim
 uv run python scripts/register_article_sightings.py        # Batch-register all unregistered reports into DB sightings
 uv run python scripts/build_article_registry.py --status  # Show processed article registry
 uv run python scripts/check_duplicate.py --url URL        # Check if article already processed
@@ -238,39 +242,6 @@ uv run python scripts/check_evidence_urls.py report        # Detailed link healt
 docker compose up -d       # Start PostgreSQL
 Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
-
-## Site Repo
-
-Sibling repo `~/esbvaktin-site/` (public, `bgautijonsson/esbvaktin-site`). 11ty v3 static site. Has its own `CLAUDE.md` with full site conventions.
-- `_data/` — 11ty build data (entities.json, reports/*.json, entity-details/*.json, evidence-details/*.json, debates/*.json)
-- `assets/data/` — client-side JS data (entities.json, reports.json, claims.json, evidence.json, sources.json, debates.json) — **must be kept in sync** (export scripts write to both)
-- `eleventy.config.js` — custom Nunjucks filters (isDate, localeString, verdictLabel, sourceTypeLabel, domainLabel, etc.), watches `assets/data`
-- Build: `cd ~/esbvaktin-site && npm run build` (or `npm run serve` for dev)
-- Data pipeline: `export_entities.py` → `export_evidence.py` → `export_topics.py` → `export_claims.py` → `prepare_site.py` (overlays DB verdicts) → `prepare_speeches.py` → `export_overviews.py` → build site
-- `prepare_site.py` overlays DB verdicts onto `_report_final.json` snapshots — report files are immutable pipeline output, DB is source of truth for verdicts
-- Homepage: server-rendered from `_data/home.js` which reads `assets/data/*.json` (countdown, signal cards, verdict distribution, recent reports, featured voices)
-- Tracker JS architecture: `site-taxonomy.js` → `tracker-utils.js` → `tracker-renderer.js` → `tracker-controller.js` → page-specific tracker. Controller owns boot flow; page scripts keep only domain logic.
-- Pages: `/umraedan/` (reports), `/fullyrdingar/` (claims), `/raddirnar/` (entities), `/heimildir/` (evidence, 338 detail pages), `/thingraedur/` (debates). `/greiningar/` redirects to `/umraedan/`.
-- Nunjucks `capitalize` filter lowercases the rest of the string — don't use it for titles with proper nouns. Capitalise in Python data export instead.
-- Speeches module has two DB access patterns: async aiosqlite (MCP server in `search.py`) and sync sqlite3 (pipeline in `context.py`, export scripts). Same althingi.db.
-
-## Obsidian Output
-
-Vault: `ESB` (MCP) / `~/Obsidian/ESB/` (direct path)
-
-Route structured output (research, analyses, implementation notes) to the ESB vault following its conventions:
-
-| Folder | Content |
-|---|---|
-| `Knowledge/<Topic>/` | Implementation notes, next-actions |
-| `Reports/` | Article analysis reports from `/analyse-article` (named `YYYY-MM-DD — Title`). Include frontmatter with verdict breakdown, framing, completeness, and tags. |
-| `Sessions/` | Session logs |
-
-Use `_MOC.md` as entry points. See vault's `Vault Guide.md` for full conventions.
-
-## Things 3
-
-Area: **ESB Vaktin** (`7H4fB4Q8heJ9DXCXogup5V`)
 
 ## Editorial Philosophy
 

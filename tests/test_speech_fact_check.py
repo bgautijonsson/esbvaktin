@@ -13,14 +13,12 @@ from __future__ import annotations
 
 import sqlite3
 from datetime import date
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from esbvaktin.pipeline.models import Claim, ClaimAssessment, ClaimType, Verdict
 from esbvaktin.pipeline.prepare_context import prepare_speech_extraction_context
-
 
 # ── Fixtures ──────────────────────────────────────────────────────
 
@@ -124,8 +122,18 @@ def mock_althingi_db(tmp_path):
     # EU-related speeches
     conn.execute(
         "INSERT INTO speeches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        ("rad001", "Þorgerður Katrín Gunnarsdóttir", "mp1", "2026-03-09T17:10:00",
-         None, None, "516", "Aðild Íslands að Evrópusambandinu", "flutningsræða", 157),
+        (
+            "rad001",
+            "Þorgerður Katrín Gunnarsdóttir",
+            "mp1",
+            "2026-03-09T17:10:00",
+            None,
+            None,
+            "516",
+            "Aðild Íslands að Evrópusambandinu",
+            "flutningsræða",
+            157,
+        ),
     )
     conn.execute(
         "INSERT INTO speech_texts VALUES (?, ?, ?, ?)",
@@ -133,8 +141,18 @@ def mock_althingi_db(tmp_path):
     )
     conn.execute(
         "INSERT INTO speeches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        ("rad002", "Sigmundur Davíð Gunnlaugsson", "mp2", "2026-03-09T18:00:00",
-         None, None, "516", "Aðild Íslands að Evrópusambandinu", "ræða", 157),
+        (
+            "rad002",
+            "Sigmundur Davíð Gunnlaugsson",
+            "mp2",
+            "2026-03-09T18:00:00",
+            None,
+            None,
+            "516",
+            "Aðild Íslands að Evrópusambandinu",
+            "ræða",
+            157,
+        ),
     )
     conn.execute(
         "INSERT INTO speech_texts VALUES (?, ?, ?, ?)",
@@ -143,8 +161,18 @@ def mock_althingi_db(tmp_path):
     # Already-checked speech (will be excluded)
     conn.execute(
         "INSERT INTO speeches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        ("rad003", "Guðrún Hafsteinsdóttir", "mp3", "2026-03-09T19:00:00",
-         None, None, "516", "Aðild Íslands að Evrópusambandinu", "ræða", 157),
+        (
+            "rad003",
+            "Guðrún Hafsteinsdóttir",
+            "mp3",
+            "2026-03-09T19:00:00",
+            None,
+            None,
+            "516",
+            "Aðild Íslands að Evrópusambandinu",
+            "ræða",
+            157,
+        ),
     )
     conn.execute(
         "INSERT INTO speech_texts VALUES (?, ?, ?, ?)",
@@ -242,21 +270,24 @@ def test_register_sightings_match_inserts_sighting(sample_assessments):
     assert mock_conn.execute.called
 
 
-# ── Test 4: No match creates unpublished claim ────────────────────
+# ── Test 4: No match creates auto-published claim ─────────────────
 
 
 def test_register_sightings_no_match_creates_unpublished_claim(sample_assessments):
-    """Non-unverifiable claim with no bank match creates a new unpublished claim."""
+    """Non-unverifiable claim with no bank match creates a new auto-published claim."""
     mock_conn = MagicMock()
     mock_conn.execute = MagicMock(return_value=MagicMock(fetchone=lambda: (99,)))
 
-    with patch(
-        "esbvaktin.speeches.register_sightings.search_claims",
-        return_value=[],  # No match
-    ), patch(
-        "esbvaktin.speeches.register_sightings.add_claim",
-        return_value=99,
-    ) as mock_add:
+    with (
+        patch(
+            "esbvaktin.speeches.register_sightings.search_claims",
+            return_value=[],  # No match
+        ),
+        patch(
+            "esbvaktin.speeches.register_sightings.add_claim",
+            return_value=99,
+        ) as mock_add,
+    ):
         from esbvaktin.speeches.register_sightings import register_speech_sightings
 
         # Pass the second assessment (unsupported, no match)
@@ -271,10 +302,10 @@ def test_register_sightings_no_match_creates_unpublished_claim(sample_assessment
     assert counts["new_claims"] == 1
     assert counts["matched"] == 0
     assert counts["discarded"] == 0
-    # Verify the new claim was marked as unpublished
+    # Verify the new claim was auto-published
     call_args = mock_add.call_args
     new_claim = call_args[0][0]
-    assert new_claim.published is False
+    assert new_claim.published is True
     assert new_claim.verdict == "unsupported"
 
 
@@ -285,12 +316,15 @@ def test_register_sightings_unverifiable_discarded(sample_assessments):
     """Unverifiable claim with no bank match is discarded."""
     mock_conn = MagicMock()
 
-    with patch(
-        "esbvaktin.speeches.register_sightings.search_claims",
-        return_value=[],  # No match
-    ), patch(
-        "esbvaktin.speeches.register_sightings.add_claim",
-    ) as mock_add:
+    with (
+        patch(
+            "esbvaktin.speeches.register_sightings.search_claims",
+            return_value=[],  # No match
+        ),
+        patch(
+            "esbvaktin.speeches.register_sightings.add_claim",
+        ) as mock_add,
+    ):
         from esbvaktin.speeches.register_sightings import register_speech_sightings
 
         # Pass the third assessment (unverifiable, no match)
@@ -319,7 +353,9 @@ def test_select_speeches_excludes_checked(mock_althingi_db):
 
         # Without exclusion — all 3 speeches
         all_speeches = select_speeches_for_batch(
-            limit=10, min_words=100, exclude_checked=False,
+            limit=10,
+            min_words=100,
+            exclude_checked=False,
         )
         all_ids = {s["speech_id"] for s in all_speeches}
         assert "rad003" in all_ids
