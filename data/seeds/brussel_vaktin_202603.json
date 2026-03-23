@@ -1,0 +1,72 @@
+[
+  {
+    "evidence_id": "TRADE-DATA-042",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "eu_industrial_policy_made_in_europe",
+    "statement": "On 4 March 2026, the European Commission proposed the Industrial Accelerator Act (Iðnaðarhraðall), introducing 'Made in Europe' provisions that create a 'European preference' framework for public procurement and state aid. The proposal mandates minimum low-carbon content thresholds for specified product categories: 25% for steel and aluminium, 5% for cement and morite (mortar). Product categories initially covered are steel, cement, aluminium, vehicles, and clean-tech products, with possible expansion via delegated acts. The proposal is under deliberation by the European Parliament and Council of Ministers.",
+    "source_name": "Brussel-vaktin (Sendiráð Íslands í Brussel) — 13. mars 2026",
+    "source_url": "https://www.stjornarradid.is/sendiskrifstofur/sendirad-islands-i-brussel/brussel-vaktin/stok-faersla/2026/03/13/Idnadarhradall-Made-in-Europe/",
+    "source_date": "2026-03-13",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "This is a legislative proposal, not yet adopted. Thresholds and product scope may change during parliamentary negotiation. Brussel-vaktin is published by Iceland's Brussels mission (foreign ministry) — factual and analytical but representing the government's monitoring perspective. The EU Commission press release referenced is IP_26_515.",
+    "related_entries": ["TRADE-DATA-043", "EEA-LEGAL-025"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-043",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "nordic_opposition_buy_european",
+    "statement": "Six EU/EEA member states — Sweden, Finland, the Netherlands, Estonia, Latvia, and Lithuania — formally expressed opposition to the 'Buy European' / 'European preference' provisions in the proposed Industrial Accelerator Act, submitting a joint letter before the Alden Biesen summit on 12 February 2026. These countries argue the provisions risk protectionism and prefer a narrower strategic scope for industrial policy. This Nordic-Baltic coalition represents a significant bloc within the Council resisting the protectionist direction of EU industrial policy.",
+    "source_name": "Brussel-vaktin (Sendiráð Íslands í Brussel) — 13. mars 2026",
+    "source_url": "https://www.stjornarradid.is/sendiskrifstofur/sendirad-islands-i-brussel/brussel-vaktin/stok-faersla/2026/03/13/Idnadarhradall-Made-in-Europe/",
+    "source_date": "2026-03-13",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The letter's content is reported by Brussel-vaktin; the original letter text is not publicly linked. The six states listed are Iceland's closest trade partners in the Nordics and Baltics, which may influence the embassy's emphasis on this opposition.",
+    "related_entries": ["TRADE-DATA-042", "EEA-LEGAL-025"]
+  },
+  {
+    "evidence_id": "EEA-LEGAL-025",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "eea_eligibility_european_preference",
+    "statement": "Under the proposed EU Industrial Accelerator Act (March 2026), products from EEA/EFTA states (Iceland, Norway, Liechtenstein) and Switzerland may qualify as a 'European preference option' (evrópskur valkostur) in public procurement, on the basis of existing free trade agreements. However, the specific eligibility criteria for EEA/EFTA products will only be clarified in delegated regulations the Commission will draft after the main regulation is adopted. This creates uncertainty about whether EEA membership alone will guarantee equivalent treatment to EU member state products under the new framework.",
+    "source_name": "Brussel-vaktin (Sendiráð Íslands í Brussel) — 13. mars 2026",
+    "source_url": "https://www.stjornarradid.is/sendiskrifstofur/sendirad-islands-i-brussel/brussel-vaktin/stok-faersla/2026/03/13/Idnadarhradall-Made-in-Europe/",
+    "source_date": "2026-03-13",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The eligibility of EEA/EFTA products is described as a possibility ('may meet criteria'), not a certainty. The delegation to future derived regulations means this is an evolving situation — the actual treatment of EEA products could range from full equivalence to partial or conditional eligibility. This evidence should be updated when delegated acts are published. The public consultation closes 7 May 2026.",
+    "related_entries": ["TRADE-DATA-042", "EEA-LEGAL-001", "EEA-LEGAL-006"]
+  },
+  {
+    "evidence_id": "SOV-DATA-035",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "eu_fdi_screening_thresholds",
+    "statement": "The proposed EU Industrial Accelerator Act (March 2026) introduces a foreign direct investment screening framework for strategic sectors. Investments of €100 million or more in sectors where a single third country holds 40% or more of global production capacity are subject to mandatory screening. Key conditions include: foreign investor equity capped at 49%, joint venture foreign partner stake capped at 49%, minimum 1% of company revenue invested in EU-based R&D, at least 50% of workforce based in the EU, and a 30% target for component sourcing within the EU. The Commission retains review powers for investments exceeding €1 billion with significant value-creation implications. Covered sectors include battery technology, electric vehicle manufacturing, solar systems, and critical minerals mining and recycling.",
+    "source_name": "Brussel-vaktin (Sendiráð Íslands í Brussel) — 13. mars 2026",
+    "source_url": "https://www.stjornarradid.is/sendiskrifstofur/sendirad-islands-i-brussel/brussel-vaktin/stok-faersla/2026/03/13/Idnadarhradall-Made-in-Europe/",
+    "source_date": "2026-03-13",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Legislative proposal, not yet adopted — thresholds may change. These provisions may or may not be EEA-relevant depending on whether the regulation is incorporated into the EEA Agreement. FDI screening has historically been a grey area for EEA applicability. Iceland currently has its own FDI screening via the Icelandic Competition Authority but does not have EU-level screening obligations.",
+    "related_entries": ["TRADE-DATA-042", "SOV-LEGAL-001"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-044",
+    "domain": "economic",
+    "topic": "trade",
+    "subtopic": "eu_industrial_policy_evolution",
+    "statement": "EU industrial policy underwent a strategic pivot between 2024 and 2026, shifting emphasis from decarbonisation to industrial competitiveness and strategic autonomy. The policy trajectory runs: Mario Draghi competitiveness report (September 2024) → Enrico Letta internal market report (April 2024) → Competitiveness Compass (January 2025) → Clean Industrial Deal (March 2025) → Industrial Accelerator Act (March 2026). Commission President von der Leyen's September 2025 State of the Union address marked the rhetorical shift from 'green transition' to 'competitive industry'. This evolution is relevant to Iceland's referendum debate because it signals the EU is moving towards a more protectionist industrial stance that may affect EEA market access terms.",
+    "source_name": "Brussel-vaktin (Sendiráð Íslands í Brussel) — 13. mars 2026, cross-referencing earlier issues",
+    "source_url": "https://www.stjornarradid.is/sendiskrifstofur/sendirad-islands-i-brussel/brussel-vaktin/stok-faersla/2026/03/13/Idnadarhradall-Made-in-Europe/",
+    "source_date": "2026-03-13",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The policy trajectory narrative is reconstructed from multiple Brussel-vaktin issues and EU source documents. The characterisation of a 'strategic pivot' is editorial interpretation by the newsletter, though supported by the sequence of policy documents. Whether this trajectory continues depends on Council negotiations and member state positions.",
+    "related_entries": ["TRADE-DATA-042", "TRADE-DATA-043", "EEA-LEGAL-025"]
+  }
+]
