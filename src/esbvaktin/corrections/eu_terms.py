@@ -24,6 +24,13 @@ _ENGLISH_TO_ICELANDIC = {
     "opt-out": "undanþága",
     "derogation": "undanþága",
     "transitional period": "aðlögunartímabil",
+    "Hague Preferences": "Haag-viðmiðin",
+    "hague preferences": "Haag-viðmiðin",
+}
+
+# Wrong Icelandic translations that LLMs hallucinate (correct → bad)
+_WRONG_ICELANDIC = {
+    "Haag-viðmiðin": [r"[Hh]águ.?kjörgæð"],
 }
 
 # Inconsistent Icelandic variant pairs (first is preferred)
@@ -69,6 +76,21 @@ def check_eu_terms(text: str) -> list[dict]:
                     }
                 )
 
+        # Check for wrong Icelandic translations (LLM hallucinations)
+        for correct_term, bad_patterns in _WRONG_ICELANDIC.items():
+            for pat in bad_patterns:
+                match = re.search(pat, line)
+                if match:
+                    warnings.append(
+                        {
+                            "line": line_num,
+                            "type": "wrong_translation",
+                            "found": match.group(),
+                            "suggestion": correct_term,
+                            "context": line.strip()[:100],
+                        }
+                    )
+
         # Check for missing hyphens
         for pattern, description in _HYPHEN_PATTERNS:
             if re.search(pattern, line):
@@ -109,6 +131,7 @@ def format_eu_term_results(warnings: list[dict], filename: str) -> int:
     for w in warnings:
         type_label = {
             "english_term": "EN TERM",
+            "wrong_translation": "WRONG IS",
             "missing_hyphen": "HYPHEN",
             "inconsistent": "INCONSISTENT",
         }.get(w["type"], w["type"])

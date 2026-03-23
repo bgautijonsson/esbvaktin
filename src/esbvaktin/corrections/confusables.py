@@ -111,6 +111,11 @@ CONFUSABLE_PATTERNS = [
     ),
     # ── EU terminology patterns ─────────────────────────────────────
     (
+        r"[Hh]águ.?kjörgæð",
+        "Wrong translation: 'Hágu-kjörgæðin' is a hallucination — correct term is 'Haag-viðmiðin' (Hague Preferences)",
+        "Haag-viðmiðin",
+    ),
+    (
         r"\bCommon\s+(?:Agricultural|Fisheries)\s+Policy\b",
         "English EU term in Icelandic text: use 'sameiginleg landbúnaðar/sjávarútvegsstefna'",
         None,

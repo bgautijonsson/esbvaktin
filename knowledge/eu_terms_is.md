@@ -41,6 +41,7 @@ Samræmd íslensk hugtakanotkun í staðreyndaúttektum ESBvaktarinnar. Notaðu 
 | Quota (fishing) | Kvóti | | "úthlutun kvóta" |
 | Tariff | Tollur | | "tollar á landbúnaðarvörur" |
 | Sovereignty | Fullveldi | "sjálfstæði" (þrengri merking) | "fullveldi Íslands" |
+| Hague Preferences | Haag-viðmiðin | "Hágu-kjörgæðin" (rangt) | Kvótavernd fyrir sjávarútveg í ESB (írsk fordæmi) |
 | Relative stability | Hlutfallslegur stöðugleiki | | Kvótaúthlutunarregla í CFP |
 | Maximum sustainable yield | Hámarkssjálfbær nýting | | MSY |
 | Emission allowances | Losunarheimildir | | "ókeypis losunarheimildir" |
