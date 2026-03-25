@@ -21,7 +21,11 @@ class CanonicalClaim(BaseModel):
     canonical_text_en: str | None = Field(default=None, description="English equivalent (optional)")
     category: str = Field(..., description="Topic (fisheries, trade, etc.)")
     claim_type: str = Field(
-        ..., description="statistic | legal_assertion | comparison | prediction | opinion"
+        ..., description="statistic | legal_assertion | comparison | forecast | opinion"
+    )
+    epistemic_type: str = Field(
+        default="factual",
+        description="factual | hearsay | counterfactual | prediction",
     )
 
     # Pre-computed verdict
@@ -51,6 +55,10 @@ class ClaimBankMatch(BaseModel):
     canonical_text_is: str
     similarity: float = Field(..., ge=0, le=1)
     verdict: str
+    epistemic_type: str = Field(
+        default="factual",
+        description="factual | hearsay | counterfactual | prediction",
+    )
     explanation_is: str
     supporting_evidence: list[str] = Field(default_factory=list)
     contradicting_evidence: list[str] = Field(default_factory=list)

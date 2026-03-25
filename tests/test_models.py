@@ -162,3 +162,74 @@ def test_canonical_claim_evidence_defaults():
     claim = _make_claim()
     assert claim.supporting_evidence == []
     assert claim.contradicting_evidence == []
+
+
+# ── CanonicalClaim epistemic_type tests ──────────────────────────────
+
+
+class TestClaimBankEpistemicType:
+    def test_canonical_claim_has_epistemic_type(self):
+        from esbvaktin.claim_bank.models import CanonicalClaim
+
+        claim = CanonicalClaim(
+            claim_slug="test-claim",
+            canonical_text_is="Test",
+            category="fisheries",
+            claim_type="statistic",
+            epistemic_type="factual",
+            verdict="supported",
+            explanation_is="Test",
+            confidence=0.9,
+        )
+        assert claim.epistemic_type == "factual"
+
+    def test_canonical_claim_defaults_to_factual(self):
+        from esbvaktin.claim_bank.models import CanonicalClaim
+
+        claim = CanonicalClaim(
+            claim_slug="test-claim",
+            canonical_text_is="Test",
+            category="fisheries",
+            claim_type="statistic",
+            verdict="supported",
+            explanation_is="Test",
+            confidence=0.9,
+        )
+        assert claim.epistemic_type == "factual"
+
+    def test_claim_bank_match_has_epistemic_type(self):
+        from datetime import date
+
+        from esbvaktin.claim_bank.models import ClaimBankMatch
+
+        match = ClaimBankMatch(
+            claim_id=1,
+            claim_slug="test",
+            canonical_text_is="Test",
+            similarity=0.9,
+            verdict="supported",
+            explanation_is="Test",
+            confidence=0.9,
+            last_verified=date.today(),
+            is_fresh=True,
+            epistemic_type="prediction",
+        )
+        assert match.epistemic_type == "prediction"
+
+    def test_claim_bank_match_defaults_to_factual(self):
+        from datetime import date
+
+        from esbvaktin.claim_bank.models import ClaimBankMatch
+
+        match = ClaimBankMatch(
+            claim_id=1,
+            claim_slug="test",
+            canonical_text_is="Test",
+            similarity=0.9,
+            verdict="supported",
+            explanation_is="Test",
+            confidence=0.9,
+            last_verified=date.today(),
+            is_fresh=True,
+        )
+        assert match.epistemic_type == "factual"

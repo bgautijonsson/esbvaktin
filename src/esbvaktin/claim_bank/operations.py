@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS claims (
     canonical_text_en TEXT,
     category TEXT NOT NULL,
     claim_type TEXT NOT NULL,
+    epistemic_type TEXT NOT NULL DEFAULT 'factual',
     verdict TEXT NOT NULL,
     explanation_is TEXT NOT NULL,
     explanation_en TEXT,
@@ -158,7 +159,7 @@ def search_claims(
 
     rows = conn.execute(
         """
-        SELECT id, claim_slug, canonical_text_is, verdict,
+        SELECT id, claim_slug, canonical_text_is, verdict, epistemic_type,
                explanation_is, supporting_evidence, contradicting_evidence,
                missing_context_is, confidence, last_verified,
                1 - (embedding <=> %(embedding)s::vector) AS similarity
@@ -179,6 +180,7 @@ def search_claims(
         "claim_slug",
         "canonical_text_is",
         "verdict",
+        "epistemic_type",
         "explanation_is",
         "supporting_evidence",
         "contradicting_evidence",
@@ -226,19 +228,20 @@ def add_claim(
         """
         INSERT INTO claims (
             claim_slug, canonical_text_is, canonical_text_en,
-            category, claim_type, verdict,
+            category, claim_type, epistemic_type, verdict,
             explanation_is, explanation_en, missing_context_is,
             supporting_evidence, contradicting_evidence,
             confidence, embedding, last_verified, published
         ) VALUES (
             %(slug)s, %(text_is)s, %(text_en)s,
-            %(category)s, %(claim_type)s, %(verdict)s,
+            %(category)s, %(claim_type)s, %(epistemic_type)s, %(verdict)s,
             %(explanation_is)s, %(explanation_en)s, %(missing_context_is)s,
             %(supporting)s, %(contradicting)s,
             %(confidence)s, %(embedding)s, %(last_verified)s, %(published)s
         ) ON CONFLICT (claim_slug) DO UPDATE SET
             canonical_text_is = EXCLUDED.canonical_text_is,
             canonical_text_en = EXCLUDED.canonical_text_en,
+            epistemic_type = EXCLUDED.epistemic_type,
             verdict = EXCLUDED.verdict,
             explanation_is = EXCLUDED.explanation_is,
             explanation_en = EXCLUDED.explanation_en,
@@ -258,6 +261,7 @@ def add_claim(
             "text_en": claim.canonical_text_en,
             "category": claim.category,
             "claim_type": claim.claim_type,
+            "epistemic_type": claim.epistemic_type,
             "verdict": claim.verdict,
             "explanation_is": claim.explanation_is,
             "explanation_en": claim.explanation_en,
@@ -319,6 +323,70 @@ def update_claim_verdict(
         """,
         {
             "claim_id": claim_id,
+            "verdict": verdict,
+            "explanation_is": explanation_is,
+            "supporting": supporting_evidence,
+            "contradicting": contradicting_evidence,
+            "missing_context_is": missing_context_is,
+            "confidence": confidence,
+        },
+    )
+    conn.commit()
+
+    if close:
+        conn.close()
+
+
+def update_claim_canonical(
+    claim_id: int,
+    *,
+    canonical_text_is: str,
+    claim_slug: str,
+    verdict: str,
+    explanation_is: str,
+    supporting_evidence: list[str],
+    contradicting_evidence: list[str],
+    missing_context_is: str | None = None,
+    confidence: float,
+    conn: psycopg.Connection | None = None,
+) -> None:
+    """Update a claim's canonical text, slug, embedding, and verdict.
+
+    Use when sighting drift correction changes the canonical text.
+    Re-embeds the text so future semantic matches use the corrected vector.
+    Increments version, updates last_verified to today.
+    """
+    from ..ground_truth.operations import embed_text, get_connection
+
+    embedding = embed_text(canonical_text_is)
+
+    close = False
+    if conn is None:
+        conn = get_connection()
+        close = True
+
+    conn.execute(
+        """
+        UPDATE claims SET
+            canonical_text_is = %(text_is)s,
+            claim_slug = %(slug)s,
+            embedding = %(embedding)s,
+            verdict = %(verdict)s,
+            explanation_is = %(explanation_is)s,
+            supporting_evidence = %(supporting)s,
+            contradicting_evidence = %(contradicting)s,
+            missing_context_is = %(missing_context_is)s,
+            confidence = %(confidence)s,
+            last_verified = CURRENT_DATE,
+            version = version + 1,
+            updated_at = NOW()
+        WHERE id = %(claim_id)s
+        """,
+        {
+            "claim_id": claim_id,
+            "text_is": canonical_text_is,
+            "slug": claim_slug,
+            "embedding": embedding,
             "verdict": verdict,
             "explanation_is": explanation_is,
             "supporting": supporting_evidence,
