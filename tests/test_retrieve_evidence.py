@@ -92,7 +92,7 @@ class TestRetrieveEvidenceForClaim:
 
 class TestRetrieveEvidenceForClaims:
     def test_batch_retrieval(self, fisheries_claim, trade_claim):
-        results, bank_matches = retrieve_evidence_for_claims(
+        results, bank_matches, _hearsay = retrieve_evidence_for_claims(
             [fisheries_claim, trade_claim], top_k=3
         )
         assert len(results) == 2
@@ -101,7 +101,7 @@ class TestRetrieveEvidenceForClaims:
         assert isinstance(bank_matches, dict)
 
     def test_empty_list(self):
-        results, bank_matches = retrieve_evidence_for_claims([], top_k=5)
+        results, bank_matches, _hearsay = retrieve_evidence_for_claims([], top_k=5)
         assert results == []
         assert bank_matches == {}
 

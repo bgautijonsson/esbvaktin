@@ -123,6 +123,7 @@ def cmd_run(args: argparse.Namespace) -> None:
 
     # 5. Parse extracted claims
     from esbvaktin.pipeline.parse_outputs import parse_claims
+
     claims = parse_claims(extraction_output)
     print(f"  Extracted {len(claims)} claims")
 
@@ -133,17 +134,25 @@ def cmd_run(args: argparse.Namespace) -> None:
     # 6. Retrieve evidence
     print("Retrieving evidence...")
     from esbvaktin.pipeline.retrieve_evidence import retrieve_evidence_for_claims
-    claims_with_evidence, bank_matches = retrieve_evidence_for_claims(
-        claims, top_k=5, use_claim_bank=True,
+
+    claims_with_evidence, bank_matches, hearsay_assessments = retrieve_evidence_for_claims(
+        claims,
+        top_k=5,
+        use_claim_bank=True,
     )
+    if hearsay_assessments:
+        print(f"  {len(hearsay_assessments)} hearsay claim(s) short-circuited as unverifiable")
     for cwe in claims_with_evidence:
         print(f"  {cwe.claim.claim_text[:60]}... — {len(cwe.evidence)} evidence matches")
 
     # 7. Prepare fact-check context
     print("Preparing assessment context...")
     from esbvaktin.pipeline.prepare_fact_check import prepare_fact_check_context
+
     fc_path = prepare_fact_check_context(
-        claims_with_evidence, work_dir, language="is",
+        claims_with_evidence,
+        work_dir,
+        language="is",
     )
     print(f"  Assessment context: {fc_path}")
 
@@ -168,6 +177,7 @@ def cmd_run(args: argparse.Namespace) -> None:
 
     # 9. Parse assessments
     from esbvaktin.pipeline.parse_outputs import parse_assessments
+
     assessments = parse_assessments(assessment_output)
     print(f"  Assessed {len(assessments)} claims")
 
@@ -183,9 +193,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         print("Registering sightings...")
         from esbvaktin.speeches.register_sightings import register_speech_sightings
 
-        source_url = (
-            f"https://www.althingi.is/altext/raeda/{session}/{speech_id}.html"
-        )
+        source_url = f"https://www.althingi.is/altext/raeda/{session}/{speech_id}.html"
         counts = register_speech_sightings(
             assessments=assessments,
             speech_id=speech_id,
@@ -279,6 +287,7 @@ def cmd_status(args: argparse.Namespace) -> None:
     # Check DB sightings
     try:
         from esbvaktin.ground_truth.operations import get_connection
+
         conn = get_connection()
         row = conn.execute(
             "SELECT COUNT(*) FROM claim_sightings WHERE source_type = 'althingi'"
@@ -299,9 +308,13 @@ def _run_subagent(task: str, output_path: Path) -> None:
     """Run a Claude Code subagent via subprocess."""
     result = subprocess.run(
         [
-            "claude", "-p", task,
-            "--output-format", "text",
-            "--max-turns", "3",
+            "claude",
+            "-p",
+            task,
+            "--output-format",
+            "text",
+            "--max-turns",
+            "3",
         ],
         capture_output=True,
         text=True,
@@ -334,21 +347,20 @@ def main() -> None:
     sel = sub.add_parser("select", help="List candidate speeches for fact-checking")
     sel.add_argument("--limit", type=int, default=10)
     sel.add_argument("--min-words", type=int, default=300)
-    sel.add_argument("--include-checked", action="store_true",
-                     help="Include already-checked speeches")
+    sel.add_argument(
+        "--include-checked", action="store_true", help="Include already-checked speeches"
+    )
 
     # run
     run = sub.add_parser("run", help="Fact-check a single speech")
     run.add_argument("speech_id", help="althingi.db speech_id")
-    run.add_argument("--dry-run", action="store_true",
-                     help="Skip sighting registration")
+    run.add_argument("--dry-run", action="store_true", help="Skip sighting registration")
 
     # batch
     bat = sub.add_parser("batch", help="Fact-check top N speeches")
     bat.add_argument("--limit", type=int, default=5)
     bat.add_argument("--min-words", type=int, default=300)
-    bat.add_argument("--dry-run", action="store_true",
-                     help="Skip sighting registration")
+    bat.add_argument("--dry-run", action="store_true", help="Skip sighting registration")
 
     # status
     sub.add_parser("status", help="Show fact-checking progress")
