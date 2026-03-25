@@ -28,8 +28,7 @@ pytestmark = [
 def fisheries_claim() -> Claim:
     return Claim(
         claim_text=(
-            "Iceland would lose control of its fishing waters"
-            " under the Common Fisheries Policy"
+            "Iceland would lose control of its fishing waters under the Common Fisheries Policy"
         ),
         original_quote="The CFP would force Iceland to hand over its fishing waters",
         category="fisheries",
@@ -55,7 +54,7 @@ def unknown_topic_claim() -> Claim:
         claim_text="EU membership would improve Iceland's healthcare system",
         original_quote="EU membership would improve Iceland's healthcare system",
         category="healthcare",
-        claim_type=ClaimType.PREDICTION,
+        claim_type=ClaimType.FORECAST,
         confidence=0.6,
     )
 

@@ -17,7 +17,13 @@ from .models import Claim, ClaimWithEvidence
 
 # ── Icelandic quality blocks ────────────────────────────────────────
 
-_BLOCKS_PATH = Path(__file__).resolve().parents[3] / ".claude" / "skills" / "icelandic-shared" / "assessment-blocks.md"
+_BLOCKS_PATH = (
+    Path(__file__).resolve().parents[3]
+    / ".claude"
+    / "skills"
+    / "icelandic-shared"
+    / "assessment-blocks.md"
+)
 
 
 def _load_icelandic_blocks() -> str:
@@ -52,6 +58,7 @@ def _load_icelandic_blocks_subset(*block_names: str) -> str:
     if current_match and current:
         sections.append("\n".join(current))
     return "\n\n".join(sections)
+
 
 # ── Shared terminology glossary (used in Icelandic contexts) ──────────
 
@@ -118,7 +125,7 @@ sem hægt er að bera saman við heimildir.
    - `original_quote`: Nákvæm tilvitnun úr greininni
    - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
-   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, prediction, opinion
+   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, forecast, opinion
    - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
 
 ## Mikilvægt
@@ -182,7 +189,7 @@ article that can be checked against evidence.
    - `original_quote`: The exact quote from the article
    - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
-   - `claim_type`: One of: statistic, legal_assertion, comparison, prediction, opinion
+   - `claim_type`: One of: statistic, legal_assertion, comparison, forecast, opinion
    - `confidence`: How confident you are this is a factual claim (0-1)
 
 ## Important
@@ -441,6 +448,7 @@ claim fields plus the assessment fields:
     output_path.write_text(context, encoding="utf-8")
 
     import logging
+
     _logger = logging.getLogger(__name__)
     _logger.info("Assessment context: %.0f KB", output_path.stat().st_size / 1024)
 
@@ -469,15 +477,11 @@ def prepare_omission_context(
     for cwe in claims_with_evidence:
         for ev in cwe.evidence:
             if ev.evidence_id not in all_evidence:
-                all_evidence[ev.evidence_id] = (
-                    ev.statement, ev.statement_is, ev.caveats
-                )
+                all_evidence[ev.evidence_id] = (ev.statement, ev.statement_is, ev.caveats)
 
     # Decide whether to use compact mode: threshold on total evidence text
     evidence_size_threshold = 50_000  # 50KB
-    full_evidence_text = "".join(
-        stmt for stmt, _, _ in all_evidence.values()
-    )
+    full_evidence_text = "".join(stmt for stmt, _, _ in all_evidence.values())
     compact = len(full_evidence_text.encode("utf-8")) > evidence_size_threshold
 
     evidence_lines: list[str] = []
@@ -498,9 +502,7 @@ def prepare_omission_context(
     article_size_threshold = 30_000  # 30KB
     if len(article_text.encode("utf-8")) > article_size_threshold:
         article_text = (
-            article_text[:5000]
-            + "\n\n[…klippt — langur texti stytt…]\n\n"
-            + article_text[-2000:]
+            article_text[:5000] + "\n\n[…klippt — langur texti stytt…]\n\n" + article_text[-2000:]
         )
 
     # List categories covered by the article's claims
@@ -640,12 +642,11 @@ evidence. Your job is to identify significant omissions and assess framing.
     # Log context size and warn if still large
     size_kb = output_path.stat().st_size / 1024
     import logging
+
     _logger = logging.getLogger(__name__)
     _logger.info("Omission context: %.0f KB%s", size_kb, " (compact)" if compact else "")
     if size_kb > 150:
-        _logger.warning(
-            "Omission context is %.0f KB — may exceed agent limits", size_kb
-        )
+        _logger.warning("Omission context is %.0f KB — may exceed agent limits", size_kb)
 
     return output_path
 
@@ -883,10 +884,10 @@ def prepare_speech_extraction_context(
     """
     meta_block = f"""## Bakgrunnur ræðumanns
 
-- Ræðumaður: {speaker_metadata.get('name', '?')}, {speaker_metadata.get('party', '?')}
-- Tegund ræðu: {speaker_metadata.get('speech_type', '?')}
-- Þingfundarheiti: {speaker_metadata.get('issue_title', '?')}
-- Dagsetning: {speaker_metadata.get('date', '?')}, {speaker_metadata.get('session', '?')}. löggjafarþing
+- Ræðumaður: {speaker_metadata.get("name", "?")}, {speaker_metadata.get("party", "?")}
+- Tegund ræðu: {speaker_metadata.get("speech_type", "?")}
+- Þingfundarheiti: {speaker_metadata.get("issue_title", "?")}
+- Dagsetning: {speaker_metadata.get("date", "?")}, {speaker_metadata.get("session", "?")}. löggjafarþing
 """
 
     if language == "is":
@@ -909,7 +910,7 @@ fullyrðingar** sem hægt er að bera saman við heimildir.
    - `original_quote`: Nákvæm tilvitnun úr ræðunni
    - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
-   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, prediction, opinion
+   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, forecast, opinion
    - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
 
 ## Mikilvægt
@@ -983,7 +984,7 @@ You are analysing an Alþingi speech related to Iceland's EU membership referend
    - `original_quote`: The exact quote from the speech
    - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
-   - `claim_type`: One of: statistic, legal_assertion, comparison, prediction, opinion
+   - `claim_type`: One of: statistic, legal_assertion, comparison, forecast, opinion
    - `confidence`: How confident you are this is a factual claim (0-1)
 
 ## Important
@@ -1085,10 +1086,10 @@ def prepare_panel_extraction_context(
 
 - **Þáttur**: {transcript.title}
 - **Þáttaröð**: {transcript.show_name}
-- **Dagsetning**: {transcript.date or '?'}
-- **Útvarpsstöð**: {transcript.broadcaster or '?'}
+- **Dagsetning**: {transcript.date or "?"}
+- **Útvarpsstöð**: {transcript.broadcaster or "?"}
 - **Orðafjöldi**: {transcript.word_count}
-- **Heimild**: {transcript.url or '?'}
+- **Heimild**: {transcript.url or "?"}
 """
 
     if language == "is":
@@ -1115,7 +1116,7 @@ saman við heimildir.
    - `speaker_name`: **Nafn þess sem sagði þetta** — nákvæmt fullt nafn
    - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
-   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, prediction, opinion
+   - `claim_type`: Eitt af: statistic, legal_assertion, comparison, forecast, opinion
    - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
 
 ## Mikilvægt
@@ -1191,7 +1192,7 @@ that can be checked against evidence.
    - `speaker_name`: **Name of the person who made this claim** — exact full name
    - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
-   - `claim_type`: One of: statistic, legal_assertion, comparison, prediction, opinion
+   - `claim_type`: One of: statistic, legal_assertion, comparison, forecast, opinion
    - `confidence`: How confident you are this is a factual claim (0-1)
 
 ## Important
@@ -1279,18 +1280,14 @@ def prepare_capsule_context(
         "misleading": "villandi",
         "unverifiable": "ekki h\u00e6gt a\u00f0 sannreyna",
     }
-    verdict_lines = [
-        f"- {verdict_is.get(v, v)}: {count}" for v, count in vc.most_common()
-    ]
+    verdict_lines = [f"- {verdict_is.get(v, v)}: {count}" for v, count in vc.most_common()]
 
     # Supported and partially supported claims
     solid_claims: list[str] = []
     for c in claims:
         if c.get("verdict") in ("supported", "partially_supported"):
             claim_obj = c.get("claim", {})
-            claim_text = (
-                claim_obj.get("claim_text", "") if isinstance(claim_obj, dict) else ""
-            )
+            claim_text = claim_obj.get("claim_text", "") if isinstance(claim_obj, dict) else ""
             evidence = c.get("supporting_evidence", [])
             if claim_text:
                 ev_str = ", ".join(evidence[:3]) if evidence else ""
@@ -1299,9 +1296,7 @@ def prepare_capsule_context(
 
     # Key omissions reframed as interesting context
     omissions = report_data.get("omissions", {})
-    omission_list = (
-        omissions.get("omissions", []) if isinstance(omissions, dict) else []
-    )
+    omission_list = omissions.get("omissions", []) if isinstance(omissions, dict) else []
     interesting: list[str] = []
     for om in omission_list[:3]:
         desc = om.get("description", "")
@@ -1310,21 +1305,11 @@ def prepare_capsule_context(
         if desc:
             interesting.append(f"- {desc} [{ev_str}]")
     interesting_section = (
-        "\n".join(interesting)
-        if interesting
-        else "Engar s\u00e9rstakar ey\u00f0ur greindar."
+        "\n".join(interesting) if interesting else "Engar s\u00e9rstakar ey\u00f0ur greindar."
     )
 
-    framing = (
-        omissions.get("framing_assessment", "")
-        if isinstance(omissions, dict)
-        else ""
-    )
-    completeness = (
-        omissions.get("overall_completeness", 0)
-        if isinstance(omissions, dict)
-        else 0
-    )
+    framing = omissions.get("framing_assessment", "") if isinstance(omissions, dict) else ""
+    completeness = omissions.get("overall_completeness", 0) if isinstance(omissions, dict) else 0
 
     context = (
         "# Samhengi fyrir lesandan\u00f3tu\n\n"
@@ -1335,9 +1320,7 @@ def prepare_capsule_context(
         f"- **Fj\u00f6ldi fullyr\u00f0inga:** {len(claims)}\n"
         f"- **Sj\u00f3narhorn:** {framing}\n"
         f"- **Heildst\u00e6\u00f0ni:** {completeness:.0%}\n\n"
-        "## Ni\u00f0urst\u00f6\u00f0ur mats\n\n"
-        + "\n".join(verdict_lines)
-        + "\n\n"
+        "## Ni\u00f0urst\u00f6\u00f0ur mats\n\n" + "\n".join(verdict_lines) + "\n\n"
         "## Fullyr\u00f0ingar sem standa \u2014 \u00fea\u00f0 sem greinin f\u00e6r r\u00e9tt\n\n"
         + (solid_section or "Engar studdar fullyr\u00f0ingar.")
         + "\n\n"
@@ -1347,9 +1330,7 @@ def prepare_capsule_context(
         "myndu au\u00f0ga skilning lesanda.\n"
         "N\u00f3tan \u00e1 a\u00f0 kynna eitt e\u00f0a tv\u00f6 "
         "\u00feessara sem forvitnileg vi\u00f0b\u00f3t, EKKI sem gagn"
-        "r\u00fdni.\n\n"
-        + interesting_section
-        + "\n\n"
+        "r\u00fdni.\n\n" + interesting_section + "\n\n"
         "## Lei\u00f0beiningar\n\n"
         "Skrifaðu 2-3 setningar á íslensku. Tónninn á að vera "
         "uppbyggilegur og forvitnilegur.\n"

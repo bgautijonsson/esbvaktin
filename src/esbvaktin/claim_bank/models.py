@@ -21,7 +21,7 @@ class CanonicalClaim(BaseModel):
     canonical_text_en: str | None = Field(default=None, description="English equivalent (optional)")
     category: str = Field(..., description="Topic (fisheries, trade, etc.)")
     claim_type: str = Field(
-        ..., description="statistic | legal_assertion | comparison | prediction | opinion"
+        ..., description="statistic | legal_assertion | comparison | forecast | opinion"
     )
 
     # Pre-computed verdict

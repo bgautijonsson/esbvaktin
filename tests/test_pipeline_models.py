@@ -51,7 +51,7 @@ class TestClaim:
             )
 
     def test_claim_type_enum(self):
-        for ct in ["statistic", "legal_assertion", "comparison", "prediction", "opinion"]:
+        for ct in ["statistic", "legal_assertion", "comparison", "forecast", "opinion"]:
             claim = Claim(
                 claim_text="test",
                 original_quote="test",

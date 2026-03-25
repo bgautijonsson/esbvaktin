@@ -11,6 +11,7 @@ from esbvaktin.ground_truth.models import (
     EvidenceEntry,
     SourceType,
 )
+from esbvaktin.pipeline.models import Claim, ClaimType, EpistemicType
 
 
 def test_valid_evidence_entry():
@@ -162,3 +163,43 @@ def test_canonical_claim_evidence_defaults():
     claim = _make_claim()
     assert claim.supporting_evidence == []
     assert claim.contradicting_evidence == []
+
+
+# ── EpistemicType tests ───────────────────────────────────────────────
+
+
+class TestEpistemicType:
+    def test_enum_values(self):
+        """EpistemicType should have exactly these four values."""
+        assert EpistemicType.FACTUAL == "factual"
+        assert EpistemicType.HEARSAY == "hearsay"
+        assert EpistemicType.COUNTERFACTUAL == "counterfactual"
+        assert EpistemicType.PREDICTION == "prediction"
+
+    def test_claim_type_forecast_replaces_prediction(self):
+        """ClaimType should use FORECAST, not PREDICTION."""
+        assert ClaimType.FORECAST == "forecast"
+        assert not hasattr(ClaimType, "PREDICTION")
+
+    def test_claim_has_epistemic_type_field(self):
+        """Claim can be constructed with an explicit epistemic_type."""
+        claim = Claim(
+            claim_text="Ísland myndi ganga í ESB",
+            original_quote="Ísland myndi ganga í ESB",
+            category="sovereignty",
+            claim_type=ClaimType.LEGAL_ASSERTION,
+            confidence=0.8,
+            epistemic_type=EpistemicType.COUNTERFACTUAL,
+        )
+        assert claim.epistemic_type == EpistemicType.COUNTERFACTUAL
+
+    def test_claim_epistemic_type_defaults_to_factual(self):
+        """Claim without epistemic_type should default to factual."""
+        claim = Claim(
+            claim_text="Ísland er í EES",
+            original_quote="Ísland er í EES",
+            category="eea_eu_law",
+            claim_type=ClaimType.LEGAL_ASSERTION,
+            confidence=0.9,
+        )
+        assert claim.epistemic_type == EpistemicType.FACTUAL

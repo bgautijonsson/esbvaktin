@@ -141,7 +141,7 @@ Ef ekki, slepptu henni.
 - Flokkaðu eftir efni: fisheries, trade, sovereignty, eea_eu_law, agriculture,
   precedents, currency, labour, energy, housing, polling, party_positions,
   org_positions, other
-- Tegund fullyrðingar: statistic, legal_assertion, comparison, prediction, opinion
+- Tegund fullyrðingar: statistic, legal_assertion, comparison, forecast, opinion
 - Vistaðu beina tilvitnun í `original_quote`
 - **JSON safety**: Íslenskar gæsalappir „…" → \"…\" í JSON-strengjum
 - Skrifaðu hrátt JSON, engin markdown-umbúðir
