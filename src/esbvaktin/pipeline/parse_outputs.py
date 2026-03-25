@@ -12,6 +12,7 @@ from .models import (
     ArticleEntities,
     Claim,
     ClaimAssessment,
+    EpistemicType,
     FramingAssessment,
     OmissionAnalysis,
 )
@@ -109,7 +110,7 @@ def _extract_json(text: str) -> str:
             # Check the quote at error position looks like content, not structure:
             # preceded by a word char or punctuation (not a JSON delimiter)
             if pos > 0 and repaired[pos - 1] not in (",", ":", "[", "{", " ", "\n", "\t"):
-                repaired = repaired[:pos] + '\\"' + repaired[pos + 1:]
+                repaired = repaired[:pos] + '\\"' + repaired[pos + 1 :]
             else:
                 break
     return repaired
@@ -142,6 +143,9 @@ def _normalise_assessment(item: dict) -> dict:
         # Preserve speaker_name for panel show / transcript claims
         if "speaker_name" in item:
             claim_dict["speaker_name"] = item.pop("speaker_name")
+        # Preserve epistemic_type for epistemic-aware assessment
+        if "epistemic_type" in item:
+            claim_dict["epistemic_type"] = item.pop("epistemic_type")
         item["claim"] = claim_dict
         # Map alternative field names
         if "evidence_ids" in item and "supporting_evidence" not in item:
@@ -160,6 +164,36 @@ def parse_assessments(output_path: Path) -> list[ClaimAssessment]:
     raw = json.loads(_extract_json(text))
     normalised = [_normalise_assessment(item) for item in raw]
     return [ClaimAssessment.model_validate(item) for item in normalised]
+
+
+_EPISTEMIC_CONFIDENCE_CEILING = 0.8
+_CLAMPED_TYPES = {EpistemicType.PREDICTION, EpistemicType.COUNTERFACTUAL}
+
+
+def clamp_epistemic_confidence(
+    assessments: list[ClaimAssessment],
+) -> list[ClaimAssessment]:
+    """Clamp confidence for prediction/counterfactual claims to 0.8 ceiling.
+
+    Predictions and counterfactuals are inherently uncertain — even well-
+    supported reasoning cannot be as confident as verified facts.
+    """
+    result = []
+    for a in assessments:
+        if a.claim.epistemic_type in _CLAMPED_TYPES:
+            clamped_claim = a.claim.model_copy(
+                update={"confidence": min(a.claim.confidence, _EPISTEMIC_CONFIDENCE_CEILING)}
+            )
+            clamped = a.model_copy(
+                update={
+                    "claim": clamped_claim,
+                    "confidence": min(a.confidence, _EPISTEMIC_CONFIDENCE_CEILING),
+                }
+            )
+            result.append(clamped)
+        else:
+            result.append(a)
+    return result
 
 
 _FRAMING_ALIASES = {
@@ -199,6 +233,7 @@ def parse_omissions_safe(output_path: Path) -> OmissionAnalysis:
     """
     if not output_path.exists():
         import logging
+
         logging.getLogger(__name__).warning(
             "Omissions file missing (%s) — using default (neutral_but_incomplete, 0.0)",
             output_path,
@@ -219,6 +254,7 @@ def parse_assessments_safe(output_path: Path) -> list[ClaimAssessment]:
     """
     if not output_path.exists():
         import logging
+
         logging.getLogger(__name__).warning(
             "Assessments file missing (%s) — returning empty list",
             output_path,

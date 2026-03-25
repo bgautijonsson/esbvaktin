@@ -105,15 +105,15 @@ class TestIcelandicQuoteSanitisation:
         claims_file = tmp_path / "claims.json"
         # Use raw string with actual Unicode characters
         claims_file.write_text(
-            '[\n'
-            '  {\n'
+            "[\n"
+            "  {\n"
             '    "claim_text": "R\u00e1\u00f0herra sag\u00f0i \u201e\u00feetta s\u00e9 r\u00e9tt\u201c",\n'
             '    "original_quote": "R\u00e1\u00f0herra sag\u00f0i \u201e\u00feetta s\u00e9 r\u00e9tt\u201c",\n'
             '    "category": "sovereignty",\n'
             '    "claim_type": "opinion",\n'
             '    "confidence": 0.8\n'
-            '  }\n'
-            ']',
+            "  }\n"
+            "]",
             encoding="utf-8",
         )
         claims = parse_claims(claims_file)
@@ -126,6 +126,7 @@ class TestIcelandicQuoteSanitisation:
         result = _extract_json(text)
         # Unicode quotes are valid JSON — should parse without sanitisation
         import json
+
         parsed = json.loads(result)
         assert parsed["key"] == "\u201eval\u201c"
 
@@ -135,6 +136,7 @@ class TestIcelandicQuoteSanitisation:
         text = '```json\n[{"key": "\u201eval""}]\n```'
         result = _extract_json(text)
         import json
+
         parsed = json.loads(result)
         assert len(parsed) == 1
 
@@ -143,8 +145,130 @@ class TestIcelandicQuoteSanitisation:
         text = '[{"key": "Ráðherra sagði «þetta sé rétt»"}]'
         result = _extract_json(text)
         import json
+
         parsed = json.loads(result)
         assert "«þetta sé rétt»" in parsed[0]["key"]
+
+
+class TestEpistemicTypeParsing:
+    def test_parse_claims_with_epistemic_type(self, tmp_path):
+        """Claims with epistemic_type are parsed correctly."""
+        import json
+
+        claims_file = tmp_path / "_claims.json"
+        claims_file.write_text(
+            json.dumps(
+                [
+                    {
+                        "claim_text": "Test claim",
+                        "original_quote": "Test",
+                        "category": "fisheries",
+                        "claim_type": "statistic",
+                        "epistemic_type": "prediction",
+                        "confidence": 0.9,
+                    }
+                ]
+            )
+        )
+        claims = parse_claims(claims_file)
+        assert claims[0].epistemic_type.value == "prediction"
+
+    def test_parse_claims_defaults_epistemic_type_to_factual(self, tmp_path):
+        """Claims without epistemic_type default to factual."""
+        import json
+
+        claims_file = tmp_path / "_claims.json"
+        claims_file.write_text(
+            json.dumps(
+                [
+                    {
+                        "claim_text": "Test claim",
+                        "original_quote": "Test",
+                        "category": "fisheries",
+                        "claim_type": "statistic",
+                        "confidence": 0.9,
+                    }
+                ]
+            )
+        )
+        claims = parse_claims(claims_file)
+        assert claims[0].epistemic_type.value == "factual"
+
+    def test_clamp_epistemic_confidence(self):
+        """Prediction/counterfactual confidence clamped to 0.8."""
+        from esbvaktin.pipeline.parse_outputs import clamp_epistemic_confidence
+        from esbvaktin.pipeline.models import (
+            Claim,
+            ClaimType,
+            EpistemicType,
+            ClaimAssessment,
+            Verdict,
+        )
+
+        claim = Claim(
+            claim_text="Test",
+            original_quote="Test",
+            category="fisheries",
+            claim_type=ClaimType.STATISTIC,
+            epistemic_type=EpistemicType.PREDICTION,
+            confidence=0.95,
+        )
+        assessment = ClaimAssessment(
+            claim=claim,
+            verdict=Verdict.SUPPORTED,
+            explanation="Test",
+            confidence=0.95,
+        )
+        clamped = clamp_epistemic_confidence([assessment])
+        assert clamped[0].confidence == 0.8
+        assert clamped[0].claim.confidence == 0.8
+
+    def test_clamp_does_not_affect_factual(self):
+        """Factual claims are not clamped."""
+        from esbvaktin.pipeline.parse_outputs import clamp_epistemic_confidence
+        from esbvaktin.pipeline.models import (
+            Claim,
+            ClaimType,
+            EpistemicType,
+            ClaimAssessment,
+            Verdict,
+        )
+
+        claim = Claim(
+            claim_text="Test",
+            original_quote="Test",
+            category="fisheries",
+            claim_type=ClaimType.STATISTIC,
+            epistemic_type=EpistemicType.FACTUAL,
+            confidence=0.95,
+        )
+        assessment = ClaimAssessment(
+            claim=claim,
+            verdict=Verdict.SUPPORTED,
+            explanation="Test",
+            confidence=0.95,
+        )
+        clamped = clamp_epistemic_confidence([assessment])
+        assert clamped[0].confidence == 0.95
+
+    def test_normalise_assessment_preserves_epistemic_type(self):
+        """_normalise_assessment preserves epistemic_type from flat format."""
+        from esbvaktin.pipeline.parse_outputs import _normalise_assessment
+
+        item = {
+            "claim_text": "Test",
+            "original_quote": "Test",
+            "category": "fisheries",
+            "claim_type": "statistic",
+            "epistemic_type": "hearsay",
+            "confidence": 0.5,
+            "verdict": "unverifiable",
+            "explanation": "Test",
+            "supporting_evidence": [],
+            "contradicting_evidence": [],
+        }
+        result = _normalise_assessment(item)
+        assert result["claim"]["epistemic_type"] == "hearsay"
 
 
 class TestParseTranslation:
