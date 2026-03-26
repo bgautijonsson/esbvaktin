@@ -61,6 +61,39 @@ def _reorder_primacy_recency(items: list) -> list:
     return [first, *middle, last]
 
 
+RRF_K = 60  # Standard Reciprocal Rank Fusion constant
+
+
+def _rrf_merge(
+    vector_results: list[SearchResult],
+    keyword_results: list[SearchResult],
+    vector_weight: float = 1.0,
+    keyword_weight: float = 1.0,
+) -> list[tuple[SearchResult, float]]:
+    """Reciprocal Rank Fusion of vector and keyword search results.
+
+    Returns (SearchResult, rrf_score) tuples sorted by score descending.
+    Documents appearing in both lists rank higher than either alone.
+    """
+    scores: dict[str, float] = {}
+    result_map: dict[str, SearchResult] = {}
+
+    for rank, r in enumerate(vector_results, 1):
+        scores[r.evidence_id] = scores.get(r.evidence_id, 0) + vector_weight / (RRF_K + rank)
+        result_map[r.evidence_id] = r
+
+    for rank, r in enumerate(keyword_results, 1):
+        scores[r.evidence_id] = scores.get(r.evidence_id, 0) + keyword_weight / (RRF_K + rank)
+        if r.evidence_id not in result_map:
+            result_map[r.evidence_id] = r
+
+    return sorted(
+        [(result_map[eid], score) for eid, score in scores.items()],
+        key=lambda x: x[1],
+        reverse=True,
+    )
+
+
 def check_claim_bank(
     claim: Claim,
     conn=None,
@@ -100,14 +133,20 @@ def retrieve_evidence_for_claim(
     top_k: int = 5,
     conn=None,
 ) -> ClaimWithEvidence:
-    """Retrieve evidence for a single claim.
+    """Retrieve evidence for a single claim using hybrid BM25 + vector search.
 
-    Runs two searches:
-    1. Filtered by topic (if the claim's category matches a known topic)
-    2. Unfiltered (catches cross-topic evidence)
+    Runs three searches:
+    1. Topic-filtered vector search (if the claim's category matches a known topic)
+    2. Unfiltered vector search (catches cross-topic evidence)
+    3. Keyword (BM25) search via PostgreSQL tsvector
 
-    Results are merged, deduplicated, and sorted by similarity.
+    Vector results are merged by evidence_id (keeping highest similarity).
+    Vector + keyword results are then fused with Reciprocal Rank Fusion (RRF).
+    Falls back to pure vector with MIN_SIMILARITY filtering when keyword search
+    returns nothing.
     """
+    from esbvaktin.ground_truth.operations import keyword_search
+
     results: dict[str, SearchResult] = {}
 
     # Filtered search if category matches a known topic
@@ -132,13 +171,57 @@ def retrieve_evidence_for_claim(
         if r.evidence_id not in results:
             results[r.evidence_id] = r
 
-    # Filter out low-similarity noise, then sort and cap at MAX_EVIDENCE_PER_CLAIM
-    sorted_results = sorted(
-        (r for r in results.values() if r.similarity >= MIN_SIMILARITY),
+    # Sort merged vector results by similarity (input for RRF)
+    vector_merged = sorted(
+        results.values(),
         key=lambda r: r.similarity,
         reverse=True,
-    )[:MAX_EVIDENCE_PER_CLAIM]
-    ordered_results = _reorder_primacy_recency(sorted_results)
+    )
+
+    # Keyword search
+    keyword_results = keyword_search(
+        query=claim.claim_text,
+        topic_filter=topic_filter,
+        top_k=20,
+        conn=conn,
+    )
+
+    if keyword_results:
+        # RRF fusion — no MIN_SIMILARITY floor (keyword hit already signals relevance)
+        rrf_results = _rrf_merge(list(vector_merged), keyword_results)
+        final_results = []
+        for r, rrf_score in rrf_results[:MAX_EVIDENCE_PER_CLAIM]:
+            if r.similarity > 0:
+                # Came from vector search — preserve original similarity
+                final_results.append(r)
+            else:
+                # Keyword-only hit: scale RRF score into a similarity-like range
+                final_results.append(
+                    SearchResult(
+                        evidence_id=r.evidence_id,
+                        domain=r.domain,
+                        topic=r.topic,
+                        subtopic=r.subtopic,
+                        statement=r.statement,
+                        source_name=r.source_name,
+                        source_url=r.source_url,
+                        source_date=r.source_date,
+                        source_type=r.source_type,
+                        confidence=r.confidence,
+                        caveats=r.caveats,
+                        statement_is=r.statement_is,
+                        similarity=min(rrf_score * 100, 0.99),
+                    )
+                )
+        ordered_results = _reorder_primacy_recency(final_results)
+    else:
+        # No keyword hits — fall back to pure vector (original behaviour)
+        sorted_results = sorted(
+            (r for r in results.values() if r.similarity >= MIN_SIMILARITY),
+            key=lambda r: r.similarity,
+            reverse=True,
+        )[:MAX_EVIDENCE_PER_CLAIM]
+        ordered_results = _reorder_primacy_recency(sorted_results)
 
     return ClaimWithEvidence(
         claim=claim,

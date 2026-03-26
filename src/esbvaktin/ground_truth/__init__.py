@@ -10,6 +10,7 @@ from .operations import (
     init_schema,
     insert_evidence,
     insert_evidence_batch,
+    keyword_search,
     search_evidence,
 )
 
@@ -27,5 +28,6 @@ __all__ = [
     "init_schema",
     "insert_evidence",
     "insert_evidence_batch",
+    "keyword_search",
     "search_evidence",
 ]

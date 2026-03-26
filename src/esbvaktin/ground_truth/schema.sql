@@ -38,6 +38,19 @@ CREATE INDEX IF NOT EXISTS idx_evidence_embedding ON evidence
 CREATE INDEX IF NOT EXISTS idx_evidence_fts ON evidence
     USING gin(to_tsvector('simple', statement || ' ' || COALESCE(caveats, '')));
 
+-- Hybrid BM25+vector: generated tsvector columns for keyword search
+-- fts_en: English statement text; fts_is: Icelandic statement text
+ALTER TABLE evidence
+  ADD COLUMN IF NOT EXISTS fts_en tsvector
+  GENERATED ALWAYS AS (to_tsvector('simple', coalesce(statement, ''))) STORED;
+
+ALTER TABLE evidence
+  ADD COLUMN IF NOT EXISTS fts_is tsvector
+  GENERATED ALWAYS AS (to_tsvector('simple', coalesce(statement_is, ''))) STORED;
+
+CREATE INDEX IF NOT EXISTS idx_evidence_fts_en ON evidence USING gin(fts_en);
+CREATE INDEX IF NOT EXISTS idx_evidence_fts_is ON evidence USING gin(fts_is);
+
 -- Update timestamp trigger
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$

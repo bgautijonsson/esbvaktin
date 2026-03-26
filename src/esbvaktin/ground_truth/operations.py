@@ -203,15 +203,92 @@ def search_evidence(
     ).fetchall()
 
     columns = [
-        "evidence_id", "domain", "topic", "subtopic", "statement",
-        "source_name", "source_url", "source_date", "source_type",
-        "confidence", "caveats", "similarity", "statement_is",
+        "evidence_id",
+        "domain",
+        "topic",
+        "subtopic",
+        "statement",
+        "source_name",
+        "source_url",
+        "source_date",
+        "source_type",
+        "confidence",
+        "caveats",
+        "similarity",
+        "statement_is",
     ]
     results = [SearchResult(**dict(zip(columns, row))) for row in rows]
 
     if close:
         conn.close()
     return results
+
+
+def keyword_search(
+    query: str,
+    topic_filter: str | None = None,
+    top_k: int = 20,
+    conn: psycopg.Connection | None = None,
+) -> list[SearchResult]:
+    """Full-text keyword search against evidence entries.
+
+    Searches both English (statement) and Icelandic (statement_is) text
+    using PostgreSQL tsvector with 'simple' config (tokenise + lowercase).
+    Returns results ranked by ts_rank_cd (cover density).
+
+    Returns an empty list if the fts columns are not yet present (DB not migrated).
+    """
+    close = False
+    if conn is None:
+        conn = get_connection()
+        close = True
+
+    topic_clause = "AND topic = %(topic)s" if topic_filter else ""
+
+    try:
+        rows = conn.execute(
+            f"""
+            SELECT evidence_id, domain, topic, subtopic, statement,
+                   source_name, source_url, source_date, source_type,
+                   confidence, caveats, statement_is,
+                   ts_rank_cd(fts_en, plainto_tsquery('simple', %(query)s))
+                 + ts_rank_cd(fts_is, plainto_tsquery('simple', %(query)s)) AS rank_score
+            FROM evidence
+            WHERE (fts_en @@ plainto_tsquery('simple', %(query)s)
+               OR  fts_is @@ plainto_tsquery('simple', %(query)s))
+            {topic_clause}
+            ORDER BY rank_score DESC
+            LIMIT %(top_k)s
+            """,
+            {"query": query, "topic": topic_filter, "top_k": top_k},
+        ).fetchall()
+    except Exception:
+        # fts columns not yet created — DB migration not applied
+        if close:
+            conn.close()
+        return []
+
+    if close:
+        conn.close()
+
+    return [
+        SearchResult(
+            evidence_id=r[0],
+            domain=r[1],
+            topic=r[2],
+            subtopic=r[3],
+            statement=r[4],
+            source_name=r[5],
+            source_url=r[6],
+            source_date=r[7],
+            source_type=r[8],
+            confidence=r[9],
+            caveats=r[10],
+            statement_is=r[11],
+            similarity=0.0,
+        )
+        for r in rows
+    ]
 
 
 def get_topic_counts(conn: psycopg.Connection | None = None) -> dict[str, int]:
