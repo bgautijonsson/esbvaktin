@@ -30,10 +30,19 @@ def _make_assessment(
 
 
 class _FakeMatch:
-    def __init__(self, claim_id: int, slug: str, sim: float):
+    def __init__(
+        self,
+        claim_id: int,
+        slug: str,
+        sim: float,
+        verdict: str = "supported",
+        confidence: float = 0.8,
+    ):
         self.claim_id = claim_id
         self.claim_slug = slug
         self.similarity = sim
+        self.verdict = verdict
+        self.confidence = confidence
 
 
 @patch("esbvaktin.pipeline.register_sightings.search_claims")
@@ -51,7 +60,8 @@ def test_matched_sighting_uses_panel_show_type(mock_search):
     )
 
     assert counts["matched"] == 1
-    call_args = conn.execute.call_args
+    # First execute call is the INSERT sighting; second is confidence UPDATE
+    call_args = conn.execute.call_args_list[0]
     params = call_args[0][1]
     assert params["source_type"] == "panel_show"
     assert params["speaker_name"] == "Sigmundur Davíð"
@@ -108,7 +118,8 @@ def test_speaker_name_preserved_through_sighting(mock_search):
         conn=conn,
     )
 
-    params = conn.execute.call_args[0][1]
+    # First execute call is the INSERT sighting; second is confidence UPDATE
+    params = conn.execute.call_args_list[0][0][1]
     assert params["speaker_name"] == "Guðrún Hafsteinsdóttir"
 
 
