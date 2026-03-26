@@ -226,16 +226,16 @@ def add_claim(
         """
         INSERT INTO claims (
             claim_slug, canonical_text_is, canonical_text_en,
-            category, claim_type, verdict,
+            category, claim_type, epistemic_type, verdict,
             explanation_is, explanation_en, missing_context_is,
             supporting_evidence, contradicting_evidence,
-            confidence, embedding, last_verified, published
+            confidence, embedding, last_verified, published, substantive
         ) VALUES (
             %(slug)s, %(text_is)s, %(text_en)s,
-            %(category)s, %(claim_type)s, %(verdict)s,
+            %(category)s, %(claim_type)s, %(epistemic_type)s, %(verdict)s,
             %(explanation_is)s, %(explanation_en)s, %(missing_context_is)s,
             %(supporting)s, %(contradicting)s,
-            %(confidence)s, %(embedding)s, %(last_verified)s, %(published)s
+            %(confidence)s, %(embedding)s, %(last_verified)s, %(published)s, %(substantive)s
         ) ON CONFLICT (claim_slug) DO UPDATE SET
             canonical_text_is = EXCLUDED.canonical_text_is,
             canonical_text_en = EXCLUDED.canonical_text_en,
@@ -258,6 +258,7 @@ def add_claim(
             "text_en": claim.canonical_text_en,
             "category": claim.category,
             "claim_type": claim.claim_type,
+            "epistemic_type": claim.epistemic_type,
             "verdict": claim.verdict,
             "explanation_is": claim.explanation_is,
             "explanation_en": claim.explanation_en,
@@ -268,6 +269,7 @@ def add_claim(
             "embedding": embedding,
             "last_verified": claim.last_verified,
             "published": claim.published,
+            "substantive": claim.substantive,
         },
     ).fetchone()
     conn.commit()

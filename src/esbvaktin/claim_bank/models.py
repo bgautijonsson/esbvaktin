@@ -23,6 +23,10 @@ class CanonicalClaim(BaseModel):
     claim_type: str = Field(
         ..., description="statistic | legal_assertion | comparison | forecast | opinion"
     )
+    epistemic_type: str = Field(
+        default="factual",
+        description="factual | hearsay | counterfactual | prediction",
+    )
 
     # Pre-computed verdict
     verdict: str = Field(
@@ -41,6 +45,7 @@ class CanonicalClaim(BaseModel):
     confidence: float = Field(..., ge=0, le=1)
     last_verified: date = Field(default_factory=date.today)
     published: bool = True
+    substantive: bool = True
 
 
 class ClaimBankMatch(BaseModel):

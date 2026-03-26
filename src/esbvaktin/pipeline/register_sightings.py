@@ -91,6 +91,7 @@ def register_panel_sightings(
                 canonical_text_is=claim_text,
                 category=assessment.claim.category,
                 claim_type=assessment.claim.claim_type.value,
+                epistemic_type=assessment.claim.epistemic_type.value,
                 verdict=verdict,
                 explanation_is=assessment.explanation,
                 missing_context_is=assessment.missing_context,
