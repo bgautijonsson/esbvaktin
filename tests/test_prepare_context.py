@@ -11,6 +11,7 @@ from esbvaktin.pipeline.models import (
     Claim,
     ClaimType,
     ClaimWithEvidence,
+    EpistemicType,
     EvidenceMatch,
 )
 from esbvaktin.pipeline.prepare_context import (
@@ -240,11 +241,44 @@ def test_omission_context_truncates_large_article(tmp_path: Path):
 def test_assessment_context_multiple_claims(tmp_path: Path):
     """Assessment context with multiple claims should number them."""
     claims = [
-        _make_cwe(claim=_make_claim(text=f"Fullyrðing {i}", category="trade"))
-        for i in range(1, 4)
+        _make_cwe(claim=_make_claim(text=f"Fullyrðing {i}", category="trade")) for i in range(1, 4)
     ]
     path = prepare_assessment_context(claims, tmp_path, language="is")
     content = path.read_text(encoding="utf-8")
     assert "Fullyrðing 1" in content
     assert "Fullyrðing 2" in content
     assert "Fullyrðing 3" in content
+
+
+# ── Epistemic type ────────────────────────────────────────────────────
+
+
+def test_extraction_context_includes_epistemic_type(tmp_path: Path):
+    path = prepare_extraction_context(
+        article_text="Test article about ESB",
+        output_dir=tmp_path,
+        language="is",
+    )
+    content = path.read_text()
+    assert "epistemic_type" in content
+    assert "hearsay" in content
+    assert "counterfactual" in content
+    # claim_type should show forecast, not prediction
+    assert "forecast" in content
+
+
+def test_assessment_context_includes_epistemic_rules(tmp_path: Path):
+    claim = Claim(
+        claim_text="Ef aðild næðist myndi matvælaverð lækka",
+        original_quote="Test",
+        category="trade",
+        claim_type=ClaimType.FORECAST,
+        epistemic_type=EpistemicType.PREDICTION,
+        confidence=0.7,
+    )
+    cwe = ClaimWithEvidence(claim=claim, evidence=[])
+    path = prepare_assessment_context([cwe], tmp_path, language="is")
+    content = path.read_text()
+    assert "Þekkingarstaða" in content or "epistemic_type" in content
+    assert "prediction" in content
+    assert "Heimildasamstaða" in content or "samstaða" in content.lower()

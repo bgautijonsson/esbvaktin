@@ -57,3 +57,16 @@ Samhengsskráin getur verið mjög stór (20+ fullyrðingar × 5 heimildir). **L
 5. Ef `contradicting_evidence` er ekki tómt → útskýring rökstyður hvers vegna stuðningsheimildir vega þyngra
 6. Ekki þrjár útskýringar í röð sem byrja á sama orði
 7. JSON er flatt fylki og er gilt
+
+## Reglur um þekkingarfræðilega tegund (epistemic_type)
+
+- **factual**: Metið eins og hingað til — er fullyrðingin studd af heimildum?
+- **counterfactual**: Þetta gerðist ekki. Metið rökin og heimildastuðning
+  fyrir orsökum og afleiðingum. Hámarks confidence: 0.8.
+- **prediction**: Þetta hefur ekki gerst enn. Metið á grundvelli:
+  1. **Heimildasamstaða**: Eru margar trúverðugar heimildir sammála?
+  2. **Trúverðugleiki heimilda**: Opinberar stofnanir, sérfræðingar, eða ónafngreindir?
+  3. **Fordæmi**: Reynsla annarra ríkja (Noregur, Svíþjóð, Króatía)?
+  4. **Rökfærsla**: Er orsök-afleiðing keðjan trúverðug?
+  Hámarks confidence: 0.8.
+- **hearsay**: Kemur ALDREI til mats — hefur þegar fengið unverifiable.

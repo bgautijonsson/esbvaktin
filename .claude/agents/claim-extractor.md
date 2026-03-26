@@ -31,5 +31,6 @@ maxTurns: 10
 1. Sérhver `claim_text` er á íslensku með réttum Unicode-stöfum (þ, ð, á, é, í, ó, ú, ý, æ, ö)
 2. Engin ASCII-umritun ("th" fyrir "þ", "ae" fyrir "æ" o.s.frv.)
 3. Flokkar eru úr gilda menginu: fisheries, trade, sovereignty, eea_eu_law, agriculture, precedents, currency, labour, energy, housing, polling, party_positions, org_positions, other
-4. Tegundir fullyrðinga eru gildar: statistic, legal_assertion, comparison, prediction, opinion
+4. Tegundir fullyrðinga eru gildar: statistic, legal_assertion, comparison, forecast, opinion
 5. JSON er gilt og þáttanlegt
+6. Tegundir þekkingarstöðu eru gildar: factual, hearsay, counterfactual, prediction

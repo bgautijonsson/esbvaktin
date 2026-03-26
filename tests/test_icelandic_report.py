@@ -1,13 +1,11 @@
 """Tests for Icelandic-first pipeline components."""
 
-from datetime import date
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from esbvaktin.pipeline.assemble_report import (
     assemble_report,
     render_report_is,
-    render_report_en,
 )
 from esbvaktin.pipeline.models import (
     Claim,
@@ -49,7 +47,7 @@ def _sample_claims() -> list[ClaimAssessment]:
                 claim_text="Aflaheimild gæti minnkað um 30%",
                 original_quote="aflaheimild gæti minnkað um allt að 30 prósent",
                 category="fisheries",
-                claim_type=ClaimType.PREDICTION,
+                claim_type=ClaimType.FORECAST,
                 confidence=0.7,
             ),
             verdict=Verdict.UNVERIFIABLE,
@@ -157,9 +155,7 @@ class TestContextTemplates:
 
     def test_extraction_context_icelandic(self):
         with TemporaryDirectory() as tmpdir:
-            path = prepare_extraction_context(
-                "Grein um ESB-aðild", Path(tmpdir), language="is"
-            )
+            path = prepare_extraction_context("Grein um ESB-aðild", Path(tmpdir), language="is")
             content = path.read_text()
 
             assert "Fullyrðingagreining" in content
@@ -168,9 +164,7 @@ class TestContextTemplates:
 
     def test_extraction_context_english(self):
         with TemporaryDirectory() as tmpdir:
-            path = prepare_extraction_context(
-                "Article about EU", Path(tmpdir), language="en"
-            )
+            path = prepare_extraction_context("Article about EU", Path(tmpdir), language="en")
             content = path.read_text()
 
             assert "Claim Extraction Task" in content

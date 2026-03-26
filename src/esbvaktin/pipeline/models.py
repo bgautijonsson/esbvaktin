@@ -10,8 +10,15 @@ class ClaimType(StrEnum):
     STATISTIC = "statistic"
     LEGAL_ASSERTION = "legal_assertion"
     COMPARISON = "comparison"
-    PREDICTION = "prediction"
+    FORECAST = "forecast"
     OPINION = "opinion"
+
+
+class EpistemicType(StrEnum):
+    FACTUAL = "factual"
+    HEARSAY = "hearsay"
+    COUNTERFACTUAL = "counterfactual"
+    PREDICTION = "prediction"
 
 
 class Verdict(StrEnum):
@@ -74,6 +81,10 @@ class Claim(BaseModel):
     original_quote: str = Field(..., description="Exact quote from the article")
     category: str = Field(..., description="Topic category (e.g. fisheries, trade)")
     claim_type: ClaimType
+    epistemic_type: EpistemicType = Field(
+        default=EpistemicType.FACTUAL,
+        description="Epistemic status: factual, hearsay, counterfactual, or prediction",
+    )
     confidence: float = Field(..., ge=0, le=1, description="Extraction confidence")
     speaker_name: str | None = Field(
         None, description="Speaker who made the claim (panel shows / transcripts)"
@@ -120,9 +131,7 @@ class Omission(BaseModel):
 
     topic: str
     description: str
-    relevant_evidence: list[str] = Field(
-        default_factory=list, description="Evidence IDs"
-    )
+    relevant_evidence: list[str] = Field(default_factory=list, description="Evidence IDs")
 
 
 class OmissionAnalysis(BaseModel):
