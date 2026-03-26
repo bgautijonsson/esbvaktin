@@ -202,7 +202,7 @@ def register_article(
                     supporting_evidence=claim_entry.get("supporting_evidence", []),
                     contradicting_evidence=claim_entry.get("contradicting_evidence", []),
                     confidence=claim_entry.get("confidence", 0.5),
-                    published=False if is_hearsay else True,
+                    published=True,
                     substantive=False if is_hearsay else True,
                 )
                 try:

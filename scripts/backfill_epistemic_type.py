@@ -162,7 +162,7 @@ def cmd_correct(apply: bool = False) -> None:
     conn.execute("""
         UPDATE claims SET
             verdict = 'unverifiable',
-            published = FALSE,
+            published = TRUE,
             substantive = FALSE,
             explanation_is = 'Fullyrðingin byggir á ónafngreindum heimildum sem ekki er hægt að staðfesta.',
             version = version + 1,
