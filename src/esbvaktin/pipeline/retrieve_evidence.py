@@ -30,7 +30,8 @@ logger = logging.getLogger(__name__)
 # Similarity thresholds for claim bank matching
 BANK_EXACT_THRESHOLD = 0.85  # Reuse verdict directly (cache hit)
 BANK_FUZZY_THRESHOLD = 0.70  # Show as context to assessment subagent
-MIN_SIMILARITY = 0.35  # Floor for evidence retrieval (filter noise)
+MIN_SIMILARITY = 0.45  # Floor for evidence retrieval (filter noise)
+MAX_EVIDENCE_PER_CLAIM = 7  # Hard cap per claim (primacy-recency ordering applied)
 
 
 def _search_result_to_match(result: SearchResult) -> EvidenceMatch:
@@ -43,6 +44,21 @@ def _search_result_to_match(result: SearchResult) -> EvidenceMatch:
         caveats=result.caveats,
         statement_is=result.statement_is,
     )
+
+
+def _reorder_primacy_recency(items: list) -> list:
+    """Reorder evidence for primacy-recency effect.
+
+    Best item first, second-best item last, remainder in the middle.
+    Assumes input is already sorted descending by similarity.
+    LLMs attend most to the beginning and end of context (SIGIR 2026).
+    """
+    if len(items) <= 2:
+        return list(items)
+    first = items[0]
+    last = items[1]
+    middle = items[2:]
+    return [first, *middle, last]
 
 
 def check_claim_bank(
@@ -116,16 +132,17 @@ def retrieve_evidence_for_claim(
         if r.evidence_id not in results:
             results[r.evidence_id] = r
 
-    # Filter out low-similarity noise, then sort and take top_k
+    # Filter out low-similarity noise, then sort and cap at MAX_EVIDENCE_PER_CLAIM
     sorted_results = sorted(
         (r for r in results.values() if r.similarity >= MIN_SIMILARITY),
         key=lambda r: r.similarity,
         reverse=True,
-    )[:top_k]
+    )[:MAX_EVIDENCE_PER_CLAIM]
+    ordered_results = _reorder_primacy_recency(sorted_results)
 
     return ClaimWithEvidence(
         claim=claim,
-        evidence=[_search_result_to_match(r) for r in sorted_results],
+        evidence=[_search_result_to_match(r) for r in ordered_results],
     )
 
 
