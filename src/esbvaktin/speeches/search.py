@@ -10,25 +10,7 @@ import re
 
 import aiosqlite
 
-# ── EU topic detection ────────────────────────────────────────────────
-
-EU_KEYWORDS_FTS = (
-    '"ESB" OR "Evrópusamband" OR "Evrópusambandið" OR "Evrópusambands"'
-    ' OR "aðildarviðræður" OR "aðildarumsókn" OR "aðild"'
-    ' OR "þjóðaratkvæðagreiðsla" OR "þjóðaratkvæðagreiðslu"'
-    ' OR "Evrópumál" OR "EES"'
-)
-
-EU_ISSUE_PATTERNS = [
-    "%Evróp%",
-    "%ESB%",
-    "%aðild%Evrópu%",
-    "%aðildarviðræð%",
-    "%aðildarumsókn%",
-    "%þjóðaratkvæðagreiðsl%",
-    "%Evrópumál%",
-]
-
+from .constants import EU_ISSUE_PATTERNS
 
 # ── Helpers ───────────────────────────────────────────────────────────
 
@@ -108,12 +90,8 @@ async def search_eu_speeches(
     under a non-EU agenda item.
     """
     if query:
-        return await _fts_eu_search(
-            db, query, date_from, date_to, speaker, party, limit
-        )
-    return await _issue_eu_search(
-        db, date_from, date_to, speaker, party, issue_only, limit
-    )
+        return await _fts_eu_search(db, query, date_from, date_to, speaker, party, limit)
+    return await _issue_eu_search(db, date_from, date_to, speaker, party, issue_only, limit)
 
 
 async def _issue_eu_search(

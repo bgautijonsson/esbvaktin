@@ -14,12 +14,9 @@ import os
 import sqlite3
 from pathlib import Path
 
-_DEFAULT_DB = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
+from .constants import EU_ISSUE_PATTERNS
 
-EU_ISSUE_PATTERNS = [
-    "%Evróp%", "%ESB%", "%aðild%Evrópu%", "%aðildarviðræð%",
-    "%aðildarumsókn%", "%þjóðaratkvæðagreiðsl%", "%Evrópumál%",
-]
+_DEFAULT_DB = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
 
 
 def _db_path() -> Path:
@@ -40,9 +37,7 @@ def _load_mp_names(conn: sqlite3.Connection) -> dict[str, str]:
 
     Returns {lowercase_name: original_name}.
     """
-    issue_filter = " OR ".join(
-        "s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS
-    )
+    issue_filter = " OR ".join("s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS)
     sql = f"""
         SELECT DISTINCT s.name
         FROM speeches s
@@ -92,9 +87,7 @@ def get_speech_excerpts(
         return {}
 
     try:
-        issue_filter = " OR ".join(
-            "s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS
-        )
+        issue_filter = " OR ".join("s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS)
 
         results: dict[str, list[dict]] = {}
         for name in names:
@@ -108,11 +101,7 @@ def get_speech_excerpts(
                 ORDER BY s.date DESC
                 LIMIT ?
             """
-            params = (
-                [max_excerpt_len + 100, name]
-                + EU_ISSUE_PATTERNS
-                + [max_speeches_per_mp]
-            )
+            params = [max_excerpt_len + 100, name] + EU_ISSUE_PATTERNS + [max_speeches_per_mp]
             rows = conn.execute(sql, params).fetchall()
 
             if rows:
@@ -123,12 +112,14 @@ def get_speech_excerpts(
                     if len(excerpt) > max_excerpt_len:
                         excerpt = excerpt[:max_excerpt_len].rsplit(" ", 1)[0] + "…"
 
-                    results[name].append({
-                        "date": row["date"],
-                        "issue_title": row["issue_title"],
-                        "excerpt": excerpt,
-                        "word_count": row["word_count"] or 0,
-                    })
+                    results[name].append(
+                        {
+                            "date": row["date"],
+                            "issue_title": row["issue_title"],
+                            "excerpt": excerpt,
+                            "word_count": row["word_count"] or 0,
+                        }
+                    )
 
         return results
     finally:
@@ -168,9 +159,7 @@ def _format_speech_context(
             words = s["word_count"]
             title = s["issue_title"]
             excerpt = s["excerpt"]
-            sections.append(
-                f"**{date}** — _{title}_ ({words} orð):\n> {excerpt}\n"
-            )
+            sections.append(f"**{date}** — _{title}_ ({words} orð):\n> {excerpt}\n")
 
     return "\n".join(sections)
 

@@ -11,6 +11,8 @@ import os
 import sqlite3
 from pathlib import Path
 
+from .constants import EU_ISSUE_PATTERNS
+
 _DEFAULT_DB = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
 
 # Reuse constants from curate_speech_evidence for scoring
@@ -27,11 +29,6 @@ KEY_FIGURES = {
     "Logi Einarsson",
     "Diljá Mist Einarsdóttir",
 }
-
-EU_ISSUE_PATTERNS = [
-    "%Evróp%", "%ESB%", "%aðild%Evrópu%", "%aðildarviðræð%",
-    "%aðildarumsókn%", "%þjóðaratkvæðagreiðsl%", "%Evrópumál%",
-]
 
 
 def _db_path() -> Path:
@@ -171,16 +168,18 @@ def select_speeches_for_batch(
                 continue
 
             score = _score_speech(row)
-            candidates.append({
-                "speech_id": sid,
-                "name": row["name"],
-                "date": row["date"][:10] if row["date"] else "?",
-                "issue_title": row["issue_title"],
-                "speech_type": row["speech_type"],
-                "word_count": row["word_count"] or 0,
-                "party": row["party"] or "?",
-                "score": score,
-            })
+            candidates.append(
+                {
+                    "speech_id": sid,
+                    "name": row["name"],
+                    "date": row["date"][:10] if row["date"] else "?",
+                    "issue_title": row["issue_title"],
+                    "speech_type": row["speech_type"],
+                    "word_count": row["word_count"] or 0,
+                    "party": row["party"] or "?",
+                    "score": score,
+                }
+            )
 
         candidates.sort(key=lambda c: c["score"], reverse=True)
         return candidates[:limit]
@@ -192,6 +191,7 @@ def _load_checked_speech_ids() -> set[str]:
     """Query PostgreSQL for speech_ids already in claim_sightings."""
     try:
         from esbvaktin.ground_truth.operations import get_connection
+
         pg_conn = get_connection()
         rows = pg_conn.execute(
             "SELECT DISTINCT speech_id FROM claim_sightings "
@@ -234,9 +234,7 @@ def prepare_speech_work_dir(speech_id: str) -> Path | None:
     if session == "?":
         session = _session_for_date(speech["date"])
 
-    source_url = (
-        f"https://www.althingi.is/altext/raeda/{session}/{speech_id}.html"
-    )
+    source_url = f"https://www.althingi.is/altext/raeda/{session}/{speech_id}.html"
 
     # Write _speech.md with metadata header + full text
     lines = [
