@@ -262,12 +262,28 @@ def main() -> None:
 
     # Copy to site repo if --site-dir provided
     if site_dir:
-        import shutil
-
         site_data = site_dir / "assets" / "data"
         site_data.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(json_path, site_data / "claims.json")
+
+        # Strip English-only fields for site (Icelandic-only display)
+        strip_fields = {"canonical_text_en", "explanation_en"}
+        site_claims = [{k: v for k, v in c.items() if k not in strip_fields} for c in claims]
+        with open(site_data / "claims.json", "w", encoding="utf-8") as f:
+            json.dump(site_claims, f, ensure_ascii=False)
         print(f"  {site_data / 'claims.json'}")
+
+        # Per-topic claim JSON files (avoid loading all claims on topic pages)
+        topic_dir = site_data / "topic-claims"
+        topic_dir.mkdir(parents=True, exist_ok=True)
+        by_category: dict[str, list[dict]] = {}
+        for c in site_claims:
+            cat = c.get("category", "other")
+            by_category.setdefault(cat, []).append(c)
+        for cat, cat_claims in by_category.items():
+            cat_path = topic_dir / f"{cat.replace('_', '-')}.json"
+            with open(cat_path, "w", encoding="utf-8") as f:
+                json.dump(cat_claims, f, ensure_ascii=False)
+        print(f"  {topic_dir}/ ({len(by_category)} topic files)")
 
     label = "all" if include_all else "published"
     print(f"Exported {len(claims)} {label} claims:")
