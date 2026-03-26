@@ -27,8 +27,9 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 |---|---|
 | Language | Python 3.12+ |
 | Package manager | uv |
-| Ground Truth DB | PostgreSQL 17 + pgvector (self-hosted via Docker) |
+| Ground Truth DB | PostgreSQL 17 + pgvector + tsvector FTS (self-hosted via Docker) |
 | Embeddings | BAAI/bge-m3 (local multilingual, 1024-dim) |
+| Evidence retrieval | Hybrid: pgvector cosine + tsvector keyword, fused with RRF |
 | Article extraction | trafilatura |
 | Analysis pipeline | Claude Code custom agents (`.claude/agents/`) |
 | Icelandic correction | GreynirCorrect + Málstaður API (via MCP) |
@@ -42,9 +43,11 @@ Full architecture: ESB Obsidian vault → `Architecture.md`
 ```
 src/esbvaktin/          # Main package
   pipeline/             # Article analysis pipeline
+    detection.py        # Source type detection (is_panel_show)
     transcript.py       # Panel show transcript parser + entity generation
     register_sightings.py  # Panel show sighting registration (source_type='panel_show')
   speeches/             # Alþingi speech MCP server (read-only, althingi.db)
+    constants.py        # Shared EU keyword/pattern constants
     context.py          # Sync speech context for pipeline (MP name detection + excerpts)
     fact_check.py       # Speech selection, loading, work dir setup for fact-checking
     register_sightings.py  # Post-assessment: match→sighting, new→unpublished claim
@@ -105,10 +108,29 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 
 ### Claim Publishing
 - Claims are **auto-published** at registration time (`published=True` by default)
-- Only `unverifiable` claims stay unpublished (these are discarded at registration, never creating a claim)
+- Only `unverifiable` factual claims stay unpublished (discarded at registration)
+- Hearsay claims are published with `verdict=unverifiable` and `substantive=False` — visible on site with amber warning but excluded from credibility scoring
 - The `substantive` flag is orthogonal: controls credibility scoring, not site visibility
 - `publish_claims.py` provides manual publish/unpublish for edge cases
 - `review_claims.py` flags trivia as `substantive=False` post-publication
+
+### Epistemic Types
+- `EpistemicType` (separate from `ClaimType`): `factual`, `hearsay`, `counterfactual`, `prediction`
+- `ClaimType.PREDICTION` was renamed to `ClaimType.FORECAST` to avoid collision with `EpistemicType.PREDICTION`
+- Hearsay: auto-`unverifiable`, published with warning, `substantive=False`. Short-circuits before evidence retrieval (no Opus cost)
+- Predictions/counterfactuals: assessed on reasoning quality (source agreement, credibility, precedent), 0.8 confidence ceiling
+- Counterfactual = past only ("ef X hefði..."), prediction = future ("ef aðild næðist myndi...")
+- Site displays type-aware verdict labels (e.g., "Víðtæk samstaða" for well-supported predictions) and coloured badges/callouts
+- Spec: `docs/specs/2026-03-25-epistemic-type-design.md`
+
+### Evidence Retrieval
+- **Hybrid search:** pgvector cosine similarity + tsvector keyword search, fused with Reciprocal Rank Fusion (RRF, k=60)
+- Keyword search catches acronyms (ESB, EES, EFTA, CFP), numbers, and legal references that embeddings handle poorly
+- `MIN_SIMILARITY = 0.45` floor for pure-vector fallback (when no keyword matches)
+- `MAX_EVIDENCE_PER_CLAIM = 7` hard cap
+- Primacy-recency ordering: best evidence first, second-best last (exploits LLM attention patterns)
+- Bank matches shown to assessor as "Fyrra mat" blocks with prior verdict + freshness label
+- Confidence: 5% decay on disagreeing sightings, 2% boost on agreeing (capped at 0.95)
 
 ### Code Style
 - Ruff: line-length 100, target py312, rules E/F/I/N/W/UP
@@ -232,6 +254,10 @@ uv run python scripts/publish_claims.py status             # Claim publishing su
 uv run python scripts/publish_claims.py eligible           # Show unpublished claims eligible for publishing
 uv run python scripts/publish_claims.py backfill           # One-time: publish all eligible unpublished claims
 uv run python scripts/publish_claims.py unpublish <id>     # Manually suppress a published claim
+uv run python scripts/backfill_epistemic_type.py status    # Epistemic type distribution
+uv run python scripts/backfill_epistemic_type.py classify  # Classify claims (heuristic, dry run)
+uv run python scripts/backfill_epistemic_type.py classify --apply  # Apply classification
+uv run python scripts/backfill_epistemic_type.py correct --apply   # Fix hearsay verdicts
 uv run python scripts/register_article_sightings.py        # Batch-register all unregistered reports into DB sightings
 uv run python scripts/build_article_registry.py --status  # Show processed article registry
 uv run python scripts/check_duplicate.py --url URL        # Check if article already processed
