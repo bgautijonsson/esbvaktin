@@ -89,6 +89,7 @@ def _pattern_1_overconfident(conn) -> list[ClaimFlag]:
           AND confidence >= %(threshold)s
           AND missing_context_is IS NOT NULL
           AND length(missing_context_is) >= %(min_len)s
+          AND epistemic_type != 'hearsay'
         ORDER BY confidence DESC, length(missing_context_is) DESC
         """,
         {"threshold": HIGH_CONFIDENCE_THRESHOLD, "min_len": MIN_MISSING_CONTEXT_LEN},
@@ -124,6 +125,7 @@ def _pattern_2_denominator(conn) -> list[ClaimFlag]:
         FROM claims
         WHERE verdict = 'supported'
           AND canonical_text_is ~* '{SCOPE_WORDS_PATTERN}'
+          AND epistemic_type != 'hearsay'
         ORDER BY confidence DESC
         """,
     ).fetchall()
@@ -161,6 +163,7 @@ def _pattern_3_sighting_drift(conn) -> list[ClaimFlag]:
         FROM claims c
         JOIN claim_sightings cs ON c.id = cs.claim_id
         WHERE cs.speech_verdict IS NOT NULL
+          AND c.epistemic_type != 'hearsay'
         GROUP BY c.id, c.claim_slug, c.canonical_text_is, c.verdict, c.confidence, c.published
         HAVING COUNT(CASE WHEN cs.speech_verdict != c.verdict THEN 1 END) >= %(min)s
         ORDER BY COUNT(CASE WHEN cs.speech_verdict != c.verdict THEN 1 END) DESC
@@ -201,6 +204,7 @@ def _pattern_4_contradicting_ignored(conn) -> list[ClaimFlag]:
         WHERE verdict = 'supported'
           AND contradicting_evidence IS NOT NULL
           AND array_length(contradicting_evidence, 1) > 0
+          AND epistemic_type != 'hearsay'
         ORDER BY array_length(contradicting_evidence, 1) DESC
         """,
     ).fetchall()
@@ -290,9 +294,9 @@ def report():
     merged = _merge_flags([p1, p2, p3, p4])
 
     # Summary
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("CLAIM VERDICT AUDIT REPORT")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print(f"  Pattern 1 — Overconfident verdicts:     {len(p1)} claims")
     print(f"  Pattern 2 — Denominator confusion:      {len(p2)} claims")
     print(f"  Pattern 3 — Sighting verdict drift:     {len(p3)} claims")
@@ -306,13 +310,17 @@ def report():
     print(f"  Published claims flagged:               {len(published)}")
 
     # Pattern 3 detail — most actionable
-    print(f"\n{'─'*70}")
+    print(f"\n{'─' * 70}")
     print("PATTERN 3: SIGHTING VERDICT DRIFT (highest signal)")
-    print(f"{'─'*70}")
+    print(f"{'─' * 70}")
 
     # Focus on supported → partially_supported drift
-    drift_down = [f for f in p3 if f.verdict == "supported"
-                  and "partially_supported" in (f.details.get("divergent_verdicts") or [])]
+    drift_down = [
+        f
+        for f in p3
+        if f.verdict == "supported"
+        and "partially_supported" in (f.details.get("divergent_verdicts") or [])
+    ]
     print(f"\n  Supported claims with partially_supported sightings: {len(drift_down)}")
 
     for f in sorted(drift_down, key=lambda x: -x.details.get("mismatches", 0))[:15]:
@@ -325,9 +333,9 @@ def report():
         print(f"    Published: {'yes' if f.published else 'no'}")
 
     # Pattern 4 detail
-    print(f"\n{'─'*70}")
+    print(f"\n{'─' * 70}")
     print("PATTERN 4: CONTRADICTING EVIDENCE PRESENT BUT STILL SUPPORTED")
-    print(f"{'─'*70}")
+    print(f"{'─' * 70}")
     for f in p4:
         contra = f.details.get("contradicting_evidence", [])
         support = f.details.get("support_count", 0)
@@ -337,17 +345,18 @@ def report():
 
     # Multi-pattern claims — highest risk
     if multi:
-        print(f"\n{'─'*70}")
+        print(f"\n{'─' * 70}")
         print("MULTI-PATTERN FLAGS (highest risk)")
-        print(f"{'─'*70}")
+        print(f"{'─' * 70}")
         for f in multi[:20]:
             print(f"\n  [{f.claim_id}] score={f.score} patterns={f.patterns}")
             print(f"    {f.canonical_text_is[:100]}...")
-            print(f"    Verdict: {f.verdict} ({f.confidence}), "
-                  f"Published: {'yes' if f.published else 'no'}")
+            print(
+                f"    Verdict: {f.verdict} ({f.confidence}), "
+                f"Published: {'yes' if f.published else 'no'}"
+            )
 
-    print("\nFor reassessment candidates: "
-          "uv run python scripts/audit_claims.py candidates")
+    print("\nFor reassessment candidates: uv run python scripts/audit_claims.py candidates")
 
 
 def candidates(as_json: bool = False):
@@ -378,29 +387,26 @@ def candidates(as_json: bool = False):
                 "published": f.published,
                 "patterns": f.patterns,
                 "score": f.score,
-                "details": {
-                    k: v for k, v in f.details.items()
-                    if k != "missing_context_preview"
-                },
+                "details": {k: v for k, v in f.details.items() if k != "missing_context_preview"},
             }
             for f in priority
         ]
         print(json.dumps(output, indent=2, ensure_ascii=False))
         return
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"PRIORITY REASSESSMENT CANDIDATES ({len(priority)} claims)")
-    print(f"{'='*70}")
-    print(f"  Scoring: sighting drift (×{WEIGHT_PATTERN_3}) > contradicting evidence "
-          f"(×{WEIGHT_PATTERN_4}) > overconfident (×{WEIGHT_PATTERN_1})")
+    print(f"{'=' * 70}")
+    print(
+        f"  Scoring: sighting drift (×{WEIGHT_PATTERN_3}) > contradicting evidence "
+        f"(×{WEIGHT_PATTERN_4}) > overconfident (×{WEIGHT_PATTERN_1})"
+    )
     print(f"  Published claims get ×{WEIGHT_PUBLISHED} multiplier")
 
     for i, f in enumerate(priority[:30], 1):
-        print(f"\n  {i}. [{f.claim_id}] score={f.score}  "
-              f"patterns={','.join(f.patterns)}")
+        print(f"\n  {i}. [{f.claim_id}] score={f.score}  patterns={','.join(f.patterns)}")
         print(f"     {f.canonical_text_is[:110]}")
-        print(f"     Verdict: {f.verdict} ({f.confidence}) "
-              f"{'📢 PUBLISHED' if f.published else ''}")
+        print(f"     Verdict: {f.verdict} ({f.confidence}) {'📢 PUBLISHED' if f.published else ''}")
         if "sighting_drift" in f.patterns:
             mis = f.details.get("mismatches", 0)
             total = f.details.get("total_sightings", 0)
@@ -436,6 +442,7 @@ def status():
         SELECT COUNT(*) FROM claims
         WHERE verdict = 'supported' AND confidence >= %(t)s
           AND missing_context_is IS NOT NULL AND length(missing_context_is) >= %(m)s
+          AND epistemic_type != 'hearsay'
         """,
         {"t": HIGH_CONFIDENCE_THRESHOLD, "m": MIN_MISSING_CONTEXT_LEN},
     ).fetchone()[0]
@@ -445,6 +452,7 @@ def status():
         SELECT COUNT(DISTINCT c.id)
         FROM claims c JOIN claim_sightings cs ON c.id = cs.claim_id
         WHERE c.verdict = 'supported' AND cs.speech_verdict = 'partially_supported'
+          AND c.epistemic_type != 'hearsay'
         """,
     ).fetchone()[0]
 
@@ -454,13 +462,14 @@ def status():
         WHERE verdict = 'supported'
           AND contradicting_evidence IS NOT NULL
           AND array_length(contradicting_evidence, 1) > 0
+          AND epistemic_type != 'hearsay'
         """,
     ).fetchone()[0]
 
     conn.close()
 
     print(f"\nTotal claims: {total}")
-    print(f"Supported: {supported} ({100*supported/total:.1f}%)")
+    print(f"Supported: {supported} ({100 * supported / total:.1f}%)")
     print("\nAudit signals:")
     print(f"  P1 — Overconfident (supported + caveats + high conf): {p1_count}")
     print(f"  P3 — Sighting drift (supported→partial):              {p3_count}")
