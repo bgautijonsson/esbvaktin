@@ -11,6 +11,7 @@ from esbvaktin.ground_truth.models import (
     EvidenceEntry,
     SourceType,
 )
+from esbvaktin.pipeline.models import Claim, ClaimType, EpistemicType
 
 
 def test_valid_evidence_entry():
@@ -164,72 +165,41 @@ def test_canonical_claim_evidence_defaults():
     assert claim.contradicting_evidence == []
 
 
-# ── CanonicalClaim epistemic_type tests ──────────────────────────────
+# ── EpistemicType tests ───────────────────────────────────────────────
 
 
-class TestClaimBankEpistemicType:
-    def test_canonical_claim_has_epistemic_type(self):
-        from esbvaktin.claim_bank.models import CanonicalClaim
+class TestEpistemicType:
+    def test_enum_values(self):
+        """EpistemicType should have exactly these four values."""
+        assert EpistemicType.FACTUAL == "factual"
+        assert EpistemicType.HEARSAY == "hearsay"
+        assert EpistemicType.COUNTERFACTUAL == "counterfactual"
+        assert EpistemicType.PREDICTION == "prediction"
 
-        claim = CanonicalClaim(
-            claim_slug="test-claim",
-            canonical_text_is="Test",
-            category="fisheries",
-            claim_type="statistic",
-            epistemic_type="factual",
-            verdict="supported",
-            explanation_is="Test",
+    def test_claim_type_forecast_replaces_prediction(self):
+        """ClaimType should use FORECAST, not PREDICTION."""
+        assert ClaimType.FORECAST == "forecast"
+        assert not hasattr(ClaimType, "PREDICTION")
+
+    def test_claim_has_epistemic_type_field(self):
+        """Claim can be constructed with an explicit epistemic_type."""
+        claim = Claim(
+            claim_text="Ísland myndi ganga í ESB",
+            original_quote="Ísland myndi ganga í ESB",
+            category="sovereignty",
+            claim_type=ClaimType.LEGAL_ASSERTION,
+            confidence=0.8,
+            epistemic_type=EpistemicType.COUNTERFACTUAL,
+        )
+        assert claim.epistemic_type == EpistemicType.COUNTERFACTUAL
+
+    def test_claim_epistemic_type_defaults_to_factual(self):
+        """Claim without epistemic_type should default to factual."""
+        claim = Claim(
+            claim_text="Ísland er í EES",
+            original_quote="Ísland er í EES",
+            category="eea_eu_law",
+            claim_type=ClaimType.LEGAL_ASSERTION,
             confidence=0.9,
         )
-        assert claim.epistemic_type == "factual"
-
-    def test_canonical_claim_defaults_to_factual(self):
-        from esbvaktin.claim_bank.models import CanonicalClaim
-
-        claim = CanonicalClaim(
-            claim_slug="test-claim",
-            canonical_text_is="Test",
-            category="fisheries",
-            claim_type="statistic",
-            verdict="supported",
-            explanation_is="Test",
-            confidence=0.9,
-        )
-        assert claim.epistemic_type == "factual"
-
-    def test_claim_bank_match_has_epistemic_type(self):
-        from datetime import date
-
-        from esbvaktin.claim_bank.models import ClaimBankMatch
-
-        match = ClaimBankMatch(
-            claim_id=1,
-            claim_slug="test",
-            canonical_text_is="Test",
-            similarity=0.9,
-            verdict="supported",
-            explanation_is="Test",
-            confidence=0.9,
-            last_verified=date.today(),
-            is_fresh=True,
-            epistemic_type="prediction",
-        )
-        assert match.epistemic_type == "prediction"
-
-    def test_claim_bank_match_defaults_to_factual(self):
-        from datetime import date
-
-        from esbvaktin.claim_bank.models import ClaimBankMatch
-
-        match = ClaimBankMatch(
-            claim_id=1,
-            claim_slug="test",
-            canonical_text_is="Test",
-            similarity=0.9,
-            verdict="supported",
-            explanation_is="Test",
-            confidence=0.9,
-            last_verified=date.today(),
-            is_fresh=True,
-        )
-        assert match.epistemic_type == "factual"
+        assert claim.epistemic_type == EpistemicType.FACTUAL

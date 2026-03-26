@@ -83,7 +83,7 @@ class Claim(BaseModel):
     claim_type: ClaimType
     epistemic_type: EpistemicType = Field(
         default=EpistemicType.FACTUAL,
-        description="Epistemic status: factual, hearsay, counterfactual, or prediction",
+        description="Epistemic status: factual, hearsay, counterfactual, prediction",
     )
     confidence: float = Field(..., ge=0, le=1, description="Extraction confidence")
     speaker_name: str | None = Field(

@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS claims (
     canonical_text_is TEXT NOT NULL,            -- Icelandic canonical text (primary)
     canonical_text_en TEXT,                     -- English equivalent (optional)
     category TEXT NOT NULL,                     -- topic (fisheries, trade, etc.)
-    claim_type TEXT NOT NULL,                   -- statistic | legal_assertion | comparison | prediction | opinion
+    claim_type TEXT NOT NULL,                   -- statistic | legal_assertion | comparison | forecast | opinion
     verdict TEXT NOT NULL,                      -- supported | partially_supported | unsupported | misleading | unverifiable
     explanation_is TEXT NOT NULL,               -- Icelandic explanation
     explanation_en TEXT,                        -- English explanation (optional)

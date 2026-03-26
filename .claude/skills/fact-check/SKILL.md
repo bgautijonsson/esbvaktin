@@ -15,7 +15,7 @@ Quick fact-check of one or more claims about Iceland's EU membership against the
 
 Parse the user's input into Claim objects, retrieve evidence, and prepare context for assessment.
 
-For each claim provided, infer the most likely `category` from the text (fisheries, trade, sovereignty, eea_eu_law, agriculture, precedents, currency, labour, housing, polling, party_positions, org_positions, or other) and `claim_type` (statistic, legal_assertion, comparison, prediction, opinion).
+For each claim provided, infer the most likely `category` from the text (fisheries, trade, sovereignty, eea_eu_law, agriculture, precedents, currency, labour, housing, polling, party_positions, org_positions, or other) and `claim_type` (statistic, legal_assertion, comparison, forecast, opinion).
 
 Generate the timestamp and create the directory using Python (do not use `$()` command substitution — it triggers security prompts):
 

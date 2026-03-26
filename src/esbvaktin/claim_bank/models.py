@@ -45,6 +45,7 @@ class CanonicalClaim(BaseModel):
     confidence: float = Field(..., ge=0, le=1)
     last_verified: date = Field(default_factory=date.today)
     published: bool = True
+    substantive: bool = True
 
 
 class ClaimBankMatch(BaseModel):

@@ -12,7 +12,15 @@ from typing import TYPE_CHECKING
 
 from esbvaktin.ground_truth import SearchResult, search_evidence
 
-from .models import KNOWN_TOPICS, Claim, ClaimWithEvidence, EvidenceMatch
+from .models import (
+    KNOWN_TOPICS,
+    Claim,
+    ClaimAssessment,
+    ClaimWithEvidence,
+    EpistemicType,
+    EvidenceMatch,
+    Verdict,
+)
 
 if TYPE_CHECKING:
     from esbvaktin.claim_bank.models import ClaimBankMatch
@@ -126,22 +134,46 @@ def retrieve_evidence_for_claims(
     top_k: int = 5,
     use_claim_bank: bool = True,
     conn=None,
-) -> tuple[list[ClaimWithEvidence], dict[int, ClaimBankMatch]]:
+) -> tuple[list[ClaimWithEvidence], dict[int, ClaimBankMatch], list[ClaimAssessment]]:
     """Retrieve evidence for multiple claims.
 
     If use_claim_bank is True, checks the claim bank first. Returns
     a tuple of:
-    - claims_with_evidence: list for all claims (including bank hits)
+    - claims_with_evidence: list for non-hearsay claims (including bank hits)
     - bank_matches: dict mapping claim index → ClaimBankMatch for claims
       that had bank matches (for use in assessment context)
+    - hearsay_assessments: pre-built UNVERIFIABLE assessments for hearsay
+      claims (no evidence retrieval performed for these)
 
     For backward compatibility, if no bank matches are found, the second
     element will be an empty dict.
     """
+    # Short-circuit hearsay claims — no evidence retrieval or assessment needed
+    hearsay_assessments: list[ClaimAssessment] = []
+    non_hearsay_claims: list[Claim] = []
+    for claim in claims:
+        if claim.epistemic_type == EpistemicType.HEARSAY:
+            hearsay_assessments.append(
+                ClaimAssessment(
+                    claim=claim,
+                    verdict=Verdict.UNVERIFIABLE,
+                    explanation=(
+                        "Fullyrðingin byggir á ónafngreindum heimildum"
+                        " sem ekki er hægt að staðfesta."
+                    ),
+                    supporting_evidence=[],
+                    contradicting_evidence=[],
+                    missing_context=None,
+                    confidence=0.0,
+                )
+            )
+        else:
+            non_hearsay_claims.append(claim)
+
     claims_with_evidence: list[ClaimWithEvidence] = []
     bank_matches: dict[int, ClaimBankMatch] = {}
 
-    for i, claim in enumerate(claims):
+    for i, claim in enumerate(non_hearsay_claims):
         # Check claim bank first
         if use_claim_bank:
             bank_match = check_claim_bank(claim, conn=conn)
@@ -149,10 +181,7 @@ def retrieve_evidence_for_claims(
                 bank_matches[i] = bank_match
                 # If exact match and fresh, we still retrieve evidence
                 # (needed for report context) but mark for potential cache hit
-                if (
-                    bank_match.similarity >= BANK_EXACT_THRESHOLD
-                    and bank_match.is_fresh
-                ):
+                if bank_match.similarity >= BANK_EXACT_THRESHOLD and bank_match.is_fresh:
                     logger.info(
                         "Cache hit (%.3f, fresh) for claim %d: %s",
                         bank_match.similarity,
@@ -164,4 +193,4 @@ def retrieve_evidence_for_claims(
         cwe = retrieve_evidence_for_claim(claim, top_k=top_k, conn=conn)
         claims_with_evidence.append(cwe)
 
-    return claims_with_evidence, bank_matches
+    return claims_with_evidence, bank_matches, hearsay_assessments

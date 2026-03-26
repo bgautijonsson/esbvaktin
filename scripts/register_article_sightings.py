@@ -188,18 +188,22 @@ def register_article(
         elif verdict != "unverifiable":
             slug = generate_slug(claim_text[:80])
             if not dry_run:
+                epistemic_type = claim_data.get("epistemic_type", "factual")
+                is_hearsay = epistemic_type == "hearsay"
                 new_claim = CanonicalClaim(
                     claim_slug=slug,
                     canonical_text_is=claim_text,
                     category=claim_data.get("category", ""),
                     claim_type=claim_data.get("claim_type", "opinion"),
-                    verdict=verdict,
+                    epistemic_type=epistemic_type,
+                    verdict="unverifiable" if is_hearsay else verdict,
                     explanation_is=claim_entry.get("explanation", ""),
                     missing_context_is=claim_entry.get("missing_context"),
                     supporting_evidence=claim_entry.get("supporting_evidence", []),
                     contradicting_evidence=claim_entry.get("contradicting_evidence", []),
                     confidence=claim_entry.get("confidence", 0.5),
-                    published=True,
+                    published=False if is_hearsay else True,
+                    substantive=False if is_hearsay else True,
                 )
                 try:
                     claim_id = add_claim(new_claim, conn=conn)

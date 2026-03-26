@@ -126,17 +126,7 @@ sem hægt er að bera saman við heimildir.
    - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
    - `claim_type`: Eitt af: statistic, legal_assertion, comparison, forecast, opinion
-   - `epistemic_type`: Eitt af: factual, hearsay, counterfactual, prediction
-     - `factual`: Bein fullyrðing um heiminn (sjálfgefið)
-     - `hearsay`: Byggt á ónafngreindum/óstaðfestanlegum heimildum («að sögn», «fregnir herma», «samkvæmt heimildum»)
-     - `counterfactual`: Um fortíðina — andstætt því sem gerðist («ef X hefði gerst...»)
-     - `prediction`: Um framtíðina, þ.m.t. skilyrtar spár («ef aðild næðist myndi...», «mun verða»)
-     Athugið: Nafngreind heimild á opinberum vettvangi er `factual`, ekki hearsay.
    - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
-
-   Munur á `claim_type` og `epistemic_type`: `claim_type` lýsir FORMI fullyrðingarinnar
-   (tala, lagaleg staðhæfing, samanburður, spá, skoðun). `epistemic_type` lýsir ÞEKKINGAR-
-   STÖÐUNNI (staðfestanleg staðreynd, orðsögn, tilgáta um fortíð, spá um framtíð).
 
 ## Mikilvægt
 
@@ -173,7 +163,6 @@ Skrifaðu JSON-fylki innan kóðablokkar:
     "original_quote": "...",
     "category": "...",
     "claim_type": "...",
-    "epistemic_type": "...",
     "confidence": 0.9
   }}
 ]
@@ -201,17 +190,7 @@ article that can be checked against evidence.
    - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
    - `claim_type`: One of: statistic, legal_assertion, comparison, forecast, opinion
-   - `epistemic_type`: One of: factual, hearsay, counterfactual, prediction
-     - `factual`: Direct assertion about the world (default)
-     - `hearsay`: Based on unnamed/unverifiable sources
-     - `counterfactual`: About the past — contrary to what happened
-     - `prediction`: About the future, including conditional scenarios
-     Note: A named, on-the-record source is `factual`, not hearsay.
    - `confidence`: How confident you are this is a factual claim (0-1)
-
-   Difference between `claim_type` and `epistemic_type`: `claim_type` describes the FORM
-   of the claim (statistic, legal assertion, comparison, forecast, opinion). `epistemic_type`
-   describes HOW KNOWABLE it is (verifiable fact, hearsay, past counterfactual, future prediction).
 
 ## Important
 
@@ -245,7 +224,6 @@ Write a JSON array inside a code block:
     "original_quote": "...",
     "category": "...",
     "claim_type": "...",
-    "epistemic_type": "...",
     "confidence": 0.9
   }}
 ]
@@ -294,7 +272,6 @@ def prepare_assessment_context(
 - **Upprunaleg tilvitnun**: „{claim.original_quote}"
 - **Flokkur**: {claim.category}
 - **Tegund**: {claim.claim_type.value}
-- **Þekkingarstaða**: {claim.epistemic_type.value}
 
 **Heimildir úr staðreyndagrunni:**
 
@@ -306,7 +283,6 @@ def prepare_assessment_context(
 - **Original quote**: "{claim.original_quote}"
 - **Category**: {claim.category}
 - **Type**: {claim.claim_type.value}
-- **Epistemic type**: {claim.epistemic_type.value}
 
 **Evidence from Ground Truth Database:**
 
@@ -364,19 +340,6 @@ Fyrir hverja fullyrðingu hér að neðan, gefðu mat:
 - **Fyrirvarar skipta máli**: Komið alltaf á framfæri fyrirvörum úr heimildum
 - **Auðmýkt**: Ef heimildir duga ekki, segið frá — ekki giska
 
-## Reglur um þekkingarfræðilega tegund (epistemic_type)
-
-- **factual**: Metið eins og hingað til — er fullyrðingin studd af heimildum?
-- **counterfactual**: Þetta gerðist ekki. Metið rökin og heimildastuðning
-  fyrir orsökum og afleiðingum. Hámarks confidence: 0.8.
-- **prediction**: Þetta hefur ekki gerst enn. Metið á grundvelli:
-  1. **Heimildasamstaða**: Eru margar trúverðugar heimildir sammála?
-  2. **Trúverðugleiki heimilda**: Opinberar stofnanir, sérfræðingar, eða ónafngreindir?
-  3. **Fordæmi**: Reynsla annarra ríkja (Noregur, Svíþjóð, Króatía)?
-  4. **Rökfærsla**: Er orsök-afleiðing keðjan trúverðug?
-  Hámarks confidence: 0.8.
-- **hearsay**: Kemur ALDREI til mats — hefur þegar fengið unverifiable.
-
 ## Úttakssnið / Output Format
 
 Skrifaðu JSON-fylki innan kóðablokkar. Hvert atriði inniheldur upprunalegu
@@ -390,7 +353,6 @@ fullyrðinguna ásamt matinu:
       "original_quote": "...",
       "category": "...",
       "claim_type": "...",
-      "epistemic_type": "...",
       "confidence": 0.9
     }},
     "verdict": "partially_supported",
@@ -444,19 +406,6 @@ For each claim below, provide an assessment:
 - **Caveats matter**: Always surface the caveats from evidence entries
 - **Humility**: If evidence is insufficient, say so — do not guess
 
-## Epistemic Type Rules
-
-- **factual**: Assess as usual — is the claim supported by evidence?
-- **counterfactual**: This did not happen. Assess the reasoning and evidence
-  for the claimed causes and consequences. Maximum confidence: 0.8.
-- **prediction**: This has not happened yet. Assess based on:
-  1. **Evidence consensus**: Do multiple credible sources agree?
-  2. **Source credibility**: Official institutions, experts, or unnamed sources?
-  3. **Precedent**: Experience from other countries (Norway, Sweden, Croatia)?
-  4. **Causal logic**: Is the cause-effect chain plausible?
-  Maximum confidence: 0.8.
-- **hearsay**: NEVER assessed — already receives unverifiable.
-
 ## Output Format
 
 Write a JSON array inside a code block. Each item includes the original
@@ -470,7 +419,6 @@ claim fields plus the assessment fields:
       "original_quote": "...",
       "category": "...",
       "claim_type": "...",
-      "epistemic_type": "...",
       "confidence": 0.9
     }},
     "verdict": "partially_supported",
@@ -963,17 +911,7 @@ fullyrðingar** sem hægt er að bera saman við heimildir.
    - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
    - `claim_type`: Eitt af: statistic, legal_assertion, comparison, forecast, opinion
-   - `epistemic_type`: Eitt af: factual, hearsay, counterfactual, prediction
-     - `factual`: Bein fullyrðing um heiminn (sjálfgefið)
-     - `hearsay`: Byggt á ónafngreindum/óstaðfestanlegum heimildum («að sögn», «fregnir herma», «samkvæmt heimildum»)
-     - `counterfactual`: Um fortíðina — andstætt því sem gerðist («ef X hefði gerst...»)
-     - `prediction`: Um framtíðina, þ.m.t. skilyrtar spár («ef aðild næðist myndi...», «mun verða»)
-     Athugið: Nafngreind heimild á opinberum vettvangi er `factual`, ekki hearsay.
    - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
-
-   Munur á `claim_type` og `epistemic_type`: `claim_type` lýsir FORMI fullyrðingarinnar
-   (tala, lagaleg staðhæfing, samanburður, spá, skoðun). `epistemic_type` lýsir ÞEKKINGAR-
-   STÖÐUNNI (staðfestanleg staðreynd, orðsögn, tilgáta um fortíð, spá um framtíð).
 
 ## Mikilvægt
 
@@ -1019,7 +957,6 @@ Skrifaðu JSON-fylki innan kóðablokkar:
     "original_quote": "...",
     "category": "...",
     "claim_type": "...",
-    "epistemic_type": "...",
     "confidence": 0.9
   }}}}
 ]
@@ -1048,17 +985,7 @@ You are analysing an Alþingi speech related to Iceland's EU membership referend
    - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
    - `claim_type`: One of: statistic, legal_assertion, comparison, forecast, opinion
-   - `epistemic_type`: One of: factual, hearsay, counterfactual, prediction
-     - `factual`: Direct assertion about the world (default)
-     - `hearsay`: Based on unnamed/unverifiable sources
-     - `counterfactual`: About the past — contrary to what happened
-     - `prediction`: About the future, including conditional scenarios
-     Note: A named, on-the-record source is `factual`, not hearsay.
    - `confidence`: How confident you are this is a factual claim (0-1)
-
-   Difference between `claim_type` and `epistemic_type`: `claim_type` describes the FORM
-   of the claim (statistic, legal assertion, comparison, forecast, opinion). `epistemic_type`
-   describes HOW KNOWABLE it is (verifiable fact, hearsay, past counterfactual, future prediction).
 
 ## Important
 
@@ -1098,7 +1025,6 @@ Write a JSON array inside a code block:
     "original_quote": "...",
     "category": "...",
     "claim_type": "...",
-    "epistemic_type": "...",
     "confidence": 0.9
   }}}}
 ]
@@ -1191,17 +1117,7 @@ saman við heimildir.
    - `category`: Eitt af: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
    - `claim_type`: Eitt af: statistic, legal_assertion, comparison, forecast, opinion
-   - `epistemic_type`: Eitt af: factual, hearsay, counterfactual, prediction
-     - `factual`: Bein fullyrðing um heiminn (sjálfgefið)
-     - `hearsay`: Byggt á ónafngreindum/óstaðfestanlegum heimildum («að sögn», «fregnir herma», «samkvæmt heimildum»)
-     - `counterfactual`: Um fortíðina — andstætt því sem gerðist («ef X hefði gerst...»)
-     - `prediction`: Um framtíðina, þ.m.t. skilyrtar spár («ef aðild næðist myndi...», «mun verða»)
-     Athugið: Nafngreind heimild á opinberum vettvangi er `factual`, ekki hearsay.
    - `confidence`: Hversu viss þú ert um að þetta sé staðreyndaleg fullyrðing (0-1)
-
-   Munur á `claim_type` og `epistemic_type`: `claim_type` lýsir FORMI fullyrðingarinnar
-   (tala, lagaleg staðhæfing, samanburður, spá, skoðun). `epistemic_type` lýsir ÞEKKINGAR-
-   STÖÐUNNI (staðfestanleg staðreynd, orðsögn, tilgáta um fortíð, spá um framtíð).
 
 ## Mikilvægt
 
@@ -1248,7 +1164,6 @@ Skrifaðu JSON-fylki innan kóðablokkar. **Athugið: `speaker_name` er skyldure
     "speaker_name": "Fullt nafn ræðumanns",
     "category": "...",
     "claim_type": "...",
-    "epistemic_type": "...",
     "confidence": 0.9
   }}}}
 ]
@@ -1278,17 +1193,7 @@ that can be checked against evidence.
    - `category`: One of: fisheries, trade, sovereignty, eea_eu_law, agriculture,
      precedents, currency, labour, polling, party_positions, org_positions, other
    - `claim_type`: One of: statistic, legal_assertion, comparison, forecast, opinion
-   - `epistemic_type`: One of: factual, hearsay, counterfactual, prediction
-     - `factual`: Direct assertion about the world (default)
-     - `hearsay`: Based on unnamed/unverifiable sources
-     - `counterfactual`: About the past — contrary to what happened
-     - `prediction`: About the future, including conditional scenarios
-     Note: A named, on-the-record source is `factual`, not hearsay.
    - `confidence`: How confident you are this is a factual claim (0-1)
-
-   Difference between `claim_type` and `epistemic_type`: `claim_type` describes the FORM
-   of the claim (statistic, legal assertion, comparison, forecast, opinion). `epistemic_type`
-   describes HOW KNOWABLE it is (verifiable fact, hearsay, past counterfactual, future prediction).
 
 ## Important
 
@@ -1326,7 +1231,6 @@ Write a JSON array inside a code block. **Note: `speaker_name` is a required fie
     "speaker_name": "Full name of speaker",
     "category": "...",
     "claim_type": "...",
-    "epistemic_type": "...",
     "confidence": 0.9
   }}}}
 ]
