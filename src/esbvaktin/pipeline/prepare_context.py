@@ -12,8 +12,12 @@ as a fallback but the primary pipeline is Icelandic-first.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from .models import Claim, ClaimWithEvidence
+
+if TYPE_CHECKING:
+    from esbvaktin.claim_bank.models import ClaimBankMatch
 
 # ── Icelandic quality blocks ────────────────────────────────────────
 
@@ -266,6 +270,7 @@ def prepare_assessment_context(
     output_dir: Path,
     language: str = "is",
     speech_context: str | None = None,
+    bank_matches: dict[int, ClaimBankMatch] | None = None,
 ) -> Path:
     """Write assessment context for the claim-assessment subagent.
 
@@ -273,6 +278,9 @@ def prepare_assessment_context(
         speech_context: Optional formatted markdown with parliamentary speech
             excerpts for MPs mentioned in the article. Built by
             ``esbvaktin.speeches.context.build_speech_context()``.
+        bank_matches: Optional dict mapping 0-based claim index to a
+            ClaimBankMatch. When present, a prior verdict block is rendered
+            before each claim's evidence section.
 
     Returns path to the context file.
     """
@@ -288,9 +296,28 @@ def prepare_assessment_context(
 - **Tegund**: {claim.claim_type.value}
 - **Þekkingarstaða**: {claim.epistemic_type.value}
 
-**Heimildir úr staðreyndagrunni:**
-
 """
+            # Bank match prior verdict (Icelandic)
+            if bank_matches and (i - 1) in bank_matches:
+                match = bank_matches[i - 1]
+                freshness = "ferskt" if match.is_fresh else "úrelt"
+                claims_section += (
+                    f"**Fyrra mat úr fullyrðingabanka**"
+                    f" (líkindi: {match.similarity:.3f},"
+                    f" slug: `{match.claim_slug}`, {freshness}):\n"
+                )
+                claims_section += (
+                    f"- Niðurstaða: `{match.verdict}` (öryggi: {match.confidence:.2f})\n"
+                )
+                claims_section += f"- Skýring: {match.explanation_is}\n"
+                if match.missing_context_is:
+                    claims_section += f"- Samhengi sem vantar: {match.missing_context_is}\n"
+                claims_section += (
+                    "> Þú getur fallist á þetta mat eða vikið frá því —"
+                    " ef þú víkur frá, skýrðu hvers vegna.\n\n"
+                )
+
+            claims_section += "**Heimildir úr staðreyndagrunni:**\n\n"
         else:
             claims_section += f"""### Claim {i}
 
@@ -300,9 +327,28 @@ def prepare_assessment_context(
 - **Type**: {claim.claim_type.value}
 - **Epistemic type**: {claim.epistemic_type.value}
 
-**Evidence from Ground Truth Database:**
-
 """
+            # Bank match prior verdict (English)
+            if bank_matches and (i - 1) in bank_matches:
+                match = bank_matches[i - 1]
+                freshness = "fresh" if match.is_fresh else "stale"
+                claims_section += (
+                    f"**Prior verdict from claim bank**"
+                    f" (similarity: {match.similarity:.3f},"
+                    f" slug: `{match.claim_slug}`, {freshness}):\n"
+                )
+                claims_section += (
+                    f"- Verdict: `{match.verdict}` (confidence: {match.confidence:.2f})\n"
+                )
+                claims_section += f"- Explanation: {match.explanation_is}\n"
+                if match.missing_context_is:
+                    claims_section += f"- Missing context: {match.missing_context_is}\n"
+                claims_section += (
+                    "> You may agree with or diverge from this prior verdict"
+                    " — if you diverge, explain why.\n\n"
+                )
+
+            claims_section += "**Evidence from Ground Truth Database:**\n\n"
         if not cwe.evidence:
             no_evidence = (
                 "_Engar viðeigandi heimildir fundust í gagnagrunni._\n\n"

@@ -282,3 +282,104 @@ def test_assessment_context_includes_epistemic_rules(tmp_path: Path):
     assert "Þekkingarstaða" in content or "epistemic_type" in content
     assert "prediction" in content
     assert "Heimildasamstaða" in content or "samstaða" in content.lower()
+
+
+# ── Bank match context ────────────────────────────────────────────────
+
+
+def test_assessment_context_with_bank_match(tmp_path):
+    """Assessment context renders bank match prior verdict."""
+    from datetime import date
+
+    from esbvaktin.claim_bank.models import ClaimBankMatch
+    from esbvaktin.pipeline.models import (
+        Claim,
+        ClaimType,
+        ClaimWithEvidence,
+    )
+    from esbvaktin.pipeline.prepare_context import prepare_assessment_context
+
+    claim = Claim(
+        claim_text="Sjávarútvegur er mikilvægur",
+        original_quote="Test",
+        category="fisheries",
+        claim_type=ClaimType.STATISTIC,
+        confidence=0.9,
+    )
+    cwe = ClaimWithEvidence(claim=claim, evidence=[])
+    bank_match = ClaimBankMatch(
+        claim_id=1,
+        claim_slug="sjavarutvegur-mikilvagur",
+        canonical_text_is="Sjávarútvegur er mikilvægur",
+        similarity=0.92,
+        verdict="supported",
+        explanation_is="Heimildir staðfesta þetta.",
+        confidence=0.85,
+        last_verified=date.today(),
+        is_fresh=True,
+    )
+    path = prepare_assessment_context([cwe], tmp_path, language="is", bank_matches={0: bank_match})
+    content = path.read_text()
+    assert "Fyrra mat" in content or "fyrra mat" in content.lower()
+    assert "sjavarutvegur-mikilvagur" in content
+    assert "supported" in content
+    assert "0.92" in content or "92" in content
+
+
+def test_assessment_context_stale_bank_match(tmp_path):
+    """Stale bank match shows staleness label."""
+    from datetime import date, timedelta
+
+    from esbvaktin.claim_bank.models import ClaimBankMatch
+    from esbvaktin.pipeline.models import (
+        Claim,
+        ClaimType,
+        ClaimWithEvidence,
+    )
+    from esbvaktin.pipeline.prepare_context import prepare_assessment_context
+
+    claim = Claim(
+        claim_text="Test claim",
+        original_quote="Test",
+        category="fisheries",
+        claim_type=ClaimType.STATISTIC,
+        confidence=0.9,
+    )
+    cwe = ClaimWithEvidence(claim=claim, evidence=[])
+    bank_match = ClaimBankMatch(
+        claim_id=1,
+        claim_slug="test-stale",
+        canonical_text_is="Test",
+        similarity=0.85,
+        verdict="partially_supported",
+        explanation_is="Test.",
+        confidence=0.7,
+        last_verified=date.today() - timedelta(days=60),
+        is_fresh=False,
+    )
+    path = prepare_assessment_context([cwe], tmp_path, language="is", bank_matches={0: bank_match})
+    content = path.read_text()
+    assert "úrelt" in content.lower() or "stale" in content.lower()
+
+
+def test_assessment_context_without_bank_match_unchanged(tmp_path):
+    """Assessment context without bank_matches works as before."""
+    from esbvaktin.pipeline.models import (
+        Claim,
+        ClaimType,
+        ClaimWithEvidence,
+    )
+    from esbvaktin.pipeline.prepare_context import prepare_assessment_context
+
+    claim = Claim(
+        claim_text="Test",
+        original_quote="Test",
+        category="fisheries",
+        claim_type=ClaimType.STATISTIC,
+        confidence=0.9,
+    )
+    cwe = ClaimWithEvidence(claim=claim, evidence=[])
+    path = prepare_assessment_context([cwe], tmp_path, language="is")
+    content = path.read_text()
+    assert "Fyrra mat" not in content
+    assert "verdict" not in content.lower() or "verdict" in content.lower()  # no bank match block

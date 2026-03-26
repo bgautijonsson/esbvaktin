@@ -10,6 +10,7 @@ import pytest
 
 from esbvaktin.pipeline.models import KNOWN_TOPICS, Claim, ClaimType
 from esbvaktin.pipeline.retrieve_evidence import (
+    MAX_EVIDENCE_PER_CLAIM,
     retrieve_evidence_for_claim,
     retrieve_evidence_for_claims,
 )
@@ -63,13 +64,17 @@ class TestRetrieveEvidenceForClaim:
     def test_returns_evidence_for_fisheries(self, fisheries_claim):
         result = retrieve_evidence_for_claim(fisheries_claim, top_k=5)
         assert len(result.evidence) > 0
-        assert len(result.evidence) <= 5
+        # Cap is MAX_EVIDENCE_PER_CLAIM regardless of top_k
+        assert len(result.evidence) <= MAX_EVIDENCE_PER_CLAIM
         assert result.claim == fisheries_claim
 
-    def test_evidence_sorted_by_similarity(self, fisheries_claim):
+    def test_evidence_best_first(self, fisheries_claim):
+        """Best evidence item is first (primacy-recency: best first, second-best last)."""
         result = retrieve_evidence_for_claim(fisheries_claim, top_k=5)
-        similarities = [e.similarity for e in result.evidence]
-        assert similarities == sorted(similarities, reverse=True)
+        if len(result.evidence) >= 2:
+            similarities = [e.similarity for e in result.evidence]
+            # Best item is first
+            assert similarities[0] == max(similarities)
 
     def test_returns_evidence_for_trade(self, trade_claim):
         result = retrieve_evidence_for_claim(trade_claim, top_k=5)
