@@ -267,9 +267,7 @@ def main() -> None:
         site_data = site_dir / "assets" / "data"
         site_data.mkdir(parents=True, exist_ok=True)
         shutil.copy2(json_path, site_data / "claims.json")
-        shutil.copy2(parquet_path, site_data / "claims.parquet")
         print(f"  {site_data / 'claims.json'}")
-        print(f"  {site_data / 'claims.parquet'}")
 
     label = "all" if include_all else "published"
     print(f"Exported {len(claims)} {label} claims:")
