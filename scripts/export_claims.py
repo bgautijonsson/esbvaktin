@@ -29,6 +29,7 @@ EXPORT_DIR = PROJECT_ROOT / "data" / "export"
 
 def _get_connection():
     from esbvaktin.ground_truth.operations import get_connection
+
     return get_connection()
 
 
@@ -46,6 +47,7 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
             c.canonical_text_en,
             c.category,
             c.claim_type,
+            c.epistemic_type,
             c.verdict,
             c.explanation_is,
             c.explanation_en,
@@ -67,11 +69,24 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
     ).fetchall()
 
     columns = [
-        "claim_slug", "canonical_text_is", "canonical_text_en",
-        "category", "claim_type", "verdict",
-        "explanation_is", "explanation_en", "missing_context_is",
-        "confidence", "substantive", "last_verified", "version", "created_at",
-        "sighting_count", "last_seen", "first_seen",
+        "claim_slug",
+        "canonical_text_is",
+        "canonical_text_en",
+        "category",
+        "claim_type",
+        "epistemic_type",
+        "verdict",
+        "explanation_is",
+        "explanation_en",
+        "missing_context_is",
+        "confidence",
+        "substantive",
+        "last_verified",
+        "version",
+        "created_at",
+        "sighting_count",
+        "last_seen",
+        "first_seen",
     ]
 
     claims = []
@@ -131,12 +146,13 @@ def _to_parquet(claims: list[dict], path: Path) -> None:
         "canonical_text_en": pa.array([c["canonical_text_en"] for c in claims], type=pa.string()),
         "category": pa.array([c["category"] for c in claims], type=pa.string()),
         "claim_type": pa.array([c["claim_type"] for c in claims], type=pa.string()),
+        "epistemic_type": pa.array(
+            [c.get("epistemic_type", "factual") for c in claims], type=pa.string()
+        ),
         "verdict": pa.array([c["verdict"] for c in claims], type=pa.string()),
         "explanation_is": pa.array([c["explanation_is"] for c in claims], type=pa.string()),
         "explanation_en": pa.array([c["explanation_en"] for c in claims], type=pa.string()),
-        "missing_context_is": pa.array(
-            [c["missing_context_is"] for c in claims], type=pa.string()
-        ),
+        "missing_context_is": pa.array([c["missing_context_is"] for c in claims], type=pa.string()),
         "confidence": pa.array([c["confidence"] for c in claims], type=pa.float32()),
         "substantive": pa.array([c["substantive"] for c in claims], type=pa.bool_()),
         "last_verified": pa.array([c["last_verified"] for c in claims], type=pa.string()),

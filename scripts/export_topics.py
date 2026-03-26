@@ -38,10 +38,7 @@ def diversity_score(topic_counts: dict[str, int]) -> float:
     n_topics = len(topic_counts)
     if n_topics <= 1:
         return 0.0
-    entropy = -sum(
-        (c / total) * math.log2(c / total)
-        for c in topic_counts.values() if c > 0
-    )
+    entropy = -sum((c / total) * math.log2(c / total) for c in topic_counts.values() if c > 0)
     max_entropy = math.log2(n_topics)
     return round(entropy / max_entropy, 4) if max_entropy > 0 else 0.0
 
@@ -57,6 +54,20 @@ def _fetch_verdict_breakdown(conn) -> dict[str, dict[str, int]]:
     result: dict[str, dict[str, int]] = defaultdict(dict)
     for category, verdict, n in rows:
         result[category][verdict] = n
+    return dict(result)
+
+
+def _fetch_epistemic_breakdown(conn) -> dict[str, dict[str, int]]:
+    """Per-topic epistemic type counts for published claims."""
+    rows = conn.execute("""
+        SELECT c.category, c.epistemic_type, COUNT(*) AS n
+        FROM claims c WHERE c.published = TRUE
+        GROUP BY c.category, c.epistemic_type
+    """).fetchall()
+
+    result: dict[str, dict[str, int]] = defaultdict(dict)
+    for category, epistemic_type, n in rows:
+        result[category][epistemic_type] = n
     return dict(result)
 
 
@@ -173,11 +184,13 @@ def _fetch_weekly_timeline(conn) -> dict[str, list[dict]]:
     result: dict[str, list[dict]] = defaultdict(list)
     for week, cat, sightings in sighting_rows:
         week_str = week.isoformat() if isinstance(week, (date, datetime)) else week
-        result[cat].append({
-            "week": week_str,
-            "sightings": sightings,
-            "new_claims": new_claims_idx.get((week_str, cat), 0),
-        })
+        result[cat].append(
+            {
+                "week": week_str,
+                "sightings": sightings,
+                "new_claims": new_claims_idx.get((week_str, cat), 0),
+            }
+        )
 
     return dict(result)
 
@@ -208,13 +221,17 @@ def _fetch_topic_claims(conn) -> dict[str, list[dict]]:
 
     result: dict[str, list[dict]] = defaultdict(list)
     for slug, text_is, verdict, cat, sighting_count, last_seen in rows:
-        result[cat].append({
-            "claim_slug": slug,
-            "canonical_text_is": text_is,
-            "verdict": verdict,
-            "sighting_count": sighting_count,
-            "last_seen": last_seen.isoformat() if isinstance(last_seen, (date, datetime)) else last_seen,
-        })
+        result[cat].append(
+            {
+                "claim_slug": slug,
+                "canonical_text_is": text_is,
+                "verdict": verdict,
+                "sighting_count": sighting_count,
+                "last_seen": last_seen.isoformat()
+                if isinstance(last_seen, (date, datetime))
+                else last_seen,
+            }
+        )
 
     return dict(result)
 
@@ -248,11 +265,13 @@ def _fetch_topic_evidence(conn) -> dict[str, list[dict]]:
 
     result: dict[str, list[dict]] = defaultdict(list)
     for eid, stmt_is, source_name, topic in rows:
-        result[topic].append({
-            "evidence_id": eid,
-            "statement_is": stmt_is,
-            "source_name": source_name,
-        })
+        result[topic].append(
+            {
+                "evidence_id": eid,
+                "statement_is": stmt_is,
+                "source_name": source_name,
+            }
+        )
 
     return dict(result)
 
@@ -280,9 +299,11 @@ def _fetch_entity_details_for_topic(conn) -> dict[str, list[dict]]:
     """).fetchall()
 
     # Build nested structure
-    topic_entities: dict[str, dict[str, dict]] = defaultdict(lambda: defaultdict(lambda: {
-        "name": "", "claim_count": 0, "verdict_breakdown": defaultdict(int)
-    }))
+    topic_entities: dict[str, dict[str, dict]] = defaultdict(
+        lambda: defaultdict(
+            lambda: {"name": "", "claim_count": 0, "verdict_breakdown": defaultdict(int)}
+        )
+    )
 
     for cat, name, verdict, n in rows:
         entry = topic_entities[cat][name]
@@ -316,11 +337,13 @@ def _fetch_source_activity_for_topic(conn) -> dict[str, list[dict]]:
 
     result: dict[str, list[dict]] = defaultdict(list)
     for cat, domain, article_count, claim_count in rows:
-        result[cat].append({
-            "source": domain,
-            "articles": article_count,
-            "claims": claim_count,
-        })
+        result[cat].append(
+            {
+                "source": domain,
+                "articles": article_count,
+                "claims": claim_count,
+            }
+        )
 
     return dict(result)
 
@@ -332,6 +355,7 @@ def build_topics(conn) -> tuple[list[dict], dict[str, dict]]:
     """
     # Fetch all aggregation data
     verdict_breakdown = _fetch_verdict_breakdown(conn)
+    epistemic_breakdown = _fetch_epistemic_breakdown(conn)
     claim_counts = _fetch_claim_counts(conn)
     sighting_counts = _fetch_sighting_counts(conn)
     date_ranges = _fetch_date_range(conn)
@@ -378,10 +402,12 @@ def build_topics(conn) -> tuple[list[dict], dict[str, dict]]:
         claims_with_speakers = []
         for claim in topic_claims.get(topic, []):
             speakers = topic_claim_speakers.get(topic, {}).get(claim["claim_slug"], [])
-            claims_with_speakers.append({
-                **claim,
-                "speakers": speakers,
-            })
+            claims_with_speakers.append(
+                {
+                    **claim,
+                    "speakers": speakers,
+                }
+            )
 
         # Per-topic diversity (how varied are sources for this topic)
         topic_source_counts = source_breakdown.get(topic, {})
@@ -399,6 +425,7 @@ def build_topics(conn) -> tuple[list[dict], dict[str, dict]]:
             "entities": entity_details.get(topic, []),
             "source_activity": source_activity.get(topic, []),
             "diversity_score": topic_diversity,
+            "epistemic_counts": epistemic_breakdown.get(topic, {}),
         }
         details[slug] = detail
 
@@ -425,7 +452,9 @@ def _show_status(conn) -> None:
     total_sightings = 0
     total_evidence = 0
 
-    for topic, label in sorted(TOPIC_LABELS_IS.items(), key=lambda x: -(sighting_counts.get(x[0], 0))):
+    for topic, label in sorted(
+        TOPIC_LABELS_IS.items(), key=lambda x: -(sighting_counts.get(x[0], 0))
+    ):
         counts = claim_counts.get(topic, {"total": 0, "published": 0})
         sightings = sighting_counts.get(topic, 0)
         evidence = evidence_counts.get(topic, 0)
@@ -435,7 +464,9 @@ def _show_status(conn) -> None:
         total_sightings += sightings
         total_evidence += evidence
 
-        print(f"{topic:<20} {label:<30} {counts['total']:>7} {counts['published']:>5} {sightings:>6} {evidence:>5}")
+        print(
+            f"{topic:<20} {label:<30} {counts['total']:>7} {counts['published']:>5} {sightings:>6} {evidence:>5}"
+        )
 
         # Show verdict breakdown inline
         verdicts = verdict_breakdown.get(topic, {})
@@ -444,7 +475,9 @@ def _show_status(conn) -> None:
             print(f"{'':>20}   {', '.join(parts)}")
 
     print("-" * 80)
-    print(f"{'TOTAL':<20} {'':<30} {total_claims:>7} {total_pub:>5} {total_sightings:>6} {total_evidence:>5}")
+    print(
+        f"{'TOTAL':<20} {'':<30} {total_claims:>7} {total_pub:>5} {total_sightings:>6} {total_evidence:>5}"
+    )
     print(f"\nDiversity score (overall): {overall_diversity:.4f}")
 
 
@@ -513,7 +546,9 @@ def main() -> None:
     total_sightings = sum(t["sighting_count"] for t in listing)
     sighting_counts = {t["slug"]: t["sighting_count"] for t in listing if t["sighting_count"] > 0}
     ds = diversity_score(sighting_counts)
-    print(f"\n{len(active_topics)} active topics, {total_claims} published claims, {total_sightings} sightings")
+    print(
+        f"\n{len(active_topics)} active topics, {total_claims} published claims, {total_sightings} sightings"
+    )
     print(f"Diversity score: {ds:.4f}")
 
 

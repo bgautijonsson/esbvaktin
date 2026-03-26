@@ -5,6 +5,7 @@ from datetime import date
 from .models import (
     AnalysisReport,
     ClaimAssessment,
+    EpistemicType,
     OmissionAnalysis,
     Verdict,
 )
@@ -42,6 +43,24 @@ _VERDICT_LABELS_IS = {
     Verdict.UNVERIFIABLE: "❓ Ekki hægt að sannreyna",
 }
 
+_VERDICT_LABELS_IS_PREDICTION = {
+    Verdict.SUPPORTED: "✅ Víðtæk samstaða",
+    Verdict.PARTIALLY_SUPPORTED: "🔶 Nokkur stoð",
+    Verdict.UNSUPPORTED: "❌ Órökstudd",
+    Verdict.MISLEADING: "🔍 Ofeinföldun",
+    Verdict.UNVERIFIABLE: "⚪ Heimildir vantar",
+}
+
+_VERDICT_LABELS_EN_PREDICTION = {
+    Verdict.SUPPORTED: "✅ Broad consensus",
+    Verdict.PARTIALLY_SUPPORTED: "🔶 Some basis",
+    Verdict.UNSUPPORTED: "❌ Unsubstantiated",
+    Verdict.MISLEADING: "🔍 Oversimplification",
+    Verdict.UNVERIFIABLE: "⚪ Evidence lacking",
+}
+
+_PREDICTION_TYPES = {EpistemicType.PREDICTION, EpistemicType.COUNTERFACTUAL}
+
 _FRAMING_LABELS_IS = {
     "balanced": "Jafnvæg umfjöllun",
     "leans_pro_eu": "Hallar á ESB-jákvæða hlið",
@@ -61,8 +80,22 @@ _FRAMING_LABELS_EN = {
 }
 
 
-def _verdict_label(verdict: Verdict, language: str = "en") -> str:
-    labels = _VERDICT_LABELS_IS if language == "is" else _VERDICT_LABELS_EN
+def _verdict_label(
+    verdict: Verdict,
+    language: str = "en",
+    epistemic_type: EpistemicType | None = None,
+) -> str:
+    """Return a display label for a verdict, adapted for epistemic type.
+
+    Predictions and counterfactuals use a different label set that reflects
+    the inherent uncertainty of forward-looking or hypothetical claims.
+    """
+    if epistemic_type in _PREDICTION_TYPES:
+        labels = (
+            _VERDICT_LABELS_IS_PREDICTION if language == "is" else _VERDICT_LABELS_EN_PREDICTION
+        )
+    else:
+        labels = _VERDICT_LABELS_IS if language == "is" else _VERDICT_LABELS_EN
     return labels.get(verdict, verdict.value)
 
 
@@ -126,7 +159,9 @@ def render_report_is(
     lines.append("## Fullyrðingamat")
     lines.append("")
     for i, ca in enumerate(claims, 1):
-        lines.append(f"### Fullyrðing {i}: {_verdict_label(ca.verdict, 'is')}")
+        lines.append(
+            f"### Fullyrðing {i}: {_verdict_label(ca.verdict, 'is', ca.claim.epistemic_type)}"
+        )
         lines.append("")
         lines.append(f"> {ca.claim.original_quote}")
         lines.append("")
@@ -215,7 +250,7 @@ def render_report_en(
     lines.append("## Claim Assessments")
     lines.append("")
     for i, ca in enumerate(claims, 1):
-        lines.append(f"### Claim {i}: {_verdict_label(ca.verdict, 'en')}")
+        lines.append(f"### Claim {i}: {_verdict_label(ca.verdict, 'en', ca.claim.epistemic_type)}")
         lines.append("")
         lines.append(f"> {ca.claim.original_quote}")
         lines.append("")

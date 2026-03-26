@@ -63,7 +63,7 @@ def _load_db_verdicts() -> dict[str, dict]:
         rows = conn.execute(
             "SELECT canonical_text_is, canonical_text_en, verdict, "
             "explanation_is, confidence, supporting_evidence, "
-            "contradicting_evidence, missing_context_is, published "
+            "contradicting_evidence, missing_context_is, published, epistemic_type "
             "FROM claims"
         ).fetchall()
         conn.close()
@@ -76,7 +76,18 @@ def _load_db_verdicts() -> dict[str, dict]:
         return {}
 
     lookup: dict[str, dict] = {}
-    for text_is, text_en, verdict, expl_is, conf, sup, contra, missing, published in rows:
+    for (
+        text_is,
+        text_en,
+        verdict,
+        expl_is,
+        conf,
+        sup,
+        contra,
+        missing,
+        published,
+        epistemic_type,
+    ) in rows:
         entry = {
             "verdict": verdict,
             "explanation_is": expl_is,
@@ -85,6 +96,7 @@ def _load_db_verdicts() -> dict[str, dict]:
             "contradicting_evidence": contra or [],
             "missing_context_is": missing,
             "published": bool(published),
+            "epistemic_type": epistemic_type or "factual",
         }
         if text_is:
             lookup[text_is] = entry
@@ -107,9 +119,7 @@ def _load_registered_claims() -> set[tuple[str, str]]:
 
         conn = get_connection()
         rows = conn.execute(
-            "SELECT source_url, original_text "
-            "FROM claim_sightings "
-            "WHERE original_text IS NOT NULL"
+            "SELECT source_url, original_text FROM claim_sightings WHERE original_text IS NOT NULL"
         ).fetchall()
         conn.close()
     except Exception as exc:
@@ -120,6 +130,7 @@ def _load_registered_claims() -> set[tuple[str, str]]:
         return set()
 
     return {(url, text) for url, text in rows}
+
 
 # ── Article metadata extraction ──────────────────────────────────────
 
@@ -132,16 +143,25 @@ _SOURCE_FROM_DOMAIN: dict[str, str] = {
     "stundin.is": "Stundin",
     "frettabladid.is": "Fréttablaðið",
     # Podcast platforms → actual broadcasters
-    "shows.acast.com": "RÚV",            # Silfrið (RÚV) hosted on Acast
-    "ruv-radio.akamaized.net": "RÚV",    # Víkulokin (RÚV) hosted on RÚV CDN
+    "shows.acast.com": "RÚV",  # Silfrið (RÚV) hosted on Acast
+    "ruv-radio.akamaized.net": "RÚV",  # Víkulokin (RÚV) hosted on RÚV CDN
     "podcasters.spotify.com": "Morgunblaðið",  # Spursmál (mbl.is) hosted on Spotify
-    "anchor.fm": "Morgunblaðið",          # Spursmál (mbl.is) old Anchor feed
+    "anchor.fm": "Morgunblaðið",  # Spursmál (mbl.is) old Anchor feed
 }
 
 _IS_MONTHS: dict[str, int] = {
-    "janúar": 1, "febrúar": 2, "mars": 3, "apríl": 4,
-    "maí": 5, "júní": 6, "júlí": 7, "ágúst": 8,
-    "september": 9, "október": 10, "nóvember": 11, "desember": 12,
+    "janúar": 1,
+    "febrúar": 2,
+    "mars": 3,
+    "apríl": 4,
+    "maí": 5,
+    "júní": 6,
+    "júlí": 7,
+    "ágúst": 8,
+    "september": 9,
+    "október": 10,
+    "nóvember": 11,
+    "desember": 12,
 }
 
 
@@ -269,9 +289,7 @@ def _parse_article_meta(analysis_dir: Path) -> dict:
         return meta
 
     # ── Format 4: Inline byline "Author skrifar — date — Source" ─
-    byline = re.search(
-        r"(.+?)\s+skrifar\s*[—–-]\s*(.+?)\s*[—–-]\s*(\S+)", text
-    )
+    byline = re.search(r"(.+?)\s+skrifar\s*[—–-]\s*(.+?)\s*[—–-]\s*(\S+)", text)
     if byline:
         meta["article_author"] = byline.group(1).strip().lstrip("*")
         meta["article_date"] = _parse_is_date(byline.group(2).strip())
@@ -346,16 +364,12 @@ def _parse_icelandic_report(report_text_is: str) -> dict:
         }
 
         # Extract claim text: **Fullyrðing:** <text>
-        claim_match = re.search(
-            r"\*\*Fullyrðing:\*\*\s*(.+?)(?=\n\n|\n\*\*)", section, re.DOTALL
-        )
+        claim_match = re.search(r"\*\*Fullyrðing:\*\*\s*(.+?)(?=\n\n|\n\*\*)", section, re.DOTALL)
         if claim_match:
             claim_data["claim_text_is"] = claim_match.group(1).strip()
 
         # Extract explanation: **Mat:** <text>
-        mat_match = re.search(
-            r"\*\*Mat:\*\*\s*(.+?)(?=\n\*\*|\n\n---|\Z)", section, re.DOTALL
-        )
+        mat_match = re.search(r"\*\*Mat:\*\*\s*(.+?)(?=\n\*\*|\n\n---|\Z)", section, re.DOTALL)
         if mat_match:
             claim_data["explanation_is"] = mat_match.group(1).strip()
 
@@ -406,9 +420,7 @@ def _linkify_evidence_ids(text: str, evidence_meta: dict[str, dict]) -> str:
     return _EVIDENCE_ID_RE.sub(_replace_id, text)
 
 
-def _build_evidence_sources(
-    evidence_ids: list[str], evidence_meta: dict[str, dict]
-) -> list[dict]:
+def _build_evidence_sources(evidence_ids: list[str], evidence_meta: dict[str, dict]) -> list[dict]:
     """Build a list of evidence source dicts for template rendering.
 
     Each dict has: id, source_name, source_url (or null).
@@ -416,11 +428,13 @@ def _build_evidence_sources(
     sources = []
     for eid in evidence_ids:
         meta = evidence_meta.get(eid, {})
-        sources.append({
-            "id": eid,
-            "source_name": meta.get("source_name", eid),
-            "source_url": meta.get("source_url"),
-        })
+        sources.append(
+            {
+                "id": eid,
+                "source_name": meta.get("source_name", eid),
+                "source_url": meta.get("source_url"),
+            }
+        )
     return sources
 
 
@@ -486,8 +500,7 @@ def _build_participants(
 
         # Filter to active attributions only
         active_attrs = [
-            a for a in attrs
-            if a.get("attribution", "asserted") in _ACTIVE_ATTRIBUTIONS
+            a for a in attrs if a.get("attribution", "asserted") in _ACTIVE_ATTRIBUTIONS
         ]
         if not active_attrs:
             continue
@@ -505,9 +518,7 @@ def _build_participants(
                 published_attrs.append(attr)
 
         # Compute dominant attribution type
-        attr_counts: Counter[str] = Counter(
-            a.get("attribution", "asserted") for a in active_attrs
-        )
+        attr_counts: Counter[str] = Counter(a.get("attribution", "asserted") for a in active_attrs)
         attribution_type = attr_counts.most_common(1)[0][0] if attr_counts else "asserted"
 
         if not published_attrs:
@@ -570,8 +581,7 @@ def _resolve_speaker_attributions(speaker: dict) -> list[dict]:
             for a in attributions
         ]
     return [
-        {"claim_index": idx, "attribution": "asserted"}
-        for idx in speaker.get("claim_indices", [])
+        {"claim_index": idx, "attribution": "asserted"} for idx in speaker.get("claim_indices", [])
     ]
 
 
@@ -599,16 +609,18 @@ def _speakers_for_claim(
                     entity = site_entities.get(speaker["name"])
                     if entity and entity.get("party"):
                         party = entity["party"]
-                speakers.append({
-                    "name": speaker["name"],
-                    "type": speaker.get("type", "individual"),
-                    "role": speaker.get("role"),
-                    "party": party,
-                    "stance": speaker.get("stance", "neutral"),
-                    "attribution": attr["attribution"],
-                    "stance_score": speaker.get("stance_score"),
-                    "credibility": speaker.get("credibility"),
-                })
+                speakers.append(
+                    {
+                        "name": speaker["name"],
+                        "type": speaker.get("type", "individual"),
+                        "role": speaker.get("role"),
+                        "party": party,
+                        "stance": speaker.get("stance", "neutral"),
+                        "attribution": attr["attribution"],
+                        "stance_score": speaker.get("stance_score"),
+                        "credibility": speaker.get("credibility"),
+                    }
+                )
                 break  # One entry per speaker per claim
 
     # Check article author
@@ -720,23 +732,31 @@ def prepare_report(
         supporting = _build_evidence_sources(sup_evidence, evidence_meta)
         contradicting = _build_evidence_sources(contra_evidence, evidence_meta)
 
-        enriched_claims.append({
-            "claim": {
-                "original_quote": item.get("claim", {}).get("original_quote", ""),
-                "claim_text": claim_text_is,
-                "category": item.get("claim", {}).get("category", ""),
-                "claim_type": item.get("claim", {}).get("claim_type", ""),
-                "confidence": item.get("claim", {}).get("confidence", 0),
-            },
-            "verdict": verdict,
-            "explanation": explanation_is,
-            "supporting_evidence": supporting,
-            "contradicting_evidence": contradicting,
-            "missing_context": missing_context_is,
-            "confidence": confidence,
-            "speakers": _speakers_for_claim(entities_data, i, site_entities),
-            "_published": is_published,
-        })
+        # Determine epistemic_type — from DB overlay first, then report data
+        epistemic_type = (db_entry.get("epistemic_type") if db_entry else None) or item.get(
+            "claim", {}
+        ).get("epistemic_type", "factual")
+
+        enriched_claims.append(
+            {
+                "claim": {
+                    "original_quote": item.get("claim", {}).get("original_quote", ""),
+                    "claim_text": claim_text_is,
+                    "category": item.get("claim", {}).get("category", ""),
+                    "claim_type": item.get("claim", {}).get("claim_type", ""),
+                    "confidence": item.get("claim", {}).get("confidence", 0),
+                    "epistemic_type": epistemic_type,
+                },
+                "verdict": verdict,
+                "explanation": explanation_is,
+                "supporting_evidence": supporting,
+                "contradicting_evidence": contradicting,
+                "missing_context": missing_context_is,
+                "confidence": confidence,
+                "speakers": _speakers_for_claim(entities_data, i, site_entities),
+                "_published": is_published,
+            }
+        )
 
     # Use Icelandic summary or generate one
     summary_is = is_data.get("summary_is") or report.get("summary", "")
@@ -744,7 +764,10 @@ def prepare_report(
     # Build participant data for all report types (needs full indexed list)
     panel_show = _is_panel_show(report_path.parent)
     participants = _build_participants(
-        entities_data, enriched_claims, site_entities, is_panel=panel_show,
+        entities_data,
+        enriched_claims,
+        site_entities,
+        is_panel=panel_show,
     )
 
     # Filter out unpublished claims and strip internal _published flag
@@ -806,11 +829,13 @@ def _listing_entry(report_data: dict) -> dict:
         for s in item.get("speakers", []):
             if s["name"] not in seen_speakers:
                 seen_speakers.add(s["name"])
-                speakers.append({
-                    "name": s["name"],
-                    "party": s.get("party"),
-                    "stance": s.get("stance"),
-                })
+                speakers.append(
+                    {
+                        "name": s["name"],
+                        "party": s.get("party"),
+                        "stance": s.get("stance"),
+                    }
+                )
 
     entry = {
         "slug": report_data["slug"],
@@ -839,7 +864,11 @@ def _listing_entry(report_data: dict) -> dict:
 
 
 def main() -> None:
-    site_dir = Path(sys.argv[sys.argv.index("--site-dir") + 1]) if "--site-dir" in sys.argv else DEFAULT_SITE_DIR
+    site_dir = (
+        Path(sys.argv[sys.argv.index("--site-dir") + 1])
+        if "--site-dir" in sys.argv
+        else DEFAULT_SITE_DIR
+    )
 
     if not site_dir.exists():
         print(f"Site directory not found: {site_dir}")
@@ -881,7 +910,11 @@ def main() -> None:
     seen_slugs: dict[str, int] = {}
     for report_path in report_files:
         report_data = prepare_report(
-            report_path, evidence_meta, site_entities, db_verdicts, registered_claims,
+            report_path,
+            evidence_meta,
+            site_entities,
+            db_verdicts,
+            registered_claims,
         )
 
         # Disambiguate duplicate slugs (different articles with same title)
@@ -899,7 +932,9 @@ def main() -> None:
             json.dump(report_data, f, ensure_ascii=False, indent=2)
 
         all_reports.append(report_data)
-        print(f"  {report_data['analysis_id']} → {out_path.name} ({report_data['claim_count']} claims)")
+        print(
+            f"  {report_data['analysis_id']} → {out_path.name} ({report_data['claim_count']} claims)"
+        )
         written += 1
 
     print(f"\nWrote {written} reports to {reports_dir}")
@@ -914,7 +949,9 @@ def main() -> None:
         json.dump(listing, f, ensure_ascii=False, indent=2)
 
     sources = set(r.get("article_source") for r in all_reports if r.get("article_source"))
-    print(f"Wrote listing JSON: {len(listing)} reports ({len(sources)} sources: {', '.join(sorted(sources))})")
+    print(
+        f"Wrote listing JSON: {len(listing)} reports ({len(sources)} sources: {', '.join(sorted(sources))})"
+    )
 
     # Prepare entity detail pages
     prepare_entity_details(site_dir)
@@ -1060,27 +1097,23 @@ def _build_entity_detail(
             verdict = claim_item.get("verdict", "unknown")
             category = claim_item.get("claim", {}).get("category", "")
 
-            resolved_claims.append({
-                "claim_text": claim_text,
-                "original_quote": claim_item.get("claim", {}).get(
-                    "original_quote", ""
-                ),
-                "verdict": verdict,
-                "explanation": claim_item.get("explanation", ""),
-                "missing_context": claim_item.get("missing_context", ""),
-                "supporting_evidence": claim_item.get(
-                    "supporting_evidence", []
-                ),
-                "contradicting_evidence": claim_item.get(
-                    "contradicting_evidence", []
-                ),
-                "category": category,
-                "attribution": attribution,
-                "article_slug": article_slug,
-                "article_title": report.get("article_title", ""),
-                "article_source": report.get("article_source"),
-                "article_date": report.get("article_date"),
-            })
+            resolved_claims.append(
+                {
+                    "claim_text": claim_text,
+                    "original_quote": claim_item.get("claim", {}).get("original_quote", ""),
+                    "verdict": verdict,
+                    "explanation": claim_item.get("explanation", ""),
+                    "missing_context": claim_item.get("missing_context", ""),
+                    "supporting_evidence": claim_item.get("supporting_evidence", []),
+                    "contradicting_evidence": claim_item.get("contradicting_evidence", []),
+                    "category": category,
+                    "attribution": attribution,
+                    "article_slug": article_slug,
+                    "article_title": report.get("article_title", ""),
+                    "article_source": report.get("article_source"),
+                    "article_date": report.get("article_date"),
+                }
+            )
 
             # Only active attributions count toward scorecard
             if attribution in _ACTIVE_ATTRIBUTIONS:
@@ -1090,14 +1123,16 @@ def _build_entity_detail(
 
         claim_count_in_article = len(article_claims)
         if claim_count_in_article > 0:
-            resolved_articles.append({
-                "slug": article_slug,
-                "title": report.get("article_title", ""),
-                "source": report.get("article_source"),
-                "date": report.get("article_date"),
-                "claim_count": claim_count_in_article,
-                "attribution_types": sorted(article_attr_types),
-            })
+            resolved_articles.append(
+                {
+                    "slug": article_slug,
+                    "title": report.get("article_title", ""),
+                    "source": report.get("article_source"),
+                    "date": report.get("article_date"),
+                    "claim_count": claim_count_in_article,
+                    "attribution_types": sorted(article_attr_types),
+                }
+            )
 
     detail = {
         "slug": entity["slug"],
@@ -1171,10 +1206,7 @@ def _enrich_outlet_coverage(
     source_names.add(entity["name"])
 
     # Find all reports published by this outlet
-    matched_reports = [
-        r for r in reports_map.values()
-        if r.get("article_source") in source_names
-    ]
+    matched_reports = [r for r in reports_map.values() if r.get("article_source") in source_names]
     matched_reports.sort(key=lambda r: r.get("article_date") or "", reverse=True)
 
     if not matched_reports:
@@ -1183,17 +1215,19 @@ def _enrich_outlet_coverage(
     # Build outlet_articles list
     outlet_articles = []
     for r in matched_reports:
-        outlet_articles.append({
-            "slug": r["slug"],
-            "title": r.get("article_title", ""),
-            "date": r.get("article_date"),
-            "source": r.get("article_source"),
-            "claim_count": r.get("claim_count", 0),
-            "verdict_counts": r.get("verdict_counts", {}),
-            "dominant_category": r.get("dominant_category"),
-            "categories": r.get("categories", []),
-            "participants": r.get("participants", []),
-        })
+        outlet_articles.append(
+            {
+                "slug": r["slug"],
+                "title": r.get("article_title", ""),
+                "date": r.get("article_date"),
+                "source": r.get("article_source"),
+                "claim_count": r.get("claim_count", 0),
+                "verdict_counts": r.get("verdict_counts", {}),
+                "dominant_category": r.get("dominant_category"),
+                "categories": r.get("categories", []),
+                "participants": r.get("participants", []),
+            }
+        )
 
     # Aggregate verdict scorecard across ALL claims in outlet's articles
     outlet_scorecard: dict[str, int] = {}
@@ -1248,7 +1282,9 @@ def prepare_evidence_details(site_dir: Path) -> None:
     reports_dir = site_dir / "_data" / "reports"
 
     if not EVIDENCE_FULL_PATH.exists():
-        print("No evidence_full.json found — run export_evidence.py first. Skipping evidence details.")
+        print(
+            "No evidence_full.json found — run export_evidence.py first. Skipping evidence details."
+        )
         return
 
     with open(EVIDENCE_FULL_PATH, encoding="utf-8") as f:
@@ -1303,29 +1339,33 @@ def _build_cited_by_index(reports_dir: Path) -> dict[str, list[dict]]:
             for ev in claim_item.get("supporting_evidence", []):
                 ev_id = ev.get("id") if isinstance(ev, dict) else ev
                 if ev_id:
-                    cited_by.setdefault(ev_id, []).append({
-                        "report_slug": report_slug,
-                        "report_title": report_title,
-                        "report_source": report_source,
-                        "report_date": report_date,
-                        "claim_text": claim_text,
-                        "verdict": verdict,
-                        "role": "supporting",
-                    })
+                    cited_by.setdefault(ev_id, []).append(
+                        {
+                            "report_slug": report_slug,
+                            "report_title": report_title,
+                            "report_source": report_source,
+                            "report_date": report_date,
+                            "claim_text": claim_text,
+                            "verdict": verdict,
+                            "role": "supporting",
+                        }
+                    )
 
             # Check contradicting_evidence
             for ev in claim_item.get("contradicting_evidence", []):
                 ev_id = ev.get("id") if isinstance(ev, dict) else ev
                 if ev_id:
-                    cited_by.setdefault(ev_id, []).append({
-                        "report_slug": report_slug,
-                        "report_title": report_title,
-                        "report_source": report_source,
-                        "report_date": report_date,
-                        "claim_text": claim_text,
-                        "verdict": verdict,
-                        "role": "contradicting",
-                    })
+                    cited_by.setdefault(ev_id, []).append(
+                        {
+                            "report_slug": report_slug,
+                            "report_title": report_title,
+                            "report_source": report_source,
+                            "report_date": report_date,
+                            "claim_text": claim_text,
+                            "verdict": verdict,
+                            "role": "contradicting",
+                        }
+                    )
 
     return cited_by
 
@@ -1343,12 +1383,14 @@ def _build_evidence_detail(
     for rel_id in entry.get("related_entries", []):
         rel = evidence_lookup.get(rel_id)
         if rel:
-            related.append({
-                "slug": rel["slug"],
-                "evidence_id": rel_id,
-                "statement": rel.get("statement_is") or rel["statement"],
-                "topic": rel.get("topic"),
-            })
+            related.append(
+                {
+                    "slug": rel["slug"],
+                    "evidence_id": rel_id,
+                    "statement": rel.get("statement_is") or rel["statement"],
+                    "topic": rel.get("topic"),
+                }
+            )
 
     # Get citations for this entry
     citations = cited_by.get(eid, [])
@@ -1366,11 +1408,13 @@ def _build_evidence_detail(
                 "report_date": cit.get("report_date"),
                 "claims": [],
             }
-        reports_citing[rs]["claims"].append({
-            "claim_text": cit["claim_text"],
-            "verdict": cit["verdict"],
-            "role": cit["role"],
-        })
+        reports_citing[rs]["claims"].append(
+            {
+                "claim_text": cit["claim_text"],
+                "verdict": cit["verdict"],
+                "role": cit["role"],
+            }
+        )
 
     return {
         "slug": entry["slug"],
