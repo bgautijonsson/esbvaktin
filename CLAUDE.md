@@ -283,6 +283,10 @@ This philosophy applies to all agents, export scripts, and any text that reaches
 
 **Weekly editorials** are news digests, not fact-check reports. They answer: What was discussed? What context do readers need? How has the rhetoric evolved? What's missing from the debate? They never label individual claims as "villandi" or "óstudd" — they show what evidence says and let the reader draw conclusions.
 
+## Design System
+
+Always read `DESIGN.md` before making any visual or UI decisions. All font choices, colours, spacing, and aesthetic direction are defined there. Do not deviate without explicit user approval. In QA mode, flag any code that doesn't match DESIGN.md.
+
 ## Important Context
 
 - Referendum date: 29 August 2026 — time-sensitive project
