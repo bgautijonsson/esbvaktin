@@ -52,6 +52,12 @@ data/overviews/
 data/audit/
 data/review/
 data/heimildin/
+data/backfill/
+data/drift_fix/
+
+# Binary/personal files
+esb_vaktin_kynning.docx
+metill-ehf.skill
 
 # Claude Code (keep skills, rules, agents, hooks, and shared settings)
 .claude/*
