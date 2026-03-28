@@ -38,14 +38,14 @@
 | Token | Hex | Usage |
 |-------|-----|-------|
 | `--bg` | `#F5F0E8` | Page background (warm cream, like good paper) |
-| `--bg-surface` | `#EDE8DD` | Card/surface backgrounds |
-| `--bg-surface-hover` | `#E5DFD3` | Card hover state |
+| `--bg-surface` | `#E8E2D5` | Card/surface backgrounds (1.14:1 vs bg — visible panel distinction) |
+| `--bg-surface-hover` | `#E0DACC` | Card hover state |
 | `--text` | `#1C1A17` | Primary text (warm near-black) |
 | `--text-muted` | `#6B6358` | Secondary text, metadata |
-| `--accent` | `#0F766E` | Links, buttons, interactive elements (deep teal) |
-| `--accent-hover` | `#0D6560` | Accent hover state |
-| `--accent-muted` | `rgba(15,118,110,0.08)` | Accent backgrounds |
-| `--accent-muted-border` | `rgba(15,118,110,0.2)` | Accent border tints |
+| `--accent` | `#0D6A63` | Links, buttons, interactive elements (deep teal — 5.0:1 on surface) |
+| `--accent-hover` | `#0B5F58` | Accent hover state |
+| `--accent-muted` | `rgba(13,106,99,0.08)` | Accent backgrounds |
+| `--accent-muted-border` | `rgba(13,106,99,0.2)` | Accent border tints |
 | `--rule` | `#D5CFC5` | Borders, dividers |
 | `--rule-strong` | `#B8B0A3` | Emphasis borders, active states |
 
@@ -122,3 +122,5 @@ Warm dark, not cold. Background has a brown warmth (#141210), not blue-grey slat
 | 2026-03-27 | Warm cream backgrounds (#F5F0E8) | Replaces pure white. Both Codex and subagent independently proposed paper-like warmth. Signals editorial care. |
 | 2026-03-27 | Evidence-first claim layout | Verdict badge appears after evidence, not before. Structurally embodies "curiosity over gotcha" philosophy. |
 | 2026-03-27 | Muted verdict colours | Forest green, amber, terracotta, plum, warm grey. Editorial stamps, not app pills. |
+| 2026-03-27 | Surface darkened to #E8E2D5 | Old #EDE8DD was 1.08:1 vs bg (invisible). New value is 1.14:1, visible panel distinction. |
+| 2026-03-27 | Accent darkened to #0D6A63 | Old #0F766E failed WCAG AA on surface panels (4.48:1). New value passes everywhere (5.0:1 on surface, 5.7:1 on bg). Still reads as the same deep teal. |
