@@ -775,9 +775,13 @@ def prepare_report(
 
     # Count verdicts from published claims only
     verdict_counts: dict[str, int] = {}
+    epistemic_counts: dict[str, int] = {}
     for ec in published_claims:
         v = ec.get("verdict", "unknown")
         verdict_counts[v] = verdict_counts.get(v, 0) + 1
+        et = ec.get("epistemic_type") or ec.get("claim", {}).get("epistemic_type", "factual")
+        if et != "factual":
+            epistemic_counts[et] = epistemic_counts.get(et, 0) + 1
 
     # Recompute dominant category from published claims
     category_counts = Counter(
@@ -807,6 +811,7 @@ def prepare_report(
         "summary": summary_is,
         "capsule": capsule,
         "verdict_counts": verdict_counts,
+        "epistemic_counts": epistemic_counts if epistemic_counts else None,
         "claim_count": len(published_claims),
         "dominant_category": dominant_category,
         "categories": categories,
@@ -849,6 +854,7 @@ def _listing_entry(report_data: dict) -> dict:
         "capsule": report_data.get("capsule", ""),
         "claim_count": report_data.get("claim_count", 0),
         "verdict_counts": report_data.get("verdict_counts", {}),
+        "epistemic_counts": report_data.get("epistemic_counts"),
         "dominant_category": report_data.get("dominant_category"),
         "categories": report_data.get("categories", []),
         "speakers": speakers,
