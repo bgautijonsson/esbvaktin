@@ -342,6 +342,7 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
         """
         SELECT c.canonical_text_is, c.claim_slug, c.verdict, c.category,
                c.missing_context_is, c.explanation_is,
+               c.epistemic_type, c.confidence,
                COUNT(s.id) AS sighting_count,
                ARRAY_AGG(DISTINCT s.source_title) FILTER (WHERE s.source_title IS NOT NULL) AS sources
         FROM claims c
@@ -364,10 +365,12 @@ def _fetch_top_claims(conn, start: date, end: date) -> list[dict]:
             "category_is": TOPIC_LABELS_IS.get(cat, cat),
             "missing_context": missing_ctx or "",
             "explanation": explanation or "",
+            "epistemic_type": ep_type or "factual",
+            "confidence": conf or 0.5,
             "sighting_count": count,
             "sources": sources or [],
         }
-        for text, slug, verdict, cat, missing_ctx, explanation, count, sources in rows
+        for text, slug, verdict, cat, missing_ctx, explanation, ep_type, conf, count, sources in rows
     ]
 
 

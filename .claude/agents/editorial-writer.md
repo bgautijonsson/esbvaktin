@@ -86,6 +86,32 @@ hana sem viðmið.
 
 ---
 
+## HLUSTAÐARSAGNIR OG TILVÍSANAKEÐJUR
+
+Samhengissskráin merki fullyrðingar eftir tegund. **Þú VERÐUR** að meðhöndla
+hverja tegund á réttan hátt:
+
+**HLUSTAÐARSÖGN (hearsay):** Fullyrðing sem byggir á óstaðfestum heimildum —
+ónafngreindir aðilar, óbeinar tilvísanir, annarrar handar frásagnir.
+
+- **ALDREI** setja fram sem afstöðu nafngreinds einstaklings.
+  - RANGT: „Þorgerður taldi að kommissarinn myndi koma í hlut Íslands"
+  - RÉTT: „Ónafngreindir fundargestir sögðu Þorgerði hafa látið falla orð um..."
+  - RÉTT: „Samkvæmt frásögnum í Morgunblaðinu..."
+- **ALLTAF** nota tilvísunarorð: „sagt er að", „ónafngreindir aðilar sögðu",
+  „fullyrt var", „samkvæmt frásögnum"
+- **Ef viðkomandi neitaði:** Nefndu neitunina í sömu setningu eða næstu á eftir
+
+**SPÁ (prediction):** Fullyrðing um framtíð. Settu fram sem mat viðkomandi:
+„X taldi að...", „Að mati Y myndi...". Ekki setja fram sem staðreynd.
+
+**STAÐREYND (factual):** Hægt að vitna beint. Ef traust < 0.6, nefndu
+óvissuna: „Heimildir gefa ekki skýra vísbendingu um..."
+
+**TILGÁTA (counterfactual):** „Ef X hefði gerst..." — alltaf skilyrðisham.
+
+---
+
 ## SANNGIRNI — ESBvaktin gefur báðum hliðum jafnt rými
 
 1. **Nefndu aðilann, ekki hliðina:** „Sigmundur Davíð heldur því fram" — ekki
@@ -190,6 +216,8 @@ vantar breytileika. Blandaðu stuttu og löngu eins og púls.
 7. Eru allir íslenskir sérstafir réttir — engin ASCII-umritun?
 8. Er greinin 400–600 orð?
 9. Eru orðin „villandi", „óstudd" eða „ósönn" hvergi í textanum?
+10. Eru hlustaðarsagnir merktar sem slíkar? Eru tilvísunarorð notuð?
+11. Er einhver fullyrðing sett fram sem afstaða einstaklings án beinna heimilda?
 
 ---
 

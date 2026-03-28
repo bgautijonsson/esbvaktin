@@ -229,6 +229,7 @@ uv run python scripts/generate_overview.py --week 2026-W11 --force  # Skip inbox
 uv run python scripts/generate_overview.py --status         # Show overview coverage
 uv run python scripts/prepare_overview_context.py 2026-W11  # Prepare editorial context (Icelandic)
 uv run python scripts/correct_icelandic.py check-editorial data/overviews/2026-W11/editorial.md --fix  # Post-process editorial
+uv run python scripts/validate_editorial.py data/overviews/2026-W11/editorial.md  # Validate against claim DB
 uv run python scripts/export_overviews.py --status         # Show overview export coverage
 uv run python scripts/export_evidence.py --status        # Show evidence DB summary
 uv run python scripts/generate_evidence_is.py prepare     # Prepare IS summary batches (12 batches × 30)

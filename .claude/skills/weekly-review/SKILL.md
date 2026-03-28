@@ -209,6 +209,24 @@ uv run python scripts/correct_icelandic.py check-editorial data/overviews/WEEK/e
 
 Apply any suggested fixes.
 
+### Step 5b: Validate Editorial Against Claims
+
+Run the editorial validator to cross-reference claims and entities:
+
+```bash
+uv run python scripts/validate_editorial.py data/overviews/WEEK/editorial.md --week WEEK
+```
+
+The validator flags:
+- **HIGH:** Hearsay claims presented without attribution markers (e.g., "sögðu", "ónafngreindir")
+- **MEDIUM:** Low-confidence claims (< 0.6) presented without uncertainty language
+
+**If HIGH flags exist:** You MUST fix the editorial before presenting it to the user. Rewrite the flagged passages with proper attribution, then re-run the validator to confirm.
+
+**If only MEDIUM flags:** Include them in the review presentation so the user can decide. The editorial may already handle these correctly — the validator uses simple heuristics.
+
+**If no flags:** Proceed to Step 6.
+
 ### Step 6: Present Editorial for Review
 
 **This is a mandatory gate.** Read the editorial and present the full text to the user:
@@ -221,12 +239,20 @@ Apply any suggested fixes.
 ---
 
 **Stats:** N words, M Málstaður corrections, K grammar issues
+**Validation:** [N flags / clean pass]
 **Coverage:** X articles analysed, Y topics active, Z entities
 
 Does this look good? I can:
 1. Push it to the site as-is
 2. Regenerate with different emphasis
 3. Edit specific sections
+```
+
+If there were MEDIUM validation flags, show them below the stats:
+
+```markdown
+**Validation notes (MEDIUM):**
+- Claim 123: Low confidence (0.45) — check attribution in paragraph about X
 ```
 
 **Wait for explicit approval.** Never proceed to Step 7 without the user confirming.

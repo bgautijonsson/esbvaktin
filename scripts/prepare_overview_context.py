@@ -34,9 +34,18 @@ def _format_date_is(iso_date: str) -> str:
     from datetime import date as date_cls
 
     months_is = {
-        1: "janúar", 2: "febrúar", 3: "mars", 4: "apríl",
-        5: "maí", 6: "júní", 7: "júlí", 8: "ágúst",
-        9: "september", 10: "október", 11: "nóvember", 12: "desember",
+        1: "janúar",
+        2: "febrúar",
+        3: "mars",
+        4: "apríl",
+        5: "maí",
+        6: "júní",
+        7: "júlí",
+        8: "ágúst",
+        9: "september",
+        10: "október",
+        11: "nóvember",
+        12: "desember",
     }
     d = date_cls.fromisoformat(iso_date)
     return f"{d.day}. {months_is[d.month]} {d.year}"
@@ -58,8 +67,7 @@ def _find_previous_editorial(current_slug: str) -> str | None:
     """
     # List all overview directories, sorted
     overview_dirs = sorted(
-        d.name for d in OVERVIEWS_DIR.iterdir()
-        if d.is_dir() and (d / "editorial.md").exists()
+        d.name for d in OVERVIEWS_DIR.iterdir() if d.is_dir() and (d / "editorial.md").exists()
     )
 
     # Find the one before current_slug
@@ -126,7 +134,9 @@ def prepare_context(slug: str) -> str:
     lines.append(">")
     lines.append("> Greinin er fréttayfirlit — hún hjálpar lesendum að skilja hvað var rætt,")
     lines.append("> hvaða samhengi skiptir máli, og hvað vantar í umræðuna.")
-    lines.append('> Ekki merkja fullyrðingar sem \u201evillandi\u201c eða \u201eósannar\u201c — sýndu samhengið')
+    lines.append(
+        "> Ekki merkja fullyrðingar sem \u201evillandi\u201c eða \u201eósannar\u201c — sýndu samhengið"
+    )
     lines.append("> og láttu lesandann draga ályktanir.")
     lines.append("")
     lines.append(f"# Tímabil: {start_is} til {end_is}")
@@ -159,18 +169,65 @@ def prepare_context(slug: str) -> str:
             lines.append(f"| {label} | {t['sightings']} | {t.get('delta', '—')} |")
         lines.append("")
 
+    # Epistemic type labels for the context
+    epistemic_labels_is = {
+        "factual": "staðreynd",
+        "prediction": "spá",
+        "counterfactual": "tilgáta",
+        "hearsay": "HLUSTAÐARSÖGN",
+    }
+
     # ── Section 3: Most-discussed claims with context ──
     top_claims = data.get("top_claims", [])
     if top_claims:
+        # Separate hearsay claims for a dedicated warning section
+        hearsay_claims = [c for c in top_claims if c.get("epistemic_type") == "hearsay"]
+        verified_claims = [c for c in top_claims if c.get("epistemic_type") != "hearsay"]
+
+        if hearsay_claims:
+            lines.append("## ⚠️ Hlustaðarsagnir — ekki setja fram sem staðreyndir")
+            lines.append("> Þessar fullyrðingar byggja á óstaðfestum heimildum (ónafngreindir")
+            lines.append("> aðilar, óbeinar tilvísanir). Ef þú nefnir þær í greininni VERÐUR þú")
+            lines.append(
+                '> að nota tilvísunarorð: „sagt er að", „ónafngreindir fundargestir sögðu",'
+            )
+            lines.append('> „fullyrt var". Aldrei setja fram sem staðfesta afstöðu viðkomandi.')
+            lines.append("")
+            for i, c in enumerate(hearsay_claims, 1):
+                cat_is = c.get(
+                    "category_is",
+                    TOPIC_LABELS_IS.get(c["category"], c["category"]),
+                )
+                lines.append(f'{i}. ⚠️ „{c["canonical_text_is"]}"')
+                lines.append(
+                    f"   Tegund: HLUSTAÐARSÖGN · Efni: {cat_is} · Tilvísanir: {c['sighting_count']}"
+                )
+                if c.get("explanation"):
+                    ctx = _truncate_caveat(c["explanation"], 250)
+                    lines.append(f"   Hvað vitum við: {ctx}")
+                lines.append("")
+
         lines.append("## Umræðuefni vikunnar — helstu fullyrðingar")
-        lines.append('> Ekki nota úrskurðarorð eins og \u201evillandi\u201c eða \u201eóstudd\u201c í greininni.')
+        lines.append(
+            "> Ekki nota úrskurðarorð eins og \u201evillandi\u201c eða \u201eóstudd\u201c í greininni."
+        )
         lines.append("> Segðu í staðinn hvað heimildir sýna og hvaða samhengi lesandinn þarf.")
         lines.append("")
-        for i, c in enumerate(top_claims[:8], 1):
-            cat_is = c.get("category_is", TOPIC_LABELS_IS.get(c["category"], c["category"]))
+        for i, c in enumerate(verified_claims[:8], 1):
+            cat_is = c.get(
+                "category_is",
+                TOPIC_LABELS_IS.get(c["category"], c["category"]),
+            )
+            ep_type = c.get("epistemic_type", "factual")
+            ep_label = epistemic_labels_is.get(ep_type, ep_type)
+            conf = c.get("confidence", 0.5)
             sources_str = ", ".join(c.get("sources", [])[:3])
+
             lines.append(f'{i}. „{c["canonical_text_is"]}"')
-            lines.append(f"   Efni: {cat_is} · Fjöldi tilvísana: {c['sighting_count']}")
+            type_str = f"   Tegund: {ep_label} · Efni: {cat_is} · Tilvísanir: {c['sighting_count']}"
+            if conf < 0.6:
+                type_str += " · ⚠️ Lítið traust"
+            lines.append(type_str)
             if c.get("missing_context"):
                 ctx = _truncate_caveat(c["missing_context"], 250)
                 lines.append(f"   Samhengi sem skiptir máli: {ctx}")
@@ -196,7 +253,8 @@ def prepare_context(slug: str) -> str:
         lines.append("## Greiningarnar")
         for i, a in enumerate(articles, 1):
             cat_is = TOPIC_LABELS_IS.get(
-                a.get("dominant_category", ""), a.get("dominant_category", ""),
+                a.get("dominant_category", ""),
+                a.get("dominant_category", ""),
             )
             lines.append(
                 f'{i}. „{a["title"]}" — {a["source"]},'
@@ -213,7 +271,7 @@ def prepare_context(slug: str) -> str:
         lines.append("")
         for f in key_facts[:4]:
             cat_is = f.get("category_is", f.get("category", ""))
-            lines.append(f'- **{cat_is}**: {f["claim_text"]}')
+            lines.append(f"- **{cat_is}**: {f['claim_text']}")
             if f.get("caveat"):
                 lines.append(f"  - Gott að vita: {_truncate_caveat(f['caveat'])}")
             lines.append("")
@@ -249,11 +307,17 @@ def prepare_context(slug: str) -> str:
     lines.append("- Greinin er fréttayfirlit, ekki staðreyndamat — hjálpaðu lesendum að skilja")
     lines.append("- Byrjaðu á áhugaverðasta atriðinu — staðreynd, spurning eða þróun")
     lines.append("- Nefndu einstaklinga og tölur — ekki skrifa almennt")
-    lines.append("- Segðu hvað heimildir sýna frekar en að merkja fullyrðingar sem réttar eða rangar")
+    lines.append(
+        "- Segðu hvað heimildir sýna frekar en að merkja fullyrðingar sem réttar eða rangar"
+    )
     lines.append("- Nefndu hvort umræðan þéttist eða breikkist — samanborið við fyrri vikur")
-    lines.append('- Nefndu ef mikilvæg málefni fá lítið rými (sjá \u201eHvað vantar í umræðuna?\u201c)')
+    lines.append(
+        "- Nefndu ef mikilvæg málefni fá lítið rými (sjá \u201eHvað vantar í umræðuna?\u201c)"
+    )
     lines.append('- BANNAÐAR opnanir: „Einnig var...", „Í vikunni sem leið...", „Hvað X varðar..."')
-    lines.append('- BANNAÐ: orðin \u201evillandi\u201c, \u201eóstudd\u201c, \u201eósönn\u201c um fullyrðingar einstaklinga')
+    lines.append(
+        "- BANNAÐ: orðin \u201evillandi\u201c, \u201eóstudd\u201c, \u201eósönn\u201c um fullyrðingar einstaklinga"
+    )
     lines.append("- Engin emoji, engin upphrópunarmerki")
     lines.append("- Skrifaðu eins og blaðamaður á fréttastofu — ekki eins og gervigreind")
     lines.append("- Textinn á að vera 400–600 orð")
