@@ -66,3 +66,4 @@ data/heimildin/
 .mcp.json
 data/althingi.db
 althingi.db
+.gstack/
