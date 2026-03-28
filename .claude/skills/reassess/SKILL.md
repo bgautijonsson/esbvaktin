@@ -10,6 +10,8 @@ Orchestrate the full claim reassessment cycle: identify candidates, prepare cont
 /reassess partial            # Only partially supported claims
 /reassess overconfident      # Only verdict-audit flagged claims
 /reassess overconfident 20   # Limit to 20 overconfident claims
+/reassess evidence CURR-DATA-007 CURRENCY-DATA-017   # Claims citing these evidence entries
+/reassess claims 123 456 789                          # Specific claims by ID
 ```
 
 ## Steps
@@ -50,8 +52,10 @@ Based on the user's argument, run the appropriate prepare command:
 - **"partial":** `uv run python scripts/reassess_claims.py prepare --only partial`
 - **"overconfident":** `uv run python scripts/reassess_claims.py prepare --only overconfident`
 - **"overconfident N":** `uv run python scripts/reassess_claims.py prepare --only overconfident --limit N`
+- **"evidence ID1 ID2 ...":** `uv run python scripts/reassess_claims.py prepare --evidence ID1 ID2 ...`
+- **"claims 123 456 ...":** `uv run python scripts/reassess_claims.py prepare --claims 123 456 ...`
 
-Note the number of batches generated (printed by the script). Each batch produces a `_context_reassess_N.md` file in `data/reassessment/`.
+Note the number of batches generated (printed by the script). Each batch produces a `_context_batch_N.md` file in `data/reassessment/`.
 
 If no claims qualify for reassessment, stop and inform the user.
 

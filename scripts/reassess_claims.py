@@ -18,6 +18,8 @@ Usage:
     uv run python scripts/reassess_claims.py prepare --only partial
     uv run python scripts/reassess_claims.py prepare --only overconfident  # verdict audit
     uv run python scripts/reassess_claims.py prepare --only overconfident --limit 30
+    uv run python scripts/reassess_claims.py prepare --evidence CURR-DATA-007 CURRENCY-DATA-017
+    uv run python scripts/reassess_claims.py prepare --claims 123 456 789
 
     # Step 2: Run subagent assessment (Claude Code reads each batch context
     #         and writes _assessments_batch_N.json)
@@ -68,13 +70,23 @@ def _get_reassessable_claims(
     include_partial: bool = True,
     include_overconfident: bool = False,
     overconfident_limit: int = 30,
+    evidence_ids: list[str] | None = None,
+    claim_ids: list[int] | None = None,
 ):
     """Fetch claims that may benefit from (re-)assessment with current evidence.
 
     For unverifiable claims: any strong evidence match qualifies.
     For partially_supported claims: must have NEW evidence not already linked.
     For overconfident claims: flagged by verdict audit (sighting drift, contradicting evidence, caveats).
+    For evidence_ids: all claims citing any of the given evidence entries.
+    For claim_ids: specific claims by ID.
     """
+    # Targeted modes bypass category logic
+    if evidence_ids:
+        return _get_claims_by_evidence(conn, evidence_ids)
+    if claim_ids:
+        return _get_claims_by_ids(conn, claim_ids)
+
     assessable = []
 
     if include_unverifiable:
@@ -85,6 +97,92 @@ def _get_reassessable_claims(
 
     if include_overconfident:
         assessable.extend(_get_overconfident_supported(conn, limit=overconfident_limit))
+
+    return assessable
+
+
+def _get_claims_by_evidence(conn, evidence_ids: list[str]) -> list[dict]:
+    """All claims citing any of the given evidence IDs — for reassessment after evidence updates."""
+    placeholders = ", ".join(["%s"] * len(evidence_ids))
+    rows = conn.execute(
+        f"SELECT id, canonical_text_is, canonical_text_en, category, claim_slug, "
+        f"       verdict, confidence, epistemic_type "
+        f"FROM claims "
+        f"WHERE (supporting_evidence && ARRAY[{placeholders}]::text[] "
+        f"    OR contradicting_evidence && ARRAY[{placeholders}]::text[]) "
+        f"  AND epistemic_type != 'hearsay' "
+        f"ORDER BY verdict, id",
+        evidence_ids + evidence_ids,  # params needed twice for both clauses
+    ).fetchall()
+
+    assessable = []
+    for claim_id, text_is, text_en, category, slug, verdict, confidence, epistemic_type in rows:
+        results = _search_evidence_dual(text_is, text_en, conn)
+        strong = sorted(
+            [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
+            key=lambda r: r.similarity,
+            reverse=True,
+        )[:8]
+        if not strong:
+            continue
+
+        # Mark updated evidence entries as "new" so assessor pays attention
+        updated_set = set(evidence_ids)
+        assessable.append(
+            _make_claim_entry(
+                claim_id,
+                text_is,
+                text_en,
+                category,
+                slug,
+                strong,
+                reason="evidence_update",
+                new_evidence_ids=updated_set,
+                current_confidence=confidence,
+                epistemic_type=epistemic_type or "factual",
+            )
+        )
+
+    return assessable
+
+
+def _get_claims_by_ids(conn, claim_ids: list[int]) -> list[dict]:
+    """Specific claims by ID — for targeted reassessment."""
+    placeholders = ", ".join(["%s"] * len(claim_ids))
+    rows = conn.execute(
+        f"SELECT id, canonical_text_is, canonical_text_en, category, claim_slug, "
+        f"       verdict, confidence, epistemic_type "
+        f"FROM claims "
+        f"WHERE id IN ({placeholders}) "
+        f"  AND epistemic_type != 'hearsay' "
+        f"ORDER BY id",
+        claim_ids,
+    ).fetchall()
+
+    assessable = []
+    for claim_id, text_is, text_en, category, slug, verdict, confidence, epistemic_type in rows:
+        results = _search_evidence_dual(text_is, text_en, conn)
+        strong = sorted(
+            [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
+            key=lambda r: r.similarity,
+            reverse=True,
+        )[:8]
+        if not strong:
+            continue
+
+        assessable.append(
+            _make_claim_entry(
+                claim_id,
+                text_is,
+                text_en,
+                category,
+                slug,
+                strong,
+                reason="targeted",
+                current_confidence=confidence,
+                epistemic_type=epistemic_type or "factual",
+            )
+        )
 
     return assessable
 
@@ -401,6 +499,8 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
     n_unverifiable = sum(1 for c in batch if c["reason"] == "unverifiable")
     n_partial = sum(1 for c in batch if c["reason"] == "partial")
     n_overconfident = sum(1 for c in batch if c["reason"] == "overconfident")
+    n_evidence_update = sum(1 for c in batch if c["reason"] == "evidence_update")
+    n_targeted = sum(1 for c in batch if c["reason"] == "targeted")
 
     lines = [
         f"# Endurmat fullyrðinga — Lota {batch_num}\n",
@@ -410,7 +510,22 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         "",
     ]
 
-    if n_overconfident:
+    if n_evidence_update or n_targeted:
+        total = n_evidence_update + n_targeted
+        lines.extend(
+            [
+                "## Endurmat eftir uppfærslu heimilda",
+                "",
+                f"Þessi lota inniheldur **{total} fullyrðingar** sem þarf að endurmeta vegna þess að",
+                "heimildir í staðreyndagrunni hafa verið uppfærðar. Heimildir merktar 🆕 hafa breyst",
+                "frá síðasta mati — lestu þær vandlega og mettu fullyrðinguna í ljósi nýjustu upplýsinga.",
+                "",
+                "**Mikilvægt:** Fyrri mat gætu verið rangt vegna úreltra heimilda. Mettu hverja fullyrðingu",
+                "eingöngu á grundvelli heimildanna hér að neðan, ekki fyrra mats.",
+                "",
+            ]
+        )
+    elif n_overconfident:
         lines.extend(
             [
                 "## Gæðaendurskoðun — of örugg «supported» mat",
@@ -471,6 +586,8 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
             "unverifiable": "óstaðfestanleg",
             "partial": "að hluta staðfest",
             "overconfident": "gæðaendurskoðun — of örugg",
+            "evidence_update": "uppfærðar heimildir",
+            "targeted": "markvisst endurmat",
         }
         reason_tag = reason_tags.get(claim["reason"], claim["reason"])
         conf_tag = ""
@@ -538,13 +655,19 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
     return path
 
 
-def prepare(*, only: str | None = None, limit: int = 30):
+def prepare(
+    *,
+    only: str | None = None,
+    limit: int = 30,
+    evidence_ids: list[str] | None = None,
+    claim_ids: list[int] | None = None,
+):
     """Prepare context files for subagent re-assessment."""
     from esbvaktin.ground_truth.operations import get_connection
 
-    include_unverifiable = only in (None, "unverifiable")
-    include_partial = only in (None, "partial")
-    include_overconfident = only == "overconfident"
+    include_unverifiable = only in (None, "unverifiable") and not evidence_ids and not claim_ids
+    include_partial = only in (None, "partial") and not evidence_ids and not claim_ids
+    include_overconfident = only == "overconfident" and not evidence_ids and not claim_ids
 
     WORK_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -556,20 +679,29 @@ def prepare(*, only: str | None = None, limit: int = 30):
         print(f"Cleaned {len(stale)} stale assessment file(s) from previous run.")
 
     conn = get_connection()
-    types = []
-    if include_unverifiable:
-        types.append("unverifiable")
-    if include_partial:
-        types.append("partially_supported")
-    if include_overconfident:
-        types.append(f"overconfident (top {limit})")
-    print(f"Retrieving evidence for {' + '.join(types)} claims...")
+
+    if evidence_ids:
+        print(f"Retrieving claims citing evidence: {', '.join(evidence_ids)}...")
+    elif claim_ids:
+        print(f"Retrieving claims by ID: {', '.join(str(c) for c in claim_ids)}...")
+    else:
+        types = []
+        if include_unverifiable:
+            types.append("unverifiable")
+        if include_partial:
+            types.append("partially_supported")
+        if include_overconfident:
+            types.append(f"overconfident (top {limit})")
+        print(f"Retrieving evidence for {' + '.join(types)} claims...")
+
     assessable = _get_reassessable_claims(
         conn,
         include_unverifiable=include_unverifiable,
         include_partial=include_partial,
         include_overconfident=include_overconfident,
         overconfident_limit=limit,
+        evidence_ids=evidence_ids,
+        claim_ids=claim_ids,
     )
     conn.close()
 
@@ -814,29 +946,48 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: uv run python scripts/reassess_claims.py [prepare|update|status]")
         print("  prepare [--only unverifiable|partial|overconfident] [--limit N]")
+        print("  prepare --evidence ID1 ID2 ...          Claims citing these evidence entries")
+        print("  prepare --claims 123 456 ...             Specific claims by ID")
         print("          Prepare context files (auto-cleans stale output files)")
-        print("  update                                 Parse subagent output → DB")
-        print("  status                                 Show verdict distribution")
+        print("  update                                   Parse subagent output → DB")
+        print("  status                                   Show verdict distribution")
         sys.exit(1)
 
     cmd = sys.argv[1]
     if cmd == "prepare":
         only = None
         limit = 30
-        if "--only" in sys.argv:
-            idx = sys.argv.index("--only")
-            if idx + 1 < len(sys.argv):
-                only = sys.argv[idx + 1]
-                if only not in ("unverifiable", "partial", "overconfident"):
-                    print(
-                        f"Unknown --only value: {only} (use 'unverifiable', 'partial', or 'overconfident')"
-                    )
-                    sys.exit(1)
-        if "--limit" in sys.argv:
-            idx = sys.argv.index("--limit")
-            if idx + 1 < len(sys.argv):
-                limit = int(sys.argv[idx + 1])
-        prepare(only=only, limit=limit)
+        evidence_ids = None
+        claim_ids = None
+
+        if "--evidence" in sys.argv:
+            idx = sys.argv.index("--evidence")
+            evidence_ids = [a for a in sys.argv[idx + 1 :] if not a.startswith("--")]
+            if not evidence_ids:
+                print("--evidence requires at least one evidence ID")
+                sys.exit(1)
+        elif "--claims" in sys.argv:
+            idx = sys.argv.index("--claims")
+            claim_ids = [int(a) for a in sys.argv[idx + 1 :] if not a.startswith("--")]
+            if not claim_ids:
+                print("--claims requires at least one claim ID")
+                sys.exit(1)
+        else:
+            if "--only" in sys.argv:
+                idx = sys.argv.index("--only")
+                if idx + 1 < len(sys.argv):
+                    only = sys.argv[idx + 1]
+                    if only not in ("unverifiable", "partial", "overconfident"):
+                        print(
+                            f"Unknown --only value: {only} (use 'unverifiable', 'partial', or 'overconfident')"
+                        )
+                        sys.exit(1)
+            if "--limit" in sys.argv:
+                idx = sys.argv.index("--limit")
+                if idx + 1 < len(sys.argv):
+                    limit = int(sys.argv[idx + 1])
+
+        prepare(only=only, limit=limit, evidence_ids=evidence_ids, claim_ids=claim_ids)
     elif cmd == "update":
         update()
     elif cmd == "status":
