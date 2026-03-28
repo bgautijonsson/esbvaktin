@@ -1,0 +1,62 @@
+[
+  {
+    "evidence_id": "POLL-INTL-001",
+    "domain": "political",
+    "topic": "polling",
+    "statement": "The Standard Eurobarometer 103 (Spring 2025, fieldwork 26 March – 22 April 2025, n=26,410 across 27 EU member states) found that 73% of EU citizens believe their country has benefited from EU membership — the highest level recorded since the question was first introduced in 1983. The top three reasons cited were: protecting peace and security (37%), closer cooperation between member states (36%), and contributions to economic growth (29%). The Eurobarometer has tracked this question consistently since the early 1980s, making it one of the longest-running comparative public opinion series on European integration.",
+    "source_name": "European Commission — Standard Eurobarometer 103",
+    "source_url": "https://europa.eu/eurobarometer/surveys/detail/3372",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The 73% figure is an EU-wide average; country-level satisfaction varies significantly (from ~50% in some Central European states to >90% in Ireland and Luxembourg). The question asks about perceived benefits to 'your country', not personal benefits — framing affects results. Standard Eurobarometer fieldwork covers only EU member states; no comparable data exists for non-EU EEA states like Iceland.",
+    "related_entries": ["POLL-DATA-017", "POLL-DATA-020", "PREC-DATA-022"]
+  },
+  {
+    "evidence_id": "PREC-DATA-040",
+    "domain": "economic",
+    "topic": "precedents",
+    "statement": "The UK Office for Budget Responsibility (OBR) estimates that leaving the EU will reduce the UK's long-run productivity by 4% relative to remaining in the EU, primarily through increased non-tariff barriers that impede the exploitation of comparative advantage. The OBR projects that UK imports and exports will both be approximately 15% lower in the long run than under continued EU membership. As of its November 2025 Economic and Fiscal Outlook, the OBR assessed that approximately two-fifths of the 4% productivity impact had already materialised by the time the Trade and Cooperation Agreement (TCA) came into force on 1 January 2021. The OBR assumes it will take 15 years for the full impact to materialise. New trade deals with non-EU countries are estimated to have negligible offsetting impact (e.g., UK-Japan FTA: +0.1% GDP over 15 years).",
+    "source_name": "UK Office for Budget Responsibility — Brexit Analysis",
+    "source_url": "https://obr.uk/forecasts-in-depth/the-economy-forecast/brexit-analysis/",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The OBR's 4% estimate is a model-based projection with inherent uncertainty. It focuses on productivity via trade channels and does not capture all possible Brexit effects (positive or negative). Some economists argue the true effect is larger (NBER estimates 6-8% GDP by 2025); others argue the OBR overstates the impact. The counterfactual ('remaining in the EU') is inherently unobservable. The OBR's estimate does not account for potential long-term regulatory flexibility benefits. Covid-19 disruption makes it difficult to isolate Brexit effects in real data.",
+    "related_entries": ["PREC-DATA-001", "PREC-HIST-012"]
+  },
+  {
+    "evidence_id": "PREC-DATA-041",
+    "domain": "economic",
+    "topic": "precedents",
+    "statement": "A 2024 National Bureau of Economic Research (NBER) working paper by Bloom, Chen, and Mizen estimated that the Brexit process reduced UK GDP by approximately 6–8%, investment by 12–18%, employment by 3–4%, and total factor productivity by 3–4% relative to the synthetic doppelgänger counterfactual by 2025. The paper used a synthetic control method comparing the UK to a weighted basket of similar economies. The study attributed the impact to a combination of elevated uncertainty, reduced demand, diverted management time, and increased misallocation of resources from a protracted Brexit process. UK goods exports to the EU were 18% below their 2019 level in real terms by 2024, while services exports were 19% above, reflecting a structural shift toward services trade.",
+    "source_name": "NBER Working Paper No. 34459 — The Economic Impact of Brexit (Bloom, Chen, Mizen)",
+    "source_url": "https://www.nber.org/papers/w34459",
+    "source_type": "academic_paper",
+    "confidence": "medium",
+    "caveats": "The 6-8% GDP figure is higher than other estimates (OBR: 4% productivity; CER: 2.8% GDP by 2023). The synthetic control method relies on a counterfactual that assumes the UK would have followed a weighted average of comparator economies' trajectories. The estimate includes the pre-referendum uncertainty period (2016 onwards), not just the post-departure period. The study's upper-bound estimates (8% GDP) are at the high end of the literature. Covid-19 disruption complicates attribution. Some portion of the estimated effect may reflect global trends that affected the UK differently for reasons unrelated to Brexit.",
+    "related_entries": ["PREC-DATA-040", "PREC-DATA-001", "PREC-HIST-012"]
+  },
+  {
+    "evidence_id": "CURR-DATA-018",
+    "domain": "economic",
+    "topic": "currency",
+    "statement": "Croatian National Bank Governor Boris Vujčić reported in a BIS speech (January 2024) that after euro adoption on 1 January 2023, Croatia's foreign-currency-denominated debt fell from approximately 70% of total debt to less than 1% — eliminating a major source of systemic financial risk. Croatia's sovereign credit rating improved from BB in 2017 to BBB+ by 2022, approaching A-territory, driven partly by the credibility gains from euro adoption convergence. Vujčić stated that the disappearance of currency risk was 'the most important structural benefit' of euro adoption for Croatia, as it removed the currency mismatch that had previously amplified financial shocks.",
+    "source_name": "Bank for International Settlements — Boris Vujčić speech: One Year with the Euro",
+    "source_url": "https://www.bis.org/review/r240131a.htm",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Croatia's kuna was tightly pegged to the euro for over two decades before formal adoption, meaning the currency risk premium had already been partially mitigated. The credit rating improvement reflects multiple factors (fiscal consolidation, EU accession, structural reforms) beyond just euro adoption. Iceland's situation differs significantly: the króna floats freely (no peg history), Iceland has much higher interest rates, and Iceland's banking system was destroyed in 2008 — making the magnitude of convergence effects potentially different. The BIS speech is from the Croatian central bank governor, who has an institutional interest in presenting euro adoption positively.",
+    "related_entries": ["PREC-DATA-012", "PREC-DATA-020", "CURR-DATA-011"]
+  },
+  {
+    "evidence_id": "SOV-INTL-001",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "On 23 February 2026, POLITICO Europe reported — citing two unnamed sources familiar with Iceland's accession preparations — that the Icelandic governing coalition was considering holding a referendum on resuming EU accession talks as early as August 2026, significantly accelerating an earlier timeline that had envisaged no vote before 2027. The report noted that Iceland's parliament could announce ballot dates 'within weeks'. The report was subsequently confirmed: on 25 February 2026, Prime Minister Kristrún Frostadóttir told Bloomberg she wanted the referendum 'in the coming months', and on 7 March the government formally announced 29 August 2026 as the date. Geopolitical factors cited as catalysts included US tariff threats on EU goods and President Trump's stated ambitions regarding Greenland.",
+    "source_name": "POLITICO Europe / Bloomberg / Government of Iceland",
+    "source_url": "https://www.politico.eu/article/iceland-eu-referendum-accession-talks/",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The POLITICO report relied on anonymous sources and was speculative at time of publication. The claim that the public 'first learned' about the referendum from foreign media is partly accurate — POLITICO broke the accelerated timeline — but domestic political discussions had been ongoing. The acceleration was driven by multiple factors (coalition dynamics, geopolitical shifts, polling trends) not solely by foreign pressure or POLITICO's reporting. The original POLITICO article may be behind a paywall.",
+    "related_entries": ["SOV-DATA-006", "SOV-DATA-011", "PARTY-DATA-013"]
+  }
+]

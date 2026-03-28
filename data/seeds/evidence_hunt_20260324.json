@@ -1,0 +1,86 @@
+[
+  {
+    "evidence_id": "EEA-LEGAL-029",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "statement": "The Digital Services Act (EU Regulation 2022/2065) establishes a tiered content moderation framework: all services must handle illegal content reports and explain removals; online platforms must conduct risk assessments and publish transparency reports; very large platforms (>45M EU users) face systemic risk assessments and independent audits. The DSA defines obligations only for illegal content — 'harmful but legal' content is explicitly excluded from removal obligations to protect freedom of expression. Non-compliance penalties reach up to 6% of global annual turnover.",
+    "source_name": "EU Digital Services Act — Official Regulation Text",
+    "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2065/oj/eng",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The DSA has not yet been formally incorporated into the EEA Agreement. Until incorporated by the EEA Joint Committee, it is not legally binding on EEA EFTA states (Iceland, Norway, Liechtenstein). Implementation timeline for EEA states is separate from EU member states.",
+    "related_entries": ["EEA-LEGAL-024", "EEA-LEGAL-010"]
+  },
+  {
+    "evidence_id": "EEA-DATA-032",
+    "domain": "political",
+    "topic": "eea_eu_law",
+    "statement": "Iceland, Norway, and Liechtenstein submitted a joint EEA EFTA comment on the DSA legislative proposal emphasising: (1) maintaining conditional liability exemptions for online intermediaries; (2) preserving the prohibition on general monitoring obligations; (3) protecting editorial media content from platform interference; (4) stronger protections for minors against micro-targeted advertising; and (5) balancing content removal obligations with freedom of expression. Norway's national implementation (Digitalytelsesloven) had consultation closing October 2025, targeting summer 2026 implementation.",
+    "source_name": "EFTA — EEA EFTA States Comment on the Digital Services Act",
+    "source_url": "https://www.efta.int/sites/default/files/documents/eea/eea-efta-comments/2021/EEA_EFTA_Comment_on_the_Digital_Services_Act.pdf",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The joint comment was submitted in 2021 during the legislative process. Final DSA text may differ from the version commented on. Norway's implementation timeline may have shifted since the consultation period.",
+    "related_entries": ["EEA-LEGAL-029", "EEA-LEGAL-024"]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-008",
+    "domain": "legal",
+    "topic": "fisheries",
+    "statement": "Icelandic law (Lög um stjórn fiskveiða) explicitly states that fishing quotas are not property rights. The Supreme Court has confirmed that fishing resources around Iceland are the common property of the Icelandic nation. However, the Court has also ruled that quota holders have constitutionally protected 'commercial rights' (atvinnuréttindi) under Article 72 of the Icelandic Constitution. This means quotas cannot be characterised as full ownership, but the state cannot arbitrarily revoke or reallocate them without constitutional justification. Quotas can be used as loan collateral, are subject to inheritance tax, and are treated as property in divorce proceedings.",
+    "source_name": "Icelandic Fisheries Management Act + Supreme Court Jurisprudence",
+    "source_url": "https://www.responsiblefisheries.is/seafood-industry/fisheries-management/",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The legal status of quotas has evolved through multiple Supreme Court rulings over decades. The 'common property' principle and 'commercial rights' protection exist in tension. The 2025 Huginn case further clarified the commercial rights doctrine. Academic and political disagreement persists about the practical implications.",
+    "related_entries": ["FISH-LEGAL-003", "FISH-DATA-022", "FISH-DATA-028"]
+  },
+  {
+    "evidence_id": "FISH-LEGAL-009",
+    "domain": "legal",
+    "topic": "fisheries",
+    "statement": "In the Huginn ehf. v Iceland case (2 July 2025), the Icelandic Supreme Court ruled that the government's method of distributing mackerel quotas during 2011–2018 infringed the commercial rights of existing quota holders. The court awarded Huginn ehf. 250 million ISK in compensation. In a companion case (Vinnslustöðin hf.), the compensation claim was dismissed due to insufficient economic evidence. The rulings established that while quotas are not full property rights, the state's reallocation methods must be constitutionally sound — arbitrary or discriminatory redistribution triggers compensation liability.",
+    "source_name": "The Fishing Daily — Icelandic Supreme Court Rules on Mackerel Quota Disputes",
+    "source_url": "https://thefishingdaily.com/icelandic-fishing-industry-news/icelandic-supreme-court-rules-on-mackerel-quota-disputes/",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Source is industry press reporting on the ruling, not the ruling text itself. The 250M ISK figure and legal reasoning are as reported. The mackerel dispute context (2010+ international disagreement on catch shares between Iceland/Faroes and EU/Norway) is distinct from domestic quota allocation.",
+    "related_entries": ["FISH-LEGAL-008", "FISH-DATA-024", "FISH-LEGAL-003"]
+  },
+  {
+    "evidence_id": "FISH-DATA-038",
+    "domain": "economic",
+    "topic": "fisheries",
+    "statement": "Iceland's Individual Transferable Quota (ITQ) system, established in 1990, is one of the earliest globally. Key features: quotas are permanent, divisible, and freely transferable subject to Ministry registration and anti-accumulation rules. Flexibility mechanisms include species switching, rollover of up to 15% of annual quota to the following year, and temporary transfers. The European Parliament's 2012 assessment noted that Icelandic ITQs have delivered biological sustainability but significant consolidation — with the largest companies holding increasing shares of total allowable catch.",
+    "source_name": "European Parliament — Rights-Based Fisheries Management in Iceland",
+    "source_url": "https://www.europarl.europa.eu/RegData/etudes/note/join/2012/474531/IPOL-PECH_NT(2012)474531_EN.pdf",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The European Parliament study is from 2012 and some consolidation figures may have changed. The ITQ system has undergone incremental legislative adjustments since then. The 15% rollover and species-switching provisions may have been modified.",
+    "related_entries": ["FISH-LEGAL-008", "FISH-DATA-022", "FISH-DATA-025"]
+  },
+  {
+    "evidence_id": "EEA-LEGAL-030",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "statement": "Article 16 of the EEA Agreement governs state monopolies of a commercial character. It requires that such monopolies operate without discrimination regarding the conditions under which goods are procured and marketed between EEA nationals. State monopolies are permitted for public health purposes (such as alcohol retail) but cannot treat domestic and imported products differently in law or practice. The EFTA Court confirmed this in the Karl K. Karlsson hf. v Iceland case (E-4/01, 2002), ruling that Iceland's pre-1995 alcohol monopoly arrangements were incompatible with Article 16, and establishing state liability for monopoly-related EEA breaches.",
+    "source_name": "EFTA Court — Case E-4/01 Karl K. Karlsson hf. v Iceland",
+    "source_url": "https://eftacourt.int/cases/e-04-01/",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The Karl K. Karlsson ruling addressed pre-1995 arrangements. Iceland has since restructured ÁTVR operations. The non-discrimination principle remains binding but the specific practices found incompatible may have been corrected.",
+    "related_entries": ["EEA-LEGAL-005", "EEA-LEGAL-024"]
+  },
+  {
+    "evidence_id": "EEA-DATA-033",
+    "domain": "economic",
+    "topic": "eea_eu_law",
+    "statement": "Nordic alcohol retail monopolies vary significantly in scope. Iceland (ÁTVR/Vínbúðin) maintains the most restrictive system — a monopoly on all retail alcohol sales. Norway (Vinmonopolet) covers beverages above 4.75% ABV, allowing grocery stores to sell beer below that threshold. Sweden (Systembolaget) covers above 3.5% ABV. Finland (Alko) covers above 5.5% ABV. Norway restructured its system after the 1996 EFTA Court ruling (E-9/00), separating production/import (Arcus Corp) from retail (Vinmonopolet). Iceland's 2022 brewery direct-sales exemption partially eroded the monopoly, and foreign-based online retailers can legally sell to Icelandic consumers — creating a gap where foreign companies have more retail freedom than domestic ones.",
+    "source_name": "WHO Europe — Nordic Alcohol Monopolies as Public Health Model",
+    "source_url": "https://www.who.int/europe/news/item/03-02-2025-who-europe-highlights-nordic-alcohol-monopolies-as-a-comprehensive-model-for-reducing-alcohol-consumption-and-harm",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "ABV thresholds are approximate and may vary by beverage type. The 2022 brewery direct-sales exemption is limited in scope. The foreign online sales channel's legal status is subject to an ongoing court case (Smáríkið, scheduled March 2026). WHO/Europe assessment focuses on health outcomes, not EEA legal compliance.",
+    "related_entries": ["EEA-LEGAL-030"]
+  }
+]

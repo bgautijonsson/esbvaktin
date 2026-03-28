@@ -55,10 +55,10 @@
     "domain": "economic",
     "topic": "currency",
     "subtopic": "interest_rate_differential",
-    "statement": "The Central Bank of Iceland has consistently maintained higher interest rates than the European Central Bank. The CBI's key rate has averaged approximately 6.5% over the 2000–2025 period, compared to the ECB's average of approximately 1.5%. As of early 2026, the CBI rate stood at 7.25% (after cumulative 2.0 percentage point cuts from 9.25%) while the ECB deposit facility rate was approximately 2.75%. This differential reflects Iceland's higher inflation, currency risk premium, and the CBI's need to defend the króna.",
+    "statement": "The Central Bank of Iceland has consistently maintained higher interest rates than the European Central Bank. The CBI's key rate has averaged approximately 6.5% over the 2000–2025 period, compared to the ECB's average of approximately 1.5%. As of March 2026, the CBI rate stands at 7.50% (after a 0.25pp hike on 18 March 2026 that reversed a cutting cycle from 9.25%) while the ECB deposit facility rate is 2.00%. The spread is 5.50 percentage points. This differential reflects Iceland's higher inflation, currency risk premium, and the CBI's need to defend the króna.",
     "source_name": "Central Bank of Iceland — Monetary policy decisions; ECB — Key interest rates",
-    "source_url": null,
-    "source_date": "2026-02-01",
+    "source_url": "https://www.sedlabanki.is/peningastefna/vaxtaakvardir/",
+    "source_date": "2026-03-18",
     "source_type": "official_statistics",
     "confidence": "high",
     "caveats": "Higher interest rates partly reflect Iceland's higher inflation and currency risk premium. Simply adopting the euro would not automatically deliver ECB-level rates if Iceland's fiscal position or banking sector were perceived as risky. The 2008 crisis showed that access to ECB liquidity is not guaranteed for peripheral eurozone members without conditionality.",
@@ -66,7 +66,7 @@
       "CURRENCY-DATA-001",
       "CURRENCY-DATA-013"
     ],
-    "statement_is": "Seðlabanki Íslands hefur stöðugt haldið hærri vöxtum en Seðlabanki Evrópu. Meðalstýrivextir á Íslandi voru um 6,5% á árunum 2000–2025 á móti ~1,5% hjá ESB. Í byrjun árs 2026 voru stýrivextir á Íslandi 7,25% (eftir 2,0 prósentustiga lækkun frá 9,25%) á meðan innlánsvextir ESB voru um 2,75%.",
+    "statement_is": "Seðlabanki Íslands hefur stöðugt haldið hærri vöxtum en Seðlabanki Evrópu. Meðalstýrivextir á Íslandi voru um 6,5% á árunum 2000–2025 á móti ~1,5% hjá ESB. Í mars 2026 eru stýrivextir á Íslandi 7,50% (eftir 0,25 prósentustiga hækkun 18. mars 2026 sem sneri við lækkunarferli frá 9,25%) á meðan innlánsvextir ESB eru 2,00%. Bilið er 5,50 prósentustig.",
     "caveats_is": "Hærri vextir endurspegla að hluta til meiri verðbólgu og áhættuálag vegna gjaldmiðils á Íslandi. Að taka upp evruna eitt og sér myndi ekki sjálfkrafa tryggja vexti á pari við Seðlabanka Evrópu ef staða ríkisfjármála eða bankakerfis Íslands væri talin áhættusöm. Kreppan árið 2008 sýndi að aðgangur að lausafjárfyrirgreiðslu Seðlabanka Evrópu er ekki tryggður fyrir jaðarríki evrusvæðisins án skilyrða."
   },
   {

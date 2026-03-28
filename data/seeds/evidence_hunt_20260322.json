@@ -1,0 +1,98 @@
+[
+  {
+    "evidence_id": "TRADE-DATA-039",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "The United States imposed a 15% reciprocal tariff on all Icelandic goods exports in August 2025, despite Iceland running a goods trade deficit with the US. Iceland's goods exports to the US totalled ISK 110 billion (12% of total goods exports) in 2024, dominated by seafood (ISK 46 billion, mainly cod and haddock) and pharmaceutical/medical products (ISK 39 billion). Pharmaceutical exports were initially exempt from the tariff regime. Aluminium, Iceland's largest export by value, is sold almost entirely to Europe and is not directly affected by US tariffs.",
+    "source_name": "Íslandsbanki Economic Analysis / Iceland Review",
+    "source_url": "https://www.islandsbanki.is/en/news/iceland-and-the-impact-of-a-trade-war",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The 15% tariff rate was the second increase — an initial 10% baseline tariff was applied in April 2025 before being raised to 15% in August. Tariff rates may change as trade negotiations continue. Pharmaceutical exemption status may be temporary.",
+    "related_entries": ["TRADE-DATA-001", "TRADE-DATA-003", "TRADE-DATA-031", "TRADE-DATA-027"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-040",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "EEA membership does not include membership of the EU customs union. EEA EFTA states (Iceland, Norway, Liechtenstein) enjoy tariff-free access to the EU single market for industrial goods, but each state sets its own external tariffs on imports from third countries and negotiates its own trade agreements with non-EU countries. By contrast, EU customs union members apply a Common External Tariff on all third-country imports and the European Commission negotiates trade agreements on behalf of all 27 member states collectively. This means EEA states cannot benefit from the EU's collective bargaining power in trade disputes with third countries such as the United States or China.",
+    "source_name": "EU Council / European Commission Access2Markets",
+    "source_url": "https://www.consilium.europa.eu/en/policies/eu-tariffs-explained/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "EEA states can negotiate their own bilateral trade deals, which provides flexibility but less leverage. The EU's 450-million-consumer market gives it significantly more negotiating weight than Iceland's 400,000-person economy acting alone. However, independent trade policy also means Iceland can potentially secure bilateral deals that the EU cannot (e.g., with the US) if strategic interests align.",
+    "related_entries": ["TRADE-COMP-006", "TRADE-DATA-021", "EEA-DATA-001"]
+  },
+  {
+    "evidence_id": "TRADE-DATA-041",
+    "domain": "economic",
+    "topic": "trade",
+    "statement": "Norway's Confederation of Enterprise (NHO) began publicly advocating in early 2026 for Norway to explore a customs union arrangement with the EU, driven by vulnerability to US tariffs. The United States imposed 15% reciprocal tariffs on Norwegian goods in 2025, plus an additional 50% surcharge on Norwegian salmon exports, severely impacting Norway's aquaculture sector. NHO's shift reflected growing concern among Nordic EEA states that being outside the EU customs union leaves them exposed in an era of trade wars, without the EU's collective retaliatory and negotiating capacity.",
+    "source_name": "Multiple Norwegian and Icelandic media sources",
+    "source_url": "https://www.ruv.is/english/2025-08-01-trump-hits-iceland-with-15-tariff-450009",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "NHO's position is a policy recommendation, not Norwegian government policy. Norway has no formal process for joining the EU customs union without full EU membership. The comparison between Norway and Iceland is imperfect — Norway's export profile (oil, gas, salmon) differs substantially from Iceland's (aluminium, seafood, tourism services).",
+    "related_entries": ["TRADE-DATA-027", "TRADE-DATA-039", "TRADE-DATA-040"]
+  },
+  {
+    "evidence_id": "AGRI-DATA-026",
+    "domain": "economic",
+    "topic": "agriculture",
+    "statement": "Iceland's Act No. 54/1990 on the Importation of Animals imposes a general ban on importing live animals to Iceland, with narrow exceptions requiring permits from MAST (Icelandic Food and Veterinary Authority) or the Ministry of Industries and Innovation. The ban exists to protect Iceland's disease-free status and genetically isolated livestock breeds — notably the Icelandic horse, Icelandic sheep, and Icelandic cattle — which have been isolated on the island for over 1,000 years. Iceland is free from most livestock diseases common in continental Europe, including rabies. Any Icelandic horse that leaves the country can never return, to prevent genetic contamination.",
+    "source_name": "Government of Iceland / MAST",
+    "source_url": "https://www.mast.is/en/import-export/import-of-live-animals",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Limited exceptions exist for pets (dogs, cats) subject to quarantine and vaccination requirements. The ban applies broadly to livestock but specific scientific and breeding exceptions can be granted on a case-by-case basis. The legal basis is Act 54/1990, amended multiple times since.",
+    "related_entries": ["AGRI-DATA-006", "AGRI-DATA-008", "AGRI-COMP-001"]
+  },
+  {
+    "evidence_id": "AGRI-DATA-027",
+    "domain": "economic",
+    "topic": "agriculture",
+    "statement": "The EFTA Surveillance Authority (ESA) has formally requested Iceland to comply with EEA rules on veterinary import controls for products of animal origin, citing failures in systematic oversight of transit/transshipment consignments, poor coordination between Iceland Customs and MAST, and persistent non-compliance identified in audit reports from 2010 and 2012. Under EEA law, Iceland functions as a shared external border for the entire EEA regarding third-country imports, meaning Iceland's veterinary controls affect public and animal health across the entire EEA region. This demonstrates that even under the EEA framework (without full EU membership), Iceland already faces pressure to align its veterinary controls with EU standards.",
+    "source_name": "EFTA Surveillance Authority",
+    "source_url": "https://www.eftasurv.int/newsroom/updates/esa-asks-iceland-comply-eea-rules-veterinary-import-controls",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "The ESA case concerns transit/transshipment controls (goods passing through Iceland), not Iceland's domestic ban on live animal imports. The general import ban on live animals is separate from veterinary product controls. However, the case illustrates the principle that EEA membership already imposes veterinary alignment obligations.",
+    "related_entries": ["AGRI-DATA-026", "AGRI-DATA-008", "EEA-DATA-001"]
+  },
+  {
+    "evidence_id": "AGRI-LEGAL-006",
+    "domain": "legal",
+    "topic": "agriculture",
+    "statement": "EU law permits member states to maintain national measures to protect animal health and prevent disease introduction under Article 36 TFEU (exceptions to free movement of goods) and Regulation (EU) 2016/429 (Animal Health Law). Several EU member states maintain specific animal health measures: the UK (while a member) maintained rabies quarantine requirements; Ireland and the UK had special rules for livestock movements; Cyprus maintains restrictions on certain animal imports. However, these are regulatory measures within the EU framework, not blanket import bans. Iceland's comprehensive ban on live animal imports would likely need to be restructured into species-specific, risk-based import controls compliant with the EU Animal Health Law upon accession, while potentially retaining enhanced biosecurity measures justified by Iceland's unique disease-free status and island geography.",
+    "source_name": "European Commission Food Safety / EUR-Lex",
+    "source_url": "https://food.ec.europa.eu/animals/animal-products-movements_en",
+    "source_type": "legal_text",
+    "confidence": "medium",
+    "caveats": "No precedent exists for an EU member state maintaining a comprehensive ban on all live animal imports equivalent to Iceland's Act 54/1990. The closest analogy is the UK's pre-EU pet passport quarantine system, which was eventually replaced by the EU Pet Travel Scheme. Iceland's negotiating position would depend on demonstrating that its measures are proportionate and scientifically justified under EU law, rather than constituting a disguised restriction on trade.",
+    "related_entries": ["AGRI-DATA-026", "AGRI-DATA-027", "AGRI-DATA-008"]
+  },
+  {
+    "evidence_id": "PREC-DATA-036",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "Historical EU accession negotiation timelines vary dramatically. The fastest accession was Austria, Finland, and Sweden (1995), completing negotiations in approximately 1 year and 11 months. Denmark, Ireland, and the UK (1973) took 4 years 2 months. The 2004 Central European enlargement took 4-6 years (Slovakia, Latvia, Lithuania, Malta: 4 years 2 months; Slovenia, Hungary, Czech Republic, Poland, Estonia, Cyprus: 6 years 1 month). Spain and Romania/Bulgaria took approximately 6 years 10 months. Portugal required 7 years 2 months, and Croatia (2013) — the most recent accession — took 7 years 8 months. Montenegro has been negotiating since 2012 (13+ years) without completion.",
+    "source_name": "Visit Ukraine / EU Council enlargement data",
+    "source_url": "https://visitukraine.today/blog/2963/eu-membership-how-long-did-it-take-between-the-start-of-negotiations-and-accession",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The Austria/Finland/Sweden precedent (1 year 11 months) is often cited as the model for Iceland's potential accession speed, but those countries had no equivalent of Iceland's fisheries and agriculture challenges. They were wealthy, stable democracies with high acquis alignment — similar to Iceland in most respects, but without a sector-defining issue like fisheries that required a chapter never previously negotiated from scratch.",
+    "related_entries": ["PREC-DATA-001", "PREC-DATA-002", "SOV-DATA-006"]
+  },
+  {
+    "evidence_id": "PREC-DATA-037",
+    "domain": "precedent",
+    "topic": "precedents",
+    "statement": "During Iceland's EU accession negotiations (2010-2013), 27 of 35 negotiating chapters were opened and 11 were provisionally closed. However, the fisheries chapter (Chapter 13) — widely considered the most difficult for Iceland — was never opened. The agriculture chapter (Chapter 11) was also never opened. These two chapters represent the sectors where Iceland's interests diverge most significantly from existing EU policy. The Foreign Minister's 2026 claim that negotiations could be completed in approximately 18 months assumes that the remaining chapters, including the two most contentious ones never previously addressed, can be resolved in less time than the entire 2010-2013 negotiation period. No candidate country has ever completed fisheries or agriculture chapters from scratch in under 18 months.",
+    "source_name": "European Commission Iceland Progress Reports / Althingi committee records",
+    "source_url": "https://www.consilium.europa.eu/en/topics/eu-enlargement/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Iceland's high acquis alignment (already implementing ~70% of internal market legislation through the EEA) could accelerate non-controversial chapters. The 18-month timeline is a political aspiration, not a technical assessment. Some analysts argue that modern accession processes have become more rigid since the 2004/2007 enlargements, with additional benchmarks and monitoring mechanisms that could slow progress.",
+    "related_entries": ["PREC-DATA-036", "AGRI-DATA-018", "AGRI-DATA-024", "FISH-DATA-001"]
+  }
+]
