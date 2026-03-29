@@ -12,6 +12,7 @@ Same 3-branch logic as ``speeches.register_sightings`` but with
 from __future__ import annotations
 
 import logging
+import sys
 from datetime import date
 
 from esbvaktin.claim_bank.models import CanonicalClaim
@@ -56,9 +57,17 @@ def register_panel_sightings(
         matches = search_claims(
             query=claim_text,
             threshold=SIGHTING_MATCH_THRESHOLD,
-            top_k=1,
+            top_k=3,
             conn=conn,
         )
+
+        if len(matches) > 1 and (matches[0].similarity - matches[1].similarity) < 0.03:
+            print(
+                f"  ⚠️ Ambiguous match: '{claim_text[:50]}' → "
+                f"{matches[0].claim_slug} ({matches[0].similarity:.3f}) vs "
+                f"{matches[1].claim_slug} ({matches[1].similarity:.3f})",
+                file=sys.stderr,
+            )
 
         if matches:
             match = matches[0]

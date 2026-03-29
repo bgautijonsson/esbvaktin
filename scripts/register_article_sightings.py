@@ -156,9 +156,19 @@ def register_article(
         matches = search_claims(
             query=claim_text,
             threshold=SIGHTING_MATCH_THRESHOLD,
-            top_k=1,
+            top_k=3,
             conn=conn,
         )
+
+        if len(matches) > 1 and (matches[0].similarity - matches[1].similarity) < 0.03:
+            logger.warning(
+                "Ambiguous match: '%s' → %s (%.3f) vs %s (%.3f)",
+                claim_text[:50],
+                matches[0].claim_slug,
+                matches[0].similarity,
+                matches[1].claim_slug,
+                matches[1].similarity,
+            )
 
         if matches:
             match = matches[0]
