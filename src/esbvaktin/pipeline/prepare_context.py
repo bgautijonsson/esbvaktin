@@ -11,6 +11,7 @@ as a fallback but the primary pipeline is Icelandic-first.
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -288,6 +289,11 @@ def prepare_assessment_context(
     for i, cwe in enumerate(claims_with_evidence, 1):
         claim = cwe.claim
         if language == "is":
+            low_conf_note = (
+                "\n⚠️ Lítið sjálfstraust við útdrátt (conf < 0.5)\n"
+                if claim.confidence < 0.5
+                else ""
+            )
             claims_section += f"""### Fullyrðing {i}
 
 - **Fullyrðing**: {claim.claim_text}
@@ -295,30 +301,35 @@ def prepare_assessment_context(
 - **Flokkur**: {claim.category}
 - **Tegund**: {claim.claim_type.value}
 - **Þekkingarstaða**: {claim.epistemic_type.value}
-
+{low_conf_note}
 """
-            # Bank match prior verdict (Icelandic)
+            # Bank match prior verdict (Icelandic) — skip if older than 90 days
             if bank_matches and (i - 1) in bank_matches:
                 match = bank_matches[i - 1]
-                freshness = "ferskt" if match.is_fresh else "úrelt"
-                claims_section += (
-                    f"**Fyrra mat úr fullyrðingabanka**"
-                    f" (líkindi: {match.similarity:.3f},"
-                    f" slug: `{match.claim_slug}`, {freshness}):\n"
-                )
-                claims_section += (
-                    f"- Niðurstaða: `{match.verdict}` (öryggi: {match.confidence:.2f})\n"
-                )
-                claims_section += f"- Skýring: {match.explanation_is}\n"
-                if match.missing_context_is:
-                    claims_section += f"- Samhengi sem vantar: {match.missing_context_is}\n"
-                claims_section += (
-                    "> Þú getur fallist á þetta mat eða vikið frá því —"
-                    " ef þú víkur frá, skýrðu hvers vegna.\n\n"
-                )
+                age_days = (date.today() - match.last_verified).days
+                if age_days <= 90:
+                    freshness = "ferskt" if match.is_fresh else "úrelt"
+                    claims_section += (
+                        f"**Fyrra mat úr fullyrðingabanka**"
+                        f" (líkindi: {match.similarity:.3f},"
+                        f" slug: `{match.claim_slug}`, {freshness}):\n"
+                    )
+                    claims_section += (
+                        f"- Niðurstaða: `{match.verdict}` (öryggi: {match.confidence:.2f})\n"
+                    )
+                    claims_section += f"- Skýring: {match.explanation_is}\n"
+                    if match.missing_context_is:
+                        claims_section += f"- Samhengi sem vantar: {match.missing_context_is}\n"
+                    claims_section += (
+                        "> Þú getur fallist á þetta mat eða vikið frá því —"
+                        " ef þú víkur frá, skýrðu hvers vegna.\n\n"
+                    )
 
             claims_section += "**Heimildir úr staðreyndagrunni:**\n\n"
         else:
+            low_conf_note = (
+                "\n⚠️ Low extraction confidence (conf < 0.5)\n" if claim.confidence < 0.5 else ""
+            )
             claims_section += f"""### Claim {i}
 
 - **Claim**: {claim.claim_text}
@@ -326,27 +337,29 @@ def prepare_assessment_context(
 - **Category**: {claim.category}
 - **Type**: {claim.claim_type.value}
 - **Epistemic type**: {claim.epistemic_type.value}
-
+{low_conf_note}
 """
-            # Bank match prior verdict (English)
+            # Bank match prior verdict (English) — skip if older than 90 days
             if bank_matches and (i - 1) in bank_matches:
                 match = bank_matches[i - 1]
-                freshness = "fresh" if match.is_fresh else "stale"
-                claims_section += (
-                    f"**Prior verdict from claim bank**"
-                    f" (similarity: {match.similarity:.3f},"
-                    f" slug: `{match.claim_slug}`, {freshness}):\n"
-                )
-                claims_section += (
-                    f"- Verdict: `{match.verdict}` (confidence: {match.confidence:.2f})\n"
-                )
-                claims_section += f"- Explanation: {match.explanation_is}\n"
-                if match.missing_context_is:
-                    claims_section += f"- Missing context: {match.missing_context_is}\n"
-                claims_section += (
-                    "> You may agree with or diverge from this prior verdict"
-                    " — if you diverge, explain why.\n\n"
-                )
+                age_days = (date.today() - match.last_verified).days
+                if age_days <= 90:
+                    freshness = "fresh" if match.is_fresh else "stale"
+                    claims_section += (
+                        f"**Prior verdict from claim bank**"
+                        f" (similarity: {match.similarity:.3f},"
+                        f" slug: `{match.claim_slug}`, {freshness}):\n"
+                    )
+                    claims_section += (
+                        f"- Verdict: `{match.verdict}` (confidence: {match.confidence:.2f})\n"
+                    )
+                    claims_section += f"- Explanation: {match.explanation_is}\n"
+                    if match.missing_context_is:
+                        claims_section += f"- Missing context: {match.missing_context_is}\n"
+                    claims_section += (
+                        "> You may agree with or diverge from this prior verdict"
+                        " — if you diverge, explain why.\n\n"
+                    )
 
             claims_section += "**Evidence from Ground Truth Database:**\n\n"
         if not cwe.evidence:
