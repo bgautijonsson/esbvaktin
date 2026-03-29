@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'  # Monday 06:00 UTC — catches time-dependent bugs
 
 jobs:
   lint:
