@@ -109,10 +109,8 @@ def _load_registered_claims() -> set[tuple[str, str]]:
     """Load (source_url, original_text) pairs for all registered claim sightings.
 
     Used only to determine whether a report claim has been registered in the DB
-    (i.e. it's not an orphan). Does NOT load verdicts — sighting matches link
-    to canonical claims via embedding similarity, and low-similarity matches
-    can point to factually different claims. Verdict overlay stays text-based
-    (exact match against canonical_text_is/en) which is always safe.
+    (i.e. it's not an orphan). Does NOT load verdicts — sighting verdicts are
+    loaded separately by _load_sighting_verdicts() for high-similarity matches.
     """
     try:
         from esbvaktin.ground_truth.operations import get_connection
@@ -130,6 +128,74 @@ def _load_registered_claims() -> set[tuple[str, str]]:
         return set()
 
     return {(url, text) for url, text in rows}
+
+
+# Minimum sighting similarity for the fallback verdict overlay.
+# Below this threshold, the sighting match is too uncertain to overlay
+# (e.g., the CBI/ECB confusion at 0.71 similarity).
+_SIGHTING_OVERLAY_MIN_SIMILARITY = 0.80
+
+
+def _load_sighting_verdicts() -> dict[tuple[str, str], dict]:
+    """Load canonical verdicts via high-similarity sightings.
+
+    Fallback for claims where the report's claim_text doesn't exactly match
+    canonical_text_is/en (e.g., minor paraphrasing during claim registration).
+    Keyed by (source_url, original_text) for safety — ensures the sighting
+    is from the same article.
+
+    Only includes sightings with similarity >= _SIGHTING_OVERLAY_MIN_SIMILARITY
+    to avoid propagating wrong verdicts from marginal embedding matches.
+    """
+    try:
+        from esbvaktin.ground_truth.operations import get_connection
+
+        conn = get_connection()
+        rows = conn.execute(
+            """
+            SELECT s.source_url, s.original_text,
+                   c.verdict, c.explanation_is, c.confidence,
+                   c.supporting_evidence, c.contradicting_evidence,
+                   c.missing_context_is, c.published, c.epistemic_type
+            FROM claim_sightings s
+            JOIN claims c ON c.id = s.claim_id
+            WHERE s.original_text IS NOT NULL
+              AND s.similarity >= %s
+            """,
+            (_SIGHTING_OVERLAY_MIN_SIMILARITY,),
+        ).fetchall()
+        conn.close()
+    except Exception as exc:
+        print(
+            f"WARNING: Could not load sighting verdicts. Error: {exc}",
+            file=sys.stderr,
+        )
+        return {}
+
+    lookup: dict[tuple[str, str], dict] = {}
+    for (
+        url,
+        orig_text,
+        verdict,
+        expl_is,
+        conf,
+        sup,
+        contra,
+        missing,
+        published,
+        epistemic_type,
+    ) in rows:
+        lookup[(url, orig_text)] = {
+            "verdict": verdict,
+            "explanation_is": expl_is,
+            "confidence": conf,
+            "supporting_evidence": sup or [],
+            "contradicting_evidence": contra or [],
+            "missing_context_is": missing,
+            "published": bool(published),
+            "epistemic_type": epistemic_type or "factual",
+        }
+    return lookup
 
 
 # ── Article metadata extraction ──────────────────────────────────────
@@ -641,6 +707,7 @@ def prepare_report(
     site_entities: dict[str, dict] | None = None,
     db_verdicts: dict[str, dict] | None = None,
     registered_claims: set[tuple[str, str]] | None = None,
+    sighting_verdicts: dict[tuple[str, str], dict] | None = None,
 ) -> dict:
     """Extract site-ready fields from a _report_final.json file.
 
@@ -649,7 +716,7 @@ def prepare_report(
     - Icelandic text parsed from report_text_is
     - Evidence source metadata (names + URLs) for linking
     - Speaker attributions from entity extraction
-    - DB verdict overlay via text match (exact match against canonical_text_is/en)
+    - DB verdict overlay (text match first, then sighting-based fallback)
     - Registered claim check (was this claim registered via sightings?)
     """
     with open(report_path, encoding="utf-8") as f:
@@ -694,14 +761,19 @@ def prepare_report(
         sup_evidence = item.get("supporting_evidence", [])
         contra_evidence = item.get("contradicting_evidence", [])
 
-        # Overlay DB verdict if text matches exactly (safe: identical claim text)
+        # Overlay DB verdict — three lookup paths in priority order:
+        # 1. Exact text match against canonical_text_is/en (always safe)
+        # 2. Sighting-based fallback for high-similarity matches (>= 0.80)
+        #    keyed by (source_url, original_text) for article-specific safety
         db_entry = None
         if db_verdicts:
             db_entry = db_verdicts.get(claim_text_raw) or db_verdicts.get(claim_text_is)
+        if not db_entry and sighting_verdicts and article_url:
+            db_entry = sighting_verdicts.get((article_url, claim_text_raw))
 
         # Published logic:
-        # - Text match → use DB published flag
-        # - Registered sighting but no text match → show (claim is in DB, just
+        # - DB overlay → use DB published flag (can both promote AND demote)
+        # - Registered sighting but no overlay → show (claim is in DB, just
         #   different canonical text due to embedding-based matching)
         # - Not registered + unverifiable → hide (discarded during registration)
         # - Not registered + substantive → show (pre-claim-bank or text-drift)
@@ -720,8 +792,7 @@ def prepare_report(
                 explanation_is = db_entry["explanation_is"]
             if db_entry["missing_context_is"]:
                 missing_context_is = db_entry["missing_context_is"]
-            if db_entry["published"]:
-                is_published = True
+            is_published = db_entry["published"]
 
         # Linkify evidence IDs in text fields
         explanation_is = _linkify_evidence_ids(explanation_is, evidence_meta)
@@ -904,6 +975,11 @@ def main() -> None:
     if registered_claims:
         print(f"Registered claims: {len(registered_claims)} (url, text) pairs loaded")
 
+    # Load sighting-based verdict fallback (high-similarity matches only)
+    sighting_verdicts = _load_sighting_verdicts()
+    if sighting_verdicts:
+        print(f"Sighting verdict fallback: {len(sighting_verdicts)} high-similarity pairs loaded")
+
     # Find all completed analysis reports
     report_files = sorted(ANALYSES_DIR.glob("*/_report_final.json"))
 
@@ -921,6 +997,7 @@ def main() -> None:
             site_entities,
             db_verdicts,
             registered_claims,
+            sighting_verdicts,
         )
 
         # Disambiguate duplicate slugs (different articles with same title)

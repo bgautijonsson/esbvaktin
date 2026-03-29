@@ -183,6 +183,16 @@ CREATE INDEX IF NOT EXISTS idx_sightings_stance ON claim_sightings(speaker_stanc
 
 
 -- ═══════════════════════════════════════════════════════════════════════
+-- Migration: epistemic type classification
+-- ═══════════════════════════════════════════════════════════════════════
+
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS epistemic_type TEXT NOT NULL DEFAULT 'factual';
+
+-- Align published default with actual DB state (add_claim sets TRUE explicitly)
+ALTER TABLE claims ALTER COLUMN published SET DEFAULT FALSE;
+
+
+-- ═══════════════════════════════════════════════════════════════════════
 -- Views: analytical queries for editorial workflow
 -- ═══════════════════════════════════════════════════════════════════════
 
