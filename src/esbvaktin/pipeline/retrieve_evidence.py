@@ -191,12 +191,15 @@ def retrieve_evidence_for_claim(
         # RRF fusion — no MIN_SIMILARITY floor (keyword hit already signals relevance)
         rrf_results = _rrf_merge(list(vector_merged), keyword_results)
         final_results = []
+        keyword_rank = 0
         for r, rrf_score in rrf_results[:MAX_EVIDENCE_PER_CLAIM]:
             if r.similarity > 0:
                 # Came from vector search — preserve original similarity
                 final_results.append(r)
             else:
-                # Keyword-only hit: scale RRF score into a similarity-like range
+                # Keyword-only hit: assign rank-based similarity (0-based position
+                # among keyword-only hits in this merged list). rank 0 → 0.90,
+                # rank 1 → 0.86, rank 5 → 0.70, rank 10 → 0.50.
                 final_results.append(
                     SearchResult(
                         evidence_id=r.evidence_id,
@@ -211,9 +214,10 @@ def retrieve_evidence_for_claim(
                         confidence=r.confidence,
                         caveats=r.caveats,
                         statement_is=r.statement_is,
-                        similarity=min(rrf_score * 100, 0.99),
+                        similarity=max(0.50, 0.90 - (keyword_rank * 0.04)),
                     )
                 )
+                keyword_rank += 1
         ordered_results = _reorder_primacy_recency(final_results)
     else:
         # No keyword hits — fall back to pure vector (original behaviour)
