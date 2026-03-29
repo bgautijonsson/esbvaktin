@@ -26,6 +26,7 @@ import argparse
 import json
 import re
 import sys
+import time
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -49,15 +50,24 @@ def load_processed() -> list[dict]:
     if REGISTRY_PATH.exists():
         try:
             registry = json.loads(REGISTRY_PATH.read_text())
+            age_hours = (time.time() - REGISTRY_PATH.stat().st_mtime) / 3600
+            if age_hours > 24:
+                print(
+                    f"WARNING: article_registry.json is {age_hours:.0f}h old — "
+                    f"run: uv run python scripts/build_article_registry.py",
+                    file=sys.stderr,
+                )
             for entry in registry:
-                results.append({
-                    "dir": entry.get("analysis_dir", entry.get("slug", "")),
-                    "title": entry.get("title", ""),
-                    "url": entry.get("url", ""),
-                    "title_norm": normalise(entry.get("title", "")),
-                    "on_site": entry.get("on_site", False),
-                    "in_db": entry.get("in_db", False),
-                })
+                results.append(
+                    {
+                        "dir": entry.get("analysis_dir", entry.get("slug", "")),
+                        "title": entry.get("title", ""),
+                        "url": entry.get("url", ""),
+                        "title_norm": normalise(entry.get("title", "")),
+                        "on_site": entry.get("on_site", False),
+                        "in_db": entry.get("in_db", False),
+                    }
+                )
             return results
         except (json.JSONDecodeError, KeyError):
             pass
@@ -71,14 +81,16 @@ def load_processed() -> list[dict]:
             continue
         try:
             data = json.loads(report.read_text())
-            results.append({
-                "dir": d.name,
-                "title": data.get("article_title", ""),
-                "url": data.get("article_url", ""),
-                "title_norm": normalise(data.get("article_title", "")),
-                "on_site": False,
-                "in_db": False,
-            })
+            results.append(
+                {
+                    "dir": d.name,
+                    "title": data.get("article_title", ""),
+                    "url": data.get("article_url", ""),
+                    "title_norm": normalise(data.get("article_title", "")),
+                    "on_site": False,
+                    "in_db": False,
+                }
+            )
         except (json.JSONDecodeError, KeyError):
             continue
     return results
@@ -114,16 +126,16 @@ def check_title(title: str, processed: list[dict]) -> str | None:
 
 
 _META_PREFIXES = (
-    "# ",            # Markdown title
-    "**source:**",   # Fréttasafn metadata
-    "**words:**",    # Pipeline word count
-    "**date:**",     # Pipeline date
-    "source:",       # Plain metadata
-    "url:",          # Plain URL
-    "article_id:",   # Fréttasafn ID
-    "höfundur:",     # Icelandic "Author:"
-    "dagsetning:",   # Icelandic "Date:"
-    "heimild:",      # Icelandic "Source:"
+    "# ",  # Markdown title
+    "**source:**",  # Fréttasafn metadata
+    "**words:**",  # Pipeline word count
+    "**date:**",  # Pipeline date
+    "source:",  # Plain metadata
+    "url:",  # Plain URL
+    "article_id:",  # Fréttasafn ID
+    "höfundur:",  # Icelandic "Author:"
+    "dagsetning:",  # Icelandic "Date:"
+    "heimild:",  # Icelandic "Source:"
 )
 
 
@@ -220,9 +232,9 @@ def check_content(
         if not article_path.exists():
             continue
         try:
-            existing = _extract_body(
-                article_path.read_text()[:_CONTENT_COMPARE_CHARS + 1000]
-            )[:_CONTENT_COMPARE_CHARS]
+            existing = _extract_body(article_path.read_text()[: _CONTENT_COMPARE_CHARS + 1000])[
+                :_CONTENT_COMPARE_CHARS
+            ]
         except OSError:
             continue
 
@@ -255,9 +267,7 @@ def main():
 
         registry = build_registry()
         REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
-        REGISTRY_PATH.write_text(
-            json.dumps(registry, indent=2, ensure_ascii=False, default=str)
-        )
+        REGISTRY_PATH.write_text(json.dumps(registry, indent=2, ensure_ascii=False, default=str))
         print(f"Registry rebuilt: {len(registry)} articles", file=sys.stderr)
 
     if not any([args.url, args.title, args.text, args.text_file, args.frettasafn_id]):
@@ -291,9 +301,7 @@ def main():
     if text_to_check:
         match, similarity = check_content(text_to_check, processed)
         if match:
-            print(
-                f"DUPLICATE: Content match ({similarity:.0%} similar) → {match}"
-            )
+            print(f"DUPLICATE: Content match ({similarity:.0%} similar) → {match}")
             sys.exit(0)
 
     if args.frettasafn_id:
@@ -303,9 +311,7 @@ def main():
                 if article.exists():
                     text = article.read_text()[:500]
                     if args.frettasafn_id in text:
-                        print(
-                            f"DUPLICATE: Already analysed in {d.name} (fréttasafn ID)"
-                        )
+                        print(f"DUPLICATE: Already analysed in {d.name} (fréttasafn ID)")
                         sys.exit(0)
 
     print("NOT FOUND: Article has not been processed yet")
