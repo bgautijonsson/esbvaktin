@@ -34,10 +34,31 @@ def _get_report_slug(report_path: Path) -> str:
     return icelandic_slugify(title)
 
 
-def _get_claim_data(report_path: Path) -> list[dict]:
+def _load_db_verdict_map() -> dict[str, str]:
+    """Load {claim_slug: verdict} from DB for current verdicts."""
+    try:
+        from esbvaktin.ground_truth.operations import get_connection
+
+        conn = get_connection()
+        rows = conn.execute(
+            "SELECT claim_slug, verdict FROM claims WHERE published = TRUE"
+        ).fetchall()
+        conn.close()
+        return {slug: verdict for slug, verdict in rows}
+    except Exception as exc:
+        print(
+            f"WARNING: Could not load DB verdicts for entity scoring: {exc}",
+            file=sys.stderr,
+        )
+        return {}
+
+
+def _get_claim_data(report_path: Path, db_verdicts: dict[str, str] | None = None) -> list[dict]:
     """Get claim slugs and verdicts from a report.
 
     Returns a list of {slug, verdict, text} dicts, one per claim.
+    When db_verdicts is provided, uses current DB verdict instead of the
+    stale snapshot value stored in the report file.
     """
     with open(report_path, encoding="utf-8") as f:
         report = json.load(f)
@@ -45,10 +66,12 @@ def _get_claim_data(report_path: Path) -> list[dict]:
     for item in report.get("claims", []):
         claim = item.get("claim", item)
         text = claim.get("claim_text", "")
+        slug = icelandic_slugify(text[:80])
+        verdict = (db_verdicts or {}).get(slug, item.get("verdict", "unknown"))
         claims.append(
             {
-                "slug": icelandic_slugify(text[:80]),
-                "verdict": item.get("verdict", "unknown"),
+                "slug": slug,
+                "verdict": verdict,
                 "text": text,
             }
         )
@@ -121,6 +144,10 @@ def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
     if non_sub:
         print(f"  Excluding {len(non_sub)} non-substantive claim texts from credibility")
 
+    db_verdicts = _load_db_verdict_map()
+    if db_verdicts:
+        print(f"  Loaded {len(db_verdicts)} current verdicts from DB for entity scoring")
+
     # Standard analyses
     for analysis_dir in sorted(ANALYSES_DIR.iterdir()):
         if not analysis_dir.is_dir():
@@ -131,7 +158,7 @@ def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
             continue
 
         report_slug = _get_report_slug(report_path)
-        claim_data = _get_claim_data(report_path)
+        claim_data = _get_claim_data(report_path, db_verdicts)
         _process_entity_dir(entities, analysis_dir, report_slug, claim_data, non_sub)
 
     # Extra dirs (inbox entities) — these have _entities.json but no _report_final.json
