@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # Similarity thresholds for claim bank matching
-BANK_EXACT_THRESHOLD = 0.85  # Reuse verdict directly (cache hit)
+BANK_EXACT_THRESHOLD = 0.85  # Reuse verdict directly (strong prior)
 BANK_FUZZY_THRESHOLD = 0.70  # Show as context to assessment subagent
 MIN_SIMILARITY = 0.45  # Floor for evidence retrieval (filter noise)
 MAX_EVIDENCE_PER_CLAIM = 7  # Hard cap per claim (primacy-recency ordering applied)
@@ -102,7 +102,7 @@ def check_claim_bank(
     """Check if a similar claim exists in the claim bank.
 
     Returns the best match above BANK_FUZZY_THRESHOLD, or None.
-    Caller decides whether to treat as cache hit (>= BANK_EXACT_THRESHOLD
+    Caller decides whether to treat as strong prior (>= BANK_EXACT_THRESHOLD
     and fresh) or just as context.
     """
     try:
@@ -285,10 +285,10 @@ def retrieve_evidence_for_claims(
             if bank_match is not None:
                 bank_matches[i] = bank_match
                 # If exact match and fresh, we still retrieve evidence
-                # (needed for report context) but mark for potential cache hit
+                # (needed for report context) but mark for potential strong prior
                 if bank_match.similarity >= BANK_EXACT_THRESHOLD and bank_match.is_fresh:
                     logger.info(
-                        "Cache hit (%.3f, fresh) for claim %d: %s",
+                        "Strong prior (%.3f, fresh) for claim %d: %s",
                         bank_match.similarity,
                         i,
                         bank_match.claim_slug,
