@@ -235,10 +235,11 @@ def cmd_add(args: argparse.Namespace) -> None:
 
 def cmd_add_batch(args: argparse.Namespace) -> None:
     """Add multiple articles from a JSON file (batch import from /find-articles)."""
+    from esbvaktin.utils.json_utils import extract_json
+
     raw = Path(args.file).read_text()
-    # Sanitise Icelandic quotes that break JSON parsing
-    raw = raw.replace("\u201e", "'").replace("\u201c", "'")
-    data = json.loads(raw)
+    cleaned = extract_json(raw)
+    data = json.loads(cleaned)
     if not isinstance(data, list):
         print("Error: expected a JSON array of article objects.", file=sys.stderr)
         sys.exit(1)
@@ -398,9 +399,9 @@ def cmd_next(args: argparse.Namespace) -> None:
 
     # Filter to actionable articles
     actionable = [
-        e for e in inbox
-        if e["status"] in ("pending", "queued")
-        and e.get("priority") in ("high", "medium")
+        e
+        for e in inbox
+        if e["status"] in ("pending", "queued") and e.get("priority") in ("high", "medium")
     ]
 
     if args.high_only:
