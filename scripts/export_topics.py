@@ -348,6 +348,26 @@ def _fetch_source_activity_for_topic(conn) -> dict[str, list[dict]]:
     return dict(result)
 
 
+# Pre-written descriptions in accusative/correct grammatical form.
+# Using "um X" requires accusative — nominative labels from TOPIC_LABELS_IS are not reusable as-is.
+_TOPIC_DESCRIPTIONS_IS: dict[str, str] = {
+    "fisheries": "Yfirlit yfir umræðu um sjávarútveg í tengslum við ESB-aðild Íslands.",
+    "trade": "Yfirlit yfir umræðu um viðskipti og verslun í tengslum við ESB-aðild Íslands.",
+    "sovereignty": "Yfirlit yfir umræðu um fullveldi í tengslum við ESB-aðild Íslands.",
+    "eea_eu_law": "Yfirlit yfir umræðu um EES og löggjöf ESB í tengslum við aðild Íslands.",
+    "agriculture": "Yfirlit yfir umræðu um landbúnað í tengslum við ESB-aðild Íslands.",
+    "precedents": "Yfirlit yfir umræðu um fordæmi annarra ríkja í tengslum við ESB-aðild Íslands.",
+    "currency": "Yfirlit yfir umræðu um gjaldmiðil og peningamál í tengslum við ESB-aðild Íslands.",
+    "labour": "Yfirlit yfir umræðu um vinnumarkað í tengslum við ESB-aðild Íslands.",
+    "energy": "Yfirlit yfir umræðu um orku og loftslagsmál í tengslum við ESB-aðild Íslands.",
+    "housing": "Yfirlit yfir umræðu um húsnæðismál í tengslum við ESB-aðild Íslands.",
+    "polling": "Yfirlit yfir umræðu um kannanir og þjóðarvilja í tengslum við ESB-aðild Íslands.",
+    "party_positions": "Yfirlit yfir umræðu um afstöðu stjórnmálaflokka í tengslum við ESB-aðild Íslands.",
+    "org_positions": "Yfirlit yfir umræðu um afstöðu stofnana og samtaka í tengslum við ESB-aðild Íslands.",
+    "other": "Yfirlit yfir aðra þætti í umræðu um ESB-aðild Íslands.",
+}
+
+
 def build_topics(conn) -> tuple[list[dict], dict[str, dict]]:
     """Build topics.json listing and per-topic detail files.
 
@@ -418,7 +438,10 @@ def build_topics(conn) -> tuple[list[dict], dict[str, dict]]:
             "slug": slug,
             "label_is": label_is,
             "label_en": topic.replace("_", " ").title(),
-            "description_is": f"Yfirlit yfir umræðu um {label_is.lower()} í tengslum við ESB-aðild Íslands.",
+            "description_is": _TOPIC_DESCRIPTIONS_IS.get(
+                topic,
+                f"Yfirlit yfir umræðu um {label_is.lower()} í tengslum við ESB-aðild Íslands.",
+            ),
             "claims": claims_with_speakers,
             "evidence": topic_evidence.get(topic, []),
             "timeline": weekly_timeline.get(topic, []),

@@ -18,11 +18,11 @@ dependencies = [
 [project.optional-dependencies]
 embeddings = [
     "FlagEmbedding>=1.2,<2",
-    "torch>=2.0",
+    "torch>=2.0,<3",
     "transformers>=4.41,<5",
 ]
 icelandic = [
-    "reynir-correct>=4.0",
+    "reynir-correct>=4.0,<5",
     "icegrams>=1.1",
     "islenska>=1.0",
     "reynir>=3.0",
