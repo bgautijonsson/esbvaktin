@@ -282,6 +282,16 @@ docker compose up -d       # Start PostgreSQL
 Rscript R/02_eurostat.R    # Fetch Eurostat data (example; scripts 01-07)
 ```
 
+## Known Friction
+
+Documented limitations. Don't rediscover these — work around them or fix them.
+
+- **Inline Python in SKILL.md breaks in delegated agents.** Subagents can't execute inline `python -c "..."` blocks due to Bash security scanner restrictions. Use standalone scripts in `scripts/` instead. If no script exists for a step, create one before delegating.
+- **Icelandic `„"` quotes break JSON parsing.** Always use `from esbvaktin.utils.json_utils import extract_json` when parsing agent or MCP output. Never call `json.loads()` directly on text that may contain Icelandic quotes.
+- **Batch processing requires phase-based orchestration.** Don't delegate the full `/analyse-article` pipeline to a single agent. Run phases from the main conversation: (1) dedup+inbox, (2) extraction agents in parallel, (3) assessment agents, (4) export. Each phase can use subagents.
+- **Subagent output verification is manual.** After any agent writes a file, verify it exists with `Path(path).exists()` before proceeding. Agents report success without writing the file ~25% of the time.
+- **`manage_inbox.py add-batch` breaks on Icelandic quotes.** Pre-sanitise the JSON scan file, or use `extract_json()` to parse it.
+
 ## Editorial Philosophy
 
 ESBvaktin nurtures curiosity — it does not play gotcha. The goal is to help readers understand the EU debate more deeply, not to score points or expose who is "wrong".
