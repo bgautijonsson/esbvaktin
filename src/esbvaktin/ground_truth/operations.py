@@ -4,6 +4,7 @@ Uses psycopg v3 + pgvector for PostgreSQL with vector similarity search.
 """
 
 import os
+import time
 from pathlib import Path
 
 import psycopg
@@ -19,15 +20,25 @@ _DEFAULT_DATABASE_URL = "postgresql://esb:localdev@localhost/esbvaktin"
 
 
 def get_connection(autocommit: bool = False) -> psycopg.Connection:
+    """Get a PostgreSQL connection with basic retry logic (3 attempts, 1s delay)."""
     load_dotenv()
     dsn = os.environ.get("DATABASE_URL", _DEFAULT_DATABASE_URL)
-    conn = psycopg.connect(dsn, autocommit=autocommit)
-    try:
-        register_vector(conn)
-    except psycopg.ProgrammingError:
-        # vector extension not yet created — init_schema will handle it
-        pass
-    return conn
+
+    last_exc: psycopg.OperationalError | None = None
+    for attempt in range(3):
+        try:
+            conn = psycopg.connect(dsn, autocommit=autocommit)
+            try:
+                register_vector(conn)
+            except psycopg.ProgrammingError:
+                # vector extension not yet created — init_schema will handle it
+                pass
+            return conn
+        except psycopg.OperationalError as exc:
+            last_exc = exc
+            if attempt < 2:
+                time.sleep(1)
+    raise last_exc  # type: ignore[misc]
 
 
 def init_schema(conn: psycopg.Connection | None = None) -> None:
