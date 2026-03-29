@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Re-assess claims that may benefit from new evidence or verdict correction.
 
-Three categories of claims are targeted:
+Four categories of claims are targeted:
   1. **Unverifiable** — previously lacked evidence, may now have matches
   2. **Partially supported** — had some evidence, may now have additional
      evidence that upgrades (or changes) the verdict
   3. **Overconfident** — 'supported' claims flagged by the verdict audit
      (sighting drift, contradicting evidence, or substantial caveats)
+  4. **Denominator confusion** — 'supported' claims using scope-broadening
+     language ("megnið", "flest", "öll") that may apply subset evidence to
+     a whole-population claim (Pattern 2 from audit_claims.py)
 
 Retrieves evidence for each claim, writes context files for subagent
 assessment, then parses subagent output and updates the DB.
@@ -18,6 +21,7 @@ Usage:
     uv run python scripts/reassess_claims.py prepare --only partial
     uv run python scripts/reassess_claims.py prepare --only overconfident  # verdict audit
     uv run python scripts/reassess_claims.py prepare --only overconfident --limit 30
+    uv run python scripts/reassess_claims.py prepare --only denominator    # scope-word audit
     uv run python scripts/reassess_claims.py prepare --evidence CURR-DATA-007 CURRENCY-DATA-017
     uv run python scripts/reassess_claims.py prepare --claims 123 456 789
 
@@ -42,6 +46,7 @@ WORK_DIR = Path("data/reassessment")
 _BLOCKS_PATH = Path(".claude/skills/icelandic-shared/assessment-blocks.md")
 SIMILARITY_THRESHOLD = 0.45
 BATCH_SIZE = 10
+SCOPE_WORDS_PATTERN = r"(megnið|flest|langflest|meirihlut|allra|öll |alls )"
 
 
 def _search_evidence_hybrid(
@@ -83,6 +88,7 @@ def _get_reassessable_claims(
     include_unverifiable: bool = True,
     include_partial: bool = True,
     include_overconfident: bool = False,
+    include_denominator: bool = False,
     overconfident_limit: int = 30,
     evidence_ids: list[str] | None = None,
     claim_ids: list[int] | None = None,
@@ -92,6 +98,7 @@ def _get_reassessable_claims(
     For unverifiable claims: any strong evidence match qualifies.
     For partially_supported claims: must have NEW evidence not already linked.
     For overconfident claims: flagged by verdict audit (sighting drift, contradicting evidence, caveats).
+    For denominator claims: 'supported' with scope-broadening language (Pattern 2).
     For evidence_ids: all claims citing any of the given evidence entries.
     For claim_ids: specific claims by ID.
     """
@@ -111,6 +118,9 @@ def _get_reassessable_claims(
 
     if include_overconfident:
         assessable.extend(_get_overconfident_supported(conn, limit=overconfident_limit))
+
+    if include_denominator:
+        assessable.extend(_get_denominator_claims(conn))
 
     return assessable
 
@@ -470,6 +480,53 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
     return assessable
 
 
+def _get_denominator_claims(conn) -> list[dict]:
+    """Supported claims with scope-broadening language — denominator confusion risk (Pattern 2).
+
+    Targets claims using words like "megnið", "flest", "öll" that may apply evidence
+    about a subset of cases to a claim about the whole population.
+    """
+    rows = conn.execute(
+        f"""
+        SELECT id, canonical_text_is, canonical_text_en, category, claim_slug,
+               confidence, epistemic_type
+        FROM claims
+        WHERE verdict = 'supported'
+          AND canonical_text_is ~* '{SCOPE_WORDS_PATTERN}'
+          AND epistemic_type != 'hearsay'
+        ORDER BY confidence DESC
+        """,
+    ).fetchall()
+
+    assessable = []
+    for claim_id, text_is, text_en, category, slug, confidence, epistemic_type in rows:
+        results = _search_evidence_hybrid(text_is, text_en, category, conn)
+        strong = sorted(
+            [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
+            key=lambda r: r.similarity,
+            reverse=True,
+        )[:8]
+
+        if not strong:
+            continue
+
+        assessable.append(
+            _make_claim_entry(
+                claim_id,
+                text_is,
+                text_en,
+                category,
+                slug,
+                strong,
+                reason="denominator_audit",
+                current_confidence=confidence,
+                epistemic_type=epistemic_type or "factual",
+            )
+        )
+
+    return assessable
+
+
 def _make_claim_entry(
     claim_id,
     text_is,
@@ -520,6 +577,7 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
     n_overconfident = sum(1 for c in batch if c["reason"] == "overconfident")
     n_evidence_update = sum(1 for c in batch if c["reason"] == "evidence_update")
     n_targeted = sum(1 for c in batch if c["reason"] == "targeted")
+    n_denominator = sum(1 for c in batch if c["reason"] == "denominator_audit")
 
     lines = [
         f"# Endurmat fullyrðinga — Lota {batch_num}\n",
@@ -569,6 +627,24 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
                 "",
             ]
         )
+    elif n_denominator:
+        lines.extend(
+            [
+                "## Gæðaendurskoðun — gildissvið fullyrðinga (denominator confusion)",
+                "",
+                f"Þessi lota inniheldur **{n_denominator} fullyrðingar** sem eru flokkaðar `supported`",
+                "en nota umfangsmiðað orðalag eins og «megnið», «flest», «öll» eða «meirihluti».",
+                "Hætta er á að heimildir staðfesti hluta tilfella en fullyrðingin sé orðuð sem allsherjar regla.",
+                "",
+                "**Reglur fyrir þessa lotu:**",
+                "",
+                "1. Lestu fullyrðinguna og heimildir vandlega",
+                "2. Ef heimildir ná aðeins til hluta þess gildissviðs sem fullyrðingin lýsir → `partially_supported`",
+                "3. Ef fullyrðingin notar «öll» eða «megnið» en heimildir sýna 60-80% tilfella → `partially_supported`",
+                "4. Aðeins halda `supported` ef heimildir staðfesta bæði umsögn og gildissvið fullyrðingarinnar",
+                "",
+            ]
+        )
     elif n_unverifiable and n_partial:
         lines.extend(
             [
@@ -607,6 +683,7 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
             "overconfident": "gæðaendurskoðun — of örugg",
             "evidence_update": "uppfærðar heimildir",
             "targeted": "markvisst endurmat",
+            "denominator_audit": "gæðaendurskoðun — gildissvið",
         }
         reason_tag = reason_tags.get(claim["reason"], claim["reason"])
         conf_tag = ""
@@ -687,6 +764,7 @@ def prepare(
     include_unverifiable = only in (None, "unverifiable") and not evidence_ids and not claim_ids
     include_partial = only in (None, "partial") and not evidence_ids and not claim_ids
     include_overconfident = only == "overconfident" and not evidence_ids and not claim_ids
+    include_denominator = only == "denominator" and not evidence_ids and not claim_ids
 
     WORK_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -711,6 +789,8 @@ def prepare(
             types.append("partially_supported")
         if include_overconfident:
             types.append(f"overconfident (top {limit})")
+        if include_denominator:
+            types.append("denominator_audit")
         print(f"Retrieving evidence for {' + '.join(types)} claims...")
 
     assessable = _get_reassessable_claims(
@@ -718,6 +798,7 @@ def prepare(
         include_unverifiable=include_unverifiable,
         include_partial=include_partial,
         include_overconfident=include_overconfident,
+        include_denominator=include_denominator,
         overconfident_limit=limit,
         evidence_ids=evidence_ids,
         claim_ids=claim_ids,
@@ -727,6 +808,7 @@ def prepare(
     n_unv = sum(1 for c in assessable if c["reason"] == "unverifiable")
     n_par = sum(1 for c in assessable if c["reason"] == "partial")
     n_over = sum(1 for c in assessable if c["reason"] == "overconfident")
+    n_den = sum(1 for c in assessable if c["reason"] == "denominator_audit")
     parts = []
     if n_unv:
         parts.append(f"{n_unv} unverifiable")
@@ -734,6 +816,8 @@ def prepare(
         parts.append(f"{n_par} partial")
     if n_over:
         parts.append(f"{n_over} overconfident")
+    if n_den:
+        parts.append(f"{n_den} denominator_audit")
     print(f"Found {len(assessable)} assessable claims ({', '.join(parts)})")
 
     # Split into batches
@@ -964,7 +1048,7 @@ def status():
 def main():
     if len(sys.argv) < 2:
         print("Usage: uv run python scripts/reassess_claims.py [prepare|update|status]")
-        print("  prepare [--only unverifiable|partial|overconfident] [--limit N]")
+        print("  prepare [--only unverifiable|partial|overconfident|denominator] [--limit N]")
         print("  prepare --evidence ID1 ID2 ...          Claims citing these evidence entries")
         print("  prepare --claims 123 456 ...             Specific claims by ID")
         print("          Prepare context files (auto-cleans stale output files)")
@@ -996,9 +1080,10 @@ def main():
                 idx = sys.argv.index("--only")
                 if idx + 1 < len(sys.argv):
                     only = sys.argv[idx + 1]
-                    if only not in ("unverifiable", "partial", "overconfident"):
+                    if only not in ("unverifiable", "partial", "overconfident", "denominator"):
                         print(
-                            f"Unknown --only value: {only} (use 'unverifiable', 'partial', or 'overconfident')"
+                            f"Unknown --only value: {only} "
+                            f"(use 'unverifiable', 'partial', 'overconfident', or 'denominator')"
                         )
                         sys.exit(1)
             if "--limit" in sys.argv:

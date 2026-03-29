@@ -171,6 +171,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 /evidence-hunt monthly     # Refresh high-decay topics (polling, party_positions, org_positions, currency)
 /reassess                  # Full reassessment cycle (unverifiable + partial)
 /reassess overconfident    # Reassess audit-flagged claims only
+/reassess denominator      # Reassess scope-word claims (denominator confusion audit)
 /reassess evidence ID1 ID2 ...  # Reassess all claims citing these evidence entries
 /reassess claims 123 456 ...    # Reassess specific claims by ID
 /tidy                      # Full codebase quality audit
@@ -252,6 +253,7 @@ uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a si
 uv run python scripts/fact_check_speeches.py status            # Show fact-check progress
 uv run python scripts/reassess_claims.py prepare           # Prepare reassessment batches (auto-cleans stale output)
 uv run python scripts/reassess_claims.py prepare --only overconfident --limit 30  # Verdict audit candidates
+uv run python scripts/reassess_claims.py prepare --only denominator   # Scope-word claims (denominator confusion)
 uv run python scripts/reassess_claims.py prepare --evidence ID1 ID2  # Claims citing these evidence entries
 uv run python scripts/reassess_claims.py prepare --claims 123 456    # Specific claims by ID
 uv run python scripts/reassess_claims.py update            # Apply subagent reassessments to DB
