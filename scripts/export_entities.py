@@ -45,11 +45,13 @@ def _get_claim_data(report_path: Path) -> list[dict]:
     for item in report.get("claims", []):
         claim = item.get("claim", item)
         text = claim.get("claim_text", "")
-        claims.append({
-            "slug": icelandic_slugify(text[:80]),
-            "verdict": item.get("verdict", "unknown"),
-            "text": text,
-        })
+        claims.append(
+            {
+                "slug": icelandic_slugify(text[:80]),
+                "verdict": item.get("verdict", "unknown"),
+                "text": text,
+            }
+        )
     return claims
 
 
@@ -65,11 +67,11 @@ def _load_non_substantive_texts() -> set[str]:
 
         conn = get_connection()
         rows = conn.execute(
-            "SELECT canonical_text_is, canonical_text_en "
-            "FROM claims WHERE substantive = FALSE"
+            "SELECT canonical_text_is, canonical_text_en FROM claims WHERE substantive = FALSE"
         ).fetchall()
         conn.close()
-    except Exception:
+    except Exception as exc:
+        print(f"ERROR: Could not load non-substantive texts: {exc}", file=sys.stderr)
         return set()
 
     texts: set[str] = set()
@@ -134,7 +136,7 @@ def load_all_entities(extra_dirs: list[Path] | None = None) -> dict[str, dict]:
 
     # Extra dirs (inbox entities) — these have _entities.json but no _report_final.json
     # Use the directory name as slug and extract claims from extracted_claims if available
-    for extra_dir in (extra_dirs or []):
+    for extra_dir in extra_dirs or []:
         if not extra_dir.is_dir():
             continue
         for sub_dir in sorted(extra_dir.iterdir()):
@@ -239,8 +241,13 @@ _ROLE_OVERRIDES: dict[str, str] = {
 _ALTHINGI_DB_DEFAULT = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
 
 _EU_ISSUE_PATTERNS = [
-    "%Evróp%", "%ESB%", "%aðild%Evrópu%", "%aðildarviðræð%",
-    "%aðildarumsókn%", "%þjóðaratkvæðagreiðsl%", "%Evrópumál%",
+    "%Evróp%",
+    "%ESB%",
+    "%aðild%Evrópu%",
+    "%aðildarviðræð%",
+    "%aðildarumsókn%",
+    "%þjóðaratkvæðagreiðsl%",
+    "%Evrópumál%",
 ]
 
 
@@ -254,9 +261,7 @@ def _load_althingi_speakers() -> dict[str, dict]:
     if not db_path.exists():
         return {}
 
-    issue_filter = " OR ".join(
-        "s.issue_title LIKE ?" for _ in _EU_ISSUE_PATTERNS
-    )
+    issue_filter = " OR ".join("s.issue_title LIKE ?" for _ in _EU_ISSUE_PATTERNS)
     sql = f"""
         SELECT s.name AS speaker,
                COUNT(*) AS speech_count,
@@ -275,7 +280,8 @@ def _load_althingi_speakers() -> dict[str, dict]:
         conn.row_factory = sqlite3.Row
         rows = conn.execute(sql, _EU_ISSUE_PATTERNS).fetchall()
         conn.close()
-    except Exception:
+    except Exception as exc:
+        print(f"WARNING: Could not load EU speech data from althingi.db: {exc}", file=sys.stderr)
         return {}
 
     return {
@@ -396,7 +402,8 @@ def _load_mp_roster() -> dict[str, dict]:
         conn.row_factory = sqlite3.Row
         rows = conn.execute(sql).fetchall()
         conn.close()
-    except Exception:
+    except Exception as exc:
+        print(f"WARNING: Could not load MP roster from althingi.db: {exc}", file=sys.stderr)
         return {}
 
     # Later sessions overwrite earlier — gives us the most recent party
@@ -463,17 +470,10 @@ def _ensure_party_entities(entities: dict[str, dict]) -> int:
     Returns the number of placeholder entities created.
     """
     # Collect all party_slugs referenced by politicians
-    referenced_slugs = {
-        e["party_slug"]
-        for e in entities.values()
-        if e.get("party_slug")
-    }
+    referenced_slugs = {e["party_slug"] for e in entities.values() if e.get("party_slug")}
 
     # Find which ones are missing
-    existing_party_slugs = {
-        slug for slug, e in entities.items()
-        if e["type"] == "party"
-    }
+    existing_party_slugs = {slug for slug, e in entities.items() if e["type"] == "party"}
     missing = referenced_slugs - existing_party_slugs
 
     # Reverse lookup for display names
@@ -520,8 +520,7 @@ def _resolve_attributions(speaker: dict) -> list[dict]:
         ]
     # Legacy fallback: bare claim_indices default to 'asserted'
     return [
-        {"claim_index": idx, "attribution": "asserted"}
-        for idx in speaker.get("claim_indices", [])
+        {"claim_index": idx, "attribution": "asserted"} for idx in speaker.get("claim_indices", [])
     ]
 
 
@@ -608,10 +607,7 @@ def _merge_entity(
             if cd["slug"] not in entity["claims"]:
                 entity["claims"].append(cd["slug"])
             # Only count verdicts for substantive claims
-            is_non_sub = (
-                non_substantive_texts
-                and cd.get("text") in non_substantive_texts
-            )
+            is_non_sub = non_substantive_texts and cd.get("text") in non_substantive_texts
             if not is_non_sub:
                 entity["_verdicts"].append(cd["verdict"])
 
@@ -683,16 +679,30 @@ def _compute_scores(entities: dict[str, dict]) -> None:
 
 # Icelandic role strings that indicate elected officials, ministers, or heads of state
 _POLITICIAN_ROLE_PATTERNS = {
-    "þingmaður", "þingkona",
-    "ráðherra", "forsætisráðherra", "utanríkisráðherra", "fjármálaráðherra",
-    "sjávarútvegsráðherra", "landbúnaðarráðherra", "atvinnuvegaáðherra",
-    "heilbrigðisráðherra", "dómsmálaráðherra", "menntamálaráðherra",
-    "umhverfisráðherra", "samgönguráðherra", "innviðaráðherra",
-    "forseti íslands", "forseti",
-    "formaður flokks", "varaformaður flokks",
+    "þingmaður",
+    "þingkona",
+    "ráðherra",
+    "forsætisráðherra",
+    "utanríkisráðherra",
+    "fjármálaráðherra",
+    "sjávarútvegsráðherra",
+    "landbúnaðarráðherra",
+    "atvinnuvegaáðherra",
+    "heilbrigðisráðherra",
+    "dómsmálaráðherra",
+    "menntamálaráðherra",
+    "umhverfisráðherra",
+    "samgönguráðherra",
+    "innviðaráðherra",
+    "forseti íslands",
+    "forseti",
+    "formaður flokks",
+    "varaformaður flokks",
     "borgarstjóri",
     # Foreign heads of state / government
-    "kanzlari", "forsætisráðherra", "forseti",
+    "kanzlari",
+    "forsætisráðherra",
+    "forseti",
     "kanslari",
 }
 
@@ -754,24 +764,43 @@ def _classify_subtypes(entities: dict[str, dict]) -> int:
 
 # Icelandic party slugs (8 current Alþingi parties)
 _ICELANDIC_PARTIES: set[str] = {
-    "midflokkurinn", "sjalfstaedisflokkurinn", "vidreisn",
-    "flokkur-folksins", "framsoknarflokkurinn", "samfylkingin",
-    "piratar", "vinstri-graen",
+    "midflokkurinn",
+    "sjalfstaedisflokkurinn",
+    "vidreisn",
+    "flokkur-folksins",
+    "framsoknarflokkurinn",
+    "samfylkingin",
+    "piratar",
+    "vinstri-graen",
 }
 
 # Icelandic media outlet slugs
 _ICELANDIC_OUTLETS: set[str] = {
-    "visir", "morgunbladid", "ruv", "dv", "heimildin",
-    "kjarninn", "stundin", "frettabladid", "nutiminn",
+    "visir",
+    "morgunbladid",
+    "ruv",
+    "dv",
+    "heimildin",
+    "kjarninn",
+    "stundin",
+    "frettabladid",
+    "nutiminn",
 }
 
 # ── Media outlet subtype classification ───────────────────────────────
 
 # Known media outlet slugs — derived from _SOURCE_FROM_DOMAIN in prepare_site.py
 _KNOWN_OUTLETS: set[str] = {
-    "visir", "morgunbladid", "ruv",
-    "heimildin", "kjarninn", "stundin", "frettabladid",
-    "dv", "altinget-no", "nutiminn",
+    "visir",
+    "morgunbladid",
+    "ruv",
+    "heimildin",
+    "kjarninn",
+    "stundin",
+    "frettabladid",
+    "dv",
+    "altinget-no",
+    "nutiminn",
 }
 
 # Map outlet entity slugs → all article_source values that belong to them.
@@ -937,7 +966,9 @@ def export_entities(
     if politician_count:
         print(f"Politicians: {politician_count} individuals classified as subtype=politician")
     if party_enriched:
-        print(f"Party affiliations: {party_enriched} politicians linked to authoritative party data")
+        print(
+            f"Party affiliations: {party_enriched} politicians linked to authoritative party data"
+        )
     if party_created:
         print(f"Party placeholders: {party_created} new party entities created as link targets")
     if media_count:
@@ -953,7 +984,9 @@ def main() -> None:
         print(f"Found {len(entities)} unique entities across analyses")
         for slug, e in sorted(entities.items(), key=lambda x: -x[1]["mention_count"]):
             cred = f", cred={e['credibility']:.2f}" if e.get("credibility") is not None else ""
-            print(f"  {e['name']} ({e['type']}, stance={e['stance_score']:+.2f}{cred}) — {e['mention_count']} articles")
+            print(
+                f"  {e['name']} ({e['type']}, stance={e['stance_score']:+.2f}{cred}) — {e['mention_count']} articles"
+            )
         return
 
     site_dir = (
