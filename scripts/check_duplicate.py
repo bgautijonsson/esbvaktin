@@ -217,6 +217,17 @@ def check_content(
     _article.md files in analysis directories. Returns (dir, similarity)
     if a match is found above the threshold, else (None, 0).
     """
+    # Check for explicit cross-publication footer (e.g., "Birtist fyrst á visir.is")
+    footer_match = re.search(
+        r"[Bb]irtist fyrst (?:á|í|hjá|í)\s+(\S+\.(?:is|com|net))",
+        text[-500:] if len(text) > 500 else text,
+    )
+    if footer_match:
+        canonical_source = footer_match.group(1).lower()
+        for p in processed:
+            if canonical_source in p.get("url", "").lower():
+                return p["url"], 1.0  # Perfect match — explicit repost attribution
+
     candidate = _extract_body(text)[:_CONTENT_COMPARE_CHARS]
     if len(candidate) < 100:
         return None, 0.0
