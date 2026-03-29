@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Audit claim verdicts for internal consistency.
 
-Detects four patterns where verdicts may not match their own evidence:
+Detects five patterns where verdicts may not match their own evidence:
 
   Pattern 1 — Overconfident verdicts:
     Explanation acknowledges significant caveats (long missing_context)
@@ -19,6 +19,10 @@ Detects four patterns where verdicts may not match their own evidence:
   Pattern 4 — Contradicting evidence ignored:
     Claims that list contradicting_evidence entries but still have
     a 'supported' verdict.
+
+  Pattern 5 — Underrated verdicts:
+    Misleading/unsupported claims that have new high-similarity evidence
+    added since last_verified — may warrant upgrading the verdict.
 
 Usage:
     uv run python scripts/audit_claims.py report            # Full audit report
@@ -47,10 +51,14 @@ SCOPE_WORDS_PATTERN = r"(megnið|flest|langflest|meirihlut|allra|öll |alls )"
 # Pattern 3 — minimum mismatch count to flag
 MIN_SIGHTING_MISMATCHES = 1
 
+# Pattern 5 — minimum cosine similarity to consider new evidence relevant
+NEW_EVIDENCE_SIMILARITY_THRESHOLD = 0.72
+
 # Candidate scoring weights
 WEIGHT_PATTERN_1 = 1.0
 WEIGHT_PATTERN_3 = 2.0  # Sighting drift is strongest signal
 WEIGHT_PATTERN_4 = 1.5
+WEIGHT_PATTERN_5 = 2.0  # New evidence for neg verdicts is high signal
 WEIGHT_PUBLISHED = 1.5  # Published claims are higher priority
 
 
@@ -230,6 +238,50 @@ def _pattern_4_contradicting_ignored(conn) -> list[ClaimFlag]:
     return flags
 
 
+def _pattern_5_underrated(conn) -> list[ClaimFlag]:
+    """Misleading/unsupported claims with new high-similarity evidence added since last_verified."""
+    rows = conn.execute(
+        """
+        SELECT c.id, c.claim_slug, c.canonical_text_is, c.verdict,
+               c.confidence, c.published, c.last_verified,
+               COUNT(DISTINCT e.evidence_id) AS new_evidence_count
+        FROM claims c
+        CROSS JOIN evidence e
+        WHERE c.verdict IN ('misleading', 'unsupported')
+          AND c.published = TRUE
+          AND e.created_at > c.last_verified
+          AND 1 - (c.embedding <=> e.embedding) > %(sim)s
+          AND NOT (e.evidence_id = ANY(c.supporting_evidence))
+          AND NOT (e.evidence_id = ANY(c.contradicting_evidence))
+        GROUP BY c.id, c.claim_slug, c.canonical_text_is, c.verdict,
+                 c.confidence, c.published, c.last_verified
+        HAVING COUNT(DISTINCT e.evidence_id) > 0
+        ORDER BY new_evidence_count DESC, c.confidence ASC
+        """,
+        {"sim": NEW_EVIDENCE_SIMILARITY_THRESHOLD},
+    ).fetchall()
+
+    flags = []
+    for r in rows:
+        flag = ClaimFlag(
+            claim_id=r[0],
+            claim_slug=r[1],
+            canonical_text_is=r[2],
+            verdict=r[3],
+            confidence=r[4],
+            published=r[5],
+            patterns=["P5_underrated"],
+            details={
+                "last_verified": str(r[6]),
+                "new_evidence_count": r[7],
+            },
+            score=r[7] * 2.0,
+        )
+        flags.append(flag)
+
+    return flags
+
+
 # ---------------------------------------------------------------------------
 # Scoring and merging
 # ---------------------------------------------------------------------------
@@ -266,6 +318,9 @@ def _merge_flags(all_flags: list[list[ClaimFlag]]) -> list[ClaimFlag]:
         if "contradicting_ignored" in flag.patterns:
             contra = flag.details.get("contra_count", 0)
             score += WEIGHT_PATTERN_4 * contra
+        if "P5_underrated" in flag.patterns:
+            new_ev = flag.details.get("new_evidence_count", 0)
+            score += WEIGHT_PATTERN_5 * new_ev
         if flag.published:
             score *= WEIGHT_PUBLISHED
         flag.score = round(score, 2)
@@ -279,7 +334,7 @@ def _merge_flags(all_flags: list[list[ClaimFlag]]) -> list[ClaimFlag]:
 
 
 def report():
-    """Full audit report with all four patterns."""
+    """Full audit report with all five patterns."""
     from esbvaktin.ground_truth.operations import get_connection
 
     conn = get_connection()
@@ -288,10 +343,11 @@ def report():
     p2 = _pattern_2_denominator(conn)
     p3 = _pattern_3_sighting_drift(conn)
     p4 = _pattern_4_contradicting_ignored(conn)
+    p5 = _pattern_5_underrated(conn)
 
     conn.close()
 
-    merged = _merge_flags([p1, p2, p3, p4])
+    merged = _merge_flags([p1, p2, p3, p4, p5])
 
     # Summary
     print(f"\n{'=' * 70}")
@@ -301,6 +357,7 @@ def report():
     print(f"  Pattern 2 — Denominator confusion:      {len(p2)} claims")
     print(f"  Pattern 3 — Sighting verdict drift:     {len(p3)} claims")
     print(f"  Pattern 4 — Contradicting evidence:     {len(p4)} claims")
+    print(f"  Pattern 5 — Underrated (new evidence):  {len(p5)} claims")
     print(f"  Unique claims flagged:                  {len(merged)}")
 
     multi = [f for f in merged if len(f.patterns) > 1]
@@ -343,6 +400,19 @@ def report():
         print(f"    Supporting: {support}, Contradicting: {contra}")
         print(f"    Confidence: {f.confidence}, Published: {'yes' if f.published else 'no'}")
 
+    # Pattern 5 detail
+    print(f"\n{'─' * 70}")
+    print("PATTERN 5: UNDERRATED — MISLEADING/UNSUPPORTED WITH NEW EVIDENCE")
+    print(f"{'─' * 70}")
+    for f in p5[:20]:
+        new_ev = f.details.get("new_evidence_count", 0)
+        last_v = f.details.get("last_verified", "unknown")
+        print(f"\n  [{f.claim_id}] {f.canonical_text_is[:100]}...")
+        print(f"    Verdict: {f.verdict} ({f.confidence}), last verified: {last_v}")
+        print(f"    New high-similarity evidence entries: {new_ev}")
+    if len(p5) > 20:
+        print(f"\n  ... and {len(p5) - 20} more.")
+
     # Multi-pattern claims — highest risk
     if multi:
         print(f"\n{'─' * 70}")
@@ -368,9 +438,10 @@ def candidates(as_json: bool = False):
     p2 = _pattern_2_denominator(conn)
     p3 = _pattern_3_sighting_drift(conn)
     p4 = _pattern_4_contradicting_ignored(conn)
+    p5 = _pattern_5_underrated(conn)
     conn.close()
 
-    merged = _merge_flags([p1, p2, p3, p4])
+    merged = _merge_flags([p1, p2, p3, p4, p5])
 
     # Focus on multi-pattern + high-score claims
     # Threshold: score >= 2.0 OR multiple patterns
@@ -414,6 +485,10 @@ def candidates(as_json: bool = False):
             print(f"     Drift: {mis}/{total} sightings disagree → {dvs}")
         if "contradicting_ignored" in f.patterns:
             print(f"     Contradicting: {f.details.get('contradicting_evidence', [])}")
+        if "P5_underrated" in f.patterns:
+            new_ev = f.details.get("new_evidence_count", 0)
+            last_v = f.details.get("last_verified", "unknown")
+            print(f"     New evidence: {new_ev} entries since {last_v}")
 
     if len(priority) > 30:
         print(f"\n  ... and {len(priority) - 30} more. Use --json for full list.")
@@ -466,6 +541,21 @@ def status():
         """,
     ).fetchone()[0]
 
+    p5_count = conn.execute(
+        """
+        SELECT COUNT(DISTINCT c.id)
+        FROM claims c
+        CROSS JOIN evidence e
+        WHERE c.verdict IN ('misleading', 'unsupported')
+          AND c.published = TRUE
+          AND e.created_at > c.last_verified
+          AND 1 - (c.embedding <=> e.embedding) > %(sim)s
+          AND NOT (e.evidence_id = ANY(c.supporting_evidence))
+          AND NOT (e.evidence_id = ANY(c.contradicting_evidence))
+        """,
+        {"sim": NEW_EVIDENCE_SIMILARITY_THRESHOLD},
+    ).fetchone()[0]
+
     conn.close()
 
     print(f"\nTotal claims: {total}")
@@ -474,6 +564,7 @@ def status():
     print(f"  P1 — Overconfident (supported + caveats + high conf): {p1_count}")
     print(f"  P3 — Sighting drift (supported→partial):              {p3_count}")
     print(f"  P4 — Contradicting evidence but supported:            {p4_count}")
+    print(f"  P5 — Underrated (misleading/unsupported + new evid):  {p5_count}")
 
 
 # ---------------------------------------------------------------------------
@@ -484,7 +575,7 @@ def status():
 def main():
     if len(sys.argv) < 2:
         print("Usage: uv run python scripts/audit_claims.py [report|candidates|status]")
-        print("  report       Full audit report with all four patterns")
+        print("  report       Full audit report with all five patterns")
         print("  candidates   Priority reassessment list (add --json for machine-readable)")
         print("  status       Quick summary")
         sys.exit(1)
