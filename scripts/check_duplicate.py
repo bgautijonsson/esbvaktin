@@ -5,8 +5,8 @@ data/analyses/, site reports, and DB claim_sightings. Falls back to scanning
 data/analyses/ directly if the registry doesn't exist.
 
 Supports three matching strategies:
-1. URL match (exact + partial)
-2. Title match (exact + substring)
+1. URL match (exact full-URL + path equality via urlparse — no substring)
+2. Title match (exact + SequenceMatcher ratio >= 0.85)
 3. Content match (body text similarity — catches cross-publication reposts
    where the same article appears on a news site and a party/blog site
    with a different title)
@@ -29,6 +29,7 @@ import sys
 import time
 from difflib import SequenceMatcher
 from pathlib import Path
+from urllib.parse import urlparse
 
 ANALYSES_DIR = Path("data/analyses")
 REGISTRY_PATH = Path("data/article_registry.json")
@@ -96,33 +97,47 @@ def load_processed() -> list[dict]:
     return results
 
 
+def _normalise_url_path(url: str) -> str:
+    """Return netloc + path, lowercased and with trailing slash stripped."""
+    parsed = urlparse(url.lower().strip())
+    return parsed.netloc + parsed.path.rstrip("/")
+
+
 def check_url(url: str, processed: list[dict]) -> str | None:
     """Check if URL matches any processed article."""
     url_clean = url.rstrip("/").lower()
+    # Exact full-URL match first
     for p in processed:
         if p["url"] and p["url"].rstrip("/").lower() == url_clean:
             return p["dir"]
-    # Partial match (same path, different domain params)
+    # Path equality match (same netloc + path, ignoring query/fragment)
+    url_path = _normalise_url_path(url)
     for p in processed:
-        if p["url"] and url_clean in p["url"].lower():
+        if p["url"] and _normalise_url_path(p["url"]) == url_path:
             return p["dir"]
     return None
 
 
-def check_title(title: str, processed: list[dict]) -> str | None:
-    """Check if title matches any processed article (fuzzy)."""
+def check_title(title: str, processed: list[dict]) -> tuple[str | None, float]:
+    """Check if title matches any processed article (fuzzy).
+
+    Returns (dir, ratio) where ratio is 1.0 for exact matches and the
+    SequenceMatcher ratio for fuzzy matches. Returns (None, 0.0) if no match.
+    """
     title_norm = normalise(title)
     if not title_norm:
-        return None
+        return None, 0.0
     for p in processed:
         if p["title_norm"] == title_norm:
-            return p["dir"]
-    # Substring match (one contains the other)
+            return p["dir"], 1.0
+    # Fuzzy ratio match (>= 0.85 catches near-identical titles)
     for p in processed:
-        if title_norm in p["title_norm"] or p["title_norm"] in title_norm:
-            if len(title_norm) > 10 and len(p["title_norm"]) > 10:
-                return p["dir"]
-    return None
+        if not p["title_norm"]:
+            continue
+        ratio = SequenceMatcher(None, title_norm, p["title_norm"]).ratio()
+        if ratio >= 0.85:
+            return p["dir"], ratio
+    return None, 0.0
 
 
 _META_PREFIXES = (
@@ -295,9 +310,9 @@ def main():
             sys.exit(0)
 
     if args.title:
-        match = check_title(args.title, processed)
+        match, ratio = check_title(args.title, processed)
         if match:
-            print(f"DUPLICATE: Already processed → {match} (title match)")
+            print(f"DUPLICATE: Already processed → {match} (title match, {ratio:.0%})")
             sys.exit(0)
 
     # Content-based dedup: catches cross-publication reposts
