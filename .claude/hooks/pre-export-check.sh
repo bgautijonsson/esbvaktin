@@ -23,28 +23,45 @@ cd "$(dirname "$0")/../.."
 ISSUES=""
 
 # Check 1: Null embeddings in evidence
-NULL_EMB=$(psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -t -c \
-    "SELECT COUNT(*) FROM evidence WHERE embedding IS NULL" 2>/dev/null | tr -d ' ' || echo "?")
+NULL_EMB=$(uv run python -c "
+from esbvaktin.ground_truth.operations import get_connection
+conn = get_connection()
+result = conn.execute('SELECT COUNT(*) FROM evidence WHERE embedding IS NULL').fetchone()[0]
+print(result)
+conn.close()
+" 2>/dev/null || echo "?")
 
 if [ "$NULL_EMB" != "0" ] && [ "$NULL_EMB" != "?" ]; then
     ISSUES="${ISSUES}WARNING: ${NULL_EMB} evidence entries missing embeddings.\n"
 fi
 
 # Check 2: Null embeddings in claims
-NULL_CLAIM_EMB=$(psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -t -c \
-    "SELECT COUNT(*) FROM claims WHERE embedding IS NULL AND published = TRUE" 2>/dev/null | tr -d ' ' || echo "?")
+NULL_CLAIM_EMB=$(uv run python -c "
+from esbvaktin.ground_truth.operations import get_connection
+conn = get_connection()
+result = conn.execute('SELECT COUNT(*) FROM claims WHERE embedding IS NULL AND published = TRUE').fetchone()[0]
+print(result)
+conn.close()
+" 2>/dev/null || echo "?")
 
 if [ "$NULL_CLAIM_EMB" != "0" ] && [ "$NULL_CLAIM_EMB" != "?" ]; then
     ISSUES="${ISSUES}WARNING: ${NULL_CLAIM_EMB} published claims missing embeddings.\n"
 fi
 
 # Check 3: Claims referencing non-existent evidence
-BROKEN_REFS=$(psql "postgresql://esb:localdev@localhost:5432/esbvaktin" -t -c "
+BROKEN_REFS=$(uv run python -c "
+from esbvaktin.ground_truth.operations import get_connection
+conn = get_connection()
+sql = '''
     SELECT COUNT(DISTINCT c.id) FROM claims c,
     LATERAL UNNEST(c.supporting_evidence || c.contradicting_evidence) AS eid
     LEFT JOIN evidence e ON e.evidence_id = eid
     WHERE e.evidence_id IS NULL AND c.published = TRUE
-" 2>/dev/null | tr -d ' ' || echo "?")
+'''
+result = conn.execute(sql).fetchone()[0]
+print(result)
+conn.close()
+" 2>/dev/null || echo "?")
 
 if [ "$BROKEN_REFS" != "0" ] && [ "$BROKEN_REFS" != "?" ]; then
     ISSUES="${ISSUES}WARNING: ${BROKEN_REFS} published claims reference non-existent evidence IDs.\n"
