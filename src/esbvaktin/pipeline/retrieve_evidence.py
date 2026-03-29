@@ -8,6 +8,7 @@ first for pre-processed assessments.
 from __future__ import annotations
 
 import logging
+import sys
 from typing import TYPE_CHECKING
 
 from esbvaktin.ground_truth import SearchResult, search_evidence
@@ -145,32 +146,43 @@ def retrieve_evidence_for_claim(
     Vector + keyword results are then fused with Reciprocal Rank Fusion (RRF).
     Falls back to pure vector with MIN_SIMILARITY filtering when keyword search
     returns nothing.
+
+    If the embedding model fails to load (ImportError, OOM, or any exception),
+    falls back to keyword-only search and logs a warning to stderr.
     """
     from esbvaktin.ground_truth.operations import keyword_search
 
     results: dict[str, SearchResult] = {}
+    _embedding_failed = False
 
     # Filtered search if category matches a known topic
     topic_filter = claim.category if claim.category in KNOWN_TOPICS else None
-    if topic_filter:
-        filtered = search_evidence(
+    try:
+        if topic_filter:
+            filtered = search_evidence(
+                query=claim.claim_text,
+                topic_filter=topic_filter,
+                top_k=top_k,
+                conn=conn,
+            )
+            for r in filtered:
+                results[r.evidence_id] = r
+
+        # Unfiltered search for cross-topic evidence
+        unfiltered = search_evidence(
             query=claim.claim_text,
-            topic_filter=topic_filter,
             top_k=top_k,
             conn=conn,
         )
-        for r in filtered:
-            results[r.evidence_id] = r
-
-    # Unfiltered search for cross-topic evidence
-    unfiltered = search_evidence(
-        query=claim.claim_text,
-        top_k=top_k,
-        conn=conn,
-    )
-    for r in unfiltered:
-        if r.evidence_id not in results:
-            results[r.evidence_id] = r
+        for r in unfiltered:
+            if r.evidence_id not in results:
+                results[r.evidence_id] = r
+    except Exception as exc:
+        print(
+            f"WARNING: Embedding model unavailable, falling back to keyword-only: {exc}",
+            file=sys.stderr,
+        )
+        _embedding_failed = True
 
     # Sort merged vector results by similarity (input for RRF)
     vector_merged = sorted(
@@ -187,7 +199,7 @@ def retrieve_evidence_for_claim(
         conn=conn,
     )
 
-    if keyword_results:
+    if keyword_results or _embedding_failed:
         # RRF fusion — no MIN_SIMILARITY floor (keyword hit already signals relevance)
         rrf_results = _rrf_merge(list(vector_merged), keyword_results)
         final_results = []
