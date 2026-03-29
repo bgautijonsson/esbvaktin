@@ -20,6 +20,7 @@ Two core assets drive everything:
 Post-launch additions: polling dashboard, claim tracker, economic dashboards, discourse digests.
 
 Full architecture: ESB Obsidian vault → `Architecture.md`
+Machine setup: `SETUP.md`
 
 ## Tech Stack
 
@@ -67,9 +68,9 @@ data/overviews/         # Weekly overview generation (gitignored)
 data/inbox/             # Article discovery inbox with persistent state
 data/{source}/          # CSV outputs from R scripts (gitignored)
 R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
-.claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification, health, db, evidence-hunt, reassess, tidy
+.claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification, health, db, evidence-hunt, reassess, tidy, process-articles, weekly-review
 .claude/hooks/          # Pre-export validation hook
-.claude/agents/         # Custom agents (10 total, see table below)
+.claude/agents/         # Custom agents (11 total, see table below)
 ```
 
 ## Custom Agents
@@ -88,6 +89,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 | `claim-reviewer` | sonnet | Read, Write, Glob | Review published claims for substantiveness |
 | `capsule-writer` | sonnet | Read, Write, Glob, MCP mideind | Write short Icelandic reader's note (constructive, curiosity-building) |
 | `evidence-auditor` | sonnet | Read, Write, Glob | Audit Ground Truth entries for internal contradictions |
+| `meta-claim-filter` | sonnet | Read, Write, Glob | Heimildin rhetoric classification (client project) |
 
 **Parallelisation:** `claim-assessor` + `omissions-analyst` always run in parallel (independent tasks). Multiple `evidence-summariser` instances can run in parallel across batches.
 
