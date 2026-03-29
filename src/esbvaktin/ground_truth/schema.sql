@@ -117,9 +117,9 @@ CREATE INDEX IF NOT EXISTS idx_claims_verdict ON claims(verdict);
 CREATE INDEX IF NOT EXISTS idx_claims_published ON claims(published);
 
 -- Vector similarity index for claim bank matching.
--- lists = sqrt(n): 31 for ~961 rows. Rebuild after large batch inserts.
+-- lists ≈ sqrt(n): 42 for ~1,800 rows. Rebuild after large batch inserts.
 CREATE INDEX IF NOT EXISTS idx_claims_embedding ON claims
-    USING ivfflat (embedding vector_cosine_ops) WITH (lists = 31);
+    USING ivfflat (embedding vector_cosine_ops) WITH (lists = 42);
 
 DROP TRIGGER IF EXISTS claims_updated_at ON claims;
 CREATE TRIGGER claims_updated_at

@@ -205,6 +205,30 @@ def search_claims(
 # ── Insert ────────────────────────────────────────────────────────────
 
 
+def _unique_slug(slug: str, canonical_text: str, conn: psycopg.Connection) -> str:
+    """Return a unique slug, appending -2, -3, etc. if needed.
+
+    Only disambiguates when the existing claim has *different* canonical text
+    (i.e., a genuine collision). Same text = intentional upsert, keep slug.
+    """
+    row = conn.execute(
+        "SELECT canonical_text_is FROM claims WHERE claim_slug = %s", (slug,)
+    ).fetchone()
+    if row is None or row[0] == canonical_text:
+        return slug  # No collision, or same claim (upsert)
+
+    # Genuine collision — find next available suffix
+    suffix = 2
+    while True:
+        candidate = f"{slug}-{suffix}"
+        existing = conn.execute(
+            "SELECT 1 FROM claims WHERE claim_slug = %s", (candidate,)
+        ).fetchone()
+        if existing is None:
+            return candidate
+        suffix += 1
+
+
 def add_claim(
     claim: CanonicalClaim,
     conn: psycopg.Connection | None = None,
@@ -212,8 +236,9 @@ def add_claim(
     """Insert a canonical claim into the bank.
 
     Generates embedding from canonical_text_is. Returns the claim id.
-    Uses upsert: if a claim with the same slug exists, update it and
-    increment the version.
+    Uses upsert: if a claim with the same slug exists and has the same
+    canonical text, update it and increment the version. If the slug
+    collides with a *different* claim, disambiguates with a suffix.
     """
     from ..ground_truth.operations import embed_text, get_connection
 
@@ -223,6 +248,9 @@ def add_claim(
     if conn is None:
         conn = get_connection()
         close = True
+
+    # Guard against slug collision with a different claim
+    claim.claim_slug = _unique_slug(claim.claim_slug, claim.canonical_text_is, conn)
 
     row = conn.execute(
         """

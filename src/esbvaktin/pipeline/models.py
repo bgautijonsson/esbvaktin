@@ -99,6 +99,7 @@ class EvidenceMatch(BaseModel):
     similarity: float
     source_name: str
     source_url: str | None = None
+    source_date: date | None = None
     caveats: str | None = None
     statement_is: str | None = None
 

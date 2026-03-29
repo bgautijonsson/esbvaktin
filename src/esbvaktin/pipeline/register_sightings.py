@@ -137,29 +137,10 @@ def register_panel_sightings(
 
 
 def _adjust_confidence(conn, match, sighting_verdict: str) -> None:
-    """Decay or boost canonical claim confidence based on verdict agreement.
+    """Decay or boost canonical claim confidence based on verdict agreement."""
+    from esbvaktin.claim_bank.confidence import adjust_confidence
 
-    Decay: sighting verdict disagrees → multiply by 0.95 (5% decay).
-    Boost: sighting verdict agrees → multiply by 1.02, capped at 0.95 (2% boost).
-    Disagreement intentionally weighs more than agreement.
-    """
-    current = match.confidence
-    canonical_verdict = match.verdict
-
-    if sighting_verdict != canonical_verdict:
-        # Disagreement: decay by 5%
-        new_confidence = current * 0.95
-    elif current < 0.95:
-        # Agreement: 2% boost, cap at 0.95
-        new_confidence = min(current * 1.02, 0.95)
-    else:
-        return  # Already at cap, no update needed
-
-    conn.execute(
-        "UPDATE claims SET confidence = %(confidence)s WHERE id = %(claim_id)s",
-        {"confidence": new_confidence, "claim_id": match.claim_id},
-    )
-    conn.commit()
+    adjust_confidence(conn, match.claim_id, match.confidence, match.verdict, sighting_verdict)
 
 
 def _insert_sighting(
@@ -175,6 +156,7 @@ def _insert_sighting(
     speaker_name: str | None = None,
 ) -> None:
     """Insert a claim sighting row with optional speaker_name."""
+    source_url = source_url.rstrip("/")
     source_domain = _extract_domain(source_url)
 
     conn.execute(

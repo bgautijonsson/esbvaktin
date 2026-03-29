@@ -44,23 +44,37 @@ SIMILARITY_THRESHOLD = 0.45
 BATCH_SIZE = 10
 
 
-def _search_evidence_dual(text_is: str | None, text_en: str | None, conn, top_k: int = 8):
-    """Semantic search using both IS and EN text, deduplicated."""
-    from esbvaktin.ground_truth.operations import search_evidence
+def _search_evidence_hybrid(
+    text_is: str | None,
+    text_en: str | None,
+    category: str | None,
+    conn,
+    top_k: int = 8,
+):
+    """Hybrid BM25 + vector search using the full retrieval pipeline.
+
+    Constructs a minimal Claim object to leverage retrieve_evidence_for_claim()
+    which runs topic-filtered vector + unfiltered vector + BM25 keyword search
+    with RRF fusion. Falls back to dual vector-only search if the pipeline
+    import fails.
+    """
+    from esbvaktin.pipeline.models import Claim, ClaimType, EpistemicType
+    from esbvaktin.pipeline.retrieve_evidence import retrieve_evidence_for_claim
 
     query = text_is or text_en
     if not query:
         return []
 
-    results = search_evidence(query, top_k=top_k, conn=conn)
-    if text_en and text_en != text_is:
-        results_en = search_evidence(text_en, top_k=top_k, conn=conn)
-        seen_ids = {r.evidence_id for r in results}
-        for r in results_en:
-            if r.evidence_id not in seen_ids:
-                results.append(r)
-                seen_ids.add(r.evidence_id)
-    return results
+    claim = Claim(
+        claim_text=query,
+        original_quote=query,
+        category=category or "sovereignty",
+        claim_type=ClaimType.OPINION,
+        epistemic_type=EpistemicType.FACTUAL,
+        confidence=0.5,
+    )
+    cwe = retrieve_evidence_for_claim(claim, top_k=top_k, conn=conn)
+    return list(cwe.evidence)
 
 
 def _get_reassessable_claims(
@@ -117,7 +131,7 @@ def _get_claims_by_evidence(conn, evidence_ids: list[str]) -> list[dict]:
 
     assessable = []
     for claim_id, text_is, text_en, category, slug, verdict, confidence, epistemic_type in rows:
-        results = _search_evidence_dual(text_is, text_en, conn)
+        results = _search_evidence_hybrid(text_is, text_en, category, conn)
         strong = sorted(
             [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
             key=lambda r: r.similarity,
@@ -161,7 +175,7 @@ def _get_claims_by_ids(conn, claim_ids: list[int]) -> list[dict]:
 
     assessable = []
     for claim_id, text_is, text_en, category, slug, verdict, confidence, epistemic_type in rows:
-        results = _search_evidence_dual(text_is, text_en, conn)
+        results = _search_evidence_hybrid(text_is, text_en, category, conn)
         strong = sorted(
             [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
             key=lambda r: r.similarity,
@@ -198,7 +212,7 @@ def _get_unverifiable_with_evidence(conn) -> list[dict]:
 
     assessable = []
     for claim_id, text_is, text_en, category, slug, epistemic_type in rows:
-        results = _search_evidence_dual(text_is, text_en, conn)
+        results = _search_evidence_hybrid(text_is, text_en, category, conn)
         strong = sorted(
             [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
             key=lambda r: r.similarity,
@@ -247,7 +261,7 @@ def _get_partial_with_new_evidence(conn) -> list[dict]:
         ) = row
         existing_ids = set(supporting or []) | set(contradicting or [])
 
-        results = _search_evidence_dual(text_is, text_en, conn)
+        results = _search_evidence_hybrid(text_is, text_en, category, conn)
         strong = sorted(
             [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
             key=lambda r: r.similarity,
@@ -424,7 +438,12 @@ def _get_overconfident_supported(conn, *, limit: int = 30) -> list[dict]:
     # Retrieve evidence for each claim
     assessable = []
     for claim in top:
-        results = _search_evidence_dual(claim["text_is"], claim["text_en"], conn)
+        results = _search_evidence_hybrid(
+            claim["text_is"],
+            claim["text_en"],
+            claim.get("category"),
+            conn,
+        )
         strong = sorted(
             [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
             key=lambda r: r.similarity,
