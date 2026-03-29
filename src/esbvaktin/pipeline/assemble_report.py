@@ -2,6 +2,7 @@
 
 from datetime import date
 
+from ..utils.slugify import icelandic_slugify
 from .models import (
     AnalysisReport,
     ClaimAssessment,
@@ -329,6 +330,8 @@ def assemble_report(
     else:
         report_text_en = render_report_en(**report_kwargs)
 
+    slug = icelandic_slugify(article_title) if article_title else None
+
     return AnalysisReport(
         article_title=article_title,
         article_url=article_url,
@@ -336,6 +339,7 @@ def assemble_report(
         article_date=article_date,
         language=language,
         summary=summary,
+        slug=slug,
         capsule=None,
         claims=claims,
         omissions=omissions,

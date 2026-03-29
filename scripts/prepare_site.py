@@ -723,7 +723,9 @@ def prepare_report(
         report = json.load(f)
 
     analysis_id = report_path.parent.name
-    slug = icelandic_slugify(report["article_title"])
+    # Prefer persisted slug (set at pipeline time) for stability; fall back to
+    # runtime generation for older reports that pre-date slug persistence.
+    slug = report.get("slug") or icelandic_slugify(report["article_title"])
 
     # Extract article metadata from _article.md
     article_meta = _parse_article_meta(report_path.parent)

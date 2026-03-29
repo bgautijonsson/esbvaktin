@@ -240,5 +240,9 @@ class AnalysisReport(BaseModel):
         None,
         description="Short Icelandic editorial insight (2-3 sentences) for article cards",
     )
+    slug: str | None = Field(
+        default=None,
+        description="URL slug persisted at pipeline time to prevent export-time instability",
+    )
     report_text_is: str = Field(default="", description="Icelandic report (primary)")
     report_text_en: str = Field(default="", description="English report (optional)")
