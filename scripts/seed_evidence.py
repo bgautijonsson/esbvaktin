@@ -33,6 +33,30 @@ from esbvaktin.ground_truth import (
 )
 
 
+def _find_affected_claims(new_ids: list[str], conn) -> list[tuple]:
+    """Find published claims with high similarity to newly-added evidence."""
+    if not new_ids:
+        return []
+    placeholders = ",".join(["%s"] * len(new_ids))
+    return conn.execute(
+        f"""
+        SELECT DISTINCT c.id, c.claim_slug, c.verdict,
+               e.evidence_id AS new_evidence,
+               ROUND((1 - (c.embedding <=> e.embedding))::numeric, 3) AS similarity
+        FROM claims c
+        CROSS JOIN evidence e
+        WHERE e.evidence_id IN ({placeholders})
+          AND c.published = TRUE
+          AND 1 - (c.embedding <=> e.embedding) > 0.70
+          AND NOT (e.evidence_id = ANY(c.supporting_evidence))
+          AND NOT (e.evidence_id = ANY(c.contradicting_evidence))
+        ORDER BY similarity DESC
+        LIMIT 20
+        """,
+        new_ids,
+    ).fetchall()
+
+
 def insert_from_json(json_path: Path) -> int:
     """Insert evidence entries from a JSON file into the database."""
     conn = get_connection()
@@ -43,6 +67,7 @@ def insert_from_json(json_path: Path) -> int:
         data = [data]
 
     count = 0
+    new_ids: list[str] = []
     for raw_entry in data:
         # Handle date fields
         for date_field in ("source_date", "last_verified"):
@@ -59,10 +84,20 @@ def insert_from_json(json_path: Path) -> int:
             entry = EvidenceEntry(**raw_entry)
             insert_evidence(entry, conn=conn)
             print(f"  ✓ {entry.evidence_id}: {entry.statement[:60]}...")
+            new_ids.append(entry.evidence_id)
             count += 1
         except Exception as e:
             eid = raw_entry.get("evidence_id", "?")
             print(f"  ✗ {eid}: {e}")
+
+    if new_ids:
+        affected = _find_affected_claims(new_ids, conn)
+        if affected:
+            print(f"\n⚠️  {len(affected)} claims may need reassessment:")
+            for cid, slug, verdict, ev_id, sim in affected:
+                print(f"  claim {cid} ({verdict}): {slug} ← {ev_id} ({sim})")
+            id_str = " ".join(new_ids)
+            print(f"\nRun: uv run python scripts/reassess_claims.py prepare --evidence {id_str}")
 
     conn.close()
     return count
