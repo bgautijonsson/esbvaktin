@@ -168,6 +168,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 /db "SELECT ..."           # Run raw SQL (read-only)
 /evidence-hunt             # Find and draft evidence for gaps
 /evidence-hunt fisheries   # Research specific topic
+/evidence-hunt monthly     # Refresh high-decay topics (polling, party_positions, org_positions, currency)
 /reassess                  # Full reassessment cycle (unverifiable + partial)
 /reassess overconfident    # Reassess audit-flagged claims only
 /reassess evidence ID1 ID2 ...  # Reassess all claims citing these evidence entries
@@ -242,6 +243,9 @@ uv run python scripts/improve_evidence_is.py correct --dry-run   # Preview witho
 # Note: `correct` may need 2-3 runs to converge (corrections change text hash → re-eligible)
 uv run python scripts/seed_evidence.py status          # Show DB summary
 uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
+
+# Monthly evidence refresh (first Monday of month — polling, party_positions, org_positions, currency)
+# These topics decay fastest; schedule via /evidence-hunt monthly
 uv run python scripts/curate_speech_evidence.py list        # Find high-value Alþingi speeches for evidence curation
 uv run python scripts/fact_check_speeches.py select --limit 5  # Rank speeches for fact-checking
 uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a single speech (run outside Claude Code session)
