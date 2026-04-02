@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from dataclasses import dataclass
+from datetime import UTC, datetime
 
 import psycopg
 
@@ -222,6 +224,279 @@ def merge_entities(keep_id: int, absorb_id: int, conn: psycopg.Connection) -> No
     )
     conn.execute("DELETE FROM entities WHERE id = %(id)s", {"id": absorb_id})
     conn.commit()
+
+
+def get_dashboard_stats(conn: psycopg.Connection) -> dict:
+    """Return aggregate stats for the entity review dashboard."""
+    # Total entities
+    total_entities = conn.execute("SELECT COUNT(*) FROM entities").fetchone()[0]
+
+    # Total non-dismissed observations
+    total_observations = conn.execute(
+        "SELECT COUNT(*) FROM entity_observations WHERE NOT dismissed"
+    ).fetchone()[0]
+
+    # By verification status
+    status_rows = conn.execute(
+        "SELECT verification_status, COUNT(*) FROM entities GROUP BY verification_status"
+    ).fetchall()
+    by_status = {"auto_generated": 0, "needs_review": 0, "confirmed": 0}
+    for status, count in status_rows:
+        by_status[status] = count
+
+    # Stance conflicts: entities with >1 distinct non-neutral stance in non-dismissed observations
+    stance_conflicts = conn.execute(
+        """
+        SELECT COUNT(*) FROM (
+            SELECT entity_id
+            FROM entity_observations
+            WHERE entity_id IS NOT NULL
+              AND NOT dismissed
+              AND observed_stance IS NOT NULL
+              AND observed_stance != 'neutral'
+            GROUP BY entity_id
+            HAVING COUNT(DISTINCT observed_stance) > 1
+        ) sub
+        """
+    ).fetchone()[0]
+
+    # Type mismatches: entities with non-dismissed observations where observed_type != entity_type
+    type_mismatches = conn.execute(
+        """
+        SELECT COUNT(DISTINCT e.id) FROM entities e
+        JOIN entity_observations o ON o.entity_id = e.id
+        WHERE NOT o.dismissed
+          AND o.observed_type IS NOT NULL
+          AND o.observed_type != e.entity_type
+        """
+    ).fetchone()[0]
+
+    # Placeholders: entities with zero non-dismissed observations
+    placeholders = conn.execute(
+        """
+        SELECT COUNT(*) FROM entities e
+        WHERE NOT EXISTS (
+            SELECT 1 FROM entity_observations o
+            WHERE o.entity_id = e.id AND NOT o.dismissed
+        )
+        """
+    ).fetchone()[0]
+
+    return {
+        "total_entities": total_entities,
+        "total_observations": total_observations,
+        "by_status": by_status,
+        "stance_conflicts": stance_conflicts,
+        "type_mismatches": type_mismatches,
+        "placeholders": placeholders,
+    }
+
+
+def get_filtered_entities(
+    conn: psycopg.Connection,
+    *,
+    issue: str | None = None,
+    entity_type: str | None = None,
+    status: str | None = None,
+    search: str | None = None,
+    sort: str = "observations",
+) -> list[dict]:
+    """Return entity dicts with observation counts and stance breakdown.
+
+    Filters:
+        entity_type — match e.entity_type
+        status — match e.verification_status
+        search — ILIKE on canonical_name and aliases
+        issue — post-aggregate filter: stance_conflict, type_mismatch, placeholder, new_entity
+
+    Sort: observations (desc), alpha (asc), recent (desc), stance_variance (desc)
+    """
+    conditions = []
+    params: dict = {}
+
+    if entity_type:
+        conditions.append("e.entity_type = %(entity_type)s")
+        params["entity_type"] = entity_type
+
+    if status:
+        conditions.append("e.verification_status = %(status)s")
+        params["status"] = status
+
+    if search:
+        conditions.append(
+            "(e.canonical_name ILIKE %(search)s OR EXISTS ("
+            "  SELECT 1 FROM unnest(e.aliases) AS a WHERE a ILIKE %(search)s"
+            "))"
+        )
+        params["search"] = f"%{search}%"
+
+    if issue == "new_entity":
+        conditions.append("e.verification_status = 'auto_generated'")
+
+    where = " AND ".join(conditions)
+    where_clause = f"WHERE {where}" if where else ""
+
+    # Fetch all matching entities with their fields
+    rows = conn.execute(
+        f"""
+        SELECT e.id, e.slug, e.canonical_name, e.entity_type, e.subtype,
+               e.stance, e.stance_score, e.party_slug, e.verification_status,
+               e.locked_fields
+        FROM entities e
+        {where_clause}
+        """,
+        params,
+    ).fetchall()
+
+    if not rows:
+        return []
+
+    entity_ids = [r[0] for r in rows]
+
+    # Fetch non-dismissed observation data for these entities in bulk
+    obs_rows = conn.execute(
+        """
+        SELECT entity_id, observed_stance, observed_type
+        FROM entity_observations
+        WHERE entity_id = ANY(%(ids)s) AND NOT dismissed
+        """,
+        {"ids": entity_ids},
+    ).fetchall()
+
+    # Build per-entity aggregates
+    obs_counts: Counter = Counter()
+    stance_breakdowns: dict[int, Counter] = {}
+    type_mismatches: set[int] = set()
+
+    entity_types_map = {r[0]: r[3] for r in rows}
+
+    for eid, stance, obs_type in obs_rows:
+        obs_counts[eid] += 1
+        if stance:
+            stance_breakdowns.setdefault(eid, Counter())[stance] += 1
+        if obs_type and obs_type != entity_types_map.get(eid):
+            type_mismatches.add(eid)
+
+    # Build stance_conflict set: entities with >1 distinct non-neutral stance
+    stance_conflict_ids: set[int] = set()
+    for eid, counter in stance_breakdowns.items():
+        non_neutral = {k for k in counter if k != "neutral"}
+        if len(non_neutral) > 1:
+            stance_conflict_ids.add(eid)
+
+    results = []
+    for r in rows:
+        eid = r[0]
+        breakdown = dict(stance_breakdowns.get(eid, {}))
+        count = obs_counts.get(eid, 0)
+
+        # Post-aggregate issue filters
+        if issue == "stance_conflict" and eid not in stance_conflict_ids:
+            continue
+        if issue == "type_mismatch" and eid not in type_mismatches:
+            continue
+        if issue == "placeholder" and count > 0:
+            continue
+
+        results.append(
+            {
+                "id": eid,
+                "slug": r[1],
+                "canonical_name": r[2],
+                "entity_type": r[3],
+                "subtype": r[4],
+                "stance": r[5],
+                "stance_score": r[6],
+                "party_slug": r[7],
+                "verification_status": r[8],
+                "locked_fields": list(r[9] or []),
+                "observation_count": count,
+                "stance_breakdown": breakdown,
+            }
+        )
+
+    # Sort
+    if sort == "alpha":
+        results.sort(key=lambda r: r["canonical_name"].lower())
+    elif sort == "recent":
+        results.sort(key=lambda r: r["id"], reverse=True)
+    elif sort == "stance_variance":
+
+        def _variance(r: dict) -> int:
+            bd = r["stance_breakdown"]
+            non_neutral = {k: v for k, v in bd.items() if k != "neutral"}
+            return len(non_neutral)
+
+        results.sort(key=_variance, reverse=True)
+    else:  # observations (default)
+        results.sort(key=lambda r: r["observation_count"], reverse=True)
+
+    return results
+
+
+def get_entity_detail(slug: str, conn: psycopg.Connection) -> dict | None:
+    """Return full entity detail with observations, or None if not found."""
+    entity = get_entity_by_slug(slug, conn)
+    if entity is None:
+        return None
+
+    observations = get_observations_for_entity(entity.id, conn)
+    result = entity.model_dump()
+    result["observations"] = [obs.model_dump() for obs in observations]
+    return result
+
+
+def confirm_entity(slug: str, conn: psycopg.Connection) -> Entity | None:
+    """Set entity verification_status to confirmed. Returns updated entity or None."""
+    entity = get_entity_by_slug(slug, conn)
+    if entity is None:
+        return None
+
+    update_entity(
+        entity.id,
+        {
+            "verification_status": "confirmed",
+            "verified_at": datetime.now(UTC),
+            "verified_by": "review_ui",
+        },
+        conn,
+    )
+    return get_entity_by_slug(slug, conn)
+
+
+def delete_entity(slug: str, conn: psycopg.Connection) -> bool:
+    """Unlink all observations and delete the entity. Returns True if found and deleted."""
+    entity = get_entity_by_slug(slug, conn)
+    if entity is None:
+        return False
+
+    conn.execute(
+        "UPDATE entity_observations SET entity_id = NULL WHERE entity_id = %(id)s",
+        {"id": entity.id},
+    )
+    conn.execute("DELETE FROM entities WHERE id = %(id)s", {"id": entity.id})
+    conn.commit()
+    return True
+
+
+def dismiss_observation(obs_id: int, conn: psycopg.Connection) -> bool:
+    """Mark an observation as dismissed. Returns True if the observation existed."""
+    result = conn.execute(
+        "UPDATE entity_observations SET dismissed = TRUE WHERE id = %(id)s RETURNING id",
+        {"id": obs_id},
+    ).fetchone()
+    conn.commit()
+    return result is not None
+
+
+def relink_observation(obs_id: int, new_entity_id: int, conn: psycopg.Connection) -> bool:
+    """Move an observation to a different entity. Returns True if the observation existed."""
+    result = conn.execute(
+        "UPDATE entity_observations SET entity_id = %(new_id)s WHERE id = %(obs_id)s RETURNING id",
+        {"new_id": new_entity_id, "obs_id": obs_id},
+    ).fetchone()
+    conn.commit()
+    return result is not None
 
 
 def _row_to_entity(row: tuple) -> Entity:
