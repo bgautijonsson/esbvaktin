@@ -384,6 +384,33 @@ def get_filtered_entities(
         if len(non_neutral) > 1:
             stance_conflict_ids.add(eid)
 
+    # Fetch recent observations (last 3 per entity) for card display
+    recent_obs_rows = conn.execute(
+        """
+        SELECT entity_id, observed_stance, article_slug, article_url, observed_name
+        FROM (
+            SELECT entity_id, observed_stance, article_slug, article_url, observed_name,
+                   ROW_NUMBER() OVER (PARTITION BY entity_id ORDER BY created_at DESC) AS rn
+            FROM entity_observations
+            WHERE entity_id = ANY(%(ids)s) AND NOT dismissed
+        ) sub
+        WHERE rn <= 3
+        ORDER BY entity_id, rn
+        """,
+        {"ids": entity_ids},
+    ).fetchall()
+
+    recent_obs: dict[int, list[dict]] = {}
+    for eid, stance, slug, url, name in recent_obs_rows:
+        recent_obs.setdefault(eid, []).append(
+            {
+                "observed_stance": stance,
+                "article_slug": slug,
+                "article_url": url,
+                "observed_name": name,
+            }
+        )
+
     results = []
     for r in rows:
         eid = r[0]
@@ -412,6 +439,9 @@ def get_filtered_entities(
                 "locked_fields": list(r[9] or []),
                 "observation_count": count,
                 "stance_breakdown": breakdown,
+                "has_type_mismatch": eid in type_mismatches,
+                "has_stance_conflict": eid in stance_conflict_ids,
+                "recent_observations": recent_obs.get(eid, []),
             }
         )
 

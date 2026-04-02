@@ -584,6 +584,35 @@ h1, h2, h3, h4 {
   color: var(--text-muted);
 }
 
+/* Recent observations on card */
+.recent-obs-section {
+  margin-top: 12px;
+}
+.recent-obs-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  padding: 4px 0;
+  color: var(--text-muted);
+}
+.recent-obs-item .obs-bar {
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.recent-obs-stance {
+  font-weight: 600;
+  min-width: 60px;
+  font-size: 0.75rem;
+}
+.recent-obs-more {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 2px 0 0 11px;
+}
+
 /* Confirmation summary */
 .confirm-summary {
   font-size: 0.8125rem;
@@ -594,6 +623,9 @@ h1, h2, h3, h4 {
 .confirm-summary strong {
   color: var(--text);
   font-weight: 600;
+}
+.summary-icon {
+  margin-right: 4px;
 }
 
 /* Action bar */
@@ -1271,13 +1303,8 @@ function issueLabel(issue) {
 }
 
 function issueBadgeClass(entity) {
-  if (entity.stance_breakdown) {
-    const b = entity.stance_breakdown;
-    const stances = Object.keys(b).filter(k => b[k] > 0);
-    if (stances.length > 1 && stances.some(s => s === 'pro_eu') && stances.some(s => s === 'anti_eu')) {
-      return 'stance-conflict';
-    }
-  }
+  if (entity.has_stance_conflict) return 'stance-conflict';
+  if (entity.has_type_mismatch) return 'type-mismatch';
   if (entity.verification_status === 'auto_generated') return 'new';
   return null;
 }
@@ -1495,9 +1522,13 @@ function renderCard(entity) {
   const typeBadge = e.entity_type ? `<span class="badge badge-type">${esc(typeLabel(e.entity_type))}</span>` : '';
   const subtypeBadge = e.subtype && e.subtype !== 'none' ? `<span class="badge badge-subtype">${esc(subtypeLabel(e.subtype))}</span>` : '';
 
-  // Metadata
+  // Metadata line: party display name · role · N observations
   const metaParts = [];
-  if (e.party_slug) metaParts.push(`<span>${esc(e.party_slug)}</span>`);
+  // Show party display name instead of slug
+  if (e.party_slug) {
+    const partyEntity = state.partyEntities.find(p => p.slug === e.party_slug);
+    metaParts.push(`<span>${esc(partyEntity ? partyEntity.name : e.party_slug)}</span>`);
+  }
   if (e.observation_count != null) metaParts.push(`<span>${e.observation_count} observations</span>`);
 
   // Stance breakdown pills
@@ -1511,15 +1542,36 @@ function renderCard(entity) {
   const scoreDisplay = e.stance_score != null ? `<span class="stance-score">${e.stance_score.toFixed(2)}</span>` : '';
   const stanceLbl = e.stance ? `<span class="stance-label" style="color: var(--v-${stanceClass(e.stance) === 'pro' ? 'supported' : stanceClass(e.stance) === 'anti' ? 'unsupported' : stanceClass(e.stance) === 'mixed' ? 'partial' : 'unverifiable'})">${stanceLabel(e.stance)}</span>` : '';
 
-  // Recent observations (use stance_breakdown as proxy — full observations only in detail)
-  // We show a summary line instead; full observations are in the detail panel
-  const obsSection = pills.length > 0 ? `
+  const stanceSection = pills.length > 0 ? `
     <div class="stance-row">
       ${pills.join('')}
       ${scoreDisplay}
       ${stanceLbl}
     </div>
   ` : '';
+
+  // Recent observations (last 3 from API)
+  const recentObs = e.recent_observations || [];
+  let recentObsSection = '';
+  if (recentObs.length > 0) {
+    const obsItems = recentObs.map(obs => {
+      const barClass = `obs-bar-${stanceClass(obs.observed_stance)}`;
+      const stanceTxt = stanceLabel(obs.observed_stance);
+      const link = obs.article_url
+        ? `<a class="obs-article-link" href="${esc(obs.article_url)}" target="_blank">${esc(obs.article_slug)}</a>`
+        : `<span>${esc(obs.article_slug)}</span>`;
+      return `<div class="recent-obs-item"><span class="obs-bar ${barClass}"></span><span class="recent-obs-stance">${stanceTxt}</span> ${link}</div>`;
+    }).join('');
+    const moreCount = e.observation_count - recentObs.length;
+    const moreLabel = moreCount > 0 ? `<div class="recent-obs-more">+ ${moreCount} more in detail panel</div>` : '';
+    recentObsSection = `
+      <div class="recent-obs-section">
+        <div class="section-label">Recent observations</div>
+        ${obsItems}
+        ${moreLabel}
+      </div>
+    `;
+  }
 
   // Aliases
   const aliases = e.aliases || [];
@@ -1529,37 +1581,39 @@ function renderCard(entity) {
     </div>
   ` : '';
 
-  // Confirmation summary — explains what "Confirm" means for this entity
+  // Differentiated summary — context-aware per issue category
   let summaryLine = '';
   if (!isConfirmed && !isEdited) {
-    const parts = [];
-    // Identity
-    const typeStr = e.subtype ? subtypeLabel(e.subtype) : typeLabel(e.entity_type);
-    parts.push(`<strong>${esc(e.canonical_name)}</strong> as ${typeStr.toLowerCase()}`);
-    // Stance
-    if (e.stance) parts.push(`with stance <strong>${stanceLabel(e.stance)}</strong>`);
-    if (e.party_slug) parts.push(`(${esc(e.party_slug)})`);
+    const typeStr = e.subtype ? subtypeLabel(e.subtype).toLowerCase() : typeLabel(e.entity_type).toLowerCase();
+    const stanceStr = e.stance ? stanceLabel(e.stance) : 'no stance';
+    const nonNeutral = Object.entries(sb).filter(([k, v]) => k !== 'neutral' && v > 0);
+    const total = Object.values(sb).reduce((s, v) => s + v, 0);
 
-    // Issues / warnings
-    const warnings = [];
-    const sb = e.stance_breakdown || {};
-    const nonNeutral = Object.entries(sb).filter(([k]) => k !== 'neutral');
-    const distinctStances = nonNeutral.filter(([, v]) => v > 0);
-    if (distinctStances.length > 1) {
+    if (e.has_stance_conflict) {
+      // Stance conflict: highlight the disagreement
       const minority = nonNeutral
         .filter(([k]) => k !== e.stance)
-        .map(([k, v]) => `${v} ${stanceLabel(k).toLowerCase()}`)
-        .join(', ');
-      if (minority) warnings.push(`${minority} observation${nonNeutral.reduce((s, [, v]) => s + v, 0) > 1 ? 's' : ''} disagree`);
+        .map(([k, v]) => `${v} ${stanceLabel(k).toLowerCase()}`);
+      const majority = nonNeutral.find(([k]) => k === e.stance);
+      const majorityStr = majority ? `${majority[1]} ${stanceLabel(majority[0]).toLowerCase()}` : '';
+      summaryLine = `<div class="confirm-summary"><span class="summary-icon" style="color: var(--warning)">⚠</span> Labelled <strong>${stanceStr}</strong> (${majorityStr}) but ${minority.join(', ')} observation${minority.length > 1 ? 's' : ''} disagree. Confirm accepts current stance, or Edit to override.</div>`;
+    } else if (e.has_type_mismatch) {
+      // Type mismatch: highlight the type disagreement
+      summaryLine = `<div class="confirm-summary"><span class="summary-icon" style="color: var(--error)">⚠</span> Registered as <strong>${typeStr}</strong> but some observations tagged a different type. Check Details or Edit to correct.</div>`;
+    } else if (e.observation_count === 0) {
+      // Placeholder: no observations
+      summaryLine = `<div class="confirm-summary"><span class="summary-icon" style="color: var(--text-muted)">○</span> No observations. Exists as a link target only. Confirm to keep, or delete via Details.</div>`;
+    } else if (nonNeutral.length <= 1 && total > 0) {
+      // Clean: unanimous or all-neutral
+      if (nonNeutral.length === 0) {
+        summaryLine = `<div class="confirm-summary"><span class="summary-icon" style="color: var(--success)">✓</span> All ${total} observations neutral. No conflicts detected.</div>`;
+      } else {
+        summaryLine = `<div class="confirm-summary"><span class="summary-icon" style="color: var(--success)">✓</span> ${total} observations, all consistent: <strong>${stanceStr}</strong>. No conflicts.</div>`;
+      }
+    } else {
+      // Catch-all for entities without specific flags
+      summaryLine = `<div class="confirm-summary">Confirm as <strong>${typeStr}</strong> with stance <strong>${stanceStr}</strong> (${total} observations).</div>`;
     }
-    if (issue === 'type-mismatch') warnings.push('some observations tagged a different entity type');
-    if (aliases.length > 0) warnings.push(`${aliases.length} alias${aliases.length > 1 ? 'es' : ''} registered`);
-
-    const warningStr = warnings.length > 0
-      ? ` — <span style="color: var(--warning)">${warnings.join('; ')}</span>`
-      : '';
-
-    summaryLine = `<div class="confirm-summary">Confirm ${parts.join(' ')}${warningStr}</div>`;
   }
 
   // Action bar
@@ -1593,7 +1647,8 @@ function renderCard(entity) {
         </div>
       </div>
       ${metaParts.length > 0 ? `<div class="card-meta">${metaParts.join('')}</div>` : ''}
-      ${obsSection}
+      ${stanceSection}
+      ${recentObsSection}
       ${aliasSection}
       ${summaryLine}
       ${actionBar || confirmedActionBar}
