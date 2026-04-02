@@ -63,7 +63,7 @@ def lemmatise_name(word: str) -> str | None:
         # Try original casing (proper nouns)
         _, meanings = b.lookup(word)
     if meanings:
-        result = meanings[0].stofn
+        result = meanings[0].ord
         _lemma_cache[word] = result
         return result
 
