@@ -242,6 +242,188 @@ def register_article(
     return counts
 
 
+# ── Entity observation registration ──────────────────────────────────────────
+
+_ENTITY_SKIP_NAMES: set[str] = {
+    "formaður miðflokksins",
+    "formaður sjálfstæðisflokksins",
+    "utanríkisráðherra",
+    "formenn ríkisstjórnarflokkanna",
+    "talsmenn esb-aðildar",
+    "mbl.is fréttaritari",
+    "ritstjórn mbl.is",
+}
+
+
+def register_entity_observations(
+    analysis_dir: str,
+    report: dict,
+    conn,
+    dry_run: bool = False,
+) -> dict[str, int]:
+    """Register entity observations from an article's _entities.json.
+
+    Matches each speaker against the entity registry and:
+      - HIGH confidence + no disagreements → auto-link
+      - MEDIUM confidence or disagreements → flag as needs_review
+      - LOW/no match → create new auto_generated + needs_review entity
+
+    Returns summary: {"auto_linked": N, "flagged": N, "new_entities": N, "disagreements": [...]}.
+    """
+    from esbvaktin.entity_registry.matcher import (
+        MATCH_THRESHOLDS,
+        compute_disagreements,
+        match_and_record_summary,
+        match_entity,
+    )
+    from esbvaktin.entity_registry.models import Entity, EntityObservation, VerificationStatus
+    from esbvaktin.entity_registry.operations import (
+        get_all_entities,
+        get_entity_by_slug,
+        insert_entity,
+        insert_observation,
+        update_entity,
+    )
+    from esbvaktin.utils.slugify import icelandic_slugify
+
+    summary = match_and_record_summary(0, 0, 0, [])
+
+    # Check if entity registry tables are populated (migration has been run)
+    try:
+        row = conn.execute("SELECT COUNT(*) FROM entities").fetchone()
+        if row[0] == 0:
+            return summary
+    except Exception:
+        return summary
+
+    entities_path = ANALYSES_DIR / analysis_dir / "_entities.json"
+    if not entities_path.exists():
+        return summary
+
+    entities_data = json.loads(entities_path.read_text())
+    speakers = entities_data.get("speakers", [])
+    if not speakers:
+        return summary
+
+    article_url = report.get("article_url", "")
+    article_slug = analysis_dir
+
+    registry = get_all_entities(conn)
+
+    for speaker in speakers:
+        name = speaker.get("name", "").strip()
+        if not name or name.lower() in _ENTITY_SKIP_NAMES:
+            continue
+
+        observed_type = speaker.get("type", "individual")
+        observed_stance = speaker.get("stance")
+        observed_role = speaker.get("role")
+        observed_party = speaker.get("party")
+
+        # Extract attribution types from attributions list (new format) or legacy
+        attributions = speaker.get("attributions", [])
+        if attributions and isinstance(attributions[0], dict):
+            attr_types = list({a.get("attribution", "asserted") for a in attributions})
+            claim_indices = [a.get("claim_index") for a in attributions if "claim_index" in a]
+        else:
+            # Legacy format: claim_indices list, defaults to ["asserted"]
+            attr_types = ["asserted"]
+            claim_indices = speaker.get("claim_indices", [])
+
+        # Match against registry
+        match = match_entity(name, observed_type, registry)
+
+        # Compute disagreements if we have a matched entity
+        disagreements = None
+        if match.matched_entity is not None:
+            disagreements = compute_disagreements(
+                match.matched_entity,
+                observed_stance,
+                observed_role,
+                observed_party,
+                observed_type,
+            )
+
+        # Any disagreement bumps to at minimum MEDIUM (flagged)
+        effective_confidence = match.confidence
+        if disagreements and effective_confidence >= MATCH_THRESHOLDS["auto_link"]:
+            effective_confidence = max(
+                MATCH_THRESHOLDS["flag"],
+                min(effective_confidence, MATCH_THRESHOLDS["auto_link"] - 0.01),
+            )
+
+        entity_id = match.entity_id
+
+        if effective_confidence >= MATCH_THRESHOLDS["auto_link"] and not disagreements:
+            # HIGH confidence, no disagreements → auto-link silently
+            summary["auto_linked"] += 1
+
+        elif effective_confidence >= MATCH_THRESHOLDS["flag"]:
+            # MEDIUM confidence or disagreements → flag as needs_review
+            summary["flagged"] += 1
+            if disagreements:
+                summary["disagreements"].append(f"{name}: {list(disagreements.keys())}")
+            if not dry_run and entity_id is not None:
+                update_entity(
+                    entity_id,
+                    {"verification_status": VerificationStatus.NEEDS_REVIEW.value},
+                    conn,
+                )
+
+        else:
+            # LOW/no match → create new auto_generated + needs_review entity
+            summary["new_entities"] += 1
+            if not dry_run:
+                slug = icelandic_slugify(name)
+                new_entity = Entity(
+                    slug=slug,
+                    canonical_name=name,
+                    entity_type=observed_type,
+                    stance=observed_stance,
+                    party_slug=icelandic_slugify(observed_party) if observed_party else None,
+                    verification_status=VerificationStatus.NEEDS_REVIEW,
+                )
+                try:
+                    entity_id = insert_entity(new_entity, conn)
+                    # Add to registry for subsequent matches in same article
+                    new_entity.id = entity_id
+                    registry.append(new_entity)
+                except Exception:
+                    # Duplicate slug — link to existing entity instead
+                    existing = get_entity_by_slug(slug, conn)
+                    if existing is not None:
+                        entity_id = existing.id
+                        summary["new_entities"] -= 1
+                        summary["flagged"] += 1
+                    else:
+                        logger.warning("Failed to create entity for '%s'", name)
+                        continue
+
+        # Insert observation
+        if not dry_run and entity_id is not None:
+            obs = EntityObservation(
+                entity_id=entity_id,
+                article_slug=article_slug,
+                article_url=article_url or None,
+                observed_name=name,
+                observed_stance=observed_stance,
+                observed_role=observed_role,
+                observed_party=observed_party,
+                observed_type=observed_type,
+                attribution_types=attr_types,
+                claim_indices=claim_indices,
+                match_confidence=effective_confidence,
+                match_method=match.method,
+                disagreements=disagreements,
+            )
+            try:
+                insert_observation(obs, conn)
+            except Exception as e:
+                logger.warning("Failed to insert observation for '%s': %s", name, e)
+
+    return summary
+
+
 def _adjust_confidence(conn, match, sighting_verdict: str) -> None:
     """Decay or boost canonical claim confidence based on verdict agreement."""
     from esbvaktin.claim_bank.confidence import adjust_confidence
@@ -334,6 +516,8 @@ def main():
         counts = register_article(args.dir, report, conn, dry_run=args.dry_run)
         prefix = "[DRY RUN] " if args.dry_run else ""
         print(f"{prefix}{args.dir}: {counts}")
+        entity_summary = register_entity_observations(args.dir, report, conn, dry_run=args.dry_run)
+        print(f"{prefix}Entities: {entity_summary}")
     else:
         # All unregistered
         articles = load_unregistered_articles()
@@ -353,6 +537,23 @@ def main():
 
             report = json.loads(report_path.read_text())
             counts = register_article(a["analysis_dir"], report, conn, dry_run=args.dry_run)
+
+            entity_summary = register_entity_observations(
+                a["analysis_dir"],
+                report,
+                conn,
+                dry_run=args.dry_run,
+            )
+            if entity_summary.get("flagged") or entity_summary.get("new_entities"):
+                logger.info(
+                    "  Entities: %d auto-linked, %d flagged, %d new%s",
+                    entity_summary["auto_linked"],
+                    entity_summary["flagged"],
+                    entity_summary["new_entities"],
+                    f" (disagreements: {entity_summary['disagreements']})"
+                    if entity_summary["disagreements"]
+                    else "",
+                )
 
             for k in totals:
                 totals[k] += counts[k]
