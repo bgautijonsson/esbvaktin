@@ -294,3 +294,66 @@ JOIN claims c ON c.id = s.claim_id
 WHERE c.published = TRUE AND s.source_domain IS NOT NULL
 GROUP BY s.source_domain, c.verdict
 ORDER BY s.source_domain, c.verdict;
+
+
+-- ═══════════════════════════════════════════════════════════════════════
+-- Entity Registry: canonical entity profiles with observation tracking
+-- ═══════════════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS entities (
+    id SERIAL PRIMARY KEY,
+    slug TEXT UNIQUE NOT NULL,
+    canonical_name TEXT NOT NULL,
+    entity_type TEXT NOT NULL CHECK (entity_type IN ('individual', 'party', 'institution', 'union')),
+    subtype TEXT CHECK (subtype IN ('politician', 'media')),
+    stance TEXT CHECK (stance IN ('pro_eu', 'anti_eu', 'mixed', 'neutral')),
+    stance_score REAL CHECK (stance_score BETWEEN -1.0 AND 1.0),
+    stance_confidence REAL CHECK (stance_confidence BETWEEN 0.0 AND 1.0),
+    party_slug TEXT,
+    althingi_id INTEGER,
+    aliases TEXT[] DEFAULT '{}',
+    roles JSONB DEFAULT '[]',
+    notes TEXT,
+    verification_status TEXT NOT NULL DEFAULT 'auto_generated'
+        CHECK (verification_status IN ('auto_generated', 'needs_review', 'confirmed')),
+    is_icelandic BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    verified_at TIMESTAMPTZ,
+    verified_by TEXT
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_entities_slug ON entities(slug);
+CREATE INDEX IF NOT EXISTS idx_entities_aliases ON entities USING GIN(aliases);
+CREATE INDEX IF NOT EXISTS idx_entities_verification ON entities(verification_status);
+
+DROP TRIGGER IF EXISTS entities_updated_at ON entities;
+CREATE TRIGGER entities_updated_at
+    BEFORE UPDATE ON entities
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+
+CREATE TABLE IF NOT EXISTS entity_observations (
+    id SERIAL PRIMARY KEY,
+    entity_id INTEGER REFERENCES entities(id) ON DELETE SET NULL,
+    article_slug TEXT NOT NULL,
+    article_url TEXT,
+    observed_name TEXT NOT NULL,
+    observed_stance TEXT,
+    observed_role TEXT,
+    observed_party TEXT,
+    observed_type TEXT,
+    attribution_types TEXT[] DEFAULT '{}',
+    claim_indices INTEGER[] DEFAULT '{}',
+    match_confidence REAL,
+    match_method TEXT CHECK (match_method IN ('exact', 'alias', 'lemma', 'fuzzy', 'manual')),
+    disagreements JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_observations_entity ON entity_observations(entity_id);
+CREATE INDEX IF NOT EXISTS idx_observations_article ON entity_observations(article_slug);
+CREATE INDEX IF NOT EXISTS idx_observations_flagged ON entity_observations(entity_id)
+    WHERE disagreements IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_observations_unmatched ON entity_observations(entity_id)
+    WHERE entity_id IS NULL;
