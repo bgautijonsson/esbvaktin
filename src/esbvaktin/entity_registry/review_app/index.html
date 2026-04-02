@@ -1708,8 +1708,8 @@ function renderEditCard(entity) {
         </div>
         <div class="edit-field">
           <label class="edit-label">Subtype</label>
-          <select class="edit-select" onchange="state.editDraft.subtype = this.value">
-            <option value="none" ${d.subtype === 'none' ? 'selected' : ''}>None</option>
+          <select class="edit-select" onchange="state.editDraft.subtype = this.value || null">
+            <option value="" ${!d.subtype ? 'selected' : ''}>None</option>
             <option value="politician" ${d.subtype === 'politician' ? 'selected' : ''}>Politician</option>
             <option value="media" ${d.subtype === 'media' ? 'selected' : ''}>Media</option>
           </select>
@@ -1963,7 +1963,7 @@ function startEdit(slug) {
     canonical_name: entity.canonical_name || '',
     stance: entity.stance || 'neutral',
     entity_type: entity.entity_type || 'individual',
-    subtype: entity.subtype || 'none',
+    subtype: entity.subtype || '',
     party_slug: entity.party_slug || '',
     is_icelandic: entity.is_icelandic != null ? entity.is_icelandic : true,
     locked_fields: entity.locked_fields ? [...entity.locked_fields] : [],
@@ -1989,6 +1989,10 @@ function toggleLock(field, checked) {
 async function saveEdit(slug) {
   try {
     const body = { ...state.editDraft };
+    // Convert empty-string sentinels to null for nullable DB columns
+    for (const key of ['subtype', 'party_slug']) {
+      if (body[key] === '' || body[key] === 'none') body[key] = null;
+    }
     await api('PATCH', `/api/entities/${slug}`, body);
     state.editingSlug = null;
     state.editDraft = {};

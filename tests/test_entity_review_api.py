@@ -20,19 +20,21 @@ from esbvaktin.entity_registry.operations import (
 
 @pytest.fixture
 def db_conn():
-    """Get a test DB connection with clean entity tables and rollback in teardown."""
+    """Get a test DB connection isolated via transaction rollback (won't wipe production data)."""
     from esbvaktin.ground_truth.operations import get_connection, init_schema
 
     conn = get_connection()
     init_schema(conn)
+    conn.commit()
+    # All test work happens in one transaction we roll back in teardown
     conn.execute("DELETE FROM entity_observations")
     conn.execute("DELETE FROM entities")
-    conn.commit()
+    # Prevent operations from committing so we can roll everything back
+    _real_commit = conn.commit
+    conn.commit = lambda: None
     yield conn
-    conn.rollback()
-    conn.execute("DELETE FROM entity_observations")
-    conn.execute("DELETE FROM entities")
-    conn.commit()
+    conn.commit = _real_commit
+    conn.rollback()  # Undo all test changes + the DELETEs → restores production data
     conn.close()
 
 

@@ -553,9 +553,9 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0" },
     { name = "requests", marker = "extra == 'email'", specifier = ">=2.32" },
     { name = "reynir", marker = "extra == 'icelandic'", specifier = ">=3.0" },
-    { name = "reynir-correct", marker = "extra == 'icelandic'", specifier = ">=4.0" },
+    { name = "reynir-correct", marker = "extra == 'icelandic'", specifier = ">=4.0,<5" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9" },
-    { name = "torch", marker = "extra == 'embeddings'", specifier = ">=2.0" },
+    { name = "torch", marker = "extra == 'embeddings'", specifier = ">=2.0,<3" },
     { name = "trafilatura", specifier = ">=2.0" },
     { name = "transformers", marker = "extra == 'embeddings'", specifier = ">=4.41,<5" },
 ]

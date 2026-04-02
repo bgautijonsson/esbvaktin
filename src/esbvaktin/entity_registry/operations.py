@@ -189,6 +189,12 @@ def update_entity(entity_id: int, updates: dict, conn: psycopg.Connection) -> No
     if not filtered:
         return
 
+    # Normalise empty-string / "none" sentinels to NULL for nullable columns
+    nullable = {"subtype", "party_slug", "althingi_id", "notes", "verified_at", "verified_by"}
+    for key in nullable & filtered.keys():
+        if filtered[key] in ("", "none", "None"):
+            filtered[key] = None
+
     if "roles" in filtered and not isinstance(filtered["roles"], str):
         filtered["roles"] = json.dumps(filtered["roles"])
 
