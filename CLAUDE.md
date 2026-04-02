@@ -53,6 +53,10 @@ src/esbvaktin/          # Main package
     fact_check.py       # Speech selection, loading, work dir setup for fact-checking
     register_sightings.py  # Post-assessment: match→sighting, new→unpublished claim
   ground_truth/         # Evidence database operations
+  entity_registry/      # Canonical entity registry (identity, stance, observations)
+    models.py           # Entity, EntityObservation, VerificationStatus, MatchMethod
+    operations.py       # DB CRUD (insert, update, merge, review queue)
+    matcher.py          # Name matching cascade (BÍN lemmatisation + aliases)
   claim_bank/           # Canonical claims storage with verdicts for reuse across articles
   gap_planner/          # Evidence gap identification and research task generation
   corrections/          # Icelandic text correction pipeline (greynir, naturalness, inflections, EU terms)
@@ -223,6 +227,12 @@ uv run python scripts/export_claims.py --site-dir ~/esbvaktin-site    # 4. Expor
 uv run python scripts/prepare_site.py --site-dir ~/esbvaktin-site     # 5. Prepare site data (overlays DB verdicts)
 uv run python scripts/prepare_speeches.py --site-dir ~/esbvaktin-site # 6. Export Alþingi debate data
 uv run python scripts/export_overviews.py --site-dir ~/esbvaktin-site # 7. Export weekly overviews
+
+# Entity registry
+uv run python scripts/migrate_entities.py --status     # Registry status (counts, verification breakdown)
+uv run python scripts/migrate_entities.py              # Run big-bang migration
+uv run python scripts/migrate_entities.py --report     # Show migration report (duplicates, conflicts)
+uv run python scripts/migrate_entities.py --force      # Re-run migration (clears existing data)
 
 # Database backup (daily via launchd, syncs to iCloud)
 ./scripts/backup_db.sh            # Manual backup
