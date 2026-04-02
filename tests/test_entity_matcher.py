@@ -157,6 +157,40 @@ class TestDisagreements:
         assert disagreements["party"] is True
 
 
+class TestLockedFields:
+    def test_disagreement_on_locked_field_still_recorded(self):
+        entity = Entity(
+            id=1,
+            slug="x",
+            canonical_name="X",
+            entity_type="individual",
+            stance="pro_eu",
+            locked_fields=["stance"],
+        )
+        disagreements = compute_disagreements(
+            entity=entity,
+            observed_stance="anti_eu",
+            observed_role=None,
+            observed_party=None,
+            observed_type="individual",
+        )
+        assert disagreements is not None
+        assert disagreements["stance"] is True
+
+    def test_is_field_locked(self):
+        from esbvaktin.entity_registry.matcher import is_field_locked
+
+        entity = Entity(
+            id=1,
+            slug="x",
+            canonical_name="X",
+            entity_type="individual",
+            locked_fields=["stance", "type"],
+        )
+        assert is_field_locked(entity, "stance") is True
+        assert is_field_locked(entity, "party") is False
+
+
 class TestMatchAndRecordSummary:
     def test_returns_summary(self):
         summary = match_and_record_summary(

@@ -253,6 +253,11 @@ def compute_disagreements(
     return disagreements if disagreements else None
 
 
+def is_field_locked(entity: Entity, field: str) -> bool:
+    """Check if a field is locked on an entity (manual override takes precedence)."""
+    return field in entity.locked_fields
+
+
 def match_and_record_summary(
     auto_linked: int,
     flagged: int,
