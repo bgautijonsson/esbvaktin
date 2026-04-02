@@ -584,6 +584,18 @@ h1, h2, h3, h4 {
   color: var(--text-muted);
 }
 
+/* Confirmation summary */
+.confirm-summary {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+.confirm-summary strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 /* Action bar */
 .action-bar {
   display: flex;
@@ -1517,6 +1529,39 @@ function renderCard(entity) {
     </div>
   ` : '';
 
+  // Confirmation summary — explains what "Confirm" means for this entity
+  let summaryLine = '';
+  if (!isConfirmed && !isEdited) {
+    const parts = [];
+    // Identity
+    const typeStr = e.subtype ? subtypeLabel(e.subtype) : typeLabel(e.entity_type);
+    parts.push(`<strong>${esc(e.canonical_name)}</strong> as ${typeStr.toLowerCase()}`);
+    // Stance
+    if (e.stance) parts.push(`with stance <strong>${stanceLabel(e.stance)}</strong>`);
+    if (e.party_slug) parts.push(`(${esc(e.party_slug)})`);
+
+    // Issues / warnings
+    const warnings = [];
+    const sb = e.stance_breakdown || {};
+    const nonNeutral = Object.entries(sb).filter(([k]) => k !== 'neutral');
+    const distinctStances = nonNeutral.filter(([, v]) => v > 0);
+    if (distinctStances.length > 1) {
+      const minority = nonNeutral
+        .filter(([k]) => k !== e.stance)
+        .map(([k, v]) => `${v} ${stanceLabel(k).toLowerCase()}`)
+        .join(', ');
+      if (minority) warnings.push(`${minority} observation${nonNeutral.reduce((s, [, v]) => s + v, 0) > 1 ? 's' : ''} disagree`);
+    }
+    if (issue === 'type-mismatch') warnings.push('some observations tagged a different entity type');
+    if (aliases.length > 0) warnings.push(`${aliases.length} alias${aliases.length > 1 ? 'es' : ''} registered`);
+
+    const warningStr = warnings.length > 0
+      ? ` — <span style="color: var(--warning)">${warnings.join('; ')}</span>`
+      : '';
+
+    summaryLine = `<div class="confirm-summary">Confirm ${parts.join(' ')}${warningStr}</div>`;
+  }
+
   // Action bar
   const actionBar = (isConfirmed || isEdited) ? '' : `
     <div class="action-bar">
@@ -1550,6 +1595,7 @@ function renderCard(entity) {
       ${metaParts.length > 0 ? `<div class="card-meta">${metaParts.join('')}</div>` : ''}
       ${obsSection}
       ${aliasSection}
+      ${summaryLine}
       ${actionBar || confirmedActionBar}
     </div>
   `;
