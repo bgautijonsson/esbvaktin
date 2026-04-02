@@ -180,6 +180,8 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 /reassess denominator      # Reassess scope-word claims (denominator confusion audit)
 /reassess evidence ID1 ID2 ...  # Reassess all claims citing these evidence entries
 /reassess claims 123 456 ...    # Reassess specific claims by ID
+/entity-review             # Interactive browser-based entity review
+/entity-review status      # Entity registry queue status
 /tidy                      # Full codebase quality audit
 /tidy lint                 # Ruff lint only
 /weekly-review              # Generate weekly overview + editorial (checks inbox first)
