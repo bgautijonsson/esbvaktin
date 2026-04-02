@@ -111,6 +111,7 @@ class TestRoleEntry:
 
 
 from esbvaktin.entity_registry.operations import (  # noqa: E402
+    get_all_entities,
     get_entity_by_slug,
     get_observations_for_entity,
     get_review_queue,
@@ -166,6 +167,12 @@ class TestInsertEntity:
 
     def test_returns_none_for_missing_slug(self, db_conn):
         assert get_entity_by_slug("nonexistent", db_conn) is None
+
+    def test_get_all_entities(self, db_conn):
+        insert_entity(Entity(slug="a", canonical_name="A", entity_type="individual"), db_conn)
+        insert_entity(Entity(slug="b", canonical_name="B", entity_type="party"), db_conn)
+        all_entities = get_all_entities(db_conn)
+        assert len(all_entities) == 2
 
 
 class TestInsertObservation:
