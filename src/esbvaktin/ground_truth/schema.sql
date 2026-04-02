@@ -357,3 +357,10 @@ CREATE INDEX IF NOT EXISTS idx_observations_flagged ON entity_observations(entit
     WHERE disagreements IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_observations_unmatched ON entity_observations(entity_id)
     WHERE entity_id IS NULL;
+
+-- ═══════════════════════════════════════════════════════════════════════
+-- Migration: Entity review support (locked fields + observation dismissal)
+-- ═══════════════════════════════════════════════════════════════════════
+
+ALTER TABLE entities ADD COLUMN IF NOT EXISTS locked_fields TEXT[] DEFAULT '{}';
+ALTER TABLE entity_observations ADD COLUMN IF NOT EXISTS dismissed BOOLEAN DEFAULT FALSE;

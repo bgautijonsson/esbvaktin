@@ -17,11 +17,12 @@ def insert_entity(entity: Entity, conn: psycopg.Connection) -> int:
         INSERT INTO entities (
             slug, canonical_name, entity_type, subtype, stance, stance_score,
             stance_confidence, party_slug, althingi_id, aliases, roles, notes,
-            verification_status, is_icelandic
+            verification_status, is_icelandic, locked_fields
         ) VALUES (
             %(slug)s, %(canonical_name)s, %(entity_type)s, %(subtype)s, %(stance)s,
             %(stance_score)s, %(stance_confidence)s, %(party_slug)s, %(althingi_id)s,
-            %(aliases)s, %(roles)s, %(notes)s, %(verification_status)s, %(is_icelandic)s
+            %(aliases)s, %(roles)s, %(notes)s, %(verification_status)s, %(is_icelandic)s,
+            %(locked_fields)s
         ) RETURNING id
         """,
         {
@@ -39,6 +40,7 @@ def insert_entity(entity: Entity, conn: psycopg.Connection) -> int:
             "notes": entity.notes,
             "verification_status": entity.verification_status.value,
             "is_icelandic": entity.is_icelandic,
+            "locked_fields": entity.locked_fields,
         },
     ).fetchone()
     conn.commit()
@@ -86,7 +88,7 @@ def get_entity_by_slug(slug: str, conn: psycopg.Connection) -> Entity | None:
         """
         SELECT id, slug, canonical_name, entity_type, subtype, stance, stance_score,
                stance_confidence, party_slug, althingi_id, aliases, roles, notes,
-               verification_status, is_icelandic
+               verification_status, is_icelandic, locked_fields
         FROM entities WHERE slug = %(slug)s
         """,
         {"slug": slug},
@@ -102,7 +104,7 @@ def get_all_entities(conn: psycopg.Connection) -> list[Entity]:
         """
         SELECT id, slug, canonical_name, entity_type, subtype, stance, stance_score,
                stance_confidence, party_slug, althingi_id, aliases, roles, notes,
-               verification_status, is_icelandic
+               verification_status, is_icelandic, locked_fields
         FROM entities ORDER BY canonical_name
         """
     ).fetchall()
@@ -115,7 +117,7 @@ def get_entities_by_status(status: VerificationStatus, conn: psycopg.Connection)
         """
         SELECT id, slug, canonical_name, entity_type, subtype, stance, stance_score,
                stance_confidence, party_slug, althingi_id, aliases, roles, notes,
-               verification_status, is_icelandic
+               verification_status, is_icelandic, locked_fields
         FROM entities WHERE verification_status = %(status)s
         ORDER BY canonical_name
         """,
@@ -132,7 +134,7 @@ def get_observations_for_entity(
         """
         SELECT id, entity_id, article_slug, article_url, observed_name, observed_stance,
                observed_role, observed_party, observed_type, attribution_types,
-               claim_indices, match_confidence, match_method, disagreements
+               claim_indices, match_confidence, match_method, disagreements, dismissed
         FROM entity_observations WHERE entity_id = %(entity_id)s
         ORDER BY created_at
         """,
@@ -177,6 +179,7 @@ def update_entity(entity_id: int, updates: dict, conn: psycopg.Connection) -> No
         "notes",
         "verification_status",
         "is_icelandic",
+        "locked_fields",
         "verified_at",
         "verified_by",
     }
@@ -246,6 +249,7 @@ def _row_to_entity(row: tuple) -> Entity:
         notes=row[12],
         verification_status=row[13],
         is_icelandic=row[14],
+        locked_fields=list(row[15] or []),
     )
 
 
@@ -270,4 +274,5 @@ def _row_to_observation(row: tuple) -> EntityObservation:
         match_confidence=row[11],
         match_method=row[12],
         disagreements=disagreements,
+        dismissed=row[14],
     )

@@ -45,6 +45,7 @@ class Entity(BaseModel):
     notes: str | None = None
     verification_status: VerificationStatus = VerificationStatus.AUTO_GENERATED
     is_icelandic: bool = True
+    locked_fields: list[str] = Field(default_factory=list)
 
 
 class EntityObservation(BaseModel):
@@ -64,3 +65,4 @@ class EntityObservation(BaseModel):
     match_confidence: float | None = None
     match_method: MatchMethod | None = None
     disagreements: dict[str, bool] | None = None
+    dismissed: bool = False

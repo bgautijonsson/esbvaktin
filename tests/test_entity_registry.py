@@ -291,3 +291,41 @@ class TestMergeEntities:
         assert "Absorbs" in keep.aliases
         obs = get_observations_for_entity(keep_id, db_conn)
         assert len(obs) == 1
+
+
+class TestLockedFields:
+    def test_insert_with_locked_fields(self, db_conn):
+        entity = Entity(
+            slug="locked-test",
+            canonical_name="Locked Test",
+            entity_type="individual",
+            stance="pro_eu",
+            locked_fields=["stance"],
+        )
+        insert_entity(entity, db_conn)
+        retrieved = get_entity_by_slug("locked-test", db_conn)
+        assert "stance" in retrieved.locked_fields
+
+    def test_update_locked_fields(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="lock-update", canonical_name="Lock", entity_type="individual"),
+            db_conn,
+        )
+        update_entity(entity_id, {"locked_fields": ["stance", "type"]}, db_conn)
+        updated = get_entity_by_slug("lock-update", db_conn)
+        assert "stance" in updated.locked_fields
+        assert "type" in updated.locked_fields
+
+
+class TestDismissedObservation:
+    def test_default_not_dismissed(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="dismiss-test", canonical_name="D", entity_type="individual"),
+            db_conn,
+        )
+        insert_observation(
+            EntityObservation(entity_id=entity_id, article_slug="a1", observed_name="D"),
+            db_conn,
+        )
+        obs = get_observations_for_entity(entity_id, db_conn)
+        assert obs[0].dismissed is False
