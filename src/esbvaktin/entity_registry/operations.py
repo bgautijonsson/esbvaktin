@@ -11,6 +11,70 @@ import psycopg
 
 from .models import Entity, EntityObservation, VerificationStatus
 
+# ── Stance computation from observations ─────────────────────────────
+
+_STANCE_SCORES = {
+    "pro_eu": 1.0,
+    "anti_eu": -1.0,
+    "mixed": 0.0,
+    "neutral": 0.0,
+}
+
+MIN_STANCE_OBSERVATIONS = 3
+
+
+@dataclass
+class ComputedStance:
+    """Observation-derived stance for an entity."""
+
+    label: str  # pro_eu | anti_eu | mixed | neutral | insufficient_data
+    score: float  # [-1.0, 1.0]
+    confidence: float  # [0.0, 1.0], linear ramp reaching 1.0 at 5 observations
+    n_observations: int  # count of non-NULL stance observations
+
+
+def _stance_label_from_score(score: float, n_observations: int) -> str:
+    """Derive stance label from continuous score, gated by observation count."""
+    if n_observations < MIN_STANCE_OBSERVATIONS:
+        return "insufficient_data"
+    if score >= 0.5:
+        return "pro_eu"
+    elif score <= -0.5:
+        return "anti_eu"
+    elif abs(score) < 0.1:
+        return "neutral"
+    else:
+        return "mixed"
+
+
+def compute_stance_from_observations(entity_id: int, conn: psycopg.Connection) -> ComputedStance:
+    """Compute stance from non-dismissed observations for an entity.
+
+    Returns a ComputedStance with the observation-derived label, score,
+    confidence, and count. Returns insufficient_data with score 0.0 when
+    fewer than MIN_STANCE_OBSERVATIONS non-NULL stances exist.
+    """
+    rows = conn.execute(
+        """
+        SELECT observed_stance FROM entity_observations
+        WHERE entity_id = %(eid)s AND NOT dismissed AND observed_stance IS NOT NULL
+        """,
+        {"eid": entity_id},
+    ).fetchall()
+
+    stances = [r[0] for r in rows]
+    n = len(stances)
+    if n == 0:
+        return ComputedStance(
+            label="insufficient_data", score=0.0, confidence=0.0, n_observations=0
+        )
+
+    numeric = [_STANCE_SCORES.get(s, 0.0) for s in stances]
+    score = round(sum(numeric) / len(numeric), 2)
+    label = _stance_label_from_score(score, n)
+    confidence = round(min(n / 5.0, 1.0), 2)
+    return ComputedStance(label=label, score=score, confidence=confidence, n_observations=n)
+
 
 def insert_entity(entity: Entity, conn: psycopg.Connection) -> int:
     """Insert an entity and return its ID."""
@@ -448,6 +512,27 @@ def get_filtered_entities(
         if len(non_neutral) > 1:
             stance_conflict_ids.add(eid)
 
+    # Compute observation-derived stance per entity (mirrors export_entities logic)
+    computed_stances: dict[int, ComputedStance] = {}
+    for eid in entity_ids:
+        stances_list = []
+        for s, count in stance_breakdowns.get(eid, {}).items():
+            stances_list.extend([s] * count)
+        n = len(stances_list)
+        if n == 0:
+            computed_stances[eid] = ComputedStance(
+                label="insufficient_data", score=0.0, confidence=0.0, n_observations=0
+            )
+        else:
+            numeric = [_STANCE_SCORES.get(s, 0.0) for s in stances_list]
+            score = round(sum(numeric) / len(numeric), 2)
+            computed_stances[eid] = ComputedStance(
+                label=_stance_label_from_score(score, n),
+                score=score,
+                confidence=round(min(n / 5.0, 1.0), 2),
+                n_observations=n,
+            )
+
     # Fetch recent observations (last 3 per entity) for card display
     recent_obs_rows = conn.execute(
         """
@@ -494,6 +579,7 @@ def get_filtered_entities(
             if not has_issue or is_confirmed:
                 continue
 
+        cs = computed_stances.get(eid)
         results.append(
             {
                 "id": eid,
@@ -511,6 +597,10 @@ def get_filtered_entities(
                 "has_type_mismatch": eid in type_mismatches,
                 "has_stance_conflict": eid in stance_conflict_ids,
                 "recent_observations": recent_obs.get(eid, []),
+                "computed_stance": cs.label if cs else None,
+                "computed_stance_score": cs.score if cs else None,
+                "computed_stance_confidence": cs.confidence if cs else None,
+                "stance_observation_count": cs.n_observations if cs else 0,
             }
         )
 
@@ -534,32 +624,51 @@ def get_filtered_entities(
 
 
 def get_entity_detail(slug: str, conn: psycopg.Connection) -> dict | None:
-    """Return full entity detail with observations, or None if not found."""
+    """Return full entity detail with observations and computed stance, or None."""
     entity = get_entity_by_slug(slug, conn)
     if entity is None:
         return None
 
     observations = get_observations_for_entity(entity.id, conn)
+    cs = compute_stance_from_observations(entity.id, conn)
     result = entity.model_dump()
     result["observations"] = [obs.model_dump() for obs in observations]
+    result["computed_stance"] = cs.label
+    result["computed_stance_score"] = cs.score
+    result["computed_stance_confidence"] = cs.confidence
+    result["stance_observation_count"] = cs.n_observations
     return result
 
 
 def confirm_entity(slug: str, conn: psycopg.Connection) -> Entity | None:
-    """Set entity verification_status to confirmed. Returns updated entity or None."""
+    """Set entity verification_status to confirmed. Returns updated entity or None.
+
+    Auto-populates stance fields from observations unless individually locked.
+    Only sets stance labels when the observation gate is met (>= 3 non-NULL stances).
+    """
     entity = get_entity_by_slug(slug, conn)
     if entity is None:
         return None
 
-    update_entity(
-        entity.id,
-        {
-            "verification_status": "confirmed",
-            "verified_at": datetime.now(UTC),
-            "verified_by": "review_ui",
-        },
-        conn,
-    )
+    updates: dict = {
+        "verification_status": "confirmed",
+        "verified_at": datetime.now(UTC),
+        "verified_by": "review_ui",
+    }
+
+    # Auto-populate stance from observations (respects locked_fields)
+    locked = set(entity.locked_fields)
+    cs = compute_stance_from_observations(entity.id, conn)
+    if cs.n_observations > 0:
+        if "stance_score" not in locked:
+            updates["stance_score"] = cs.score
+        if "stance_confidence" not in locked:
+            updates["stance_confidence"] = cs.confidence
+        # Only set categorical stance when observation gate is met
+        if "stance" not in locked and cs.label != "insufficient_data":
+            updates["stance"] = cs.label
+
+    update_entity(entity.id, updates, conn)
     return get_entity_by_slug(slug, conn)
 
 

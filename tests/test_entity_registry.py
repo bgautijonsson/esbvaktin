@@ -111,6 +111,8 @@ class TestRoleEntry:
 
 
 from esbvaktin.entity_registry.operations import (  # noqa: E402
+    compute_stance_from_observations,
+    confirm_entity,
     get_all_entities,
     get_entity_by_slug,
     get_observations_for_entity,
@@ -465,6 +467,213 @@ class TestLockedFields:
         update_entity(entity_id, {"notes": "some notes"}, db_conn)
         entity = get_entity_by_slug("lock-other", db_conn)
         assert entity.notes == "some notes"
+
+
+class TestComputeStanceFromObservations:
+    def test_no_observations(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="cs-empty", canonical_name="Empty", entity_type="individual"),
+            db_conn,
+        )
+        cs = compute_stance_from_observations(entity_id, db_conn)
+        assert cs.label == "insufficient_data"
+        assert cs.score == 0.0
+        assert cs.n_observations == 0
+
+    def test_below_gate(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="cs-sparse", canonical_name="Sparse", entity_type="individual"),
+            db_conn,
+        )
+        for i in range(2):
+            insert_observation(
+                EntityObservation(
+                    entity_id=entity_id,
+                    article_slug=f"a{i}",
+                    observed_name="Sparse",
+                    observed_stance="pro_eu",
+                ),
+                db_conn,
+            )
+        cs = compute_stance_from_observations(entity_id, db_conn)
+        assert cs.label == "insufficient_data"
+        assert cs.n_observations == 2
+        assert cs.score == 1.0  # score still computed, label gated
+
+    def test_above_gate_pro(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="cs-pro", canonical_name="Pro", entity_type="individual"),
+            db_conn,
+        )
+        for i in range(4):
+            insert_observation(
+                EntityObservation(
+                    entity_id=entity_id,
+                    article_slug=f"a{i}",
+                    observed_name="Pro",
+                    observed_stance="pro_eu",
+                ),
+                db_conn,
+            )
+        cs = compute_stance_from_observations(entity_id, db_conn)
+        assert cs.label == "pro_eu"
+        assert cs.score == 1.0
+        assert cs.confidence == 0.8  # 4/5
+
+    def test_mixed_stances(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="cs-mixed", canonical_name="Mixed", entity_type="individual"),
+            db_conn,
+        )
+        stances = ["pro_eu", "anti_eu", "pro_eu"]
+        for i, s in enumerate(stances):
+            insert_observation(
+                EntityObservation(
+                    entity_id=entity_id,
+                    article_slug=f"a{i}",
+                    observed_name="Mixed",
+                    observed_stance=s,
+                ),
+                db_conn,
+            )
+        cs = compute_stance_from_observations(entity_id, db_conn)
+        assert cs.label == "mixed"
+        assert cs.score == pytest.approx(0.33, abs=0.01)
+
+    def test_null_stances_excluded(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="cs-null", canonical_name="Null", entity_type="individual"),
+            db_conn,
+        )
+        # 2 with stance, 3 without → only 2 count
+        for i in range(2):
+            insert_observation(
+                EntityObservation(
+                    entity_id=entity_id,
+                    article_slug=f"a{i}",
+                    observed_name="Null",
+                    observed_stance="pro_eu",
+                ),
+                db_conn,
+            )
+        for i in range(3):
+            insert_observation(
+                EntityObservation(
+                    entity_id=entity_id,
+                    article_slug=f"n{i}",
+                    observed_name="Null",
+                    observed_stance=None,
+                ),
+                db_conn,
+            )
+        cs = compute_stance_from_observations(entity_id, db_conn)
+        assert cs.n_observations == 2
+        assert cs.label == "insufficient_data"
+
+    def test_dismissed_excluded(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="cs-dismiss", canonical_name="Dismiss", entity_type="individual"),
+            db_conn,
+        )
+        obs_ids = []
+        for i in range(3):
+            obs_id = insert_observation(
+                EntityObservation(
+                    entity_id=entity_id,
+                    article_slug=f"a{i}",
+                    observed_name="Dismiss",
+                    observed_stance="pro_eu",
+                ),
+                db_conn,
+            )
+            obs_ids.append(obs_id)
+        # Dismiss the third observation via SQL (insert_observation doesn't support dismissed)
+        db_conn.execute(
+            "UPDATE entity_observations SET dismissed = TRUE WHERE id = %(id)s",
+            {"id": obs_ids[2]},
+        )
+        cs = compute_stance_from_observations(entity_id, db_conn)
+        assert cs.n_observations == 2  # dismissed one excluded
+        assert cs.label == "insufficient_data"
+
+
+class TestConfirmWithStance:
+    def test_confirm_auto_populates_stance(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="confirm-stance", canonical_name="Confirm", entity_type="individual"),
+            db_conn,
+        )
+        for i in range(4):
+            insert_observation(
+                EntityObservation(
+                    entity_id=entity_id,
+                    article_slug=f"a{i}",
+                    observed_name="Confirm",
+                    observed_stance="anti_eu",
+                ),
+                db_conn,
+            )
+        result = confirm_entity("confirm-stance", db_conn)
+        assert result.verification_status == VerificationStatus.CONFIRMED
+        assert result.stance == "anti_eu"
+        assert result.stance_score == -1.0
+        assert result.stance_confidence == 0.8
+
+    def test_confirm_insufficient_data_no_stance(self, db_conn):
+        entity_id = insert_entity(
+            Entity(slug="confirm-insuf", canonical_name="Insuf", entity_type="individual"),
+            db_conn,
+        )
+        insert_observation(
+            EntityObservation(
+                entity_id=entity_id,
+                article_slug="a1",
+                observed_name="Insuf",
+                observed_stance="pro_eu",
+            ),
+            db_conn,
+        )
+        result = confirm_entity("confirm-insuf", db_conn)
+        assert result.verification_status == VerificationStatus.CONFIRMED
+        # Below gate → stance stays None (not overridden to "insufficient_data")
+        assert result.stance is None
+        assert result.stance_score == 1.0  # score always set
+        assert result.stance_confidence == 0.2  # 1/5
+
+    def test_confirm_respects_locked_stance(self, db_conn):
+        insert_entity(
+            Entity(
+                slug="confirm-locked",
+                canonical_name="Locked",
+                entity_type="individual",
+                stance="pro_eu",
+                stance_score=0.9,
+                locked_fields=["stance", "stance_score"],
+            ),
+            db_conn,
+        )
+        for i in range(4):
+            insert_observation(
+                EntityObservation(
+                    entity_id=None,  # will be set below
+                    article_slug=f"a{i}",
+                    observed_name="Locked",
+                    observed_stance="anti_eu",
+                ),
+                db_conn,
+            )
+        # Fix observation entity_id
+        entity = get_entity_by_slug("confirm-locked", db_conn)
+        db_conn.execute(
+            "UPDATE entity_observations SET entity_id = %(eid)s WHERE entity_id IS NULL",
+            {"eid": entity.id},
+        )
+        result = confirm_entity("confirm-locked", db_conn)
+        # Locked fields preserved despite observations saying anti_eu
+        assert result.stance == "pro_eu"
+        assert result.stance_score == 0.9
+        # Confidence not locked, so it gets updated
+        assert result.stance_confidence == 0.8
 
 
 class TestDismissedObservation:

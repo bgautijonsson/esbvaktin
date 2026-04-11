@@ -491,6 +491,12 @@
         color: var(--v-unverifiable);
       }
 
+      .stance-pill-insufficient {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px dashed var(--rule-strong);
+      }
+
       @media (prefers-color-scheme: dark) {
         .stance-pill-pro {
           background: rgba(74, 222, 128, 0.12);
@@ -1399,6 +1405,7 @@
           anti_eu: "Anti EU",
           mixed: "Mixed",
           neutral: "Neutral",
+          insufficient_data: "Insufficient data",
         };
         return labels[stance] || stance || "Unknown";
       }
@@ -1409,6 +1416,7 @@
           anti_eu: "anti",
           mixed: "mixed",
           neutral: "neutral",
+          insufficient_data: "insufficient",
         };
         return map[stance] || "neutral";
       }
@@ -1776,17 +1784,38 @@
           e.stance_score != null
             ? `<span class="stance-score">${e.stance_score.toFixed(2)}</span>`
             : "";
-        const stanceLbl = e.stance
-          ? `<span class="stance-label" style="color: var(--v-${stanceClass(e.stance) === "pro" ? "supported" : stanceClass(e.stance) === "anti" ? "unsupported" : stanceClass(e.stance) === "mixed" ? "partial" : "unverifiable"})">${stanceLabel(e.stance)}</span>`
+
+        // Use computed stance (observation-derived) for the label
+        const displayStance = e.computed_stance || e.stance;
+        const stanceLbl = displayStance
+          ? `<span class="stance-label" style="color: var(--v-${stanceClass(displayStance) === "pro" ? "supported" : stanceClass(displayStance) === "anti" ? "unsupported" : stanceClass(displayStance) === "mixed" ? "partial" : "unverifiable"})">${stanceLabel(displayStance)}</span>`
           : "";
 
+        // Observation count hint for sparse data
+        const obsCountHint =
+          e.stance_observation_count != null && e.stance_observation_count < 5
+            ? `<span class="stance-score" title="Stance observations">(n=${e.stance_observation_count})</span>`
+            : "";
+
+        // Show DB stance override note if DB and computed disagree
+        const stanceOverride =
+          e.stance &&
+          e.computed_stance &&
+          e.stance !== e.computed_stance &&
+          e.computed_stance !== "insufficient_data"
+            ? `<span class="stance-score" title="DB stance differs from computed">DB: ${stanceLabel(e.stance)}</span>`
+            : "";
+
         const stanceSection =
-          pills.length > 0
+          pills.length > 0 || displayStance === "insufficient_data"
             ? `
     <div class="stance-row">
       ${pills.join("")}
+      ${displayStance === "insufficient_data" && pills.length === 0 ? `<span class="stance-pill stance-pill-insufficient">Insufficient data</span>` : ""}
       ${scoreDisplay}
       ${stanceLbl}
+      ${obsCountHint}
+      ${stanceOverride}
     </div>
   `
             : "";
@@ -1840,7 +1869,14 @@
           const typeStr = e.subtype
             ? subtypeLabel(e.subtype).toLowerCase()
             : typeLabel(e.entity_type).toLowerCase();
-          const stanceStr = e.stance ? stanceLabel(e.stance) : "no stance";
+          const computedStanceStr = e.computed_stance
+            ? stanceLabel(e.computed_stance)
+            : "no stance";
+          const stanceStr =
+            e.computed_stance || e.stance
+              ? stanceLabel(e.computed_stance || e.stance)
+              : "no stance";
+          const nObs = e.stance_observation_count || 0;
           const nonNeutral = Object.entries(sb).filter(
             ([k, v]) => k !== "neutral" && v > 0,
           );
@@ -1862,6 +1898,9 @@
           } else if (e.observation_count === 0) {
             // Placeholder: no observations
             summaryLine = `<div class="confirm-summary"><span class="summary-icon" style="color: var(--text-muted)">○</span> No observations. Exists as a link target only. Confirm to keep, or delete via Details.</div>`;
+          } else if (e.computed_stance === "insufficient_data") {
+            // Below observation gate — stance not yet reliable
+            summaryLine = `<div class="confirm-summary"><span class="summary-icon" style="color: var(--text-muted)">◑</span> Only ${nObs} stance observation${nObs !== 1 ? "s" : ""} (minimum 3 for a label). Confirming will set stance to <strong>insufficient data</strong> until more evidence arrives.</div>`;
           } else if (nonNeutral.length <= 1 && total > 0) {
             // Clean: unanimous or all-neutral
             if (nonNeutral.length === 0) {
