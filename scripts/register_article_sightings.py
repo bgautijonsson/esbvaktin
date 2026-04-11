@@ -389,7 +389,8 @@ def register_entity_observations(
                     new_entity.id = entity_id
                     registry.append(new_entity)
                 except Exception:
-                    # Duplicate slug — link to existing entity instead
+                    # Duplicate slug — rollback the failed INSERT, then link to existing
+                    conn.rollback()
                     existing = get_entity_by_slug(slug, conn)
                     if existing is not None:
                         entity_id = existing.id
@@ -413,7 +414,7 @@ def register_entity_observations(
                 attribution_types=attr_types,
                 claim_indices=claim_indices,
                 match_confidence=effective_confidence,
-                match_method=match.method,
+                match_method=match.method if match.method != "none" else None,
                 disagreements=disagreements,
             )
             try:
