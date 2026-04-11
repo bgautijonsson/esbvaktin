@@ -44,6 +44,7 @@ def _search_result_to_match(result: SearchResult) -> EvidenceMatch:
         source_url=result.source_url,
         source_date=result.source_date,
         caveats=result.caveats,
+        confidence=result.confidence,
         statement_is=result.statement_is,
     )
 

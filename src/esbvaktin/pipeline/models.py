@@ -101,6 +101,7 @@ class EvidenceMatch(BaseModel):
     source_url: str | None = None
     source_date: date | None = None
     caveats: str | None = None
+    confidence: str | None = None
     statement_is: str | None = None
 
 

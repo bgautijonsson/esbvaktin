@@ -373,8 +373,9 @@ def prepare_assessment_context(
             for ev in cwe.evidence:
                 caveats = f" ⚠️ Caveats: {ev.caveats}" if ev.caveats else ""
                 date_str = f", {ev.source_date}" if ev.source_date else ""
+                conf_str = f" [traust: {ev.confidence}]" if ev.confidence else ""
                 claims_section += (
-                    f"- **{ev.evidence_id}** (similarity: {ev.similarity:.3f}): "
+                    f"- **{ev.evidence_id}** (similarity: {ev.similarity:.3f}){conf_str}: "
                     f"{ev.statement} — _Source: {ev.source_name}{date_str}_{caveats}\n"
                 )
             claims_section += "\n"

@@ -610,8 +610,10 @@ def _merge_entity(
     if speaker.get("party") and not entity.get("party"):
         entity["party"] = speaker["party"]
 
-    # Track this per-article stance for averaging
-    entity["_stances"].append(speaker.get("stance", "neutral"))
+    # Track this per-article stance for averaging (preserve None vs neutral distinction)
+    observed_stance = speaker.get("stance")
+    if observed_stance is not None:
+        entity["_stances"].append(observed_stance)
 
     # Add article reference
     if report_slug not in entity["articles"]:
@@ -658,8 +660,14 @@ _VERDICT_SCORES = {
 }
 
 
-def _stance_label(score: float) -> str:
-    """Derive a categorical stance label from a continuous score."""
+def _stance_label(score: float, n_observations: int = 99) -> str:
+    """Derive a categorical stance label from a continuous score.
+
+    Returns "insufficient_data" when fewer than 3 non-NULL stance observations
+    exist — honest about uncertainty rather than asserting a label.
+    """
+    if n_observations < 3:
+        return "insufficient_data"
     if score >= 0.5:
         return "pro_eu"
     elif score <= -0.5:
@@ -679,14 +687,18 @@ def _compute_scores(entities: dict[str, dict]) -> None:
     attribution_counts: breakdown of how claims are attributed to this entity.
     """
     for entity in entities.values():
-        # Stance score — average of all per-article stances
+        # Stance score — average of all per-article stances (NULL stances excluded)
         stances = entity.pop("_stances")
+        n_observations = len(stances)
+        entity["stance_observation_count"] = n_observations
         if stances:
             numeric = [_STANCE_SCORES.get(s, 0.0) for s in stances]
             entity["stance_score"] = round(sum(numeric) / len(numeric), 2)
         else:
             entity["stance_score"] = 0.0
-        entity["stance"] = _stance_label(entity["stance_score"])
+        entity["stance"] = _stance_label(entity["stance_score"], n_observations)
+        # Linear ramp: confidence reaches 1.0 at 5 observations
+        entity["stance_confidence"] = round(min(n_observations / 5.0, 1.0), 2)
 
         # Credibility — from claim verdicts (unverifiable excluded, 'mentioned' excluded)
         verdicts = entity.pop("_verdicts")
