@@ -211,6 +211,8 @@ class ReviewHandler(BaseHTTPRequestHandler):
             update_entity(entity.id, body, conn)
             detail = get_entity_detail(slug, conn)
             self._json_response(detail)
+        except ValueError as ve:
+            self._error(409, str(ve))
         except Exception as exc:
             self._error(500, str(exc))
         finally:
@@ -399,6 +401,8 @@ class ReviewHandler(BaseHTTPRequestHandler):
             update_entity(entity.id, {"aliases": aliases}, conn)
             detail = get_entity_detail(slug, conn)
             self._json_response(detail)
+        except ValueError as ve:
+            self._error(409, str(ve))
         except Exception as exc:
             self._error(500, str(exc))
         finally:
@@ -428,6 +432,8 @@ class ReviewHandler(BaseHTTPRequestHandler):
             update_entity(entity.id, {"roles": roles}, conn)
             detail = get_entity_detail(slug, conn)
             self._json_response(detail)
+        except ValueError as ve:
+            self._error(409, str(ve))
         except Exception as exc:
             self._error(500, str(exc))
         finally:

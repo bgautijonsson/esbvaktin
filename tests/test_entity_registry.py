@@ -294,6 +294,101 @@ class TestMergeEntities:
         obs = get_observations_for_entity(keep_id, db_conn)
         assert len(obs) == 1
 
+    def test_merge_carries_roles(self, db_conn):
+        keep_id = insert_entity(
+            Entity(
+                slug="keep-roles",
+                canonical_name="Keep Roles",
+                entity_type="individual",
+                roles=[RoleEntry(role="alþingismaður", from_date="2020-01-01")],
+            ),
+            db_conn,
+        )
+        absorb_id = insert_entity(
+            Entity(
+                slug="absorb-roles",
+                canonical_name="Absorb Roles",
+                entity_type="individual",
+                roles=[RoleEntry(role="ráðherra", from_date="2022-06-01")],
+            ),
+            db_conn,
+        )
+        merge_entities(keep_id=keep_id, absorb_id=absorb_id, conn=db_conn)
+        keep = get_entity_by_slug("keep-roles", db_conn)
+        role_names = [r.role for r in keep.roles]
+        assert "alþingismaður" in role_names
+        assert "ráðherra" in role_names
+
+    def test_merge_carries_notes(self, db_conn):
+        keep_id = insert_entity(
+            Entity(
+                slug="keep-notes",
+                canonical_name="Keep Notes",
+                entity_type="individual",
+                notes="Keep note",
+            ),
+            db_conn,
+        )
+        absorb_id = insert_entity(
+            Entity(
+                slug="absorb-notes",
+                canonical_name="Absorb Notes",
+                entity_type="individual",
+                notes="Absorb note",
+            ),
+            db_conn,
+        )
+        merge_entities(keep_id=keep_id, absorb_id=absorb_id, conn=db_conn)
+        keep = get_entity_by_slug("keep-notes", db_conn)
+        assert "Keep note" in keep.notes
+        assert "Absorb note" in keep.notes
+        assert "absorb-notes" in keep.notes  # origin label
+
+    def test_merge_carries_stance_score_if_keep_is_none(self, db_conn):
+        keep_id = insert_entity(
+            Entity(
+                slug="keep-score",
+                canonical_name="Keep Score",
+                entity_type="individual",
+            ),
+            db_conn,
+        )
+        absorb_id = insert_entity(
+            Entity(
+                slug="absorb-score",
+                canonical_name="Absorb Score",
+                entity_type="individual",
+                stance_score=0.7,
+            ),
+            db_conn,
+        )
+        merge_entities(keep_id=keep_id, absorb_id=absorb_id, conn=db_conn)
+        keep = get_entity_by_slug("keep-score", db_conn)
+        assert keep.stance_score == pytest.approx(0.7)
+
+    def test_merge_preserves_keep_stance_score(self, db_conn):
+        keep_id = insert_entity(
+            Entity(
+                slug="keep-score2",
+                canonical_name="Keep Score2",
+                entity_type="individual",
+                stance_score=-0.5,
+            ),
+            db_conn,
+        )
+        absorb_id = insert_entity(
+            Entity(
+                slug="absorb-score2",
+                canonical_name="Absorb Score2",
+                entity_type="individual",
+                stance_score=0.8,
+            ),
+            db_conn,
+        )
+        merge_entities(keep_id=keep_id, absorb_id=absorb_id, conn=db_conn)
+        keep = get_entity_by_slug("keep-score2", db_conn)
+        assert keep.stance_score == pytest.approx(-0.5)
+
 
 class TestLockedFields:
     def test_insert_with_locked_fields(self, db_conn):
@@ -317,6 +412,59 @@ class TestLockedFields:
         updated = get_entity_by_slug("lock-update", db_conn)
         assert "stance" in updated.locked_fields
         assert "type" in updated.locked_fields
+
+    def test_update_locked_field_raises(self, db_conn):
+        entity_id = insert_entity(
+            Entity(
+                slug="lock-enforce",
+                canonical_name="Lock Enforce",
+                entity_type="individual",
+                stance="pro_eu",
+                locked_fields=["stance"],
+            ),
+            db_conn,
+        )
+        with pytest.raises(ValueError, match="locked"):
+            update_entity(entity_id, {"stance": "anti_eu"}, db_conn)
+        # Verify stance unchanged
+        entity = get_entity_by_slug("lock-enforce", db_conn)
+        assert entity.stance == "pro_eu"
+
+    def test_unlock_and_update_allowed(self, db_conn):
+        entity_id = insert_entity(
+            Entity(
+                slug="lock-unlock",
+                canonical_name="Lock Unlock",
+                entity_type="individual",
+                stance="pro_eu",
+                locked_fields=["stance"],
+            ),
+            db_conn,
+        )
+        # Changing locked_fields in the same request allows updating locked fields
+        update_entity(
+            entity_id,
+            {"locked_fields": [], "stance": "anti_eu"},
+            db_conn,
+        )
+        entity = get_entity_by_slug("lock-unlock", db_conn)
+        assert entity.stance == "anti_eu"
+        assert entity.locked_fields == []
+
+    def test_non_locked_field_allowed(self, db_conn):
+        entity_id = insert_entity(
+            Entity(
+                slug="lock-other",
+                canonical_name="Lock Other",
+                entity_type="individual",
+                stance="pro_eu",
+                locked_fields=["stance"],
+            ),
+            db_conn,
+        )
+        update_entity(entity_id, {"notes": "some notes"}, db_conn)
+        entity = get_entity_by_slug("lock-other", db_conn)
+        assert entity.notes == "some notes"
 
 
 class TestDismissedObservation:

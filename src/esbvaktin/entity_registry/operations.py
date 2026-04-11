@@ -189,6 +189,17 @@ def update_entity(entity_id: int, updates: dict, conn: psycopg.Connection) -> No
     if not filtered:
         return
 
+    # Enforce locked_fields: reject updates to locked fields unless locks themselves are changing
+    if "locked_fields" not in filtered:
+        row = conn.execute(
+            "SELECT locked_fields FROM entities WHERE id = %(id)s", {"id": entity_id}
+        ).fetchone()
+        if row and row[0]:
+            locked = set(row[0])
+            violations = locked & filtered.keys()
+            if violations:
+                raise ValueError(f"Cannot update locked fields: {', '.join(sorted(violations))}")
+
     # Normalise empty-string / "none" sentinels to NULL for nullable columns
     nullable = {"subtype", "party_slug", "althingi_id", "notes", "verified_at", "verified_by"}
     for key in nullable & filtered.keys():
@@ -205,25 +216,69 @@ def update_entity(entity_id: int, updates: dict, conn: psycopg.Connection) -> No
 
 
 def merge_entities(keep_id: int, absorb_id: int, conn: psycopg.Connection) -> None:
-    """Merge absorb_id into keep_id: move observations, absorb aliases, delete absorbed entity."""
+    """Merge absorb_id into keep_id: move observations, absorb aliases/roles/notes, delete absorbed."""
     keep = conn.execute(
-        "SELECT aliases, canonical_name FROM entities WHERE id = %(id)s", {"id": keep_id}
+        "SELECT aliases, canonical_name, roles, notes, stance_score FROM entities WHERE id = %(id)s",
+        {"id": keep_id},
     ).fetchone()
     absorb = conn.execute(
-        "SELECT aliases, canonical_name, slug FROM entities WHERE id = %(id)s", {"id": absorb_id}
+        "SELECT aliases, canonical_name, slug, roles, notes, stance_score FROM entities WHERE id = %(id)s",
+        {"id": absorb_id},
     ).fetchone()
     if not keep or not absorb:
         return
 
+    # Merge aliases
     merged_aliases = list(keep[0] or [])
     for name in [absorb[1]] + list(absorb[0] or []):
         if name not in merged_aliases:
             merged_aliases.append(name)
 
+    # Merge roles (additive, skip duplicates by role+from_date)
+    keep_roles = keep[2] or []
+    if isinstance(keep_roles, str):
+        keep_roles = json.loads(keep_roles)
+    absorb_roles = absorb[3] or []
+    if isinstance(absorb_roles, str):
+        absorb_roles = json.loads(absorb_roles)
+    existing_keys = {(r.get("role"), r.get("from_date")) for r in keep_roles}
+    for role in absorb_roles:
+        if (role.get("role"), role.get("from_date")) not in existing_keys:
+            keep_roles.append(role)
+
+    # Merge notes (append with origin label)
+    keep_notes = keep[3] or ""
+    absorb_notes = absorb[4] or ""
+    if absorb_notes:
+        merged_notes = (
+            f"{keep_notes}\n---\n[Merged from {absorb[2]}] {absorb_notes}"
+            if keep_notes
+            else absorb_notes
+        )
+    else:
+        merged_notes = keep_notes or None
+
+    # Carry over stance_score if keep has None
+    stance_score_update = {}
+    if keep[4] is None and absorb[5] is not None:
+        stance_score_update["stance_score"] = absorb[5]
+
     conn.execute(
-        "UPDATE entities SET aliases = %(aliases)s WHERE id = %(id)s",
-        {"aliases": merged_aliases, "id": keep_id},
+        """UPDATE entities
+        SET aliases = %(aliases)s, roles = %(roles)s, notes = %(notes)s
+        WHERE id = %(id)s""",
+        {
+            "aliases": merged_aliases,
+            "roles": json.dumps(keep_roles),
+            "notes": merged_notes,
+            "id": keep_id,
+        },
     )
+    if stance_score_update:
+        conn.execute(
+            "UPDATE entities SET stance_score = %(stance_score)s WHERE id = %(id)s",
+            {"stance_score": stance_score_update["stance_score"], "id": keep_id},
+        )
     conn.execute(
         "UPDATE entity_observations SET entity_id = %(keep)s WHERE entity_id = %(absorb)s",
         {"keep": keep_id, "absorb": absorb_id},
@@ -250,23 +305,24 @@ def get_dashboard_stats(conn: psycopg.Connection) -> dict:
     for status, count in status_rows:
         by_status[status] = count
 
-    # Stance conflicts: entities with >1 distinct non-neutral stance in non-dismissed observations
+    # Stance conflicts: unconfirmed entities with >1 distinct non-neutral observed stance
     stance_conflicts = conn.execute(
         """
         SELECT COUNT(*) FROM (
-            SELECT entity_id
-            FROM entity_observations
-            WHERE entity_id IS NOT NULL
-              AND NOT dismissed
-              AND observed_stance IS NOT NULL
-              AND observed_stance != 'neutral'
-            GROUP BY entity_id
-            HAVING COUNT(DISTINCT observed_stance) > 1
+            SELECT o.entity_id
+            FROM entity_observations o
+            JOIN entities e ON e.id = o.entity_id
+            WHERE NOT o.dismissed
+              AND o.observed_stance IS NOT NULL
+              AND o.observed_stance != 'neutral'
+              AND e.verification_status != 'confirmed'
+            GROUP BY o.entity_id
+            HAVING COUNT(DISTINCT o.observed_stance) > 1
         ) sub
         """
     ).fetchone()[0]
 
-    # Type mismatches: entities with non-dismissed observations where observed_type != entity_type
+    # Type mismatches: unconfirmed entities where observed_type != entity_type
     type_mismatches = conn.execute(
         """
         SELECT COUNT(DISTINCT e.id) FROM entities e
@@ -274,14 +330,16 @@ def get_dashboard_stats(conn: psycopg.Connection) -> dict:
         WHERE NOT o.dismissed
           AND o.observed_type IS NOT NULL
           AND o.observed_type != e.entity_type
+          AND e.verification_status != 'confirmed'
         """
     ).fetchone()[0]
 
-    # Placeholders: entities with zero non-dismissed observations
+    # Placeholders: unconfirmed entities with zero non-dismissed observations
     placeholders = conn.execute(
         """
         SELECT COUNT(*) FROM entities e
-        WHERE NOT EXISTS (
+        WHERE e.verification_status != 'confirmed'
+          AND NOT EXISTS (
             SELECT 1 FROM entity_observations o
             WHERE o.entity_id = e.id AND NOT o.dismissed
         )
@@ -431,8 +489,9 @@ def get_filtered_entities(
         if issue == "placeholder" and count > 0:
             continue
         if issue == "needs_attention":
+            is_confirmed = r[8] == "confirmed"
             has_issue = eid in stance_conflict_ids or eid in type_mismatches or count == 0
-            if not has_issue:
+            if not has_issue or is_confirmed:
                 continue
 
         results.append(

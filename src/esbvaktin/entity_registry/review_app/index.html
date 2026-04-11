@@ -1257,6 +1257,65 @@
       ::-webkit-scrollbar-thumb:hover {
         background: var(--rule-strong);
       }
+
+      /* ── Keyboard focus ────────────────────────────────────────── */
+      .entity-card.keyboard-focused {
+        border-left: 3px solid var(--accent);
+        margin-left: -3px;
+      }
+
+      /* ── Shortcut help overlay ─────────────────────────────────── */
+      .shortcut-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 300;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .shortcut-modal {
+        background: var(--bg);
+        border: 1px solid var(--rule-strong);
+        border-radius: 8px;
+        padding: 24px 32px;
+        max-width: 420px;
+        width: 90vw;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+
+      .shortcut-modal h3 {
+        font-size: 1rem;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .shortcut-table {
+        width: 100%;
+        font-size: 0.8125rem;
+      }
+
+      .shortcut-table td {
+        padding: 4px 0;
+      }
+
+      .shortcut-table td:first-child {
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        width: 80px;
+        color: var(--accent);
+      }
+
+      /* ── Session stats ─────────────────────────────────────────── */
+      .session-stats {
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 8px;
+        line-height: 1.6;
+      }
     </style>
   </head>
   <body>
@@ -1301,6 +1360,8 @@
         mergeTarget: null,
         mergeConfirmSlug: null,
         deleteConfirmSlug: null,
+        focusedIndex: -1,
+        sessionStats: { confirmed: 0, edited: 0, skipped: 0 },
       };
 
       // ===================================================================
@@ -1370,8 +1431,8 @@
       function statusLabel(s) {
         const map = {
           auto_generated: "Auto",
+          needs_review: "Needs Review",
           confirmed: "Confirmed",
-          manually_edited: "Edited",
         };
         return map[s] || s || "";
       }
@@ -1401,6 +1462,17 @@
           month: "short",
           year: "numeric",
         });
+      }
+
+      function parseArticleSlug(slug) {
+        if (!slug) return { date: null, title: slug || "" };
+        const match = slug.match(/^(\d{4}-\d{2}-\d{2})-(.+)$/);
+        if (!match) return { date: null, title: slug };
+        const date = match[1];
+        const title = match[2]
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+        return { date, title };
       }
 
       let searchTimeout = null;
@@ -1502,7 +1574,7 @@
         ];
 
         const types = ["individual", "party", "institution", "union"];
-        const statuses = ["auto_generated", "confirmed", "manually_edited"];
+        const statuses = ["auto_generated", "needs_review", "confirmed"];
 
         document.getElementById("sidebar").innerHTML = `
     <div>
@@ -1574,8 +1646,10 @@
       <div class="progress-bar">
         <div class="progress-fill" style="width: ${pct}%"></div>
       </div>
+      <div class="session-stats" id="session-stats">Press <strong>?</strong> for shortcuts</div>
     </div>
   `;
+        renderSessionStats();
       }
 
       // ===================================================================
@@ -1599,7 +1673,7 @@
 
         const sortOptions = [
           { value: "observations", label: "Most observations" },
-          { value: "name", label: "Name A-Z" },
+          { value: "alpha", label: "Name A-Z" },
           { value: "recent", label: "Most recent" },
         ];
 
@@ -1622,6 +1696,11 @@
       ${entities.map((e) => (state.editingSlug === e.slug ? renderEditCard(e) : renderCard(e))).join("")}
     </div>
   `;
+        // Re-apply keyboard focus after re-render
+        if (state.focusedIndex >= entities.length) {
+          state.focusedIndex = Math.max(0, entities.length - 1);
+        }
+        updateFocus();
       }
 
       // ===================================================================
@@ -1630,7 +1709,6 @@
       function renderCard(entity) {
         const e = entity;
         const isConfirmed = e.verification_status === "confirmed";
-        const isEdited = e.verification_status === "manually_edited";
 
         // Issue badge
         let issueBadge = "";
@@ -1650,9 +1728,6 @@
         if (isConfirmed)
           confirmedBadge =
             '<span class="badge badge-confirmed">&#x2713; Confirmed</span>';
-        if (isEdited)
-          confirmedBadge =
-            '<span class="badge badge-confirmed">&#x270E; Edited</span>';
 
         // Type/subtype badges
         const typeBadge = e.entity_type
@@ -1724,10 +1799,14 @@
             .map((obs) => {
               const barClass = `obs-bar-${stanceClass(obs.observed_stance)}`;
               const stanceTxt = stanceLabel(obs.observed_stance);
+              const parsed = parseArticleSlug(obs.article_slug);
               const link = obs.article_url
-                ? `<a class="obs-article-link" href="${esc(obs.article_url)}" target="_blank">${esc(obs.article_slug)}</a>`
-                : `<span>${esc(obs.article_slug)}</span>`;
-              return `<div class="recent-obs-item"><span class="obs-bar ${barClass}"></span><span class="recent-obs-stance">${stanceTxt}</span> ${link}</div>`;
+                ? `<a class="obs-article-link" href="${esc(obs.article_url)}" target="_blank">${esc(parsed.title)}</a>`
+                : `<span>${esc(parsed.title)}</span>`;
+              const dateStr = parsed.date
+                ? `<span class="obs-date">${parsed.date}</span>`
+                : "";
+              return `<div class="recent-obs-item"><span class="obs-bar ${barClass}"></span><span class="recent-obs-stance">${stanceTxt}</span> ${link} ${dateStr}</div>`;
             })
             .join("");
           const moreCount = e.observation_count - recentObs.length;
@@ -1757,7 +1836,7 @@
 
         // Differentiated summary — context-aware per issue category
         let summaryLine = "";
-        if (!isConfirmed && !isEdited) {
+        if (!isConfirmed) {
           const typeStr = e.subtype
             ? subtypeLabel(e.subtype).toLowerCase()
             : typeLabel(e.entity_type).toLowerCase();
@@ -1797,10 +1876,9 @@
         }
 
         // Action bar
-        const actionBar =
-          isConfirmed || isEdited
-            ? ""
-            : `
+        const actionBar = isConfirmed
+          ? ""
+          : `
     <div class="action-bar">
       <button class="btn btn-confirm" onclick="confirmEntity('${esc(e.slug)}')">Confirm &#x2713;</button>
       <button class="btn" onclick="startEdit('${esc(e.slug)}')">Edit</button>
@@ -1810,16 +1888,15 @@
     </div>
   `;
 
-        // If confirmed/edited, still allow Details and Discuss
-        const confirmedActionBar =
-          isConfirmed || isEdited
-            ? `
+        // If confirmed, still allow Details and Discuss
+        const confirmedActionBar = isConfirmed
+          ? `
     <div class="action-bar">
       <button class="btn" onclick="openDetail('${esc(e.slug)}')">Details</button>
       <button class="btn" onclick="discuss('${esc(e.slug)}')">&#x1F4AC; Discuss</button>
     </div>
   `
-            : "";
+          : "";
 
         return `
     <div class="entity-card" id="card-${esc(e.slug)}">
@@ -2050,31 +2127,26 @@
       function renderDetailObservation(obs) {
         const barClass = `obs-bar-${stanceClass(obs.observed_stance)}`;
         const isRelinking = state.relinkObsId === obs.id;
+        const parsed = parseArticleSlug(obs.article_slug);
 
         return `
     <div class="detail-obs">
       <div class="obs-bar ${barClass}"></div>
       <div class="detail-obs-header">
         <span class="detail-obs-name">${esc(obs.observed_name || "(unnamed)")}</span>
-        ${obs.confidence != null ? `<span class="confidence-badge">${(obs.confidence * 100).toFixed(0)}%</span>` : ""}
+        ${obs.match_confidence != null ? `<span class="confidence-badge">${(obs.match_confidence * 100).toFixed(0)}%</span>` : ""}
       </div>
       <div class="detail-obs-meta">
         <span><strong>Stance:</strong> ${stanceLabel(obs.observed_stance)}</span>
-        ${obs.role ? `<span><strong>Role:</strong> ${esc(obs.role)}</span>` : ""}
-        ${obs.party ? `<span><strong>Party:</strong> ${esc(obs.party)}</span>` : ""}
-        ${obs.entity_type ? `<span><strong>Type:</strong> ${esc(obs.entity_type)}</span>` : ""}
-        ${obs.attribution_types ? `<span><strong>Attribution:</strong> ${esc(Array.isArray(obs.attribution_types) ? obs.attribution_types.join(", ") : obs.attribution_types)}</span>` : ""}
+        ${obs.observed_role ? `<span><strong>Role:</strong> ${esc(obs.observed_role)}</span>` : ""}
+        ${obs.observed_party ? `<span><strong>Party:</strong> ${esc(obs.observed_party)}</span>` : ""}
+        ${obs.observed_type ? `<span><strong>Type:</strong> ${esc(obs.observed_type)}</span>` : ""}
+        ${obs.attribution_types && obs.attribution_types.length ? `<span><strong>Attribution:</strong> ${esc(obs.attribution_types.join(", "))}</span>` : ""}
       </div>
-      ${
-        obs.article_title
-          ? `
-        <div style="margin-top: 4px; font-size: 0.8125rem;">
-          ${obs.article_url ? `<a class="obs-article-link" href="${esc(obs.article_url)}" target="_blank">${esc(obs.article_title)}</a>` : esc(obs.article_title)}
-          ${obs.article_date ? `<span class="obs-date">${formatDate(obs.article_date)}</span>` : ""}
-        </div>
-      `
-          : ""
-      }
+      <div style="margin-top: 4px; font-size: 0.8125rem;">
+        ${obs.article_url ? `<a class="obs-article-link" href="${esc(obs.article_url)}" target="_blank">${esc(parsed.title)}</a>` : esc(parsed.title)}
+        ${parsed.date ? `<span class="obs-date">${parsed.date}</span>` : ""}
+      </div>
       <div class="detail-obs-actions">
         <button class="btn-small btn-small-danger" onclick="dismissObservation(${obs.id})">Dismiss</button>
         <button class="btn-small" onclick="startRelink(${obs.id})">${isRelinking ? "Cancel" : "Relink"}</button>
@@ -2160,6 +2232,7 @@
       async function confirmEntity(slug) {
         try {
           await api("POST", `/api/entities/${slug}/confirm`);
+          state.sessionStats.confirmed++;
           await Promise.all([fetchDashboard(), fetchEntities()]);
           renderSidebar();
           showToast("Entity confirmed");
@@ -2212,6 +2285,7 @@
           await api("PATCH", `/api/entities/${slug}`, body);
           state.editingSlug = null;
           state.editDraft = {};
+          state.sessionStats.edited++;
           await Promise.all([fetchDashboard(), fetchEntities()]);
           renderSidebar();
           showToast("Entity updated");
@@ -2534,6 +2608,241 @@
       }
 
       init();
+
+      // ===================================================================
+      // Keyboard shortcuts
+      // ===================================================================
+      let shortcutHelpVisible = false;
+
+      function isInputFocused() {
+        const el = document.activeElement;
+        if (!el) return false;
+        const tag = el.tagName.toLowerCase();
+        return tag === "input" || tag === "textarea" || tag === "select";
+      }
+
+      function updateFocus() {
+        document
+          .querySelectorAll(".entity-card.keyboard-focused")
+          .forEach((el) => el.classList.remove("keyboard-focused"));
+        if (
+          state.focusedIndex < 0 ||
+          state.focusedIndex >= state.entities.length
+        )
+          return;
+        const entity = state.entities[state.focusedIndex];
+        const card = document.getElementById(`card-${entity.slug}`);
+        if (card) {
+          card.classList.add("keyboard-focused");
+          card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
+
+      function focusNext() {
+        if (state.entities.length === 0) return;
+        state.focusedIndex = Math.min(
+          state.focusedIndex + 1,
+          state.entities.length - 1,
+        );
+        updateFocus();
+      }
+
+      function focusPrev() {
+        if (state.entities.length === 0) return;
+        state.focusedIndex = Math.max(state.focusedIndex - 1, 0);
+        updateFocus();
+      }
+
+      function skipToNextUnconfirmed() {
+        for (let i = state.focusedIndex + 1; i < state.entities.length; i++) {
+          if (state.entities[i].verification_status !== "confirmed") {
+            state.focusedIndex = i;
+            state.sessionStats.skipped++;
+            updateFocus();
+            renderSessionStats();
+            return;
+          }
+        }
+        // Wrap around
+        for (let i = 0; i < state.focusedIndex; i++) {
+          if (state.entities[i].verification_status !== "confirmed") {
+            state.focusedIndex = i;
+            state.sessionStats.skipped++;
+            updateFocus();
+            renderSessionStats();
+            return;
+          }
+        }
+        showToast("All entities in view are confirmed");
+      }
+
+      async function confirmFocused() {
+        if (
+          state.focusedIndex < 0 ||
+          state.focusedIndex >= state.entities.length
+        )
+          return;
+        const entity = state.entities[state.focusedIndex];
+        if (entity.verification_status === "confirmed") {
+          showToast("Already confirmed");
+          return;
+        }
+        await confirmEntity(entity.slug);
+        // Auto-advance to next unconfirmed after confirm
+        for (let i = state.focusedIndex; i < state.entities.length; i++) {
+          if (
+            state.entities[i] &&
+            state.entities[i].verification_status !== "confirmed"
+          ) {
+            state.focusedIndex = i;
+            updateFocus();
+            return;
+          }
+        }
+        updateFocus();
+      }
+
+      function editFocused() {
+        if (
+          state.focusedIndex < 0 ||
+          state.focusedIndex >= state.entities.length
+        )
+          return;
+        const entity = state.entities[state.focusedIndex];
+        if (entity.verification_status === "confirmed") return;
+        startEdit(entity.slug);
+      }
+
+      function detailFocused() {
+        if (
+          state.focusedIndex < 0 ||
+          state.focusedIndex >= state.entities.length
+        )
+          return;
+        openDetail(state.entities[state.focusedIndex].slug);
+      }
+
+      function toggleShortcutHelp() {
+        shortcutHelpVisible = !shortcutHelpVisible;
+        renderShortcutHelp();
+      }
+
+      function renderShortcutHelp() {
+        let overlay = document.getElementById("shortcut-overlay");
+        if (!shortcutHelpVisible) {
+          if (overlay) overlay.remove();
+          return;
+        }
+        if (!overlay) {
+          overlay = document.createElement("div");
+          overlay.id = "shortcut-overlay";
+          overlay.className = "shortcut-overlay";
+          overlay.onclick = (e) => {
+            if (e.target === overlay) toggleShortcutHelp();
+          };
+          document.body.appendChild(overlay);
+        }
+        overlay.innerHTML = `
+    <div class="shortcut-modal">
+      <h3>Keyboard Shortcuts</h3>
+      <table class="shortcut-table">
+        <tr><td>j / &darr;</td><td>Next entity</td></tr>
+        <tr><td>k / &uarr;</td><td>Previous entity</td></tr>
+        <tr><td>c</td><td>Confirm focused entity</td></tr>
+        <tr><td>e</td><td>Edit focused entity</td></tr>
+        <tr><td>d</td><td>Open detail panel</td></tr>
+        <tr><td>s</td><td>Skip to next unconfirmed</td></tr>
+        <tr><td>/</td><td>Focus search</td></tr>
+        <tr><td>Esc</td><td>Close panel / cancel / blur</td></tr>
+        <tr><td>?</td><td>Toggle this help</td></tr>
+      </table>
+    </div>
+  `;
+      }
+
+      function renderSessionStats() {
+        const el = document.getElementById("session-stats");
+        if (!el) return;
+        const s = state.sessionStats;
+        const parts = [];
+        if (s.confirmed) parts.push(`${s.confirmed} confirmed`);
+        if (s.edited) parts.push(`${s.edited} edited`);
+        if (s.skipped) parts.push(`${s.skipped} skipped`);
+        el.innerHTML =
+          parts.length > 0
+            ? `Session: ${parts.join(", ")}`
+            : "Press <strong>?</strong> for shortcuts";
+      }
+
+      document.addEventListener("keydown", (e) => {
+        // Always handle Escape
+        if (e.key === "Escape") {
+          if (shortcutHelpVisible) {
+            toggleShortcutHelp();
+            return;
+          }
+          if (state.detailSlug) {
+            closeDetail();
+            return;
+          }
+          if (state.editingSlug) {
+            cancelEdit();
+            return;
+          }
+          if (isInputFocused()) {
+            document.activeElement.blur();
+            return;
+          }
+          return;
+        }
+
+        // Always handle ? for help (when not typing)
+        if (e.key === "?" && !isInputFocused()) {
+          e.preventDefault();
+          toggleShortcutHelp();
+          return;
+        }
+
+        // Block shortcuts when typing, editing, or in modal states
+        if (isInputFocused()) return;
+        if (state.editingSlug) return;
+        if (state.detailSlug) return;
+        if (shortcutHelpVisible) return;
+
+        switch (e.key) {
+          case "j":
+          case "ArrowDown":
+            e.preventDefault();
+            focusNext();
+            break;
+          case "k":
+          case "ArrowUp":
+            e.preventDefault();
+            focusPrev();
+            break;
+          case "c":
+            e.preventDefault();
+            confirmFocused();
+            break;
+          case "e":
+            e.preventDefault();
+            editFocused();
+            break;
+          case "d":
+            e.preventDefault();
+            detailFocused();
+            break;
+          case "s":
+            e.preventDefault();
+            skipToNextUnconfirmed();
+            break;
+          case "/":
+            e.preventDefault();
+            const searchInput = document.querySelector(".search-input");
+            if (searchInput) searchInput.focus();
+            break;
+        }
+      });
     </script>
   </body>
 </html>
