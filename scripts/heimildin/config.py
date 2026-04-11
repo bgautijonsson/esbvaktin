@@ -70,8 +70,15 @@ MIN_WORDS_REPLY = 150
 
 # Issue title patterns for filtering off-topic speeches (P1.4)
 EU_TITLE_PATTERNS = [
-    "evróp", "ees", "esb", "evrópubandalag", "evrópusamband",
-    "efnahagssvæð", "fríverslunarsamtök", "aðild", "tvíhliða",
+    "evróp",
+    "ees",
+    "esb",
+    "evrópubandalag",
+    "evrópusamband",
+    "efnahagssvæð",
+    "fríverslunarsamtök",
+    "aðild",
+    "tvíhliða",
     "þjóðaratkvæðagreiðsl",
 ]
 
@@ -95,6 +102,42 @@ KNOWN_TOPICS = [
     "environment",
     "other",
 ]
+
+TOPIC_LABELS_IS: dict[str, str] = {
+    "fisheries": "Sjávarútvegur",
+    "trade": "Viðskipti",
+    "sovereignty": "Fullveldi",
+    "eea_eu_law": "EES/ESB-löggjöf",
+    "agriculture": "Landbúnaður",
+    "precedents": "Fordæmi",
+    "currency": "Gjaldmiðill",
+    "labour": "Vinnumarkaður",
+    "energy": "Orkumál",
+    "housing": "Húsnæðismál",
+    "defence": "Varnarmál",
+    "democracy": "Lýðræði/ferli",
+    "environment": "Umhverfismál",
+    "other": "Annað",
+}
+
+TOPIC_LABELS_IS_LOWER: dict[str, str] = {k: v.lower() for k, v in TOPIC_LABELS_IS.items()}
+
+TOPIC_PREFIX_MAP: dict[str, str] = {
+    "FIS": "fisheries",
+    "TRA": "trade",
+    "SOV": "sovereignty",
+    "EEA": "eea_eu_law",
+    "AGR": "agriculture",
+    "PRE": "precedents",
+    "CUR": "currency",
+    "LAB": "labour",
+    "ENE": "energy",
+    "HOU": "housing",
+    "DEF": "defence",
+    "DEM": "democracy",
+    "ENV": "environment",
+    "OTH": "other",
+}
 
 
 # ---------------------------------------------------------------------------

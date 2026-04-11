@@ -17,7 +17,6 @@ import csv
 import json
 import sys
 from io import StringIO
-from pathlib import Path
 
 from config import DELIVERABLES_DIR, WORK_DIR
 
@@ -48,28 +47,21 @@ def _build_id_lookup(instances: list[dict]) -> dict[str, dict]:
 
 def _instances_for(cc: dict, lookup: dict) -> list[dict]:
     """Get claim instances for a canonical claim using stable IDs."""
-    return [
-        lookup[iid] for iid in cc.get("instance_ids", [])
-        if iid in lookup
-    ]
+    return [lookup[iid] for iid in cc.get("instance_ids", []) if iid in lookup]
 
 
 def _speakers_for(cc: dict, lookup: dict) -> list[str]:
     """Get unique speaker names for a canonical claim."""
-    return sorted({
-        lookup[iid].get("speaker", "?")
-        for iid in cc.get("instance_ids", [])
-        if iid in lookup
-    })
+    return sorted(
+        {lookup[iid].get("speaker", "?") for iid in cc.get("instance_ids", []) if iid in lookup}
+    )
 
 
 def _parties_for(cc: dict, lookup: dict) -> list[str]:
     """Get unique party names for a canonical claim."""
-    return sorted({
-        lookup[iid].get("party", "?")
-        for iid in cc.get("instance_ids", [])
-        if iid in lookup
-    })
+    return sorted(
+        {lookup[iid].get("party", "?") for iid in cc.get("instance_ids", []) if iid in lookup}
+    )
 
 
 def generate_d1_frequency(
@@ -91,17 +83,11 @@ def generate_d1_frequency(
         era = eras[0]
         era_label = "ESB (2024–2026)" if era == "esb" else "EES (1991–1993)"
         lookup = lookup_by_era[era]
-        stats = stats_by_era.get(era, {})
-        total_speeches = stats.get("speeches", "?")
 
         lines.append(
-            f"| # | Meginfullyrðing | Efnisflokkur | Afstaða | Tíðni | "
-            f"Þingmenn | Flokkar |"
+            "| # | Meginfullyrðing | Efnisflokkur | Afstaða | Tíðni | Þingmenn | Flokkar |"
         )
-        lines.append(
-            "|---|---------------|--------------|---------|-------|"
-            "----------|---------|"
-        )
+        lines.append("|---|---------------|--------------|---------|-------|----------|---------|")
 
         for i, cc in enumerate(canonical_by_era[era], 1):
             speakers = _speakers_for(cc, lookup)
@@ -135,11 +121,7 @@ def generate_d1_frequency(
                 f"{esb_count}× | {ees_count} | {speaker_names} |"
             )
 
-    total = sum(
-        cc["instance_count"]
-        for era in eras
-        for cc in canonical_by_era.get(era, [])
-    )
+    total = sum(cc["instance_count"] for era in eras for cc in canonical_by_era.get(era, []))
     unique = sum(len(canonical_by_era.get(era, [])) for era in eras)
     lines.append("")
     lines.append(f"*{total} fullyrðingatilvik, {unique} aðgreindar meginfullyrðingar.*")
@@ -180,20 +162,14 @@ def generate_d2_detail(
 
         topic = _topic_label(cc["canonical_id"])
         lines.append(f"## {cc['canonical_text']}")
-        lines.append(
-            f"*{n}× | {topic} | {cc['stance']} | "
-            f"Flokkar: {', '.join(parties)}*"
-        )
+        lines.append(f"*{n}× | {topic} | {cc['stance']} | Flokkar: {', '.join(parties)}*")
         lines.append("")
 
         claim_instances = _instances_for(cc, lookup)
         claim_instances.sort(key=lambda c: c.get("date", ""))
 
         for inst in claim_instances:
-            lines.append(
-                f"- **{inst['speaker']}** ({inst['party']}) — "
-                f"{inst['date']}"
-            )
+            lines.append(f"- **{inst['speaker']}** ({inst['party']}) — {inst['date']}")
             url = inst.get("speech_url", "")
             if url:
                 lines.append(f"  {url}")
@@ -211,44 +187,45 @@ def generate_d3_csv(
     instances: list[dict],
 ) -> str:
     """D3: Flat CSV — one row per claim instance."""
-    canon_lookup = {
-        cc["canonical_id"]: cc["canonical_text"]
-        for cc in canonical
-    }
+    canon_lookup = {cc["canonical_id"]: cc["canonical_text"] for cc in canonical}
 
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow([
-        "canonical_claim",
-        "canonical_id",
-        "instance_id",
-        "exact_wording",
-        "date",
-        "speech_url",
-        "mp_name",
-        "party",
-        "era",
-        "topic",
-        "stance",
-    ])
+    writer.writerow(
+        [
+            "canonical_claim",
+            "canonical_id",
+            "instance_id",
+            "exact_wording",
+            "date",
+            "speech_url",
+            "mp_name",
+            "party",
+            "era",
+            "topic",
+            "stance",
+        ]
+    )
 
     sorted_instances = sorted(instances, key=lambda c: c.get("date", ""))
 
     for inst in sorted_instances:
         cid = inst.get("canonical_id", "UNMAPPED")
-        writer.writerow([
-            canon_lookup.get(cid, inst.get("claim_summary", "")),
-            cid,
-            inst.get("instance_id", ""),
-            inst.get("exact_quote", ""),
-            inst.get("date", ""),
-            inst.get("speech_url", ""),
-            inst.get("speaker", ""),
-            inst.get("party", ""),
-            era.upper(),
-            inst.get("topic", ""),
-            inst.get("stance", ""),
-        ])
+        writer.writerow(
+            [
+                canon_lookup.get(cid, inst.get("claim_summary", "")),
+                cid,
+                inst.get("instance_id", ""),
+                inst.get("exact_quote", ""),
+                inst.get("date", ""),
+                inst.get("speech_url", ""),
+                inst.get("speaker", ""),
+                inst.get("party", ""),
+                era.upper(),
+                inst.get("topic", ""),
+                inst.get("stance", ""),
+            ]
+        )
 
     return output.getvalue()
 
@@ -288,12 +265,10 @@ def generate_cross_era_summary(
         lines.append("| | ESB (2026) | EES (1991–93) |")
         lines.append("|---|-----------|---------------|")
         lines.append(
-            f"| Ræður | {esb_stats.get('speeches', '?')} | "
-            f"{ees_stats.get('speeches', '?')} |"
+            f"| Ræður | {esb_stats.get('speeches', '?')} | {ees_stats.get('speeches', '?')} |"
         )
         lines.append(
-            f"| Orð | {esb_stats.get('total_words', 0):,} | "
-            f"{ees_stats.get('total_words', 0):,} |"
+            f"| Orð | {esb_stats.get('total_words', 0):,} | {ees_stats.get('total_words', 0):,} |"
         )
         lines.append(
             f"| Þingmenn | {esb_stats.get('unique_speakers', '?')} | "
@@ -306,15 +281,24 @@ def generate_cross_era_summary(
         lines.append("")
 
     for type_key, type_label, type_desc in [
-        ("perennial", "Röksemdafærslur sem lifðu af 30 ár",
-         "Þessar röksemdafærslur birtast í báðum umræðum — frá EES-samningnum "
-         "1991–1993 og ESB-þjóðaratkvæðagreiðslunni 2026."),
-        ("new_2026", "Nýjar röksemdafærslur 2026",
-         "Þessar röksemdafærslur birtast aðeins í ESB-umræðunni 2026 — "
-         "þær áttu sér enga hliðstæðu í EES-umræðunni."),
-        ("disappeared", "Röksemdafærslur sem hurfu",
-         "Þessar röksemdafærslur voru áberandi í EES-umræðunni 1991–1993 "
-         "en birtast ekki í ESB-umræðunni 2026."),
+        (
+            "perennial",
+            "Röksemdafærslur sem lifðu af 30 ár",
+            "Þessar röksemdafærslur birtast í báðum umræðum — frá EES-samningnum "
+            "1991–1993 og ESB-þjóðaratkvæðagreiðslunni 2026.",
+        ),
+        (
+            "new_2026",
+            "Nýjar röksemdafærslur 2026",
+            "Þessar röksemdafærslur birtast aðeins í ESB-umræðunni 2026 — "
+            "þær áttu sér enga hliðstæðu í EES-umræðunni.",
+        ),
+        (
+            "disappeared",
+            "Röksemdafærslur sem hurfu",
+            "Þessar röksemdafærslur voru áberandi í EES-umræðunni 1991–1993 "
+            "en birtast ekki í ESB-umræðunni 2026.",
+        ),
     ]:
         type_themes = [t for t in themes if t.get("type") == type_key]
         if not type_themes:
@@ -328,22 +312,20 @@ def generate_cross_era_summary(
         def _total(t):
             esb_n = sum(
                 esb_lookup_cc[i]["instance_count"]
-                for i in t.get("esb_ids", []) if i in esb_lookup_cc
+                for i in t.get("esb_ids", [])
+                if i in esb_lookup_cc
             )
             ees_n = sum(
                 ees_lookup_cc[i]["instance_count"]
-                for i in t.get("ees_ids", []) if i in ees_lookup_cc
+                for i in t.get("ees_ids", [])
+                if i in ees_lookup_cc
             )
             return esb_n + ees_n
 
         type_themes.sort(key=_total, reverse=True)
 
-        lines.append(
-            "| Meginfullyrðing | ESB (2026) | EES (1991–93) | Athugasemd |"
-        )
-        lines.append(
-            "|---------------|------------|---------------|------------|"
-        )
+        lines.append("| Meginfullyrðing | ESB (2026) | EES (1991–93) | Athugasemd |")
+        lines.append("|---------------|------------|---------------|------------|")
 
         for t in type_themes:
             theme = t.get("theme", "?")
@@ -351,19 +333,19 @@ def generate_cross_era_summary(
 
             esb_n = sum(
                 esb_lookup_cc[i]["instance_count"]
-                for i in t.get("esb_ids", []) if i in esb_lookup_cc
+                for i in t.get("esb_ids", [])
+                if i in esb_lookup_cc
             )
             ees_n = sum(
                 ees_lookup_cc[i]["instance_count"]
-                for i in t.get("ees_ids", []) if i in ees_lookup_cc
+                for i in t.get("ees_ids", [])
+                if i in ees_lookup_cc
             )
 
             esb_str = f"{esb_n}×" if esb_n else "—"
             ees_str = f"{ees_n}×" if ees_n else "—"
 
-            lines.append(
-                f"| {theme} | {esb_str} | {ees_str} | {note} |"
-            )
+            lines.append(f"| {theme} | {esb_str} | {ees_str} | {note} |")
 
         lines.append("")
 
@@ -400,8 +382,6 @@ def generate_party_speaker_analysis(
         era_label = "ESB (2024–2026)" if era == "esb" else "EES (1991–1993)"
         instances = instances_by_era[era]
         canonical = canonical_by_era[era]
-        lookup = lookup_by_era[era]
-        stats = stats_by_era.get(era, {})
 
         lines.append(f"## {era_label}")
         lines.append("")
@@ -411,10 +391,9 @@ def generate_party_speaker_analysis(
         for inst in instances:
             party = inst.get("party", "?")
             stance = inst.get("stance", "neutral")
-            party_stats.setdefault(party, {
-                "pro_eu": 0, "anti_eu": 0, "neutral": 0,
-                "total": 0, "speakers": set()
-            })
+            party_stats.setdefault(
+                party, {"pro_eu": 0, "anti_eu": 0, "neutral": 0, "total": 0, "speakers": set()}
+            )
             party_stats[party][stance] = party_stats[party].get(stance, 0) + 1
             party_stats[party]["total"] += 1
             party_stats[party]["speakers"].add(inst.get("speaker", "?"))
@@ -435,9 +414,7 @@ def generate_party_speaker_analysis(
             anti = ps["anti_eu"]
             neu = ps["neutral"]
             pct = f"{pro / total * 100:.0f}%" if total else "—"
-            lines.append(
-                f"| {party} | {n_speakers} | {total} | {pro} | {anti} | {neu} | {pct} |"
-            )
+            lines.append(f"| {party} | {n_speakers} | {total} | {pro} | {anti} | {neu} | {pct} |")
 
         lines.append("")
 
@@ -447,10 +424,17 @@ def generate_party_speaker_analysis(
             speaker = inst.get("speaker", "?")
             party = inst.get("party", "?")
             stance = inst.get("stance", "neutral")
-            speaker_stats.setdefault(speaker, {
-                "party": party, "pro_eu": 0, "anti_eu": 0, "neutral": 0, "total": 0,
-                "top_claims": {},
-            })
+            speaker_stats.setdefault(
+                speaker,
+                {
+                    "party": party,
+                    "pro_eu": 0,
+                    "anti_eu": 0,
+                    "neutral": 0,
+                    "total": 0,
+                    "top_claims": {},
+                },
+            )
             speaker_stats[speaker][stance] = speaker_stats[speaker].get(stance, 0) + 1
             speaker_stats[speaker]["total"] += 1
             cid = inst.get("canonical_id", "?")
@@ -460,12 +444,8 @@ def generate_party_speaker_analysis(
 
         lines.append("### Þingmenn — yfirlit")
         lines.append("")
-        lines.append(
-            "| Þingmaður | Flokkur | Fullyrðingar | Fylgjandi | Andvíg | Hlutlaus |"
-        )
-        lines.append(
-            "|-----------|---------|-------------|-----------|--------|----------|"
-        )
+        lines.append("| Þingmaður | Flokkur | Fullyrðingar | Fylgjandi | Andvíg | Hlutlaus |")
+        lines.append("|-----------|---------|-------------|-----------|--------|----------|")
 
         for speaker, ss in sorted(speaker_stats.items(), key=lambda x: -x[1]["total"]):
             lines.append(
@@ -498,21 +478,32 @@ def _topic_label(canonical_id: str) -> str:
     """Extract topic from canonical_id prefix."""
     prefix = canonical_id.split("-")[0] if "-" in canonical_id else "OTH"
     labels = {
-        "FIS": "sjávarútvegur", "TRA": "viðskipti", "SOV": "fullveldi",
-        "EEA": "EES/ESB-löggjöf", "AGR": "landbúnaður", "PRE": "fordæmi",
-        "CUR": "gjaldmiðill", "LAB": "vinnumarkaður", "ENE": "orkumál",
-        "HOU": "húsnæðismál", "DEF": "varnarmál", "DEM": "lýðræði/ferli",
-        "ENV": "umhverfismál", "OTH": "annað",
+        "FIS": "sjávarútvegur",
+        "TRA": "viðskipti",
+        "SOV": "fullveldi",
+        "EEA": "ees/esb-löggjöf",
+        "AGR": "landbúnaður",
+        "PRE": "fordæmi",
+        "CUR": "gjaldmiðill",
+        "LAB": "vinnumarkaður",
+        "ENE": "orkumál",
+        "HOU": "húsnæðismál",
+        "DEF": "varnarmál",
+        "DEM": "lýðræði/ferli",
+        "ENV": "umhverfismál",
+        "OTH": "annað",
     }
-    return labels.get(prefix, prefix)
+    return labels.get(prefix, "annað")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate Heimildin deliverables"
+    parser = argparse.ArgumentParser(description="Generate Heimildin deliverables")
+    parser.add_argument(
+        "--era",
+        action="append",
+        default=[],
+        help="Era(s) to include (esb, ees). Can specify multiple.",
     )
-    parser.add_argument("--era", action="append", default=[],
-                        help="Era(s) to include (esb, ees). Can specify multiple.")
 
     args = parser.parse_args()
     eras = args.era if args.era else ["esb"]
@@ -553,9 +544,7 @@ def main() -> None:
 
     # D4: Cross-era summary (if matching data exists)
     if len(eras) > 1:
-        cross = generate_cross_era_summary(
-            canonical_by_era, lookup_by_era, stats_by_era
-        )
+        cross = generate_cross_era_summary(canonical_by_era, lookup_by_era, stats_by_era)
         if cross:
             cross_file = DELIVERABLES_DIR / "D4_cross_era_summary.md"
             cross_file.write_text(cross, encoding="utf-8")
