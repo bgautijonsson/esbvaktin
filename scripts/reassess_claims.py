@@ -907,7 +907,10 @@ def update():
             continue
 
         for item in raw:
+            # Handle both flat (claim_id: N) and nested (claim: {id: N}) formats
             claim_id = item.get("claim_id")
+            if not claim_id and isinstance(item.get("claim"), dict):
+                claim_id = item["claim"].get("id")
             verdict = item.get("verdict") or item.get("new_verdict")
             if not claim_id or not verdict:
                 print(f"    Skipping malformed item: {item}")
