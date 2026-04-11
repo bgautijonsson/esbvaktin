@@ -33,6 +33,28 @@ def _get_connection():
     return get_connection()
 
 
+def _classify_maturity(
+    sighting_count: int,
+    canonical_verdict: str,
+    sighting_verdicts: list[str | None],
+) -> str:
+    """Classify claim maturity based on sighting count and verdict agreement.
+
+    - first_assessment: 0-1 sightings
+    - corroborated: 2+ sightings, all non-NULL sighting verdicts agree with canonical
+    - contested: 2+ sightings, at least one non-NULL sighting verdict disagrees
+    """
+    if sighting_count <= 1:
+        return "first_assessment"
+    non_null = [v for v in sighting_verdicts if v is not None]
+    if not non_null:
+        # Multiple sightings but no per-sighting verdicts → treat as corroborated
+        return "corroborated"
+    if all(v == canonical_verdict for v in non_null):
+        return "corroborated"
+    return "contested"
+
+
 def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
     """Fetch denormalised claims with sighting data from PostgreSQL."""
     conn = _get_connection()
@@ -117,6 +139,7 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
     ).fetchall()
 
     sightings_by_slug: dict[str, list[dict]] = {}
+    verdicts_by_slug: dict[str, list[str | None]] = {}
     for slug, url, title, sdate, stype in sighting_rows:
         sighting = {
             "source_url": url,
@@ -126,8 +149,25 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
         }
         sightings_by_slug.setdefault(slug, []).append(sighting)
 
+    # Fetch per-sighting verdicts for maturity classification
+    verdict_rows = conn.execute(
+        f"""
+        SELECT c.claim_slug, s.speech_verdict
+        FROM claim_sightings s
+        JOIN claims c ON c.id = s.claim_id
+        {where_clause}
+        """
+    ).fetchall()
+    for slug, sv in verdict_rows:
+        verdicts_by_slug.setdefault(slug, []).append(sv)
+
     for claim in claims:
         claim["sightings"] = sightings_by_slug.get(claim["claim_slug"], [])
+        claim["maturity"] = _classify_maturity(
+            claim["sighting_count"],
+            claim["verdict"],
+            verdicts_by_slug.get(claim["claim_slug"], []),
+        )
 
     conn.close()
     return claims
@@ -161,6 +201,9 @@ def _to_parquet(claims: list[dict], path: Path) -> None:
         "sighting_count": pa.array([c["sighting_count"] for c in claims], type=pa.int32()),
         "last_seen": pa.array([c["last_seen"] for c in claims], type=pa.string()),
         "first_seen": pa.array([c["first_seen"] for c in claims], type=pa.string()),
+        "maturity": pa.array(
+            [c.get("maturity", "first_assessment") for c in claims], type=pa.string()
+        ),
         "sightings_json": pa.array(
             [json.dumps(c.get("sightings", []), ensure_ascii=False) for c in claims],
             type=pa.string(),
@@ -215,6 +258,15 @@ def _show_status(claims: list[dict]) -> None:
     print("\nBy category:")
     for cat, n in sorted(categories.items(), key=lambda x: -x[1]):
         print(f"  {cat}: {n}")
+
+    # Maturity breakdown
+    maturity: dict[str, int] = {}
+    for c in claims:
+        m = c.get("maturity", "first_assessment")
+        maturity[m] = maturity.get(m, 0) + 1
+    print("\nBy maturity:")
+    for m, n in sorted(maturity.items(), key=lambda x: -x[1]):
+        print(f"  {m}: {n}")
 
     total_sightings = sum(c["sighting_count"] for c in claims)
     print(f"\nTotal sightings: {total_sightings}")
