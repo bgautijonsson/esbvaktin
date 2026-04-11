@@ -430,6 +430,10 @@ def get_filtered_entities(
             continue
         if issue == "placeholder" and count > 0:
             continue
+        if issue == "needs_attention":
+            has_issue = eid in stance_conflict_ids or eid in type_mismatches or count == 0
+            if not has_issue:
+                continue
 
         results.append(
             {
