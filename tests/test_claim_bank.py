@@ -84,6 +84,69 @@ class TestCanonicalClaimModel:
             )
 
 
+class TestVerdictDistance:
+    """Tests for graduated verdict distance calculation."""
+
+    def test_same_verdict(self):
+        from esbvaktin.claim_bank.confidence import verdict_distance
+
+        assert verdict_distance("supported", "supported") == 0
+
+    def test_adjacent_verdicts(self):
+        from esbvaktin.claim_bank.confidence import verdict_distance
+
+        assert verdict_distance("supported", "partially_supported") == 1
+
+    def test_far_verdicts(self):
+        from esbvaktin.claim_bank.confidence import verdict_distance
+
+        assert verdict_distance("supported", "misleading") == 3
+
+    def test_medium_distance(self):
+        from esbvaktin.claim_bank.confidence import verdict_distance
+
+        assert verdict_distance("supported", "unsupported") == 2
+        assert verdict_distance("partially_supported", "misleading") == 2
+
+    def test_unverifiable_always_distance_1(self):
+        from esbvaktin.claim_bank.confidence import verdict_distance
+
+        assert verdict_distance("supported", "unverifiable") == 1
+        assert verdict_distance("misleading", "unverifiable") == 1
+
+    def test_symmetric(self):
+        from esbvaktin.claim_bank.confidence import verdict_distance
+
+        assert verdict_distance("supported", "misleading") == verdict_distance(
+            "misleading", "supported"
+        )
+
+
+class TestGraduatedDecay:
+    """Tests for graduated confidence decay logic."""
+
+    def test_adjacent_decay_is_5pct(self):
+        from esbvaktin.claim_bank.confidence import BASE_DECAY_FACTOR
+
+        # Distance 1 → decay = BASE_DECAY_FACTOR^1 = 0.95
+        assert BASE_DECAY_FACTOR**1 == 0.95
+
+    def test_far_decay_is_stronger(self):
+        from esbvaktin.claim_bank.confidence import BASE_DECAY_FACTOR
+
+        # Distance 3 → decay = 0.95^3 ≈ 0.857
+        d3 = BASE_DECAY_FACTOR**3
+        assert d3 < 0.86
+        assert d3 > 0.85
+
+    def test_midrange_decay(self):
+        from esbvaktin.claim_bank.confidence import BASE_DECAY_FACTOR
+
+        # Distance 2 → 0.95^2 = 0.9025
+        d2 = BASE_DECAY_FACTOR**2
+        assert 0.90 < d2 < 0.91
+
+
 class TestClaimBankMatchModel:
     """Tests for the ClaimBankMatch model."""
 

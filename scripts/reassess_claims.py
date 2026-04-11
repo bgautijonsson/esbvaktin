@@ -89,6 +89,7 @@ def _get_reassessable_claims(
     include_partial: bool = True,
     include_overconfident: bool = False,
     include_denominator: bool = False,
+    include_flagged: bool = False,
     overconfident_limit: int = 30,
     evidence_ids: list[str] | None = None,
     claim_ids: list[int] | None = None,
@@ -121,6 +122,9 @@ def _get_reassessable_claims(
 
     if include_denominator:
         assessable.extend(_get_denominator_claims(conn))
+
+    if include_flagged:
+        assessable.extend(_get_flagged_claims(conn, limit=overconfident_limit))
 
     return assessable
 
@@ -527,6 +531,63 @@ def _get_denominator_claims(conn) -> list[dict]:
     return assessable
 
 
+def _get_flagged_claims(conn, limit: int = 30) -> list[dict]:
+    """Claims flagged for reassessment by the confidence decay trigger.
+
+    These are claims where sighting drift caused confidence to cross below
+    REASSESSMENT_THRESHOLD (0.50), indicating the verdict may need revision.
+    """
+    rows = conn.execute(
+        """
+        SELECT id, canonical_text_is, canonical_text_en, category, claim_slug,
+               confidence, epistemic_type, reassessment_reason
+        FROM claims
+        WHERE needs_reassessment = TRUE
+          AND epistemic_type != 'hearsay'
+        ORDER BY confidence ASC
+        LIMIT %(limit)s
+        """,
+        {"limit": limit},
+    ).fetchall()
+
+    assessable = []
+    for (
+        claim_id,
+        text_is,
+        text_en,
+        category,
+        slug,
+        confidence,
+        epistemic_type,
+        reason_detail,
+    ) in rows:
+        results = _search_evidence_hybrid(text_is, text_en, category, conn)
+        strong = sorted(
+            [r for r in results if r.similarity >= SIMILARITY_THRESHOLD],
+            key=lambda r: r.similarity,
+            reverse=True,
+        )[:8]
+
+        if not strong:
+            continue
+
+        assessable.append(
+            _make_claim_entry(
+                claim_id,
+                text_is,
+                text_en,
+                category,
+                slug,
+                strong,
+                reason=f"flagged:{reason_detail or 'sighting_drift'}",
+                current_confidence=confidence,
+                epistemic_type=epistemic_type or "factual",
+            )
+        )
+
+    return assessable
+
+
 def _make_claim_entry(
     claim_id,
     text_is,
@@ -765,6 +826,7 @@ def prepare(
     include_partial = only in (None, "partial") and not evidence_ids and not claim_ids
     include_overconfident = only == "overconfident" and not evidence_ids and not claim_ids
     include_denominator = only == "denominator" and not evidence_ids and not claim_ids
+    include_flagged = only == "flagged" and not evidence_ids and not claim_ids
 
     WORK_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -791,6 +853,8 @@ def prepare(
             types.append(f"overconfident (top {limit})")
         if include_denominator:
             types.append("denominator_audit")
+        if include_flagged:
+            types.append(f"flagged (top {limit})")
         print(f"Retrieving evidence for {' + '.join(types)} claims...")
 
     assessable = _get_reassessable_claims(
@@ -799,6 +863,7 @@ def prepare(
         include_partial=include_partial,
         include_overconfident=include_overconfident,
         include_denominator=include_denominator,
+        include_flagged=include_flagged,
         overconfident_limit=limit,
         evidence_ids=evidence_ids,
         claim_ids=claim_ids,
@@ -809,6 +874,7 @@ def prepare(
     n_par = sum(1 for c in assessable if c["reason"] == "partial")
     n_over = sum(1 for c in assessable if c["reason"] == "overconfident")
     n_den = sum(1 for c in assessable if c["reason"] == "denominator_audit")
+    n_flagged = sum(1 for c in assessable if c["reason"].startswith("flagged:"))
     parts = []
     if n_unv:
         parts.append(f"{n_unv} unverifiable")
@@ -818,6 +884,8 @@ def prepare(
         parts.append(f"{n_over} overconfident")
     if n_den:
         parts.append(f"{n_den} denominator_audit")
+    if n_flagged:
+        parts.append(f"{n_flagged} flagged")
     print(f"Found {len(assessable)} assessable claims ({', '.join(parts)})")
 
     # Split into batches
@@ -982,6 +1050,14 @@ def update():
                     confidence=confidence,
                     conn=conn,
                 )
+                # Clear reassessment flag if it was set
+                conn.execute(
+                    """UPDATE claims
+                    SET needs_reassessment = FALSE, reassessment_reason = NULL
+                    WHERE id = %(claim_id)s AND needs_reassessment = TRUE""",
+                    {"claim_id": claim_id},
+                )
+                conn.commit()
                 updated += 1
             except Exception as e:
                 print(f"    Error updating claim {claim_id}: {e}")
@@ -1042,6 +1118,19 @@ def status():
     print(f"\n  Unverifiable rate: {unverifiable}/{total} = {unverifiable / total * 100:.1f}%")
     print(f"  Partial rate:      {partial}/{total} = {partial / total * 100:.1f}%")
 
+    # Flagged for reassessment (confidence decay trigger)
+    flagged = conn.execute(
+        "SELECT COUNT(*) FROM claims WHERE needs_reassessment = TRUE"
+    ).fetchone()[0]
+    if flagged > 0:
+        print(f"\n  Flagged for reassessment: {flagged}")
+        reasons = conn.execute(
+            "SELECT reassessment_reason, COUNT(*) FROM claims "
+            "WHERE needs_reassessment = TRUE GROUP BY reassessment_reason"
+        ).fetchall()
+        for reason, count in reasons:
+            print(f"    {reason or '(no reason)'}: {count}")
+
     if pending_batches or done_batches:
         print(f"\n  Assessment batches: {done_batches} done, {pending_batches} pending")
 
@@ -1051,7 +1140,9 @@ def status():
 def main():
     if len(sys.argv) < 2:
         print("Usage: uv run python scripts/reassess_claims.py [prepare|update|status]")
-        print("  prepare [--only unverifiable|partial|overconfident|denominator] [--limit N]")
+        print(
+            "  prepare [--only unverifiable|partial|overconfident|denominator|flagged] [--limit N]"
+        )
         print("  prepare --evidence ID1 ID2 ...          Claims citing these evidence entries")
         print("  prepare --claims 123 456 ...             Specific claims by ID")
         print("          Prepare context files (auto-cleans stale output files)")
@@ -1083,10 +1174,16 @@ def main():
                 idx = sys.argv.index("--only")
                 if idx + 1 < len(sys.argv):
                     only = sys.argv[idx + 1]
-                    if only not in ("unverifiable", "partial", "overconfident", "denominator"):
+                    if only not in (
+                        "unverifiable",
+                        "partial",
+                        "overconfident",
+                        "denominator",
+                        "flagged",
+                    ):
                         print(
                             f"Unknown --only value: {only} "
-                            f"(use 'unverifiable', 'partial', 'overconfident', or 'denominator')"
+                            f"(use 'unverifiable', 'partial', 'overconfident', 'denominator', or 'flagged')"
                         )
                         sys.exit(1)
             if "--limit" in sys.argv:

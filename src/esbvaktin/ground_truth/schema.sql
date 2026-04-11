@@ -193,6 +193,17 @@ ALTER TABLE claims ALTER COLUMN published SET DEFAULT FALSE;
 
 
 -- ═══════════════════════════════════════════════════════════════════════
+-- Migration: needs_reassessment flag for verdict revision triggers
+-- ═══════════════════════════════════════════════════════════════════════
+
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS needs_reassessment BOOLEAN DEFAULT FALSE;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS reassessment_reason TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_claims_needs_reassessment
+    ON claims(needs_reassessment) WHERE needs_reassessment = TRUE;
+
+
+-- ═══════════════════════════════════════════════════════════════════════
 -- Views: analytical queries for editorial workflow
 -- ═══════════════════════════════════════════════════════════════════════
 
