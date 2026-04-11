@@ -122,7 +122,7 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
             claim["created_at"] = claim["created_at"].isoformat()
         claims.append(claim)
 
-    # Fetch individual sightings and attach to claims
+    # Fetch individual sightings (with per-sighting verdict) and attach to claims
     sighting_rows = conn.execute(
         f"""
         SELECT
@@ -130,7 +130,8 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
             s.source_url,
             s.source_title,
             s.source_date,
-            s.source_type
+            s.source_type,
+            s.speech_verdict
         FROM claim_sightings s
         JOIN claims c ON c.id = s.claim_id
         {where_clause}
@@ -140,34 +141,33 @@ def _fetch_claims(*, include_unpublished: bool = False) -> list[dict]:
 
     sightings_by_slug: dict[str, list[dict]] = {}
     verdicts_by_slug: dict[str, list[str | None]] = {}
-    for slug, url, title, sdate, stype in sighting_rows:
+    for slug, url, title, sdate, stype, sv in sighting_rows:
         sighting = {
             "source_url": url,
             "source_title": title,
             "source_date": sdate.isoformat() if isinstance(sdate, (date, datetime)) else sdate,
             "source_type": stype,
         }
+        if sv:
+            sighting["verdict"] = sv
         sightings_by_slug.setdefault(slug, []).append(sighting)
-
-    # Fetch per-sighting verdicts for maturity classification
-    verdict_rows = conn.execute(
-        f"""
-        SELECT c.claim_slug, s.speech_verdict
-        FROM claim_sightings s
-        JOIN claims c ON c.id = s.claim_id
-        {where_clause}
-        """
-    ).fetchall()
-    for slug, sv in verdict_rows:
         verdicts_by_slug.setdefault(slug, []).append(sv)
 
     for claim in claims:
         claim["sightings"] = sightings_by_slug.get(claim["claim_slug"], [])
+        svs = verdicts_by_slug.get(claim["claim_slug"], [])
         claim["maturity"] = _classify_maturity(
             claim["sighting_count"],
             claim["verdict"],
-            verdicts_by_slug.get(claim["claim_slug"], []),
+            svs,
         )
+        # Verdict distribution across sightings (non-NULL only)
+        non_null_svs = [v for v in svs if v]
+        if non_null_svs:
+            dist: dict[str, int] = {}
+            for v in non_null_svs:
+                dist[v] = dist.get(v, 0) + 1
+            claim["sighting_verdict_distribution"] = dist
 
     conn.close()
     return claims
