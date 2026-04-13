@@ -1,0 +1,5 @@
+project:
+  type: default
+  output-dir: /Users/brynjolfurjonsson/esbvaktin-site/althjodastofnun
+  preview:
+    port: 4201

@@ -1,0 +1,275 @@
+/*-- scss:defaults --*/
+
+// ESBvaktin Design Tokens
+$bg:        #F5F0E8;
+$text:      #1C1A17;
+$accent:    #0D6A63;
+$muted:     #6B6358;
+$rule:      #D5CFC5;
+
+$primary:   $accent;
+$secondary: $bg;
+
+$body-bg:                   $bg;
+$body-color:                $text;
+
+$font-size-base:            1.0rem;
+$font-family-base:          "Source Serif 4", Georgia, serif;
+$font-family-sans-serif:    "DM Sans", "Source Sans 3", sans-serif;
+
+$headings-color:            $text;
+$headings-font-weight:      500;
+$headings-font-family:      "Fraunces", Georgia, serif;
+
+$link-color:                $accent;
+
+/*-- scss:rules --*/
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap');
+
+.reveal h1 {
+    color: $text;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 2.8rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.reveal h2 {
+    color: $text;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 2.0rem;
+    font-weight: 500;
+    padding-top: 20px;
+    letter-spacing: -0.01em;
+}
+
+.reveal p {
+    font-family: "Source Serif 4", Georgia, serif;
+    line-height: 1.65;
+}
+
+.reveal strong {
+    color: $accent;
+}
+
+.reveal p.subtitle {
+    color: $muted;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+
+.reveal p.author {
+    color: $text;
+    font-family: "Source Serif 4", Georgia, serif;
+}
+
+.reveal p.institute {
+    color: $muted;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.reveal a {
+    color: $accent;
+}
+
+.reveal .slides {
+    font-size: 0.95em;
+}
+
+/* Number grid for scale slide */
+.number-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem 4rem;
+    text-align: center;
+    padding: 2rem 4rem;
+}
+
+.number-grid .number {
+    font-family: "DM Sans", sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: $text;
+    line-height: 1;
+}
+
+.number-grid .label {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.1rem;
+    color: $muted;
+    margin-top: 0.3rem;
+}
+
+/* Closing slide large number */
+.big-number {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 10rem;
+    font-weight: 500;
+    color: $text;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.closing-text {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.3rem;
+    color: $muted;
+    margin-top: 1rem;
+}
+
+.closing-question {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.5rem;
+    color: $text;
+    font-style: italic;
+    margin-top: 1.5rem;
+}
+
+/* Key line callout */
+.key-line {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.3rem;
+    color: $text;
+    border-left: 3px solid $accent;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    line-height: 1.5;
+}
+
+/* Pipeline diagram */
+.pipeline {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+    padding: 0 2rem;
+}
+
+.pipeline-step {
+    text-align: center;
+    flex: 1;
+    max-width: 360px;
+}
+
+.pipeline-number {
+    font-family: "DM Sans", sans-serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: $text;
+    line-height: 1;
+    display: block;
+}
+
+.pipeline-arrow {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 0.95rem;
+    color: $muted;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.pipeline-detail {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.8rem;
+    color: $muted;
+    display: block;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+}
+
+/* Discourse table */
+.discourse-table {
+    margin-top: 1rem;
+    padding: 0 1rem;
+}
+
+.discourse-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.discourse-table thead th {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.6rem 1rem;
+    border-bottom: 2px solid $rule;
+    text-align: left;
+}
+
+.discourse-table thead th:first-child {
+    width: 12%;
+}
+
+.discourse-table tbody td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid $rule;
+    vertical-align: top;
+    color: $text;
+}
+
+.discourse-table tbody td:first-child {
+    width: 12%;
+}
+
+.discourse-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.topic-label {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: $accent;
+    white-space: nowrap;
+}
+
+/* Three questions closing */
+.three-questions {
+    text-align: left;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.three-questions .question {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.5rem;
+    color: $text;
+    display: block;
+    margin-top: 1.2rem;
+    line-height: 1.4;
+}
+
+.three-questions .attribution {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.85rem;
+    color: $muted;
+    display: block;
+    margin-top: 0.2rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Footer */
+.footer {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.75rem;
+    color: $muted;
+    letter-spacing: 0.04em;
+}
+
+.footer a {
+    color: $muted;
+    text-decoration: none;
+}

@@ -1,0 +1,172 @@
+---
+title: "Hvað segir umræðan?"
+subtitle: "Kerfisbundin greining á ESB-umræðunni"
+author:
+  - name: Brynjólfur Gauti Jónsson
+format:
+  revealjs:
+    theme: theme.scss
+    slide-number: false
+    progress: false
+    hash: true
+    navigation-mode: linear
+    controls: false
+    touch: true
+    width: 1920
+    height: 1080
+    margin: 0.08
+    center: true
+    footer: "esbvaktin.is"
+---
+
+## {data-name="Titill" .center}
+
+::: {style="margin-top: 3rem;"}
+[Hvað segir umræðan?]{style="font-family: Fraunces; font-size: 3.5rem; font-weight: 500; color: #1C1A17; letter-spacing: -0.02em;"}
+
+[Kerfisbundin greining á ESB-umræðunni]{style="font-family: 'Source Serif 4'; font-size: 1.5rem; color: #6B6358; display: block; margin-top: 1rem;"}
+
+[Brynjólfur Gauti Jónsson]{style="font-family: 'Source Serif 4'; font-size: 1.1rem; color: #1C1A17; display: block; margin-top: 3rem;"}
+
+[esbvaktin.is]{style="font-family: 'DM Sans'; font-size: 0.85rem; color: #6B6358; letter-spacing: 0.06em; display: block; margin-top: 0.5rem;"}
+:::
+
+::: {.notes}
+Titilglæra — sýnileg meðan allir setjast.
+:::
+
+
+## {data-name="Upphaf" .center}
+
+::: {style="margin-top: 2rem;"}
+
+[Spurningin 29. ágúst er hvort við eigum að **hefja viðræður** — ekki hvort við eigum að ganga í ESB.]{style="font-family: 'Source Serif 4'; font-size: 1.8rem; color: #1C1A17; line-height: 1.5;"}
+
+[En umræðan gerir nánast engan greinarmun á þessu tvennu.]{style="font-family: 'Source Serif 4'; font-size: 1.4rem; color: #6B6358; display: block; margin-top: 2rem;"}
+
+:::
+
+::: {.notes}
+Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort við eigum að ganga í ESB. En umræðan gerir nánast engan greinarmun á þessu tvennu.
+
+Við lögðum af stað til að kortleggja umræðuna kerfisbundið. Ekki til að svara spurningu pallborðsins — heldur til að sjá hvernig Ísland ræðir hana. Og kortið sýnir að samtalið er ekki þar sem maður myndi búast við.
+:::
+
+
+## {data-name="Aðferð"}
+
+::: {.pipeline}
+
+::: {.pipeline-step}
+[333 greinar]{.pipeline-number}
+
+[→ Fullyrðingagreining (Claude)]{.pipeline-arrow}
+:::
+
+::: {.pipeline-step}
+[2.101 fullyrðingar]{.pipeline-number}
+
+[→ Mat á sannanir (Claude)]{.pipeline-arrow}
+:::
+
+::: {.pipeline-step}
+[499 heimildir]{.pipeline-number}
+
+[handlesnar · lagatextar · Eurostat · sáttmálar]{.pipeline-detail}
+:::
+
+:::
+
+::: {.key-line style="margin-top: 2rem;"}
+Hvert skref er rekjanlegt. Heimildir → gögn → mat → þú getur athugað.
+:::
+
+::: {.notes}
+ESBvaktin fylgist kerfisbundið með ESB-umræðunni á Íslandi. Við notum Claude — gervigreindakerfi — til að lesa greinar og draga út fullyrðingar. Þær eru bornar saman við heimildagrunn sem ég les saman — lagatexta, Eurostat-gögn, sáttmálaákvæði, þingræður. Hvert mat vísar til heimilda. Hver heimild vísar til frumheimildar. Keðjan er rekjanleg frá upphafi til enda.
+
+Claude er vélin. Heimildasöfnun, ritstjórnarstefna og lokayfirferð er mannleg.
+
+Af þessum 2.101 fullyrðingum eru 75% að hluta studdar — ekki rangar, en samhengið vantar. Umræðan er ekki að ljúga. Hún er að segja hálfa söguna.
+:::
+
+
+## Ófullkomin, ekki röng {data-name="Gæði"}
+
+![](figures/verdicts.png){width="100%"}
+
+::: {.notes}
+Af þessum 2.101 fullyrðingum eru 75 prósent að hluta studdar — ekki rangar, en samhengið vantar. Minna en ein af hverjum fimmtíu er beinlínis röng. Vandamálið er ekki lygar — vandamálið er hálfur sannleikur. Og þetta á við beggja vegna.
+:::
+
+
+## {data-name="Tafla"}
+
+::: {.discourse-table}
+
+| | Hvað umræðan endurtekur | Hvað enginn spyr |
+|---|---|---|
+| [**EES-réttur**]{.topic-label} | Báðar hliðar vitna í „70%" — engin segir hvaða nefnara hún notar. Sömu gögnin, gagnstæð rök | Geta 380 þúsund innleitt allt regluverkið? 400–500 tilskipanir bíða þegar |
+| [**Sjávarútvegur**]{.topic-label} | 14 af 20 fullyrðingum: hvað við myndum tapa. Engin: hvaða skilmála við gætum samið | 800–1.000 ma.kr. í kvótaeignum — ekki meðal topp 20 |
+| [**Landbúnaður**]{.topic-label} | 6:1 framleiðendamiðað. Eitt blað ræður 36% umfjöllunar | 50–70% matvælaverðsálag (Eurostat). Kemur fyrir í 2 af 20 |
+| [**Fullveldi**]{.topic-label} | Mest endurtekið: dagsetning atkvæðagreiðslu (49×). Viðræður og aðild blandað saman | Afturkræfni: 0 af 25. Dönskur varnarmálaundanþága (felld 2022): enn nefnd |
+
+:::
+
+::: {.notes}
+Hér er það sem 333 greinar og 2.101 fullyrðingar sýna okkur. Fjögur stærstu málefnin — og hvað fólk endurtekir annars vegar, og hvað enginn spyr hins vegar.
+
+**EES-réttur:** Mest endurtekna fullyrðingin — sextán tilvísanir — er að Ísland hafi innleitt 70 prósent af löggjöf ESB. Báðar hliðar nota hana. Engin segir hvaða nefnara hún notar. 13,4 prósent ef þú telur allt regluverkið. 75 prósent ef þú telur aðeins innri markaðinn. Sömu staðreyndin — þrjú mismunandi rök. Og enginn ræðir hvort ríki sem er með 380 þúsund íbúa geti tekið á sig allt regluverkið þegar 400 til 500 tilskipanir bíða nú þegar.
+
+**Sjávarútvegur:** Af tuttugustu umræddustu fullyrðingunum fjalla fjórtán um það sem Ísland myndi tapa. Fjórar um hvað það gæti lært. Engin spyr: hvaða skilmála gæti Ísland samið um? Sjávarútvegskaflinn var aldrei opnaður í viðræðunum 2010 til 2013. Og svo er kvótinn sjálfur: 800 til 1.000 milljarðar króna í eignaverðmæti — á pari við landsframleiðsluna. Ekki meðal topp tuttugu.
+
+**Landbúnaður:** Sex á móti einu á hlið framleiðenda. Eitt blað — Bændablaðið — ræður 35 prósentum allrar umfjöllunar. Matvælaverð á Íslandi er 50 til 70 prósent yfir meðaltali ESB. Þetta kemur fyrir í tveimur af topp tuttugu. Sama tolltalan þýðir vernd fyrir bóndann í Borgarfirði og kostnað fyrir einstætt foreldri á Breiðholti.
+
+**Fullveldi:** Mest endurtekna fullyrðingin — 49 tilvísanir — er dagsetning þjóðaratkvæðagreiðslunnar. Mikilvæg, en aðallega um form. Umræðan blandar viðræðum og aðild saman, eins og já-atkvæði 29. ágúst þýði inngöngu. Ferlið er afturkræft á öllum stigum — greitt úr viðræðum, greitt úr aðild. Þessi staðreynd kemur hvergi fram í topp 25. Og danska varnarmálaundanþágan — felld í júní 2022 — er enn nefnd í umræðunni eins og hún sé í gildi. Umræðan leiðréttir ekki sjálfa sig, ekki einu sinni þegar auðvelt er að athuga.
+:::
+
+
+## Hvar er umræðan? {data-name="Umræðan"}
+
+![](figures/topics.png){width="100%"}
+
+::: {.notes}
+En stærsta niðurstaðan snýst ekki um þessi fjögur efni. Hér sést hvar umræðan er. EES-réttur, fullveldi, sjávarútvegur — yfir helmingur samtalanna. Orkumál, vinnumarkaður, húsnæðismál — undir þrjú prósent samtals. Efnin sem skipta mestu máli í daglegu lífi eru efnin sem samtalið hefur ekki enn náð til. Þjóðaratkvæðagreiðslan er eftir fjóra og hálfan mánuð. Samtalið hefur tíma til þess — en aðeins ef við tökum eftir eyðunni.
+:::
+
+
+## {data-name="Lokaorð" .center}
+
+::: {style="margin-top: 1.5rem;"}
+
+::: {.three-questions}
+
+[1. Er ég forvitinn — eða er ég að verja afstöðu?]{.question}
+[— Tim Harford]{.attribution}
+
+[2. Er þetta sett fram til að upplýsa mig — eða til að sannfæra mig?]{.question}
+[— David Spiegelhalter]{.attribution}
+
+[3. Get ég athugað þetta sjálfur?]{.question}
+[— Onora O'Neill]{.attribution}
+
+:::
+
+::: {style="margin-top: 2.5rem;"}
+[Hvaða spurningum getum við svarað — og hvaða spurningar snúast í raun um val, ekki vitneskju?]{.closing-question}
+:::
+
+:::
+
+::: {.notes}
+Sumt vitum við — og getum athugað. Sumt myndum við læra í viðræðum. Sumt er óvíst hvað sem gerist. Og sum ágreiningur snýst ekki um vitneskju heldur um gildi.
+
+Þegar þið lesið um þjóðaratkvæðagreiðsluna héðan til ágúst, þrjár spurningar munu nýtast vel.
+
+Sú fyrsta, frá Tim Harford: Er ég forvitinn, eða er ég að verja afstöðu sem ég hef þegar tekið?
+
+Sú önnur, frá David Spiegelhalter: Er þessu sett fram til að upplýsa mig, eða til að sannfæra mig?
+
+Sú þriðja, frá Onora O'Neill: Get ég athugað þetta sjálfur? Og ef ekki — af hverju leggur einhver þetta fram sem staðreynd?
+
+Við lögðum ekki af stað til að svara spurningu pallborðsins. Við lögðum af stað til að kortleggja hvernig Ísland ræðir hana. Kortið sýnir að samtalið hefur ekki náð til þeirra spurninga sem mestu máli skipta.
+:::
