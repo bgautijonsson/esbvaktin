@@ -128,7 +128,14 @@ $link-color:                $accent;
     font-size: 1.5rem;
     color: $text;
     font-style: italic;
-    margin-top: 1.5rem;
+    margin-top: 2.5rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.closing-question p {
+    font-style: italic;
 }
 
 /* Key line callout */
@@ -193,8 +200,8 @@ $link-color:                $accent;
     width: 100%;
     border-collapse: collapse;
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 0.85rem;
-    line-height: 1.45;
+    font-size: 1.0rem;
+    line-height: 1.5;
 }
 
 .discourse-table thead th {
@@ -231,7 +238,7 @@ $link-color:                $accent;
 .topic-label {
     font-family: "DM Sans", sans-serif;
     font-weight: 500;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: $accent;
     white-space: nowrap;
 }
@@ -261,6 +268,71 @@ $link-color:                $accent;
     margin-bottom: 0.8rem;
 }
 
+/* Centered text slides */
+.reveal .slides section.centered-text {
+    text-align: center;
+}
+
+.reveal .slides section.centered-text .three-questions {
+    text-align: left;
+    display: inline-block;
+}
+
+/* Hero statement (Upphaf slide) */
+.hero-statement {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.8rem;
+    color: $text;
+    line-height: 1.5;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.hero-follow {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.4rem;
+    color: $muted;
+    margin-top: 2rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Hide empty headings (untitled slides) */
+.reveal .slides section.no-heading > h2:first-child {
+    display: none;
+}
+
+/* Title slide refinements */
+#title-slide {
+    text-align: center;
+}
+
+#title-slide h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 3.2rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: $text;
+    padding-bottom: 1.2rem;
+    border-bottom: 2px solid $rule;
+    display: inline-block;
+}
+
+#title-slide .subtitle {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.4rem;
+    color: $muted;
+    margin-top: 0.5rem;
+}
+
+#title-slide .author {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.1rem;
+    color: $text;
+    margin-top: 2.5rem;
+}
+
 /* Footer */
 .footer {
     font-family: "DM Sans", sans-serif;
@@ -272,4 +344,25 @@ $link-color:                $accent;
 .footer a {
     color: $muted;
     text-decoration: none;
+}
+
+/* Fragment transitions */
+.reveal .slides section .fragment {
+    transition: all 0.4s ease;
+}
+
+/* Table row reveal animation */
+.discourse-table tbody tr.fragment.visible {
+    animation: row-arrive 0.6s ease-out;
+}
+
+@keyframes row-arrive {
+    from {
+        border-left: 3px solid $accent;
+        background-color: rgba(13, 106, 99, 0.04);
+    }
+    to {
+        border-left: 3px solid transparent;
+        background-color: transparent;
+    }
 }

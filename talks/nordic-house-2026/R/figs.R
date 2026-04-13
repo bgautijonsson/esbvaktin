@@ -7,6 +7,9 @@ library(ggtext)
 
 source("R/theme_esb.R")
 
+# NOTE: Run this script inside Positron, not from CLI.
+# showtext needs an IDE graphics device for correct Icelandic glyph rendering.
+
 db_url <- readLines("~/esbvaktin/.env") |>
   grep("^DATABASE_URL", x = _, value = TRUE) |>
   sub("DATABASE_URL=", "", x = _)
@@ -158,6 +161,20 @@ ggsave(
   device = cairo_pdf
 )
 
+ggsave(
+  filename = "talks/nordic-house-2026/figures/topics.svg",
+  width = 16,
+  height = 9,
+  device = svglite::svglite
+)
+
+ggsave(
+  filename = "talks/nordic-house-2026/figures/topics.png",
+  width = 16,
+  height = 9,
+  dpi = 300,
+)
+
 
 plot_dat <- claims |>
   filter(published == TRUE) |>
@@ -280,8 +297,15 @@ ggsave(
 
 ggsave(
   "talks/nordic-house-2026/figures/verdicts.svg",
-  width = 8,
-  height = 0.5 * 8,
-  scale = 1.6,
+  width = 16,
+  height = 9,
   device = svglite::svglite
+)
+
+ggsave(
+  "talks/nordic-house-2026/figures/verdicts.png",
+  width = 16,
+  height = 9,
+  scale = 0.6,
+  dpi = 300
 )
