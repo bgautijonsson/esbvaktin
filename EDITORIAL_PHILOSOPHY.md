@@ -154,6 +154,20 @@ The reassessment pipeline exists for this reason. Claims are living documents. N
 **O'Neill:** Reliability means consistency. If we publish claims immediately and retract them later, we're not reliable. A cooling-off period or minimum-evidence gate would be more trustworthy than instant publication.
 **Spiegelhalter:** Include uncertainties. If a claim is published with low confidence, the uncertainty should be visible to readers, not hidden behind a binary published/unpublished gate.
 
+## Editorial-Reviewer Agent: Decision Record
+
+**Decision (2026-04-13):** Not warranted at this time.
+
+**Rationale:** The W15 editorial failure was a pipeline problem, not a writer problem. The suspicious framing originated in evidence caveats (`ORG-DATA-001`), was propagated by the assessor into `missing_context_is`, and surfaced in the editorial. Fixing the upstream layers (evidence caveats rewritten, writer agent prompt strengthened with philosophy principles, anti-exemplars added) addresses the root cause more effectively than adding a downstream reviewer.
+
+Additional factors:
+
+- Every editorial already requires human review before publication (hard constraint)
+- An Opus-tier reviewer would cost ~$0.15–0.30 per editorial for weekly output — poor ROI given human review
+- Prompt strengthening + exemplar bank + evidence quality are three independent defence layers
+
+**Revisit if:** Editorials begin publishing without human review, volume exceeds weekly, or a new class of philosophy violation emerges that the strengthened prompt doesn't catch.
+
 ## For Agents and Contributors
 
 If you are an agent (claim-assessor, omissions-analyst, editorial-writer, capsule-writer) or a human contributor, these principles apply to your output:
