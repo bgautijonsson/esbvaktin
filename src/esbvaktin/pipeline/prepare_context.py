@@ -79,7 +79,7 @@ _TERMINOLOGY_IS = """
 - heimild / gögn = evidence / data
 - stutt af heimildum = supported
 - ekki stutt af heimildum = unsupported
-- villandi = misleading
+- þarfnast samhengis = misleading (needs context)
 - stutt að hluta = partially supported
 - ekki hægt að sannreyna = unverifiable
 - vanræksla / það sem vantar = omission
@@ -394,7 +394,7 @@ Fyrir hverja fullyrðingu hér að neðan, gefðu mat:
    - `supported` — heimildir staðfesta fullyrðinguna
    - `partially_supported` — fullyrðingin er í meginatriðum rétt en vantar blæbrigði
    - `unsupported` — engar heimildir styðja fullyrðinguna
-   - `misleading` — tæknilega rétt en sleppur mikilvægu samhengi
+   - `misleading` (þarfnast samhengis) — tæknilega rétt en sleppur mikilvægu samhengi
    - `unverifiable` — ófullnægjandi heimildir til að meta
 
 2. **explanation**: 2-3 setningar á **íslensku** sem útskýra matið. Vísaðu í
@@ -813,7 +813,7 @@ Translate the following analysis report into Icelandic.
   - evidence = heimild / gögn
   - supported = stutt af heimildum
   - unsupported = ekki stutt af heimildum
-  - misleading = villandi
+  - misleading = þarfnast samhengis
   - partially supported = stutt að hluta
   - omission = vanræksla / það sem vantar
 - Translate verdict names in parentheses, keep original as well:
@@ -1410,7 +1410,7 @@ def prepare_capsule_context(
         "supported": "stutt af heimildum",
         "partially_supported": "stutt a\u00f0 hluta",
         "unsupported": "ekki stutt",
-        "misleading": "villandi",
+        "misleading": "þarfnast samhengis",
         "unverifiable": "ekki h\u00e6gt a\u00f0 sannreyna",
     }
     verdict_lines = [f"- {verdict_is.get(v, v)}: {count}" for v, count in vc.most_common()]

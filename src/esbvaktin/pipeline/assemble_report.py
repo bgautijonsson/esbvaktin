@@ -40,7 +40,7 @@ _VERDICT_LABELS_IS = {
     Verdict.SUPPORTED: "✅ Stutt af heimildum",
     Verdict.PARTIALLY_SUPPORTED: "⚠️ Stutt að hluta",
     Verdict.UNSUPPORTED: "❌ Ekki stutt af heimildum",
-    Verdict.MISLEADING: "🔍 Villandi",
+    Verdict.MISLEADING: "🔍 Þarfnast samhengis",
     Verdict.UNVERIFIABLE: "❓ Ekki hægt að sannreyna",
 }
 
@@ -148,7 +148,7 @@ def render_report_is(
         "supported": "Stutt af heimildum",
         "partially_supported": "Stutt að hluta",
         "unsupported": "Ekki stutt",
-        "misleading": "Villandi",
+        "misleading": "Þarfnast samhengis",
         "unverifiable": "Ekki hægt að sannreyna",
     }
     for v, count in sorted(verdict_counts.items()):

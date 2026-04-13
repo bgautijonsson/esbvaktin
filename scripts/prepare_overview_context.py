@@ -24,7 +24,7 @@ VERDICT_LABELS_IS = {
     "supported": "Studd",
     "partially_supported": "Studd að hluta",
     "unsupported": "Óstudd",
-    "misleading": "Villandi",
+    "misleading": "Þarfnast samhengis",
     "unverifiable": "Óstaðfestanleg",
 }
 

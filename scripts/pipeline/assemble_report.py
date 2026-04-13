@@ -69,7 +69,7 @@ def main():
         "supported": "stutt af heimildum",
         "partially_supported": "stutt að hluta",
         "unsupported": "ekki stutt",
-        "misleading": "villandi",
+        "misleading": "þarfnast samhengis",
         "unverifiable": "ekki hægt að sannreyna",
     }
     parts = [f"{count} {verdict_names.get(v, v)}" for v, count in vc.most_common()]
