@@ -134,7 +134,7 @@ Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort 
 <tr>
   <th></th>
   <th>Hvað umræðan endurtekur</th>
-  <th>Hvað enginn spyr</th>
+  <th>Hvers engin spyr</th>
 </tr>
 </thead>
 <tbody>
@@ -147,7 +147,7 @@ Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort 
     Báðar hliðar vitna í „70%" — engin segir nefnarann. Bilið er
     <span class="td-stat">5×</span>
   </td>
-  <td>400–500 tilskipanir bíða þegar — geta 380 þúsund tekið á sig allt?</td>
+  <td>13.000+ lagagerðir án atkvæðisréttar. 400–500 bíða innleiðingar. Hvort tveggja sjaldan rætt.</td>
 </tr>
 <tr class="fragment">
   <td>
@@ -158,7 +158,7 @@ Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort 
     <span class="td-stat">14 af 20</span>: hverju við myndum tapa.
     <span class="td-stat">Engin</span>: hvaða skilmála við gætum samið
   </td>
-  <td>800–1.000 ma.kr. í kvótaeignum — ekki meðal topp 20</td>
+  <td>Hvað verður um 800–1.000 ma.kr. í kvótaeignum — ekki meðal topp 20</td>
 </tr>
 <tr class="fragment">
   <td>
@@ -166,11 +166,11 @@ Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort 
     ><span class="topic-meta">146 fullyrðingar</span>
   </td>
   <td>
-    <span class="td-stat">6:1</span> á hlið framleiðenda. Eitt blað ræður
+    <span class="td-stat">6:1</span> frá sjónarhorni framleiðenda. Eitt blað ræður
     <span class="td-stat">36%</span> umfjöllunar
   </td>
   <td>
-    50–70% matvælaverðsálag — kemur fyrir í <span class="td-stat">2 af 20</span>
+    Hvaða áhrif hefur þetta á neytendur? Matvælaverð kemur fyrir í <span class="td-stat">2 af 20</span>
   </td>
 </tr>
 <tr class="fragment">
@@ -179,12 +179,11 @@ Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort 
     ><span class="topic-meta">383 fullyrðingar</span>
   </td>
   <td>
-    Mest endurtekið: dagsetning (<span class="td-stat">49×</span>). Viðræðum og
-    aðild blandað saman
+    Viðræðum og aðild blandað saman —
+    hefðum örfá þingsæti
   </td>
   <td>
-    Afturkræfni: <span class="td-stat">0 af 25</span>. Dönsk undanþága felld
-    2022 — enn nefnd
+    Afturkræfni: <span class="td-stat">0 af 25</span>. Höfum engin þingsæti þar núna
   </td>
 </tr>
 </tbody>
