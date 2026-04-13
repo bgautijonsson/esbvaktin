@@ -24,11 +24,11 @@
     "subtopic": "si_survey_eu_membership_2026",
     "statement": "Samtök iðnaðarins (SI, Confederation of Icelandic Enterprise) conducted a membership survey in February/March 2026 on attitudes toward Iceland's potential EU membership. The survey found that 57% of SI members were opposed to EU membership (þar af 43% mjög andvígir — of which 43% strongly opposed), while a minority supported membership. The proportion of members reporting strong opposition had approximately doubled compared to a comparable survey conducted in 2024. SI is Iceland's largest employers' organisation, representing companies across manufacturing, technology, services, and other sectors. The organisation has historically taken a cautious position on EU membership, emphasising both the potential benefits of single market access and the risks of EU regulation, particularly for Iceland's specific economic conditions. SI's membership includes both exporters (who might benefit from closer EU integration) and domestically oriented businesses (who might face increased competition).",
     "source_name": "Samtök iðnaðarins (SI) — Membership survey, February/March 2026",
-    "source_url": "https://www.si.is/",
+    "source_url": "https://www.si.is/frettasafn/meirihluti-felagsmanna-si-andvigur-adild-ad-esb",
     "source_date": "2026-03-01",
     "source_type": "official_statistics",
     "confidence": "medium",
-    "caveats": "Employer organisation surveys reflect the views of business owners and managers, not the general public or workers. The doubling of strong opposition may reflect sampling variation, changes in SI membership composition, or genuine shifts in business sentiment. SI published headline results but has not disclosed sample size, response rate, or exact question wording. SI's public position on EU membership is more nuanced than the survey results might suggest — the organisation has called for thorough economic analysis before any decision.",
+    "caveats": "Employer organisation surveys reflect the views of business owners and managers, not the general public or workers. The survey was conducted by Outcome among leaders of Icelandic industrial firms (stjórnendur íslenskra iðnfyrirtækja). The question asked: 'hversu hlynnt(ur) eða andvíg(ur) ertu aðild Íslands að Evrópusambandinu?' SI reports that response rate is 'similar between years' but does not disclose the percentage, sample size, or margin of error. The doubling of strong opposition may reflect sampling variation, changes in SI membership composition, or genuine shifts in business sentiment. SI states it has not taken a formal position on EU membership ('ekki tekið afstöðu').",
     "related_entries": ["POL-DATA-004", "POL-DATA-005"]
   },
   {

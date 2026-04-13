@@ -129,11 +129,11 @@
     "subtopic": "si_member_survey_eu_support_decline",
     "statement": "Samtök iðnaðarins (Confederation of Icelandic Industries, SI) has conducted periodic surveys of its members on EU membership. The surveys showed a decline in strong EU support: the proportion of members 'very much in favour' (mjög fylgjandi) of EU membership fell from approximately 17% in 2024 to approximately 10% in 2026. The proportion 'somewhat in favour' (frekar hlynntir) also declined from approximately 20% to approximately 15% over the same period. SI's leadership has interpreted this as reflecting growing concern among Icelandic industry about the practical terms of EU membership, particularly regarding regulatory burden and the Common Fisheries Policy.",
     "source_name": "Samtök iðnaðarins — Könnun meðal félagsmanna um ESB-aðild",
-    "source_url": "https://www.si.is/",
+    "source_url": "https://www.si.is/frettasafn/meirihluti-felagsmanna-si-andvigur-adild-ad-esb",
     "source_date": "2026-03-01",
     "source_type": "expert_analysis",
     "confidence": "medium",
-    "caveats": "SI member surveys represent the views of Icelandic industrial companies, not the general public. The survey methodology, sample size, and response rate may vary between years. SI's public position has been sceptical of EU membership, which may influence how results are presented. SI published summary results but the exact question wording and response options are not included in the press releases available at si.is.",
+    "caveats": "SI member surveys represent the views of industrial company leaders (stjórnendur), not the general public. The survey was conducted by the polling firm Outcome. SI published the question wording and notes that response rate is 'similar between years', but does not disclose sample size, response rate percentage, or margin of error. SI states it has not taken a formal position on EU membership, though its leadership has publicly supported membership while its members' survey shows majority opposition.",
     "related_entries": ["POLL-DATA-001", "POLL-DATA-002"]
   },
   {
