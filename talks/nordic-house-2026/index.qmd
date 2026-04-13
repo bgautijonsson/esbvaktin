@@ -1,11 +1,12 @@
 ---
-title: "Hvað segir umræðan?"
-subtitle: "Kerfisbundin greining á ESB-umræðunni"
+title: "Hvað segja Íslendingar um málið?"
+subtitle: "Kerfisbundin greining á ESB-umræðunni í fjölmiðlum, stjórnmálaflokkum og hagsmunasamtökum"
 author:
-  - name: Brynjólfur Gauti Jónsson
+  - name: Brynjólfur Gauti Guðrúnar Jónsson
 format:
   revealjs:
     theme: theme.scss
+    embed-resources: true
     slide-number: false
     progress: false
     hash: true
@@ -22,9 +23,7 @@ format:
     totalTime: 180
     defaultTiming: 30
     auto-stretch: false
-    footer: "esbvaktin.is · 14. apríl 2026"
-title-slide-attributes:
-  data-notes: "[0:00–0:15] Titilglæra — sýnileg meðan allir setjast. Ekki tala."
+    footer: "esbvaktin.is · 14. apríl"
 ---
 
 
@@ -38,59 +37,86 @@ Spurningin 29. ágúst er hvort við eigum að **hefja viðræður** — ekki hv
 En umræðan gerir nánast engan greinarmun á þessu tvennu.
 :::
 
+<div class="headline-stack fragment">
+<div class="headline hl--membership">„Þjóðaratkvæðagreiðslan er um <strong>aðild</strong> Íslands að Evrópusambandinu"</div>
+<div class="headline hl--negotiation">„Hvað gerist ef kosið verður að halda áfram <strong>viðræðum</strong>?"</div>
+<div class="headline hl--membership">„Vilja leiða þjóðina blinda til Brussel"</div>
+<div class="headline hl--negotiation">„Vafasöm spurning um ESB-<strong>viðræður</strong>"</div>
+<div class="headline hl--membership">„Segir Ísland tipla inn í ESB án umræðu"</div>
+</div>
+
+<div class="headline-note fragment">Allar úr sama gagnagrunninum. Sama frétt — önnur spurning.</div>
+
 ::: {.notes}
-[0:15–0:35 · ~50 orð]
+[0:15–0:35 · ~50 orð · 2 smellir]
 
 Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort við eigum að ganga í ESB. En umræðan gerir nánast engan greinarmun á þessu tvennu.
 
-Við lögðum af stað til að kortleggja umræðuna kerfisbundið. Ekki til að svara spurningu pallborðsins — heldur til að sjá hvernig Ísland ræðir hana. Og kortið sýnir að samtalið er ekki þar sem maður myndi búast við.
+[Smellur 1: Fyrirsagnir] Þetta eru raunverulegar fyrirsagnir úr gagnagrunninum okkar. Sumar segja „viðræður." Aðrar segja „aðild." Sama frétt — önnur spurning.
+
+[Smellur 2: Athugasemd] Við lögðum af stað til að kortleggja þetta kerfisbundið.
 :::
 
+## {data-name="Aðferð" .no-heading}
 
-## {data-name="Aðferð"}
+<div class="pipeline">
 
-::: {.pipeline}
+<div class="pipeline-step fragment">
+  <span class="pipeline-icon">1</span>
+  <span class="pipeline-label">Umræða</span>
+  <span class="pipeline-desc">Greinar, ræður og viðtöl skoðuð</span>
+  <span class="pipeline-count">333 greinar</span>
+</div>
 
-::: {.pipeline-step .fragment}
-[333 greinar]{.pipeline-number}
+<span class="pipeline-arrow">→</span>
 
-[→ Fullyrðingagreining]{.pipeline-arrow}
-:::
+<div class="pipeline-step fragment">
+  <span class="pipeline-icon">2</span>
+  <span class="pipeline-label">Fullyrðingar</span>
+  <span class="pipeline-desc">Mælanlegar staðhæfingar dregnar út</span>
+  <span class="pipeline-count">2.101 skráðar</span>
+</div>
 
-::: {.pipeline-step .fragment}
-[2.101 fullyrðingar]{.pipeline-number}
+<span class="pipeline-arrow">→</span>
 
-[→ Mat á sannanir]{.pipeline-arrow}
-:::
+<div class="pipeline-step fragment">
+  <span class="pipeline-icon">3</span>
+  <span class="pipeline-label">Heimildir</span>
+  <span class="pipeline-desc">Bornar saman við gögn og lagaákvæði</span>
+  <span class="pipeline-count">499 heimildir</span>
+</div>
 
-::: {.pipeline-step .fragment}
-[499 heimildir]{.pipeline-number}
+<span class="pipeline-arrow">→</span>
 
-[handlesnar · lagatextar · Eurostat · sáttmálar]{.pipeline-detail}
-:::
+<div class="pipeline-step fragment">
+  <span class="pipeline-icon">4</span>
+  <span class="pipeline-label">Mat</span>
+  <span class="pipeline-desc">Fullyrðingar flokkaðar eftir gæðum</span>
+  <span class="pipeline-verdicts"><span style="color:#2e6a4f">●</span> <span style="color:#8a6a1e">●</span> <span style="color:#6b6358">●</span> <span style="color:#a63a2b">●</span> <span style="color:#8b3d5e">●</span></span>
+</div>
 
-:::
+</div>
 
-::: {.key-line .fragment style="margin-top: 2rem;"}
-Hvert skref er rekjanlegt. Heimildir → gögn → mat → þú getur athugað.
-:::
+<div class="pipeline-example fragment"><span class="ex-cell"><span class="ex-label">Grein</span><span class="ex-content"><em>„Við höfum ekki tekið upp 80% af reglum ESB"</em><span class="ex-source">Stjórnmálin · 24. mars</span></span></span><span class="ex-arrow">→</span><span class="ex-cell"><span class="ex-label">Fullyrðing</span><span class="ex-content">„Ísland hafi innleitt 80% af regluverki ESB"</span></span><span class="ex-arrow">→</span><span class="ex-cell"><span class="ex-label">Heimildir</span><span class="ex-content"><span class="ev-id">EEA-LEGAL-001</span> · <span class="ev-id">EEA-DATA-017</span></span></span><span class="ex-arrow">→</span><span class="ex-verdict ex-verdict--misleading">þarfnast samhengis</span></div>
 
 ::: {.notes}
-[0:35–0:55 · ~60 orð · 3 smellir]
+[0:35–0:55 · ~60 orð · 5 smellir]
 
-[Smellur 1: 333 greinar] Við lesum greinar og drögum út fullyrðingar.
+[Smellur 1: Umræða] Við lesum greinar, þingræður, viðtöl — 333 texta hingað til.
 
-[Smellur 2: 2.101 fullyrðingar] Þær eru bornar saman við heimildagrunn — lagatexta, Eurostat-gögn, sáttmálaákvæði, þingræður.
+[Smellur 2: Fullyrðingar] Við drögum út staðhæfingar sem hægt er að bera saman við gögn. Rúmlega tvö þúsund.
 
-[Smellur 3: 499 heimildir] Hvert mat vísar til heimilda. Hver heimild vísar til frumheimildar.
+[Smellur 3: Heimildir] Þær eru bornar saman við heimildagrunn — lagatexta, Eurostat-gögn, sáttmálaákvæði, þingræður. 499 heimildir.
 
-[Smellur 4: Lykilsetning] Keðjan er rekjanleg frá upphafi til enda.
+[Smellur 4: Mat] Útkoman: flokkun eftir gæðum. Fimm flokkar — frá „stutt" til „villandi."
+
+[Smellur 5: Dæmi] Hér er raunverulegt dæmi. Grein á Stjórnmálin.is rannsakaði sjálf þessa tölu. Utanríkisráðherra sagði 80 prósent — en heimild EEA-LEGAL-001 segir 70 prósent af innri markaðinum, og EEA-DATA-017 segir 13 prósent ef allt er talið. Mat: þarfnast samhengis — talan fer eftir nefnaranum.
 :::
 
 
 ## {data-name="Gæði"}
 
-![](figures/verdicts.png){width="100%"}
+![](figures/verdicts.svg){width="100%"}
 
 ::: {.notes}
 [0:55–1:15 · ~40 orð]
@@ -113,24 +139,24 @@ Hvert skref er rekjanlegt. Heimildir → gögn → mat → þú getur athugað.
 </thead>
 <tbody>
 <tr class="fragment">
-  <td><span class="topic-label"><strong>EES-réttur</strong></span></td>
-  <td>Báðar hliðar vitna í „70%" — engin segir hvaða nefnara hún notar. Sömu gögnin, gagnstæð rök</td>
-  <td>Geta 380 þúsund innleitt allt regluverkið? 400–500 tilskipanir bíða þegar</td>
+  <td><span class="topic-label">EES-réttur</span><span class="topic-meta">424 fullyrðingar · 674 skráningar</span></td>
+  <td>Báðar hliðar vitna í „70%" — engin segir hvaða nefnara hún notar. Bilið er <span class="td-stat">5×</span>: 13,4% ef allt er talið, 75% ef aðeins innri markaðurinn. Sömu gögnin, gagnstæð rök — <span class="td-stat">77%</span> þarfnast samhengis</td>
+  <td>Geta 380 þúsund innleitt allt regluverkið? 400–500 tilskipanir bíða þegar. Stofnanalegur undirbúningur er ekki meðal topp 25 fullyrðinga</td>
 </tr>
 <tr class="fragment">
-  <td><span class="topic-label"><strong>Sjávarútvegur</strong></span></td>
-  <td>14 af 20 fullyrðingum: hvað við myndum tapa. Engin: hvaða skilmála við gætum samið</td>
-  <td>800–1.000 ma.kr. í kvótaeignum — ekki meðal topp 20</td>
+  <td><span class="topic-label">Sjávarútvegur</span><span class="topic-meta">291 fullyrðing · ótti:forvitni 14:4</span></td>
+  <td><span class="td-stat">14 af 20</span> efstu: hverju við myndum tapa. Óttarammaðar fullyrðingar: meðalvissustig 0,66. Forvitnirammaðar: <span class="td-stat">0,81</span> — traustvekjandi rök styðjast við sterkari heimildir</td>
+  <td>800–1.000 ma.kr. í kvótaeignum — ekki meðal topp 20. Gr. 17 tryggir innri úthlutun ríkja. Norskur samningaferill er til — enginn vitnar í hann</td>
 </tr>
 <tr class="fragment">
-  <td><span class="topic-label"><strong>Landbúnaður</strong></span></td>
-  <td>6:1 framleiðendamiðað. Eitt blað ræður 36% umfjöllunar</td>
-  <td>50–70% matvælaverðsálag (Eurostat). Kemur fyrir í 2 af 20</td>
+  <td><span class="topic-label">Landbúnaður</span><span class="topic-meta">146 fullyrðingar · 0 villandi</span></td>
+  <td><span class="td-stat">6:1</span> á hlið framleiðenda — nánast ekkert frá neytenda&shy;sjónarhorni. Eitt blað ræður <span class="td-stat">36%</span> allrar umfjöllunar. Engin fullyrðing metin villandi</td>
+  <td>50–70% matvælaverðsálag á Íslandi (Eurostat) — kemur fyrir í 2 af 20 efstu. Neytendaáhrif eru stærsti blindi bletturinn í umræðunni</td>
 </tr>
 <tr class="fragment">
-  <td><span class="topic-label"><strong>Fullveldi</strong></span></td>
-  <td>Mest endurtekið: dagsetning atkvæðagreiðslu (49×). Viðræður og aðild blandað saman</td>
-  <td>Afturkræfni: 0 af 25. Dönskur varnarmálaundanþága (felld 2022): enn nefnd</td>
+  <td><span class="topic-label">Fullveldi</span><span class="topic-meta">Stærsta málefnið</span></td>
+  <td>Mest endurtekið: dagsetning atkvæðagreiðslu (<span class="td-stat">49×</span>). Viðræðum og aðild blandað saman. Formleg atriði ná til topp en efnisleg rök um valdaframsal eru dreifðari</td>
+  <td>Afturkræfni — ESB-sáttmálinn tryggir hana — kemur hvergi fyrir í topp 25. Dönsk varnarmálaundanþága felld 2022, enn nefnd sem fordæmi</td>
 </tr>
 </tbody>
 </table>
@@ -138,21 +164,21 @@ Hvert skref er rekjanlegt. Heimildir → gögn → mat → þú getur athugað.
 :::
 
 ::: {.notes}
-[1:15–2:15 · ~120 orð · 4 smellir, ~15s á röð]
+[1:15–2:15 · ~150 orð · 4 smellir, ~15s á röð]
 
-[Smellur 1: EES-réttur] Mest endurtekna fullyrðingin: Ísland hafi innleitt 70 prósent af löggjöf ESB. Báðar hliðar nota hana. Engin segir hvaða nefnara. 13,4 prósent ef þú telur allt. 75 prósent ef þú telur aðeins innri markaðinn. Og enginn spyr hvort 380 þúsund geti innleitt allt regluverkið.
+[Smellur 1: EES-réttur] 424 fullyrðingar, stærsta undirefnið. Mest endurtekna: Ísland hafi innleitt 70 prósent. Báðar hliðar nota hana — engin segir hvaða nefnara. Bilið er fimmfalt: 13,4 prósent ef allt er talið, 75 ef aðeins innri markaðurinn. 77 prósent þarfnast samhengis. Og enginn spyr hvort 380 þúsund geti innleitt allt regluverkið.
 
-[Smellur 2: Sjávarútvegur] Fjórtán af tuttugu: hvað við myndum tapa. Engin: hvaða skilmála gætum við samið? Kvótinn — 800 til 1.000 milljarðar — ekki meðal topp tuttugu.
+[Smellur 2: Sjávarútvegur] Ótti yfirgnæfir forvitni — fjórtán á móti fjórum. En forvitnirammaðar fullyrðingar hafa hærra vissustig: 0,81 á móti 0,66 — þær styðjast við sterkari heimildir. Kvótinn — 800 til 1.000 milljarðar — ekki meðal topp tuttugu. Grein 17 tryggir innri úthlutun en enginn vitnar í hana.
 
-[Smellur 3: Landbúnaður] Sex á móti einu á hlið framleiðenda. Matvælaverð 50 til 70 prósent yfir meðaltali ESB — kemur fyrir í tveimur af tuttugu.
+[Smellur 3: Landbúnaður] Sex á móti einu á hlið framleiðenda. Neytandinn er stærsti blindi bletturinn — matvælaverð 50 til 70 prósent yfir meðaltali. Kemur fyrir í tveimur af tuttugu.
 
-[Smellur 4: Fullveldi] Mest endurtekið: dagsetning atkvæðagreiðslunnar, 49 sinnum. Ferlið er afturkræft á öllum stigum — kemur hvergi fram í topp 25. Danska varnarmálaundanþágan, felld 2022, er enn nefnd eins og hún sé í gildi.
+[Smellur 4: Fullveldi] Stærsta málefnið. Mest endurtekið: dagsetning atkvæðagreiðslunnar, 49 sinnum. Afturkræfni — tryggð í sáttmálanum — kemur hvergi fram í topp 25.
 :::
 
 
 ## {data-name="Umræðan"}
 
-![](figures/topics.png){width="100%"}
+![](figures/topics.svg){width="100%"}
 
 ::: {.notes}
 [2:15–2:35 · ~50 orð]
@@ -193,7 +219,7 @@ Hvaða spurningum getum við svarað — og hvaða spurningar snúast í raun um
 
 [Smellur 1] Frá Tim Harford: Er ég forvitinn — eða er ég að verja afstöðu?
 
-[Smellur 2] Frá David Spiegelhalter: Er þessu sett fram til að upplýsa — eða sannfæra?
+[Smellur 2] Frá David Spiegelhalter: Er þetta sett fram til að upplýsa — eða sannfæra?
 
 [Smellur 3] Frá Onora O'Neill: Get ég athugað þetta sjálfur?
 
