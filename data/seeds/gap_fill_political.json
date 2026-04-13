@@ -28,11 +28,8 @@
     "source_date": "2026-03-01",
     "source_type": "official_statistics",
     "confidence": "medium",
-    "caveats": "Employer organisation surveys reflect the views of business owners and managers, not the general public or workers. The doubling of strong opposition may reflect sampling variation, changes in SI membership composition, or genuine shifts in business sentiment. The survey methodology (sample size, response rate, question wording) has not been independently verified. SI's public position on EU membership is more nuanced than the survey results might suggest — the organisation has called for thorough economic analysis before any decision.",
-    "related_entries": [
-      "POL-DATA-004",
-      "POL-DATA-005"
-    ]
+    "caveats": "Employer organisation surveys reflect the views of business owners and managers, not the general public or workers. The doubling of strong opposition may reflect sampling variation, changes in SI membership composition, or genuine shifts in business sentiment. SI published headline results but has not disclosed sample size, response rate, or exact question wording. SI's public position on EU membership is more nuanced than the survey results might suggest — the organisation has called for thorough economic analysis before any decision.",
+    "related_entries": ["POL-DATA-004", "POL-DATA-005"]
   },
   {
     "evidence_id": "ORG-DATA-002",
@@ -46,11 +43,7 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "BÍ is an advocacy organisation representing farmers' interests and its position reflects those interests. Some economists and pro-EU commentators argue that BÍ overstates the risks and understates the potential benefits of CAP participation (direct payments, rural development funding, access to EU food markets). The impact on Icelandic agriculture would depend heavily on transition arrangements negotiated during accession — Finland and Sweden's experience suggests that Arctic/sub-Arctic supplements are possible.",
-    "related_entries": [
-      "AGRI-DATA-017",
-      "AGRI-LEGAL-004",
-      "AGRI-DATA-016"
-    ]
+    "related_entries": ["AGRI-DATA-017", "AGRI-LEGAL-004", "AGRI-DATA-016"]
   },
   {
     "evidence_id": "POLITICAL-DATA-012",
@@ -84,10 +77,6 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Political party connections across borders are normal in democratic politics — most Icelandic parties have international affiliations. The characterisation of contacts with the US Republican Party comes primarily from political opponents and media reports, and the significance of any such contacts is disputed. Sigmundur Davíð's 'Evrópubrölt' characterisation is a political opinion, not a factual claim.",
-    "related_entries": [
-      "POLITICAL-DATA-005",
-      "POL-DATA-020",
-      "PARTY-DATA-012"
-    ]
+    "related_entries": ["POLITICAL-DATA-005", "POL-DATA-020", "PARTY-DATA-012"]
   }
 ]

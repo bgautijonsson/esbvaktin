@@ -47,11 +47,7 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "The PM's statements about needing a 'strong mandate' are political framing rather than legal requirements. There is no formal threshold beyond a simple majority in the referendum legislation. The emphasis on mandate strength may be a rhetorical strategy to manage expectations or to signal to EU-sceptic coalition partners that the process will not be rushed.",
-    "related_entries": [
-      "POLITICAL-DATA-002",
-      "SOV-DATA-006",
-      "PARTY-DATA-013"
-    ]
+    "related_entries": ["POLITICAL-DATA-002", "SOV-DATA-006", "PARTY-DATA-013"]
   },
   {
     "evidence_id": "PARTY-DATA-020",
@@ -65,11 +61,7 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "The characterisation of the timeline as 'rushed' is a political judgment. The government argues that 6 months of campaign time is adequate, pointing to precedents in other countries. The Independence Party's position reflects both substantive policy opposition and tactical parliamentary strategy.",
-    "related_entries": [
-      "POLITICAL-DATA-006",
-      "POL-DATA-006",
-      "SOV-DATA-006"
-    ]
+    "related_entries": ["POLITICAL-DATA-006", "POL-DATA-006", "SOV-DATA-006"]
   },
   {
     "evidence_id": "PARTY-DATA-021",
@@ -83,11 +75,7 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Claims about US opposition to Icelandic EU membership are based on unnamed sources and political speculation, not documented policy. The US has not historically opposed EU enlargement — it supported the accession of Central and Eastern European states. However, the Trump administration's approach to alliances and multilateral institutions differs from previous administrations, and its specific Iceland policy preferences have not been publicly articulated.",
-    "related_entries": [
-      "SOV-DATA-008",
-      "SOV-HIST-002",
-      "PARTY-DATA-012"
-    ]
+    "related_entries": ["SOV-DATA-008", "SOV-HIST-002", "PARTY-DATA-012"]
   },
   {
     "evidence_id": "PARTY-DATA-022",
@@ -100,7 +88,7 @@
     "source_date": "2026-03-01",
     "source_type": "expert_analysis",
     "confidence": "medium",
-    "caveats": "The specific details of meetings — who attended, what was discussed, what commitments were made — have not been independently verified. International political contacts and campaign strategy sharing are common in democratic politics and are not inherently problematic. The significance of these contacts is contested: pro-EU commentators frame them as foreign interference, while anti-EU commentators view them as normal international political networking.",
+    "caveats": "Meeting details (attendees, agenda, commitments) are based on reporting by Heimildin, Stundin, and Altinget.no; neither Miðflokkurinn nor Sjálfstæðisflokkurinn has confirmed specifics. International political contacts and campaign strategy sharing are common in democratic politics and are not inherently problematic. The significance of these contacts is contested: pro-EU commentators frame them as foreign interference, while anti-EU commentators view them as normal international political networking.",
     "related_entries": [
       "PARTY-DATA-012",
       "POLITICAL-DATA-013",
@@ -119,11 +107,7 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Campaign finance figures are estimates based on pledges and media reports; final spending may differ. The ISK 500 million LÍÚ figure has been reported in multiple outlets but the exact breakdown and timing of expenditure is not yet public. Iceland's campaign finance disclosure requirements for referendum campaigns may differ from those for parliamentary elections.",
-    "related_entries": [
-      "POL-DATA-014",
-      "POL-DATA-012",
-      "POL-DATA-005"
-    ]
+    "related_entries": ["POL-DATA-014", "POL-DATA-012", "POL-DATA-005"]
   },
   {
     "evidence_id": "POL-DATA-022",
@@ -173,10 +157,6 @@
     "source_type": "expert_analysis",
     "confidence": "medium",
     "caveats": "Debates about government neutrality in referendum campaigns are standard in democratic politics. Both the UK (2016 Brexit) and Denmark (1992 Maastricht) experienced similar controversies. Whether the Icelandic campaign is genuinely biased or merely perceived as such by opponents is a matter of interpretation. The opposition's criticism may itself be a campaign tactic.",
-    "related_entries": [
-      "SOV-DATA-006",
-      "PARTY-DATA-020",
-      "POLITICAL-DATA-013"
-    ]
+    "related_entries": ["SOV-DATA-006", "PARTY-DATA-020", "POLITICAL-DATA-013"]
   }
 ]

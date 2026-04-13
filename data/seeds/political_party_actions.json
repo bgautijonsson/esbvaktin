@@ -28,11 +28,8 @@
     "source_date": "2026-03-01",
     "source_type": "expert_analysis",
     "confidence": "medium",
-    "caveats": "The specific nature and extent of Miðflokkurinn's international contacts are based on media reporting and have not been independently verified in full. The party has not published a formal statement confirming or denying all reported meetings. The ECR alignment is informal as Iceland is not an EU member.",
-    "related_entries": [
-      "POLITICAL-DATA-001",
-      "POLITICAL-DATA-005"
-    ]
+    "caveats": "Details of Miðflokkurinn's international contacts are based on reporting by Altinget.no and Heimildin. The party has not published a formal statement confirming or denying the reported meetings. The ECR alignment is informal as Iceland is not an EU member.",
+    "related_entries": ["POLITICAL-DATA-001", "POLITICAL-DATA-005"]
   },
   {
     "evidence_id": "PARTY-DATA-013",
