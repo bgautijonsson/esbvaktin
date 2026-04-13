@@ -54,13 +54,13 @@ Við lögðum af stað til að kortleggja umræðuna kerfisbundið. Ekki til að
 ::: {.pipeline-step .fragment}
 [333 greinar]{.pipeline-number}
 
-[→ Fullyrðingagreining (Claude)]{.pipeline-arrow}
+[→ Fullyrðingagreining]{.pipeline-arrow}
 :::
 
 ::: {.pipeline-step .fragment}
 [2.101 fullyrðingar]{.pipeline-number}
 
-[→ Mat á sannanir (Claude)]{.pipeline-arrow}
+[→ Mat á sannanir]{.pipeline-arrow}
 :::
 
 ::: {.pipeline-step .fragment}
@@ -84,11 +84,11 @@ Hvert skref er rekjanlegt. Heimildir → gögn → mat → þú getur athugað.
 
 [Smellur 3: 499 heimildir] Hvert mat vísar til heimilda. Hver heimild vísar til frumheimildar.
 
-[Smellur 4: Lykilsetning] Keðjan er rekjanleg frá upphafi til enda. Claude er vélin — heimildasöfnun og lokayfirferð er mannleg.
+[Smellur 4: Lykilsetning] Keðjan er rekjanleg frá upphafi til enda.
 :::
 
 
-## Ófullkomin, ekki röng {data-name="Gæði"}
+## {data-name="Gæði"}
 
 ![](figures/verdicts.png){width="100%"}
 
@@ -150,7 +150,7 @@ Hvert skref er rekjanlegt. Heimildir → gögn → mat → þú getur athugað.
 :::
 
 
-## Hvar er umræðan? {data-name="Umræðan"}
+## {data-name="Umræðan"}
 
 ![](figures/topics.png){width="100%"}
 

@@ -79,7 +79,7 @@ $link-color:                $accent;
 }
 
 .reveal .slides {
-    font-size: 0.95em;
+    font-size: 1.1em;
 }
 
 /* Number grid for scale slide */
@@ -125,7 +125,7 @@ $link-color:                $accent;
 
 .closing-question {
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     color: $text;
     font-style: italic;
     margin-top: 2.5rem;
@@ -141,7 +141,7 @@ $link-color:                $accent;
 /* Key line callout */
 .key-line {
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     color: $text;
     border-left: 3px solid $accent;
     padding-left: 1rem;
@@ -166,7 +166,7 @@ $link-color:                $accent;
 
 .pipeline-number {
     font-family: "DM Sans", sans-serif;
-    font-size: 3.2rem;
+    font-size: 4.0rem;
     font-weight: 700;
     color: $text;
     line-height: 1;
@@ -175,7 +175,7 @@ $link-color:                $accent;
 
 .pipeline-arrow {
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     color: $muted;
     display: block;
     margin-top: 0.5rem;
@@ -183,7 +183,7 @@ $link-color:                $accent;
 
 .pipeline-detail {
     font-family: "DM Sans", sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.95rem;
     color: $muted;
     display: block;
     margin-top: 0.5rem;
@@ -200,13 +200,13 @@ $link-color:                $accent;
     width: 100%;
     border-collapse: collapse;
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 1.0rem;
+    font-size: 1.1rem;
     line-height: 1.5;
 }
 
 .discourse-table thead th {
     font-family: "DM Sans", sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: $muted;
     text-transform: uppercase;
@@ -238,7 +238,7 @@ $link-color:                $accent;
 .topic-label {
     font-family: "DM Sans", sans-serif;
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: $accent;
     white-space: nowrap;
 }
@@ -252,7 +252,7 @@ $link-color:                $accent;
 
 .three-questions .question {
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: $text;
     display: block;
     margin-top: 1.2rem;
@@ -261,7 +261,7 @@ $link-color:                $accent;
 
 .three-questions .attribution {
     font-family: "DM Sans", sans-serif;
-    font-size: 0.85rem;
+    font-size: 1.0rem;
     color: $muted;
     display: block;
     margin-top: 0.2rem;
@@ -281,7 +281,7 @@ $link-color:                $accent;
 /* Hero statement (Upphaf slide) */
 .hero-statement {
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     color: $text;
     line-height: 1.5;
     max-width: 1400px;
@@ -290,7 +290,7 @@ $link-color:                $accent;
 
 .hero-follow {
     font-family: "Source Serif 4", Georgia, serif;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: $muted;
     margin-top: 2rem;
     max-width: 1400px;
