@@ -38,41 +38,11 @@ Umræðan gerir lítinn greinarmun á þessu tvennu.
 :::
 
 <div class="headline-stack fragment">
-  <div class="db-card hl--membership">
-    <div class="db-card-header">
-      <span class="db-source">Vísir</span>
-      <time>31. mars</time>
-    </div>
-    <div class="db-card-title">„Hvað kostar möguleg <strong>aðild</strong> Íslands að Evrópusambandinu?"</div>
-  </div>
-  <div class="db-card hl--negotiation">
-    <div class="db-card-header">
-      <span class="db-source">Vísir</span>
-      <time>10. mars</time>
-    </div>
-    <div class="db-card-title">„Hvað gerist ef kosið verður að halda áfram <strong>viðræðum</strong>?"</div>
-  </div>
-  <div class="db-card hl--membership">
-    <div class="db-card-header">
-      <span class="db-source">RÚV</span>
-      <time>7. mars</time>
-    </div>
-    <div class="db-card-title">„ESB <strong>aðild</strong> hefði veruleg neikvæð áhrif á bænda"</div>
-  </div>
-  <div class="db-card hl--negotiation">
-    <div class="db-card-header">
-      <span class="db-source">Morgunblaðið</span>
-      <time>9. mars</time>
-    </div>
-    <div class="db-card-title">„Segja '<strong>samningaviðræður</strong>' vera villandi hugtak"</div>
-  </div>
-  <div class="db-card hl--membership">
-    <div class="db-card-header">
-      <span class="db-source">DV</span>
-      <time>21. mars</time>
-    </div>
-    <div class="db-card-title">„Svona eykst sjálfstæði Íslands með ESB-<strong>aðild</strong>"</div>
-  </div>
+<div class="db-card hl--membership"><div class="db-card-header"><span class="db-source">Vísir</span><time>31. mars</time></div><div class="db-card-title">„Hvað kostar möguleg <strong>aðild</strong> Íslands að Evrópusambandinu?"</div></div>
+<div class="db-card hl--negotiation"><div class="db-card-header"><span class="db-source">Vísir</span><time>10. mars</time></div><div class="db-card-title">„Hvað gerist ef kosið verður að halda áfram <strong>viðræðum</strong>?"</div></div>
+<div class="db-card hl--membership"><div class="db-card-header"><span class="db-source">RÚV</span><time>7. mars</time></div><div class="db-card-title">„ESB <strong>aðild</strong> hefði veruleg neikvæð áhrif á bænda"</div></div>
+<div class="db-card hl--negotiation"><div class="db-card-header"><span class="db-source">Morgunblaðið</span><time>9. mars</time></div><div class="db-card-title">„Segja '<strong>samningaviðræður</strong>' vera villandi hugtak"</div></div>
+<div class="db-card hl--membership"><div class="db-card-header"><span class="db-source">DV</span><time>21. mars</time></div><div class="db-card-title">„Svona eykst sjálfstæði Íslands með ESB-<strong>aðild</strong>"</div></div>
 </div>
 
 <div class="headline-note fragment">Allar úr sama gagnagrunninum. Sama frétt — önnur spurning.</div>
