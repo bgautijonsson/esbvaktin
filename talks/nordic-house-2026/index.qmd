@@ -30,19 +30,49 @@ format:
 ## {data-name="Upphaf" .center .centered-text}
 
 ::: {.hero-statement}
-Spurningin 29. ágúst er hvort við eigum að **hefja viðræður** — ekki hvort við eigum að ganga í ESB.
+Spurningin um **viðræður**, en umræðan er oft um **aðild**.
 :::
 
 ::: {.hero-follow}
-En umræðan gerir nánast engan greinarmun á þessu tvennu.
+Umræðan gerir lítinn greinarmun á þessu tvennu.
 :::
 
 <div class="headline-stack fragment">
-<div class="headline hl--membership">„Þjóðaratkvæðagreiðslan er um <strong>aðild</strong> Íslands að Evrópusambandinu"</div>
-<div class="headline hl--negotiation">„Hvað gerist ef kosið verður að halda áfram <strong>viðræðum</strong>?"</div>
-<div class="headline hl--membership">„Vilja leiða þjóðina blinda til Brussel"</div>
-<div class="headline hl--negotiation">„Vafasöm spurning um ESB-<strong>viðræður</strong>"</div>
-<div class="headline hl--membership">„Segir Ísland tipla inn í ESB án umræðu"</div>
+  <div class="db-card hl--membership">
+    <div class="db-card-header">
+      <span class="db-source">Vísir</span>
+      <time>31. mars</time>
+    </div>
+    <div class="db-card-title">„Hvað kostar möguleg <strong>aðild</strong> Íslands að Evrópusambandinu?"</div>
+  </div>
+  <div class="db-card hl--negotiation">
+    <div class="db-card-header">
+      <span class="db-source">Vísir</span>
+      <time>10. mars</time>
+    </div>
+    <div class="db-card-title">„Hvað gerist ef kosið verður að halda áfram <strong>viðræðum</strong>?"</div>
+  </div>
+  <div class="db-card hl--membership">
+    <div class="db-card-header">
+      <span class="db-source">RÚV</span>
+      <time>7. mars</time>
+    </div>
+    <div class="db-card-title">„ESB <strong>aðild</strong> hefði veruleg neikvæð áhrif á bænda"</div>
+  </div>
+  <div class="db-card hl--negotiation">
+    <div class="db-card-header">
+      <span class="db-source">Morgunblaðið</span>
+      <time>9. mars</time>
+    </div>
+    <div class="db-card-title">„Segja '<strong>samningaviðræður</strong>' vera villandi hugtak"</div>
+  </div>
+  <div class="db-card hl--membership">
+    <div class="db-card-header">
+      <span class="db-source">DV</span>
+      <time>21. mars</time>
+    </div>
+    <div class="db-card-title">„Svona eykst sjálfstæði Íslands með ESB-<strong>aðild</strong>"</div>
+  </div>
 </div>
 
 <div class="headline-note fragment">Allar úr sama gagnagrunninum. Sama frétt — önnur spurning.</div>
@@ -50,9 +80,9 @@ En umræðan gerir nánast engan greinarmun á þessu tvennu.
 ::: {.notes}
 [0:15–0:35 · ~50 orð · 2 smellir]
 
-Spurningin 29. ágúst er hvort við eigum að hefja viðræður — ekki hvort við eigum að ganga í ESB. En umræðan gerir nánast engan greinarmun á þessu tvennu.
+Spurningin 29. ágúst er um viðræður — ekki hvort við eigum að ganga í ESB. En umræðan gerir nánast engan greinarmun á þessu tvennu.
 
-[Smellur 1: Fyrirsagnir] Þetta eru raunverulegar fyrirsagnir úr gagnagrunninum okkar. Sumar segja „viðræður." Aðrar segja „aðild." Sama frétt — önnur spurning.
+[Smellur 1: Fyrirsagnir] Þetta eru raunverulegar fyrirsagnir úr gagnagrunninum — frá Vísi, RÚV, Morgunblaðinu, DV. Sumar segja „viðræður." Aðrar segja „aðild." Sömu fréttirnar — önnur spurning.
 
 [Smellur 2: Athugasemd] Við lögðum af stað til að kortleggja þetta kerfisbundið.
 :::

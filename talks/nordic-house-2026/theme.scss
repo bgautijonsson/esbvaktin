@@ -439,7 +439,7 @@ $link-color:                $accent;
     margin-right: auto;
 }
 
-/* Headline stack: real article headlines from the database */
+/* Headline stack: real article cards from the database */
 .headline-stack {
     margin-top: 2.5rem;
     max-width: 1100px;
@@ -447,36 +447,67 @@ $link-color:                $accent;
     margin-right: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.4rem;
 }
 
-.headline {
-    font-family: "Source Serif 4", Georgia, serif;
-    font-size: 1.2rem;
-    line-height: 1.5;
-    padding: 0.4rem 1rem;
-    border-radius: 4px;
-    border-left: 3px solid transparent;
+/* Database-style article cards */
+.db-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid $rule;
+    border-radius: 8px;
+    padding: 0.6rem 1.0rem;
+    border-left: 3px solid $rule;
 }
 
-.headline strong {
-    font-weight: 600;
-}
-
-.hl--membership {
-    color: $text;
+.db-card.hl--membership {
     border-left-color: #a63a2b;
-    background: rgba(166, 58, 43, 0.05);
+    background: rgba(166, 58, 43, 0.04);
+}
+
+.db-card.hl--negotiation {
+    border-left-color: $accent;
+    background: rgba(13, 106, 99, 0.04);
+}
+
+.db-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.db-card-header .db-source {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: $accent;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid $accent;
+    border-radius: 4px;
+}
+
+.db-card-header time {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.65rem;
+    color: $muted;
+}
+
+.db-card-title {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 0.95rem;
+    color: $text;
+    line-height: 1.35;
+}
+
+.db-card-title strong {
+    font-weight: 600;
 }
 
 .hl--membership strong {
     color: #a63a2b;
-}
-
-.hl--negotiation {
-    color: $text;
-    border-left-color: $accent;
-    background: rgba(13, 106, 99, 0.05);
 }
 
 .hl--negotiation strong {
