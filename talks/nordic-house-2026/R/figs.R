@@ -98,8 +98,8 @@ plot_dat |>
     y = category
   )) +
   geom_segment(
-    alpha = 0.5,
-    linewidth = 0.2,
+    alpha = 1,
+    linewidth = 0.5,
     aes(color = category)
   ) +
   geom_point(
@@ -163,16 +163,9 @@ ggsave(
 
 ggsave(
   filename = "talks/nordic-house-2026/figures/topics.svg",
-  width = 16,
-  height = 9,
-  device = svglite::svglite
-)
-
-ggsave(
-  filename = "talks/nordic-house-2026/figures/topics.png",
-  width = 16,
-  height = 9,
-  dpi = 300,
+  width = 8,
+  height = 0.5 * 8,
+  scale = 1.45
 )
 
 
@@ -297,15 +290,7 @@ ggsave(
 
 ggsave(
   "talks/nordic-house-2026/figures/verdicts.svg",
-  width = 16,
-  height = 9,
-  device = svglite::svglite
-)
-
-ggsave(
-  "talks/nordic-house-2026/figures/verdicts.png",
-  width = 16,
-  height = 9,
-  scale = 0.6,
-  dpi = 300
+  width = 8,
+  height = 0.5 * 8,
+  scale = 1.6,
 )

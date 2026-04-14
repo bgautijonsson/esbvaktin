@@ -30,7 +30,7 @@ format:
 ## {data-name="Upphaf" .center .centered-text}
 
 ::: {.hero-statement}
-Spurningin um **viðræður**, en umræðan er oft um **aðild**.
+Spurningin er um **viðræður**, en umræðan er oft um **aðild**.
 :::
 
 ::: {.hero-follow}
@@ -164,7 +164,7 @@ Stærsta niðurstaðan. EES-réttur, fullveldi, sjávarútvegur — yfir helming
 <tbody>
 <tr class="fragment">
   <td>
-    <span class="topic-label">EES-réttur</span
+    <span class="topic-label">EES/ESB-löggjöf</span
     ><span class="topic-meta">424 fullyrðingar</span>
   </td>
   <td>
@@ -190,7 +190,7 @@ Stærsta niðurstaðan. EES-réttur, fullveldi, sjávarútvegur — yfir helming
     ><span class="topic-meta">146 fullyrðingar</span>
   </td>
   <td>
-    <span class="td-stat">6:1</span> frá sjónarhorni framleiðenda. Eitt blað ræður
+    <span class="td-stat">85%</span> frá sjónarhorni framleiðenda. Bændablaðið birtir
     <span class="td-stat">36%</span> umfjöllunar
   </td>
   <td>
