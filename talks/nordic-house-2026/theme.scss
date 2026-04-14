@@ -523,6 +523,38 @@ $link-color:                $accent;
     letter-spacing: 0.01em;
 }
 
+/* Claim grid: 2×2 anchor claims transition slide */
+.claim-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 2rem auto 0;
+    padding: 0 1rem;
+}
+
+.db-card.hl--neutral {
+    border-left-color: #8a6a1e;
+    background: rgba(138, 106, 30, 0.04);
+}
+
+.db-card-meta {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.6rem;
+    color: $muted;
+    letter-spacing: 0.02em;
+}
+
+.db-verdict {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: #8a6a1e;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid #8a6a1e;
+    border-radius: 4px;
+}
+
 /* Hide empty headings (untitled slides) */
 .reveal .slides section.no-heading > h2:first-child {
     display: none;

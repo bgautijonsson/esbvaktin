@@ -45,7 +45,7 @@ Umræðan gerir lítinn greinarmun á þessu tvennu.
 <div class="db-card hl--membership"><div class="db-card-header"><span class="db-source">DV</span><time>21. mars</time></div><div class="db-card-title">„Svona eykst sjálfstæði Íslands með ESB-<strong>aðild</strong>"</div></div>
 </div>
 
-<div class="headline-note fragment">Allar úr sama gagnagrunninum. Sama frétt — önnur spurning.</div>
+<div class="headline-note fragment">Allar úr gagnagrunni ESB Vaktarinnar</div>
 
 ::: {.notes}
 [0:15–0:35 · ~50 orð · 2 smellir]
@@ -122,6 +122,30 @@ Spurningin 29. ágúst er um viðræður — ekki hvort við eigum að ganga í 
 [0:55–1:15 · ~40 orð]
 
 75 prósent fullyrðinga eru að hluta studdar — ekki rangar, en samhengið vantar. Minna en ein af fimmtíu er beinlínis röng. Vandamálið er ekki lygar — vandamálið er hálfur sannleikur. Og þetta á við beggja vegna.
+:::
+
+## {data-name="Umræðan"}
+
+![](figures/topics.svg){width="100%"}
+
+::: {.notes}
+[2:15–2:35 · ~50 orð]
+
+Stærsta niðurstaðan. EES-réttur, fullveldi, sjávarútvegur — yfir helmingur samtalanna. Orkumál, vinnumarkaður, húsnæðismál — undir þrjú prósent samtals. Efnin sem skipta mestu máli í daglegu lífi eru efnin sem samtalið hefur ekki enn náð til. Samtalið hefur tíma — en aðeins ef við tökum eftir eyðunni.
+:::
+
+
+## {data-name="Fullyrðingar" .no-heading}
+
+<div class="claim-grid">
+<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">EES-réttur</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„Ísland hefur þegar innleitt stóran hluta af löggjöf ESB í gegnum EES-samninginn."</div><div class="db-card-meta">16 tilvísanir · #84</div></div>
+<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">Sjávarútvegur</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„Sameiginlega sjávarútvegsstefnan fellur undir einokunarvald ESB samkvæmt 3. gr. TFEU."</div><div class="db-card-meta">5 tilvísanir · #890</div></div>
+<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">Landbúnaður</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„ESB-aðild myndi leiða til opnunar íslensks markaðar á innflutningi landbúnaðarafurða."</div><div class="db-card-meta">13 tilvísanir · #217</div></div>
+<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">Fullveldi</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„Við ESB-aðild yrðu Íslendingar neyddir til að hlíta lögum sem samin eru erlendis."</div><div class="db-card-meta">3 tilvísanir · #966</div></div>
+</div>
+
+::: {.notes}
+Þetta eru mest umræddu fullyrðingarnar í hverjum flokki — raunverulegar staðhæfingar úr gagnagrunninum. Allar fjórar eru „að hluta studdar" — ekki rangar, en samhengið vantar. Nú ætla ég að sýna ykkur hvað liggur undir.
 :::
 
 
@@ -201,17 +225,6 @@ Spurningin 29. ágúst er um viðræður — ekki hvort við eigum að ganga í 
 [Smellur 3: Landbúnaður] Sex á móti einu á hlið framleiðenda. Neytandinn er stærsti blindi bletturinn — matvælaverð 50 til 70 prósent yfir meðaltali. Kemur fyrir í tveimur af tuttugu.
 
 [Smellur 4: Fullveldi] Stærsta málefnið. Mest endurtekið: dagsetning atkvæðagreiðslunnar, 49 sinnum. Afturkræfni — tryggð í sáttmálanum — kemur hvergi fram í topp 25.
-:::
-
-
-## {data-name="Umræðan"}
-
-![](figures/topics.svg){width="100%"}
-
-::: {.notes}
-[2:15–2:35 · ~50 orð]
-
-Stærsta niðurstaðan. EES-réttur, fullveldi, sjávarútvegur — yfir helmingur samtalanna. Orkumál, vinnumarkaður, húsnæðismál — undir þrjú prósent samtals. Efnin sem skipta mestu máli í daglegu lífi eru efnin sem samtalið hefur ekki enn náð til. Samtalið hefur tíma — en aðeins ef við tökum eftir eyðunni.
 :::
 
 
