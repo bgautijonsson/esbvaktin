@@ -239,6 +239,37 @@ def register_article(
         else:
             counts["discarded"] += 1
 
+    # Phase 3: write through to frettasafn consumer_state so future scans
+    # anti-join this article at the SQL level. Failures here don't fail
+    # registration — the local article_registry.json is still updated by
+    # build_article_registry.py.
+    if not dry_run and source_url:
+        try:
+            from esbvaktin.utils.frettasafn_state import mark_urls
+
+            metadata = {
+                "report_slug": report.get("slug") or analysis_dir,
+                "title": source_title or None,
+                "source_date": source_date.isoformat() if source_date else None,
+                "claim_counts": counts,
+            }
+            _, unmatched = mark_urls(
+                [source_url],
+                state="processed",
+                metadata_per_url={source_url: metadata},
+            )
+            if unmatched:
+                logger.debug(
+                    "consumer_state: URL not in frettasafn.articles (%s)",
+                    source_url[:80],
+                )
+        except Exception as e:
+            logger.warning(
+                "Failed to write frettasafn consumer_state for %s: %s",
+                source_url[:60],
+                e,
+            )
+
     return counts
 
 

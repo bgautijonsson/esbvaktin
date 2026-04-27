@@ -304,21 +304,58 @@ def cmd_reject(args: argparse.Namespace) -> None:
     updated = _set_status_bulk(args.ids, "rejected", inbox)
     _save_inbox(inbox)
 
-    # Also append to rejected_urls.txt
-    with open(REJECTED_PATH, "a") as f:
-        for entry_id in args.ids:
-            entry = _find_entry(inbox, entry_id)
-            if entry:
-                f.write(f"{entry['url']}\n")
+    # Collect URLs of the rejected entries for both rejected_urls.txt and
+    # frettasafn consumer_state.
+    rejected_urls = []
+    for entry_id in args.ids:
+        entry = _find_entry(inbox, entry_id)
+        if entry and entry.get("url"):
+            rejected_urls.append(entry["url"])
 
-    print(f"Rejected {updated} articles (also added to {REJECTED_PATH}).")
+    # Append to rejected_urls.txt (legacy local cache)
+    with open(REJECTED_PATH, "a") as f:
+        for url in rejected_urls:
+            f.write(f"{url}\n")
+
+    # Phase 3: write through to frettasafn consumer_state. Failure here
+    # doesn't undo the local rejection.
+    cs_msg = ""
+    if rejected_urls:
+        try:
+            from esbvaktin.utils.frettasafn_state import mark_urls
+
+            written, unmatched = mark_urls(rejected_urls, state="rejected")
+            cs_msg = f", {written} marked rejected in consumer_state"
+            if unmatched:
+                cs_msg += f" ({len(unmatched)} URL(s) unknown to frettasafn)"
+        except Exception as e:
+            cs_msg = f" (consumer_state write failed: {e})"
+
+    print(f"Rejected {updated} articles (also added to {REJECTED_PATH}{cs_msg}).")
 
 
 def cmd_skip(args: argparse.Namespace) -> None:
     inbox = _load_inbox()
     updated = _set_status_bulk(args.ids, "skipped", inbox)
     _save_inbox(inbox)
-    print(f"Skipped {updated} articles.")
+
+    # Phase 3: write through to frettasafn consumer_state.
+    skipped_urls = []
+    for entry_id in args.ids:
+        entry = _find_entry(inbox, entry_id)
+        if entry and entry.get("url"):
+            skipped_urls.append(entry["url"])
+    cs_msg = ""
+    if skipped_urls:
+        try:
+            from esbvaktin.utils.frettasafn_state import mark_urls
+
+            written, unmatched = mark_urls(skipped_urls, state="skipped")
+            cs_msg = f", {written} marked skipped in consumer_state"
+        except Exception as e:
+            cs_msg = f" (consumer_state write failed: {e})"
+
+    print(f"Skipped {updated} articles{cs_msg}.")
 
 
 def cmd_queue(args: argparse.Namespace) -> None:

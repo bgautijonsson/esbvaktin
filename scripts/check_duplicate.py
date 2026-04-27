@@ -309,6 +309,21 @@ def main():
             print(f"DUPLICATE: Already processed → {match}")
             sys.exit(0)
 
+        # Phase 3: also check frettasafn consumer_state (which may be ahead
+        # of the local registry — register_article_sightings now writes
+        # through). Both registry and consumer_state are checked so the
+        # dedup is robust during the registry-retirement transition.
+        try:
+            from esbvaktin.utils.frettasafn_state import is_known_url
+
+            record = is_known_url(args.url)
+            if record and record["state"] in ("processed", "rejected"):
+                hint = (record.get("metadata") or {}).get("report_slug") or record["article_id"]
+                print(f"DUPLICATE: consumer_state[{record['state']}] → {hint}")
+                sys.exit(0)
+        except Exception as e:
+            print(f"NOTE: consumer_state check skipped: {e}", file=sys.stderr)
+
     if args.title:
         match, ratio = check_title(args.title, processed)
         if match:
