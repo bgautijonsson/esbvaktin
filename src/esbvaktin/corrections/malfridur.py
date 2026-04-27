@@ -4,27 +4,17 @@ Uses Miðeind's Málstaður API (api.malstadur.is) for grammar checking via the
 /v1/grammar endpoint. This is a higher-quality alternative to the local
 GreynirCorrect library and the older yfirlestur.is API.
 
+HTTP transport is delegated to esbvaktin.utils.malstadur.MalstadurClient,
+which provides retry + rate-limit handling. This module wraps the result
+shape into the malfridur format used by the Icelandic correction pipeline
+(line numbers + auto_fixable flag).
+
 Requires MALSTADUR_API_KEY environment variable.
 
 API docs: https://mideind.is/is/greinar/forritaskil-api-a-malstad
 """
 
-import os
-
-import httpx
-
-MALSTADUR_BASE = "https://api.malstadur.is/v1"
-
-
-def _get_api_key() -> str:
-    """Get API key from environment, raising if not set."""
-    key = os.environ.get("MALSTADUR_API_KEY", "")
-    if not key:
-        raise RuntimeError(
-            "MALSTADUR_API_KEY not set. "
-            "Get one at https://malstadur.mideind.is/askrift"
-        )
-    return key
+from esbvaktin.utils.malstadur import MalstadurClient
 
 
 def check_with_malfridur(
@@ -34,8 +24,9 @@ def check_with_malfridur(
 ) -> list[dict]:
     """Check sentences using the Málstaður grammar API.
 
-    Sends texts in batches to /v1/grammar and returns a list of correction
-    dicts compatible with the existing pipeline format.
+    Sends texts via the centralised MalstadurClient (with retry + 0.5s
+    inter-call delay) and transforms results into the malfridur dict
+    format used by the rest of the correction pipeline.
 
     Each result dict has:
         line: int — pseudo line number from input
@@ -44,41 +35,31 @@ def check_with_malfridur(
         annotations: list[dict] — individual change annotations
         auto_fixable: bool — True if corrections were found
     """
-    api_key = _get_api_key()
-    headers = {
-        "X-API-KEY": api_key,
-        "Content-Type": "application/json",
-    }
+    if not sentences:
+        return []
+
+    texts = [s[0] for s in sentences]
+
+    with MalstadurClient() as client:
+        api_results = client.check_grammar(texts, batch_size=batch_size)
 
     results: list[dict] = []
+    for i, item in enumerate(api_results):
+        original = item.get("originalText", "")
+        corrected = item.get("changedText", "")
+        annotations = item.get("diffAnnotations", [])
+        line_num = sentences[i][1] if i < len(sentences) else 0
 
-    for batch_start in range(0, len(sentences), batch_size):
-        batch = sentences[batch_start : batch_start + batch_size]
-        texts = [s[0] for s in batch]
-
-        resp = httpx.post(
-            f"{MALSTADUR_BASE}/grammar",
-            headers=headers,
-            json={"texts": texts},
-            timeout=60,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-
-        for i, item in enumerate(data.get("results", [])):
-            original = item.get("originalText", "")
-            corrected = item.get("changedText", "")
-            annotations = item.get("diffAnnotations", [])
-            line_num = batch[i][1] if i < len(batch) else 0
-
-            has_changes = bool(annotations) and original != corrected
-            results.append({
+        has_changes = bool(annotations) and original != corrected
+        results.append(
+            {
                 "line": line_num,
                 "original": original,
                 "corrected": corrected,
                 "annotations": annotations,
                 "auto_fixable": has_changes,
-            })
+            }
+        )
 
     return results
 
@@ -131,7 +112,7 @@ def format_malfridur_results(results: list[dict], filename: str) -> tuple[int, i
                 orig = ann.get("origString", "")
                 changed = ann.get("changedString", "")
                 if orig or changed:
-                    print(f"{change_type}: \"{orig}\" → \"{changed}\"")
+                    print(f'{change_type}: "{orig}" → "{changed}"')
                 else:
                     print(f"{change_type}")
         else:
