@@ -34,42 +34,39 @@ Note any backlog articles. These will be included in the analysis batch alongsid
 
 If the argument is `backlog`, **skip Steps 1–7** and go directly to Step 8 with the backlog articles.
 
-### Step 1: Rebuild Article Registry
+### Step 1: Refresh Article Registry (still consumed by other scripts)
 
 ```bash
 uv run python scripts/build_article_registry.py --status
 ```
 
-This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. Note the total count.
+This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. The registry is no longer used for `scan_eu` filtering — the SQL-side anti-join below replaces it — but it's still consumed by `check_duplicate.py` and `register_article_sightings.py`. Keep this step until Phase 3 retires those paths.
 
-### Step 2: Collect Known IDs + Show Status
-
-Get all frettasafn article IDs already known to the inbox/registry, and show current inbox status:
+### Step 2: Show Inbox Status
 
 ```bash
-uv run python scripts/manage_inbox.py known-ids --json
 uv run python scripts/manage_inbox.py status
 ```
-
-Save the JSON array output from `known-ids` — these will be passed to `scan_eu` as `exclude_ids` so that already-discovered articles are filtered server-side.
 
 Also load rejected URLs for URL-based filtering. **Use the Read tool** to read `data/rejected_urls.txt` (do NOT use shell commands like `wc`, `grep`, or input redirection — these trigger permission prompts). Parse the lines in your response: non-empty lines that don't start with `#` are rejected URLs.
 
 ### Step 3: Scan for EU Articles
 
-Use the Fréttasafn MCP `scan_eu` tool with `exclude_ids` to skip already-known articles:
+Use the Fréttasafn MCP `scan_eu` tool with `consumer_id="esbvaktin"` so frettasafn anti-joins against its `consumer_state` table at the SQL level — already-processed and rejected articles are filtered out before they reach Python:
 
 ```
-scan_eu(date_from=<start_date>, date_to=<today>, exclude_ids=<known_ids>, limit=50)
+scan_eu(date_from=<start_date>, date_to=<today>, consumer_id="esbvaktin", limit=50)
 ```
 
-Where `start_date` is determined by the argument (default: 7 days ago) and `known_ids` is the JSON array from Step 2.
+Where `start_date` is determined by the argument (default: 7 days ago).
 
-If the scan returns many results, also run a second pass with a narrower date range or higher limit if needed to ensure coverage.
+The `exclude_states` parameter defaults to `["processed", "rejected"]` when `consumer_id` is set; pass it explicitly only to override (e.g. `["processed", "rejected", "skipped"]` to also skip deferred articles).
+
+If the scan returns many results, run a second pass with a narrower date range or higher limit if needed to ensure coverage.
 
 ### Step 4: Filter and Classify
 
-For each article returned by `scan_eu` (already filtered by `exclude_ids`):
+For each article returned by `scan_eu` (already filtered server-side via consumer_state SQL anti-join):
 
 1. **Skip if rejected** — URL (normalised) is in `rejected`
 2. **Title-based false positive filter** — skip articles whose titles clearly have no EU/referendum content. Common false positive patterns from `scan_eu`:
