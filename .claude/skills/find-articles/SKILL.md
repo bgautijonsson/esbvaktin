@@ -2,6 +2,8 @@
 
 Discover new EU referendum articles, filter out already-processed and irrelevant ones, and **automatically analyse HIGH priority articles**. Also surfaces backlog from previous sessions.
 
+> **Note:** The `overnight-batch-weekdays` Cowork routine runs discovery + classification + auto-queue + processing autonomously every weekday night, with results landing in `~/esbvaktin-site/` ready for morning git-diff review and push. This skill is for **manual ad-hoc use** — when something specific comes up during the day, when scanning a particular topic, or for weekend catch-up. The routine handles the routine daily flow; this skill is for human-driven exploration.
+
 ## Usage
 
 ```
