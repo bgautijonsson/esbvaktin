@@ -60,8 +60,8 @@ uv run python scripts/manage_inbox.py next --high-only     # Next articles ready
 uv run python scripts/manage_inbox.py next --limit 10      # Next N articles (HIGH + MEDIUM)
 uv run python scripts/manage_inbox.py add-batch FILE.json  # Batch import from scan
 uv run python scripts/manage_inbox.py queue ID [ID ...]    # Queue for analysis
-uv run python scripts/manage_inbox.py reject ID [ID ...]   # Reject + add to rejected_urls.txt
-uv run python scripts/manage_inbox.py skip ID [ID ...]     # Skip (not worth it)
+uv run python scripts/manage_inbox.py reject ID [ID ...]   # Reject + rejected_urls.txt + consumer_state[rejected]
+uv run python scripts/manage_inbox.py skip ID [ID ...]     # Skip + consumer_state[skipped]
 uv run python scripts/manage_inbox.py prune --days 30      # Clean old entries
 
 # Development
@@ -135,9 +135,12 @@ uv run python scripts/backfill_epistemic_type.py status    # Epistemic type dist
 uv run python scripts/backfill_epistemic_type.py classify  # Classify claims (heuristic, dry run)
 uv run python scripts/backfill_epistemic_type.py classify --apply  # Apply classification
 uv run python scripts/backfill_epistemic_type.py correct --apply   # Fix hearsay verdicts
-uv run python scripts/register_article_sightings.py        # Batch-register all unregistered reports into DB sightings
-uv run python scripts/build_article_registry.py --status  # Show processed article registry
-uv run python scripts/check_duplicate.py --url URL        # Check if article already processed
+uv run python scripts/register_article_sightings.py        # Batch-register reports → DB sightings + write through to consumer_state
+uv run python scripts/build_article_registry.py --status  # Show local registry (transitional safety net post-Phase-3)
+uv run python scripts/check_duplicate.py --url URL        # Check if article already processed (queries both registry AND consumer_state)
+# Frettasafn consumer_state (canonical dedup state, Phase 3)
+# - From Python: from esbvaktin.utils.frettasafn_state import mark_urls, is_known_url, consumer_summary
+# - From Claude (MCP): mcp__frettasafn__consumer_state_summary, mark_articles_batch, get_article_state
 uv run python scripts/check_evidence_urls.py status        # Link health summary
 uv run python scripts/check_evidence_urls.py check         # Check all evidence URLs (3-tier)
 uv run python scripts/check_evidence_urls.py populate      # Auto-populate source excerpts

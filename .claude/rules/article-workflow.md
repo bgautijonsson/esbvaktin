@@ -12,29 +12,35 @@ globs: ["scripts/check_duplicate.py", "scripts/build_article_registry.py", "data
 - **Backlog** → always check `manage_inbox.py next --high-only` before scanning for new articles.
 - `/find-articles` scans + analyses HIGH articles in one session. User only needs to approve MEDIUM.
 
-## Dedup: Always check all three sources
+## Dedup: `consumer_state` is primary, registry is the safety net
 
-Processed articles exist in THREE places that can diverge:
+Per-article processing state lives in **frettasafn's `consumer_state` table** (Phase 3):
 
-1. `data/analyses/*/_report_final.json` — local work directories
-2. `~/esbvaktin-site/_data/reports/*.json` — site report exports
-3. DB `claim_sightings` table — registered after pipeline completes
-
-**Before marking an article as "new"**, rebuild the registry:
-```bash
-uv run python scripts/build_article_registry.py
+```sql
+consumer_state(consumer_id, article_id, state, updated_at, metadata)
+-- state ∈ {processed, rejected, skipped, in_progress}
 ```
 
-Then check against it:
+- `scan_eu` and `fetch_eu_articles` anti-join against this at the SQL level when called with `consumer_id="esbvaktin"` — already-processed and rejected articles never reach Python.
+- `register_article_sightings.py` writes `state="processed"` through after each registration.
+- `manage_inbox.py reject` writes `state="rejected"`; `manage_inbox.py skip` writes `state="skipped"`.
+- The Python helpers live in `src/esbvaktin/utils/frettasafn_state.py` (`mark_urls`, `is_known_url`).
+
+The local `data/article_registry.json` is now a **transitional safety net** — it merges three legacy sources (`data/analyses/`, `~/esbvaktin-site/_data/reports/`, DB `claim_sightings`). `check_duplicate.py` checks both consumer_state AND the registry; either saying "duplicate" is a duplicate. Phase 4 will retire the registry once consumer_state has been stable for a verification period.
+
+When checking for duplicates manually:
 ```bash
 uv run python scripts/check_duplicate.py --url "URL" --title "TITLE"
 ```
 
-Never rely on `claim_sightings` alone — the site is often ahead of the DB.
+When the registry feels stale (long break, suspect drift):
+```bash
+uv run python scripts/build_article_registry.py
+```
 
 ## Rejected URLs
 
-`data/rejected_urls.txt` tracks false positives from `scan_eu`. When discovering articles, filter these out. When a user confirms an article is irrelevant, append its URL to this file.
+`data/rejected_urls.txt` tracks false positives from `scan_eu`. `manage_inbox.py reject` appends to this file AND writes `state="rejected"` to consumer_state — the SQL anti-join then filters those URLs out of future scans server-side. The text file remains as a human-readable log; the consumer_state row is what actually drives dedup.
 
 ## Article Inbox
 

@@ -91,6 +91,21 @@ uv run python scripts/manage_inbox.py status
 uv run python scripts/build_article_registry.py --status
 ```
 
+```bash
+uv run python -c "
+from esbvaktin.utils.frettasafn_state import consumer_summary
+counts = consumer_summary('esbvaktin')
+total = sum(counts.values())
+print('=== CONSUMER_STATE (esbvaktin) ===')
+print(f'  Total tracked: {total}')
+for state in ('processed', 'rejected', 'skipped', 'in_progress'):
+    if state in counts:
+        print(f'  {state}: {counts[state]}')
+"
+```
+
+The `consumer_state` totals (Phase 3 — written by `register_article_sightings.py` and `manage_inbox.py reject/skip`) should be roughly aligned with the registry's processed count. Divergence means either fresh activity hasn't propagated, or the registry is stale.
+
 ### Step 4: Icelandic Quality
 
 ```bash
@@ -174,7 +189,8 @@ AUDIT SIGNALS
 
 PIPELINE
   Inbox: N pending (N high, N medium, N low)
-  Registry: N processed articles
+  Consumer state: N processed, N rejected, N skipped (frettasafn)
+  Registry: N processed articles (transitional safety net)
 
 ICELANDIC QUALITY
   statement_is: N/N (X%)
