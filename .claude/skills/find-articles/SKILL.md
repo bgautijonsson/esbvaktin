@@ -36,13 +36,13 @@ Note any backlog articles. These will be included in the analysis batch alongsid
 
 If the argument is `backlog`, **skip Steps 1–7** and go directly to Step 8 with the backlog articles.
 
-### Step 1: Refresh Article Registry (still consumed by other scripts)
+### Step 1: Refresh Article Registry (transitional safety net)
 
 ```bash
 uv run python scripts/build_article_registry.py --status
 ```
 
-This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. The registry is no longer used for `scan_eu` filtering — the SQL-side anti-join below replaces it — but it's still consumed by `check_duplicate.py` and `register_article_sightings.py`. Keep this step until Phase 3 retires those paths.
+This merges `data/analyses/`, site reports, and DB sightings into `data/article_registry.json`. The registry is **no longer the primary dedup source** — frettasafn's `consumer_state` table is, and `scan_eu` anti-joins against it at the SQL level (Step 3). The registry is now a transitional safety net: `check_duplicate.py` checks both registry and consumer_state; `register_article_sightings.py` writes through to consumer_state. The registry rebuild here keeps both views aligned during the verification period before Phase 4 retires it. Skip this step if you're scanning a small focused window — consumer_state alone is enough for the SQL anti-join.
 
 ### Step 2: Show Inbox Status
 
@@ -68,9 +68,9 @@ If the scan returns many results, run a second pass with a narrower date range o
 
 ### Step 4: Filter and Classify
 
-For each article returned by `scan_eu` (already filtered server-side via consumer_state SQL anti-join):
+For each article returned by `scan_eu` (already filtered server-side via consumer_state SQL anti-join — `state ∈ {processed, rejected}` are excluded before the rows reach you):
 
-1. **Skip if rejected** — URL (normalised) is in `rejected`
+1. **Backstop URL check** — the SQL anti-join already excludes URLs whose article_id is marked `rejected`, but check `rejected` (loaded in Step 2) anyway as a safety net for any rejection that hasn't propagated to consumer_state yet. In normal operation this should be a no-op.
 2. **Title-based false positive filter** — skip articles whose titles clearly have no EU/referendum content. Common false positive patterns from `scan_eu`:
    - Crime/accident reports (kynferðisbrot, slys, lögregla, eld)
    - Sports (ÓL, keppni, leikur)
@@ -174,7 +174,7 @@ When the user picks MEDIUM articles to analyse:
 When the user marks articles as irrelevant/skip:
 
 1. Reject them: `uv run python scripts/manage_inbox.py reject <id> [<id> ...]`
-   (This sets status to "rejected" AND appends URLs to `rejected_urls.txt`)
+   (This sets inbox status to "rejected", appends URLs to `rejected_urls.txt`, AND writes `state="rejected"` to frettasafn's consumer_state — so future `scan_eu` calls anti-join them out at the SQL level. No further action needed.)
 
 When articles are neither picked nor rejected, they remain `pending` in the inbox for next session.
 
@@ -183,7 +183,7 @@ When articles are neither picked nor rejected, they remain `pending` in the inbo
 - **Fréttasafn false positives**: The `scan_eu` tool searches keyword groups (EU general, referendum, accession, EEA/Schengen, fisheries, agriculture). It returns many articles where these keywords only appear in sidebars, tag clouds, or "related articles" sections. Always fetch full text before final classification.
 - **Parallel fetching**: Fetch multiple articles in parallel using concurrent MCP calls to speed up Step 5.
 - **Date range**: Default 7 days balances thoroughness with speed. For catch-up after a break, use a longer range.
-- **The registry is the authority**: Never check only `data/analyses/` or only the DB. Always use the registry.
+- **Dedup authority**: `consumer_state` is the increasingly-authoritative source after Phase 3 — `scan_eu` anti-joins against it server-side; `register_article_sightings.py` writes through to it; `check_duplicate.py` checks it. The registry is a transitional safety net during the verification period. Don't grep `data/analyses/` directly — call `consumer_state_summary` or use `check_duplicate.py` which checks both paths.
 - **Backlog priority**: Articles older than 7 days are flagged as backlog in `manage_inbox.py next` output. They are still analysed — age does not reduce importance, only time-sensitivity.
 - **Session efficiency**: A typical session should be: run `/find-articles` → Claude scans, finds 2–4 HIGH articles, analyses them all, presents results + MEDIUM list. User reviews MEDIUM, optionally queues some. Minimal keyboard time.
 - **Avoid permission prompts**: Use dedicated tools (Read, Write, Grep, Glob) instead of shell commands for all file I/O. Never use input redirection (`<`), heredocs (`<< EOF`), `cat >`, `echo >`, `wc`, or `grep` on data files — these trigger security prompts that require user interaction. Only use Bash for `uv run python` commands.
