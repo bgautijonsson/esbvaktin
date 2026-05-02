@@ -989,9 +989,8 @@ def main() -> None:
         print("No analysis reports found.")
         return
 
-    all_reports = []
-    written = 0
-    seen_slugs: dict[str, int] = {}
+    # Phase 1: prepare all reports
+    prepared = []
     for report_path in report_files:
         report_data = prepare_report(
             report_path,
@@ -1001,7 +1000,40 @@ def main() -> None:
             registered_claims,
             sighting_verdicts,
         )
+        prepared.append(report_data)
 
+    # Phase 2: dedup by article_url (same article analysed twice → keep latest)
+    seen_urls: dict[str, int] = {}
+    drop_indices: set[int] = set()
+    for i, report_data in enumerate(prepared):
+        url = report_data.get("article_url")
+        if not url:
+            continue
+        if url in seen_urls:
+            prev_i = seen_urls[url]
+            prev = prepared[prev_i]
+            if report_data["analysis_id"] > prev["analysis_id"]:
+                drop_indices.add(prev_i)
+                seen_urls[url] = i
+                print(
+                    f"  Duplicate URL: keeping {report_data['analysis_id']}"
+                    f" over {prev['analysis_id']}"
+                )
+            else:
+                drop_indices.add(i)
+                print(
+                    f"  Duplicate URL: keeping {prev['analysis_id']}"
+                    f" over {report_data['analysis_id']}"
+                )
+        else:
+            seen_urls[url] = i
+    prepared = [r for i, r in enumerate(prepared) if i not in drop_indices]
+
+    # Phase 3: disambiguate slugs + write
+    all_reports = []
+    written = 0
+    seen_slugs: dict[str, int] = {}
+    for report_data in prepared:
         # Disambiguate duplicate slugs (different articles with same title)
         slug = report_data["slug"]
         if slug in seen_slugs:

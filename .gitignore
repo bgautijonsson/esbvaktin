@@ -55,6 +55,11 @@ data/heimildin/
 data/backfill/
 data/drift_fix/
 
+# Scratch / one-off scripts (underscore-prefix convention).
+# These are typically date-stamped generators kept locally for reproducibility
+# but never committed. See ESB Knowledge/Operations/ for the convention.
+scripts/_*
+
 # Binary/personal files
 esb_vaktin_kynning.docx
 metill-ehf.skill
