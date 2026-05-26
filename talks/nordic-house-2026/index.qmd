@@ -6,7 +6,6 @@ author:
 format:
   revealjs:
     theme: theme.scss
-    embed-resources: true
     slide-number: false
     progress: false
     hash: true
@@ -20,10 +19,8 @@ format:
     center-title-slide: true
     transition: fade
     transition-speed: fast
-    totalTime: 180
-    defaultTiming: 30
     auto-stretch: false
-    footer: "esbvaktin.is · 14. apríl"
+    footer: "esbvaktin.is/althjodamalastofnun · 14. apríl"
 ---
 
 
@@ -47,16 +44,6 @@ Umræðan gerir lítinn greinarmun á þessu tvennu.
 
 <div class="headline-note fragment">Allar úr gagnagrunni ESB Vaktarinnar</div>
 
-::: {.notes}
-[0:15–0:35 · ~50 orð · 2 smellir]
-
-Spurningin 29. ágúst er um viðræður — ekki hvort við eigum að ganga í ESB. En umræðan gerir nánast engan greinarmun á þessu tvennu.
-
-[Smellur 1: Fyrirsagnir] Þetta eru raunverulegar fyrirsagnir úr gagnagrunninum — frá Vísi, RÚV, Morgunblaðinu, DV. Sumar segja „viðræður." Aðrar segja „aðild." Sömu fréttirnar — önnur spurning.
-
-[Smellur 2: Athugasemd] Við lögðum af stað til að kortleggja þetta kerfisbundið.
-:::
-
 ## {data-name="Aðferð" .no-heading}
 
 <div class="pipeline">
@@ -65,7 +52,7 @@ Spurningin 29. ágúst er um viðræður — ekki hvort við eigum að ganga í 
   <span class="pipeline-icon">1</span>
   <span class="pipeline-label">Umræða</span>
   <span class="pipeline-desc">Greinar, ræður og viðtöl skoðuð</span>
-  <span class="pipeline-count">333 greinar</span>
+  <span class="pipeline-count">343 greinar</span>
 </div>
 
 <span class="pipeline-arrow">→</span>
@@ -74,7 +61,7 @@ Spurningin 29. ágúst er um viðræður — ekki hvort við eigum að ganga í 
   <span class="pipeline-icon">2</span>
   <span class="pipeline-label">Fullyrðingar</span>
   <span class="pipeline-desc">Mælanlegar staðhæfingar dregnar út</span>
-  <span class="pipeline-count">2.101 skráðar</span>
+  <span class="pipeline-count">2.154 skráðar</span>
 </div>
 
 <span class="pipeline-arrow">→</span>
@@ -97,134 +84,32 @@ Spurningin 29. ágúst er um viðræður — ekki hvort við eigum að ganga í 
 
 </div>
 
-<div class="pipeline-example fragment"><span class="ex-cell"><span class="ex-label">Grein</span><span class="ex-content"><em>„Við höfum ekki tekið upp 80% af reglum ESB"</em><span class="ex-source">Stjórnmálin · 24. mars</span></span></span><span class="ex-arrow">→</span><span class="ex-cell"><span class="ex-label">Fullyrðing</span><span class="ex-content">„Ísland hafi innleitt 80% af regluverki ESB"</span></span><span class="ex-arrow">→</span><span class="ex-cell"><span class="ex-label">Heimildir</span><span class="ex-content"><span class="ev-id">EEA-LEGAL-001</span> · <span class="ev-id">EEA-DATA-017</span></span></span><span class="ex-arrow">→</span><span class="ex-verdict ex-verdict--misleading">þarfnast samhengis</span></div>
-
-::: {.notes}
-[0:35–0:55 · ~60 orð · 5 smellir]
-
-[Smellur 1: Umræða] Við lesum greinar, þingræður, viðtöl — 333 texta hingað til.
-
-[Smellur 2: Fullyrðingar] Við drögum út staðhæfingar sem hægt er að bera saman við gögn. Rúmlega tvö þúsund.
-
-[Smellur 3: Heimildir] Þær eru bornar saman við heimildagrunn — lagatexta, Eurostat-gögn, sáttmálaákvæði, þingræður. 499 heimildir.
-
-[Smellur 4: Mat] Útkoman: flokkun eftir gæðum. Fimm flokkar — frá „stutt" til „villandi."
-
-[Smellur 5: Dæmi] Hér er raunverulegt dæmi. Grein á Stjórnmálin.is rannsakaði sjálf þessa tölu. Utanríkisráðherra sagði 80 prósent — en heimild EEA-LEGAL-001 segir 70 prósent af innri markaðinum, og EEA-DATA-017 segir 13 prósent ef allt er talið. Mat: þarfnast samhengis — talan fer eftir nefnaranum.
-:::
+<div class="pipeline-example fragment"><span class="ex-cell"><span class="ex-label">Grein</span><span class="ex-content"><em>„Líklega er hlutfallið komið eitthvað nær 20% í dag en hins vegar óraveg frá 75-80%."</em><span class="ex-source">Stjórnmálin · 24. mars</span></span></span><span class="ex-arrow">→</span><span class="ex-cell"><span class="ex-label">Fullyrðing</span><span class="ex-content">„Ísland hafi innleitt 80% af regluverki ESB"</span></span><span class="ex-arrow">→</span><span class="ex-cell"><span class="ex-label">Heimildir</span><span class="ex-content"><span class="ev-id">EEA-LEGAL-001</span> · <span class="ev-id">EEA-DATA-017</span> · <span class="ev-id">EEA-LEGAL-006</span></span></span><span class="ex-arrow">→</span><span class="ex-verdict ex-verdict--partial">að hluta staðfest</span></div>
 
 
 ## {data-name="Gæði"}
 
 ![](figures/verdicts.svg){width="100%"}
 
-::: {.notes}
-[0:55–1:15 · ~40 orð]
 
-75 prósent fullyrðinga eru að hluta studdar — ekki rangar, en samhengið vantar. Minna en ein af fimmtíu er beinlínis röng. Vandamálið er ekki lygar — vandamálið er hálfur sannleikur. Og þetta á við beggja vegna.
-:::
 
 ## {data-name="Umræðan"}
 
 ![](figures/topics.svg){width="100%"}
 
-::: {.notes}
-[2:15–2:35 · ~50 orð]
 
-Stærsta niðurstaðan. EES-réttur, fullveldi, sjávarútvegur — yfir helmingur samtalanna. Orkumál, vinnumarkaður, húsnæðismál — undir þrjú prósent samtals. Efnin sem skipta mestu máli í daglegu lífi eru efnin sem samtalið hefur ekki enn náð til. Samtalið hefur tíma — en aðeins ef við tökum eftir eyðunni.
+## {data-name="Niðurstaða" .center .centered-text}
+
+::: {.hero-statement}
+Stærsta tækifærið er að greina hvað við vitum, hvað við þurfum að læra, og hvað við getum ekki vitað.
 :::
 
-
-## {data-name="Fullyrðingar" .no-heading}
-
-<div class="claim-grid">
-<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">EES-réttur</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„Ísland hefur þegar innleitt stóran hluta af löggjöf ESB í gegnum EES-samninginn."</div><div class="db-card-meta">16 tilvísanir · #84</div></div>
-<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">Sjávarútvegur</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„Sameiginlega sjávarútvegsstefnan fellur undir einokunarvald ESB samkvæmt 3. gr. TFEU."</div><div class="db-card-meta">5 tilvísanir · #890</div></div>
-<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">Landbúnaður</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„ESB-aðild myndi leiða til opnunar íslensks markaðar á innflutningi landbúnaðarafurða."</div><div class="db-card-meta">13 tilvísanir · #217</div></div>
-<div class="db-card hl--neutral"><div class="db-card-header"><span class="db-source">Fullveldi</span><span class="db-verdict">að hluta stutt</span></div><div class="db-card-title">„Við ESB-aðild yrðu Íslendingar neyddir til að hlíta lögum sem samin eru erlendis."</div><div class="db-card-meta">3 tilvísanir · #966</div></div>
-</div>
-
-::: {.notes}
-Þetta eru mest umræddu fullyrðingarnar í hverjum flokki — raunverulegar staðhæfingar úr gagnagrunninum. Allar fjórar eru „að hluta studdar" — ekki rangar, en samhengið vantar. Nú ætla ég að sýna ykkur hvað liggur undir.
+::: {.hero-follow .fragment .fade-in}
+Stærsta áskorunin er að þetta er samvinnuverkefni — bæði þeirra sem skrifa og þeirra sem lesa.
 :::
 
-
-## {data-name="Tafla" .no-heading}
-
-::: {.discourse-table}
-
-<table>
-<thead>
-<tr>
-  <th></th>
-  <th>Hvað umræðan endurtekur</th>
-  <th>Hvers engin spyr</th>
-</tr>
-</thead>
-<tbody>
-<tr class="fragment">
-  <td>
-    <span class="topic-label">EES/ESB-löggjöf</span
-    ><span class="topic-meta">424 fullyrðingar</span>
-  </td>
-  <td>
-    Báðar hliðar vitna í „70%" — engin segir nefnarann. Bilið er
-    <span class="td-stat">5×</span>
-  </td>
-  <td>13.000+ lagagerðir án atkvæðisréttar. 400–500 bíða innleiðingar. Hvort tveggja sjaldan rætt.</td>
-</tr>
-<tr class="fragment">
-  <td>
-    <span class="topic-label">Sjávarútvegur</span
-    ><span class="topic-meta">291 fullyrðing</span>
-  </td>
-  <td>
-    <span class="td-stat">14 af 20</span>: hverju við myndum tapa.
-    <span class="td-stat">Engin</span>: hvaða skilmála við gætum samið
-  </td>
-  <td>Hvað verður um 800–1.000 ma.kr. í kvótaeignum — ekki meðal topp 20</td>
-</tr>
-<tr class="fragment">
-  <td>
-    <span class="topic-label">Landbúnaður</span
-    ><span class="topic-meta">146 fullyrðingar</span>
-  </td>
-  <td>
-    <span class="td-stat">85%</span> frá sjónarhorni framleiðenda. Bændablaðið birtir
-    <span class="td-stat">36%</span> umfjöllunar
-  </td>
-  <td>
-    Hvaða áhrif hefur þetta á neytendur? Matvælaverð kemur fyrir í <span class="td-stat">2 af 20</span>
-  </td>
-</tr>
-<tr class="fragment">
-  <td>
-    <span class="topic-label">Fullveldi</span
-    ><span class="topic-meta">383 fullyrðingar</span>
-  </td>
-  <td>
-    Viðræðum og aðild blandað saman —
-    hefðum örfá þingsæti
-  </td>
-  <td>
-    Afturkræfni: <span class="td-stat">0 af 25</span>. Höfum engin þingsæti þar núna
-  </td>
-</tr>
-</tbody>
-</table>
-
-:::
-
-::: {.notes}
-[1:15–2:15 · ~150 orð · 4 smellir, ~15s á röð]
-
-[Smellur 1: EES-réttur] 424 fullyrðingar, stærsta undirefnið. Mest endurtekna: Ísland hafi innleitt 70 prósent. Báðar hliðar nota hana — engin segir hvaða nefnara. Bilið er fimmfalt: 13,4 prósent ef allt er talið, 75 ef aðeins innri markaðurinn. 77 prósent þarfnast samhengis. Og enginn spyr hvort 380 þúsund geti innleitt allt regluverkið.
-
-[Smellur 2: Sjávarútvegur] Fjórtán af tuttugu efstu fullyrðingunum snúast um það sem við myndum tapa. Fjórar um hvað við gætum lært. Engin spyr: hvaða skilmála gæti Ísland samið um? Sjávarútvegskaflinn var aldrei opnaður í viðræðunum 2010 til 2013. Kvótinn — 800 til 1.000 milljarðar — ekki meðal topp tuttugu.
-
-[Smellur 3: Landbúnaður] Sex á móti einu á hlið framleiðenda. Neytandinn er stærsti blindi bletturinn — matvælaverð 50 til 70 prósent yfir meðaltali. Kemur fyrir í tveimur af tuttugu.
-
-[Smellur 4: Fullveldi] Stærsta málefnið. Mest endurtekið: dagsetning atkvæðagreiðslunnar, 49 sinnum. Afturkræfni — tryggð í sáttmálanum — kemur hvergi fram í topp 25.
+::: {.closing-question .fragment .fade-in}
+Hvaða spurningum getum við **svarað núna**? Hvaða spurningar þurfa **meiri upplýsingar**? Hvaða spurningum er **ekki hægt að svara**?
 :::
 
 
@@ -233,7 +118,7 @@ Stærsta niðurstaðan. EES-réttur, fullveldi, sjávarútvegur — yfir helming
 ::: {.three-questions}
 
 ::: {.fragment .fade-in}
-[1. Er ég forvitinn — eða er ég að verja afstöðu?]{.question}
+[1. Er ég forvitin — eða er ég að verja afstöðu?]{.question}
 [— Tim Harford]{.attribution}
 :::
 
@@ -243,28 +128,8 @@ Stærsta niðurstaðan. EES-réttur, fullveldi, sjávarútvegur — yfir helming
 :::
 
 ::: {.fragment .fade-in}
-[3. Get ég athugað þetta sjálfur?]{.question}
+[3. Reyndu ekki að auka traust, sýndu traustverðugleika.]{.question}
 [— Onora O'Neill]{.attribution}
 :::
 
-:::
-
-::: {.closing-question .fragment .fade-in}
-Hvaða spurningum getum við svarað — og hvaða spurningar snúast í raun um val, ekki vitneskju?
-:::
-
-::: {.notes}
-[2:35–3:00 · ~60 orð · 4 smellir]
-
-Þegar þið lesið um þjóðaratkvæðagreiðsluna héðan til ágúst, þrjár spurningar munu nýtast vel.
-
-[Smellur 1] Frá Tim Harford: Er ég forvitinn — eða er ég að verja afstöðu?
-
-[Smellur 2] Frá David Spiegelhalter: Er þetta sett fram til að upplýsa — eða sannfæra?
-
-[Smellur 3] Frá Onora O'Neill: Get ég athugað þetta sjálfur?
-
-[Smellur 4 — hljótt] Hvaða spurningum getum við svarað — og hvaða spurningar snúast um val, ekki vitneskju?
-
-[Þögn. Takk.]
 :::
