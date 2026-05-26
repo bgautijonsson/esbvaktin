@@ -1,3 +1,8 @@
+---
+name: reassess
+description: Orchestrate the full claim reassessment cycle — identify candidates (unverifiable, partial, overconfident, denominator-confusion, by evidence ID, or by claim ID), prepare batches, run claim-assessor agents in parallel, apply DB updates. Use when reassessing claims after evidence updates, audit flags, or specific claim/evidence IDs need re-evaluation.
+---
+
 # Reassess
 
 Orchestrate the full claim reassessment cycle: identify candidates, prepare context batches, run assessor agents in parallel, and apply updates to the database.

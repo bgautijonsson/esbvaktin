@@ -1,3 +1,8 @@
+---
+name: db
+description: Query the Ground Truth Database with natural language or raw SQL — read-only by default. Use when asking about claims, evidence, verdicts, sightings, balance audits, stale evidence, or running ad-hoc DB queries. Handles "show me X", "how many Y", semantic evidence search, and raw SELECT/WITH SQL.
+---
+
 # DB
 
 Query the Ground Truth Database with natural language or SQL. Read-only by default.

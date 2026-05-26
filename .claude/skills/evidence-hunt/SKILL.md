@@ -1,3 +1,8 @@
+---
+name: evidence-hunt
+description: Research and draft new evidence entries to fill gaps in the Ground Truth Database. Use when filling evidence gaps surfaced by audits or unverifiable claims, researching a specific topic for the GT DB, or running the monthly refresh of high-decay topics (polling, party_positions, org_positions, currency).
+---
+
 # Evidence Hunt
 
 Research and draft new evidence entries to fill gaps in the Ground Truth Database.

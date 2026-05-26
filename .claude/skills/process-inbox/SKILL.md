@@ -1,3 +1,8 @@
+---
+name: process-inbox
+description: Lightweight claim harvesting from Fréttasafn or the manual Obsidian inbox — extracts and catalogues claims, matches against the claim bank, records sightings, flags ground truth gaps. Does NOT run full assessment (verdicts stay unverifiable). Use when ingesting many articles for sighting tracking only; for full verdict assessment use process-articles instead.
+---
+
 # Process Inbox
 
 Ingest articles from two sources — **Fréttasafn** (automated news corpus) and a **manual Obsidian inbox** — extract claims, match them against the claim bank, record sightings, and flag ground truth gaps.

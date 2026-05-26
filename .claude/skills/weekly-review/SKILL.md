@@ -1,3 +1,8 @@
+---
+name: weekly-review
+description: Generate the weekly overview and editorial for ESBvaktin. Checks inbox coverage first, flags articles that should be analysed before writing, then runs editorial-writer agent. Gates on user approval before any publication. Use for current week, a specific ISO week (YYYY-Www), or "last" for previous week.
+---
+
 # Weekly Review
 
 Generate the weekly overview and editorial for ESBvaktin. Checks inbox coverage first, flags articles that should be analysed before writing the editorial, and gates on user approval before publishing.

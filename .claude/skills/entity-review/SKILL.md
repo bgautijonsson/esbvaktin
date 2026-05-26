@@ -1,3 +1,8 @@
+---
+name: entity-review
+description: Interactive browser-based entity registry review (speakers, authors, organisations) with terminal discussion bridge. Use when reviewing the entity registry queue, merging duplicate entities, fixing speaker/author attribution, or working through needs-review items.
+---
+
 # Entity Review
 
 Interactive browser-based entity review with terminal discussion bridge.

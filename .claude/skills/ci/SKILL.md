@@ -1,3 +1,8 @@
+---
+name: ci
+description: Monitor GitHub Actions CI runs for ESBvaktin — shows status, lists recent runs, downloads failure logs, surfaces failed runs only. Use when checking CI status, investigating a build failure, or after a git push.
+---
+
 # CI
 
 Monitor GitHub Actions CI runs. Shows status, investigates failures, and downloads relevant logs.

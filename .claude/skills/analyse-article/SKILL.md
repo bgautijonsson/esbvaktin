@@ -1,3 +1,8 @@
+---
+name: analyse-article
+description: Analyse a single article or panel show transcript about Iceland's EU referendum end-to-end against the Ground Truth Database — extracts claims, retrieves evidence, assesses verdicts, runs omission analysis, writes a capsule, exports to data/analyses/. Use when given a URL, file path, fréttasafn ID, or pasted text and the user wants a full report. For batch processing of inbox articles, use process-articles instead.
+---
+
 # Analyse Article
 
 Analyse an article about Iceland's EU membership referendum against the Ground Truth Database.

@@ -1,3 +1,8 @@
+---
+name: plan-verification
+description: Analyse a completed analysis report for unverifiable claims and generate a research task plan to fill evidence gaps. Use after analyse-article when the user wants follow-up evidence research planned, takes an analysis dir path as input.
+---
+
 # Plan Verification
 
 Analyse an article analysis report for unverifiable claims and generate

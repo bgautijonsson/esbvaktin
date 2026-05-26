@@ -1,3 +1,8 @@
+---
+name: fact-check
+description: Quick fact-check of one or more standalone claims about Iceland's EU membership against the Ground Truth Database — lighter than analyse-article (no article extraction, no omission analysis). Use when given just claim text(s) without a containing article, or when the user wants a verdict on a specific assertion.
+---
+
 # Fact-Check
 
 Quick fact-check of one or more claims about Iceland's EU membership against the Ground Truth Database. Lighter alternative to `/analyse-article` — no article extraction, omission analysis, or translation.

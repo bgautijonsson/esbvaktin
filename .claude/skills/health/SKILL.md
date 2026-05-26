@@ -1,3 +1,8 @@
+---
+name: health
+description: Unified ESBvaktin project health dashboard — DB stats, verdict distribution, audit signals, inbox/pipeline status, Icelandic quality coverage, site export freshness. Use when the user asks about project status, what's pending, how the system is doing, or wants a quick check before starting work.
+---
+
 # Health
 
 Unified project health dashboard. Consolidates 18+ separate status commands into one view.

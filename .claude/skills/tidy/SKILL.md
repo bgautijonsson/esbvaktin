@@ -1,3 +1,8 @@
+---
+name: tidy
+description: Audit the codebase for quality, consistency, and maintainability — ruff lint, tests, duplication, doc accuracy. Use when the user asks for codebase cleanup, lint check, test run, or code quality review. Sub-modes: lint, duplication, docs, tests.
+---
+
 # Tidy
 
 Audit the codebase for quality, consistency, and maintainability. Identifies issues and suggests targeted fixes.

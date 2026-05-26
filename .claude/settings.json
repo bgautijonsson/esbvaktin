@@ -1,8 +1,7 @@
 {
   "hooks": {
-    "Notification": [
+    "PreCompact": [
       {
-        "matcher": "compact",
         "hooks": [
           {
             "type": "prompt",

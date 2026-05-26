@@ -1,3 +1,8 @@
+---
+name: find-articles
+description: Discover new EU referendum articles via Fréttasafn, classify HIGH/MEDIUM/LOW, save to inbox, auto-analyse HIGH priority. Use for manual ad-hoc discovery, weekend catch-up, or working a specific date range or backlog. The routine daily flow is handled by the overnight-batch-weekdays scheduled task — this skill is for human-driven exploration.
+---
+
 # Find Articles
 
 Discover new EU referendum articles, filter out already-processed and irrelevant ones, and **automatically analyse HIGH priority articles**. Also surfaces backlog from previous sessions.
