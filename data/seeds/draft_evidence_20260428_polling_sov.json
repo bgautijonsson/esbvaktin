@@ -1,0 +1,38 @@
+[
+  {
+    "evidence_id": "POLL-DATA-027",
+    "domain": "political",
+    "topic": "polling",
+    "statement": "The Maskína annual survey commissioned by the Icelandic Ministry of Foreign Affairs (utanríkisráðuneyti) on attitudes towards international affairs was conducted online from 12 to 19 March 2026 with 936 respondents aged 18+ nationwide. Headline findings: 84% of respondents reported greater concern about developments in international affairs than a year earlier; 71% expressed significant concern; approximately 6% reported little or no concern. On personal security, 88% experienced Iceland as a safe country, with only 2% disagreeing. On the value of international cooperation, 69% believed Iceland's participation in international cooperation strengthens Iceland's sovereignty, and 73% strongly agreed that Iceland's economic prosperity depends on international cooperation (with another 22% agreeing moderately). Foreign Minister Þorgerður Katrín Gunnarsdóttir cited these figures in a speech at the annual conference of Alþjóðamálastofnun HÍ, the Foreign Ministry, and Norræna húsið on 14 April 2026, presenting the findings as evidence that the public recognises the importance of international engagement.",
+    "source_name": "Stjórnarráðið — „Íslendingar vilja rækta alþjóðasamstarf'",
+    "source_url": "https://www.stjornarradid.is/efst-a-baugi/frettir/stok-frett/2026/04/15/Islendingar-vilja-raekta-althjodasamstarf-/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The survey measures attitudes towards international affairs broadly, not EU membership specifically. The 84% / 71% / 88% headline figures concern global developments and personal security, not direct support for EU accession. Care is needed in framing: rising concern about international affairs is consistent with multiple policy responses (more EU integration, more NATO cooperation, more bilateral agreements, more domestic preparedness). The poll is published by the commissioning ministry rather than an independent third party — the framing of results in the press release should be distinguished from the underlying data. No margin of error is reported in the public release.",
+    "related_entries": ["POLL-DATA-014", "POLL-DATA-020", "POLL-DATA-021"]
+  },
+  {
+    "evidence_id": "POLL-DATA-028",
+    "domain": "political",
+    "topic": "polling",
+    "statement": "The Maskína annual survey for the Icelandic Ministry of Foreign Affairs (fieldwork 12–19 March 2026, n=936) included a specific question on resuming EU accession talks. Findings: 42% of respondents favoured resuming accession talks, while 39% opposed. The poll also recorded 72% positive views of Iceland's NATO membership (with 7% negative), 65% support for Ukraine's defence against Russia (down from 71% the previous year), 80% support for humanitarian aid to Ukraine, and 42% support for defence-related aid to Ukraine (up from 28% the previous year). The 42 / 39 split on EU accession talks shows the public roughly evenly divided in early 2026, which is broadly consistent with parallel Gallup Þjóðarpúls findings (POLL-DATA-014, POLL-DATA-020) showing a slight majority for continuing talks.",
+    "source_name": "Stjórnarráðið — „Íslendingar vilja rækta alþjóðasamstarf'",
+    "source_url": "https://www.stjornarradid.is/efst-a-baugi/frettir/stok-frett/2026/04/15/Islendingar-vilja-raekta-althjodasamstarf-/",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "The exact question wording on EU accession talks is not published in the press release — full methodology and crosstabs are not publicly available. The 42% / 39% finding is close enough that small changes in question framing could move the result substantially (see POLL-DATA-022 on framing effects). Comparison with Gallup figures should account for different fieldwork dates and sample frames. Commissioned by the Foreign Ministry, which is leading the accession push — readers should note this when assessing how the result is presented.",
+    "related_entries": ["POLL-DATA-014", "POLL-DATA-020", "POLL-DATA-021", "POLL-DATA-022", "POLL-DATA-027"]
+  },
+  {
+    "evidence_id": "SOV-PARL-006",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "The 2009 nefndarálit utanríkismálanefndar (Foreign Affairs Committee report, þingskjal 249/137) accompanying Iceland's EU membership application set out specific reservations and negotiation objectives. The committee held 19 meetings on the matter and received 78 guests from ministries, institutions, universities, and organisations. Key reservations included: (1) Sovereignty over the fishery resource within Iceland's 200-mile exclusive economic zone, with sustainable utilisation as a guide and protection against foreign vessel access to Icelandic stocks; (2) State ownership and utilisation of water and energy resources to remain entirely under Icelandic control, on the basis that EU rules govern environmental sustainability principles but not resource ownership per se; (3) Explicit support for milk production and traditional Icelandic farming, including tariff protection and food security safeguards. The committee acknowledged that EU regulations would have direct binding force on Iceland upon membership, distinguishing this from the EEA framework where legislative authority is not transferred in the same manner. The committee was composed of members from multiple parties, with the report noting that 'within most political parties there are divided opinions' on EU accession itself, even where procedural agreement was reached. The Alþingi adopted Þingsályktun 1/137 (þingskjal 283/137) on 16 July 2009 by 33 votes to 28, instructing the government to submit the application.",
+    "source_name": "Alþingi — Nefndarálit utanríkismálanefndar (þingskjal 249, 137. löggjafarþing)",
+    "source_url": "https://www.althingi.is/altext/137/s/0249.html",
+    "source_type": "parliamentary_record",
+    "confidence": "high",
+    "caveats": "The reservations were political objectives recorded in the parliamentary resolution and committee report — they were not formal opt-outs negotiated with the EU. The 2010–2013 accession talks did not formally table the reservations as binding negotiation prerequisites; the difficult chapters (fisheries, agriculture) were never opened before talks were suspended in 2013. The committee report's acknowledgment that EU law would have direct binding force on Iceland upon membership is consistent with subsequent legal scholarship (see EEA-LEGAL-012, EEA-LEGAL-020) and with the 2026-04-20 Lagastofnun HÍ memorandum cited in current debate.",
+    "related_entries": ["SOV-DATA-023", "EEA-LEGAL-012", "EEA-LEGAL-020", "PREC-HIST-015", "SOV-PARL-005"]
+  }
+]

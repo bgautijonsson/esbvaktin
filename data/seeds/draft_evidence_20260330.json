@@ -1,0 +1,38 @@
+[
+  {
+    "evidence_id": "ORG-DATA-002",
+    "domain": "political",
+    "topic": "org_positions",
+    "statement": "Félag atvinnurekenda (FA, Icelandic Employers' Association) conducted a survey of its members on EU membership in March 2026. The results showed 51% of members oppose opening negotiations with the EU, while 39% support negotiations. On the question of EU membership itself, 53% are opposed and only 20% are in favour. The survey also found that 46% of members believe the Icelandic króna is a viable long-term currency, while 35% disagree. FA noted that attitudes have shifted significantly since 2009-2012, when support for accession negotiations among business leaders reached approximately 60%. A reversal occurred in 2016-2017 when a majority turned against negotiations.",
+    "source_name": "Nútíminn / Félag atvinnurekenda",
+    "source_url": "https://www.nutiminn.is/forsida/atvinnulifid-snyst-gegn-esb-vidraedum/",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "FA is a smaller employers' association than SA (Samtök atvinnulífsins). FA members are predominantly SMEs. Survey methodology, sample size, and response rate are not publicly disclosed. Results reflect employer views, not general public or worker opinion. SA leadership supports EU membership, creating a split within the business community.",
+    "related_entries": ["ORG-DATA-001", "POL-DATA-016", "POLL-DATA-023"]
+  },
+  {
+    "evidence_id": "ORG-DATA-003",
+    "domain": "political",
+    "topic": "org_positions",
+    "statement": "Bændasamtök Íslands (Farmers' Association of Iceland) expressed serious reservations about EU membership in a statement by chairman Trausti Hjálmarsson on 7 March 2026. The association stated it had 'not come across any special opportunities for the overall interests of Icelandic agriculture with EU membership' and warned that liberalising agricultural imports from large EU food-producing nations would have 'substantial negative effects on Icelandic farmers' interests'. However, the association does not formally oppose the referendum itself, supporting citizens' right to vote on continuing negotiations. The position is described as cautious sectoral opposition rather than principled rejection of EU membership.",
+    "source_name": "RÚV / Bændasamtök Íslands",
+    "source_url": "https://www.ruv.is/frettir/innlent/2026-03-07-esb-adild-hefdi-veruleg-neikvaed-ahrif-a-hagsmuni-islenskra-baenda-469093",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Bændasamtökin represent agricultural producers who would be most directly affected by EU membership through exposure to CAP and free movement of agricultural goods. Their position is inherently sectoral. The statement does not cite specific economic data or analysis. Iceland's agricultural sector receives significant state subsidies under the current regime which would be restructured under EU membership.",
+    "related_entries": ["AGRI-DATA-009", "AGRI-DATA-017", "AGRI-LEGAL-004"]
+  },
+  {
+    "evidence_id": "POLITICAL-DATA-016",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "EU Enlargement Commissioner Marta Kos published a video on her Facebook page on 26 March 2026 in which she stated 'we don't call these negotiations' (Icelandic reporting: 'Við köllum þetta ekki samningaviðræður'), referring to EU accession talks. She described Iceland's potential accession as the 'easiest' the EU would have undertaken. In a separate NRK interview on 21 May 2025, Kos stated that accession talks are 'largely about adapting the applicant country's legislation to EU law' and that 'generally, new states must accept all the rules, but sometimes transition periods are possible'. She explicitly stated that permanent opt-outs are not available.",
+    "source_name": "Stjórnmálin.is (secondary) / Marta Kos Facebook video + NRK interview",
+    "source_url": "https://www.stjornmalin.is/?p=49609",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "Source URL is secondary reporting by Stjórnmálin.is, not the primary Facebook video or NRK transcript. Kos's statements represent the EU Commission's procedural position on enlargement. The 'easiest negotiations' characterisation refers to Iceland's extensive EEA alignment (~70% of single market acquis already adopted), not to the political difficulty of fisheries/sovereignty issues. The Facebook video is political communication, not a formal policy document.",
+    "related_entries": ["POLITICAL-DATA-015", "EEA-LEGAL-017", "EEA-LEGAL-021"]
+  }
+]

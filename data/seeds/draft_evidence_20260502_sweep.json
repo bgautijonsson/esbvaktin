@@ -1,0 +1,137 @@
+[
+  {
+    "evidence_id": "SOV-PARL-007",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "On 6 March 2026, Foreign Minister Þorgerður Katrín Gunnarsdóttir submitted government bill 516 (157th legislative session, þingsályktunartillaga 875) to Alþingi proposing a referendum on continuing Iceland's EU accession negotiations. The proposed referendum date is 29 August 2026. As of late April 2026 the bill was in the Foreign Affairs Committee (utanríkismálanefnd) review phase, having received 54 written umsagnir from organisations and institutions. The referendum is consultative, not legally binding on Alþingi.",
+    "source_name": "Alþingi — bill 516 (157th session)",
+    "source_url": "https://www.althingi.is/thingstorf/thingmalalistar-eftir-thingum/ferill/157/516/?ltg=157&mnr=516",
+    "source_type": "parliamentary_record",
+    "confidence": "high",
+    "caveats": "The bill page lists 54 umsagnir as aggregate count; individual submissions are linked separately under althingi.is/altext/erindi/157/. Government communique on the bill: stjornarradid.is, 6 March 2026.",
+    "related_entries": [
+      "SOV-PARL-008",
+      "SOV-LEGAL-033"
+    ]
+  },
+  {
+    "evidence_id": "SOV-PARL-008",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "On 10 April 2026, Landskjörstjórn (the Icelandic National Election Commission) submitted a written umsögn to the Foreign Affairs Committee on bill 516, pursuant to Article 52(1) of the Elections Act. The umsögn raised three principal concerns about the proposed referendum question 'Á að halda áfram viðræðum um aðild Íslands að Evrópusambandinu?': (i) the question presupposes that negotiations have not been terminated, which is itself contested; (ii) voters who believe negotiations were ended would struggle to answer yes or no without implicitly taking a stance on that contested premise; (iii) wording could affect voter positions and undermine result clarity. The Commission recommended more open and neutral phrasing and simplifying response options to a straightforward yes/no rather than repeating the question in the answers.",
+    "source_name": "Landskjörstjórn umsögn to Foreign Affairs Committee, 10 April 2026 (mál 516)",
+    "source_url": "https://www.althingi.is/thingstorf/thingmalalistar-eftir-thingum/ferill/157/516/?ltg=157&mnr=516",
+    "source_type": "parliamentary_record",
+    "confidence": "high",
+    "caveats": "Summary based on contemporaneous reporting (Útvarp Saga 11 April 2026; Wikipedia 'Icelandic European Union membership referendum' updated 24 April 2026 citing the umsögn directly). Full PDF of the umsögn is filed in the Alþingi erindi register for mál 516. Subsequent commentary (Þorsteinn Pálsson, DV 16 April 2026) debated whether the Commission exceeded its mandate by addressing matters beyond the question wording.",
+    "related_entries": [
+      "SOV-PARL-007",
+      "SOV-LEGAL-033"
+    ]
+  },
+  {
+    "evidence_id": "SOV-LEGAL-033",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "statement": "On 22 April 2026, the Council of Europe's Venice Commission issued opinion CDL-PI(2026)006 ('Opinion on the Proposed Referendum on Iceland's Accession to the European Union'), addressing the bill 516 referendum. The opinion covers question wording and clarity, procedural standards including timing and constitutional procedure, and adherence to democratic standards (Code of Good Practice on Referendums). The opinion was filed with Alþingi as erindi 157-2538 in the bill 516 record.",
+    "source_name": "Venice Commission CDL-PI(2026)006 (filed as Alþingi erindi 157-2538)",
+    "source_url": "https://www.althingi.is/altext/erindi/157/157-2538.pdf",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Detailed recommendations require reading the full opinion PDF. The Venice Commission opinion is advisory; it carries persuasive but not binding authority on the Icelandic legislative process.",
+    "related_entries": [
+      "SOV-PARL-007",
+      "SOV-PARL-008"
+    ]
+  },
+  {
+    "evidence_id": "AGRI-PREC-001",
+    "domain": "precedent",
+    "topic": "agriculture",
+    "statement": "When Finland joined the EU on 1 January 1995, Finnish agricultural farmgate prices were halved upon accession, and the right to take national decisions on agricultural policy was transferred to the EU. Finland had sought transition periods to gradually join the common market, but the Act of Accession did not prescribe a transition period for most agricultural sectors (transition was granted only for sugar, via Commission Regulation (EC) No 3300/94). To compensate, Finland and the EU agreed a permanent Northern Aid mechanism (Article 142) and a national support package was created to address gaps left by the negotiation outcome.",
+    "source_name": "European Parliament Think Tank — 'The 1995 enlargement of the European Union'",
+    "source_url": "https://epthinktank.eu/2015/11/05/the-1995-enlargement-of-the-european-union-the-accession-of-finland-and-sweden/",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Iceland's geographic and demographic profile differs substantially from Finland's: Iceland has roughly 0.4M inhabitants vs Finland's 5.5M (1995), and its agricultural sector is smaller in absolute terms. The applicability of Finland's outcome to a hypothetical Icelandic accession is comparative, not predictive.",
+    "related_entries": [
+      "AGRI-LEGAL-007",
+      "AGRI-PREC-002"
+    ]
+  },
+  {
+    "evidence_id": "AGRI-LEGAL-007",
+    "domain": "legal",
+    "topic": "agriculture",
+    "statement": "Article 142 of the 1994 Act of Accession of Austria, Finland and Sweden authorises the European Commission to permit those Member States to grant long-term national aid to maintain agricultural activity in northern regions. The provision applies to administrative units situated north of the 62nd parallel and adjacent areas south of it affected by comparable climatic conditions. Eligibility criteria: population density at most 10 inhabitants per km², utilised agricultural area (UAA) at most 10% of total surface, and arable crops for human consumption at most 20% of UAA. The reference period for support levels was 1994 for cow's milk and soft fruit/vegetables, 1993 for other products. Aid may not exceed pre-accession reference levels.",
+    "source_name": "EUR-Lex — 1994 Treaty of Accession, Article 142 (referenced in Commission report 52007DC0459)",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:52007DC0459",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Iceland lies entirely north of the 62nd parallel and meets the population-density criterion across most regions, so Article 142 (or an equivalent Iceland-specific provision in a future accession treaty) would in principle be available as a precedent. Whether the 1994 article would apply directly or be re-negotiated is a matter for any accession negotiation.",
+    "related_entries": [
+      "AGRI-PREC-001",
+      "AGRI-PREC-002"
+    ]
+  },
+  {
+    "evidence_id": "AGRI-PREC-002",
+    "domain": "precedent",
+    "topic": "agriculture",
+    "statement": "The Northern Aid scheme under Article 142 was implemented through Commission Decision 1995/196/EC (for Finland) and Commission Decision 1996/228/EC (for Sweden). In Finland the scheme covers approximately 1,417,000 hectares of utilised agricultural area, equivalent to 55.5% of Finland's 1994 total. Eligible products include milk, beef, pork, poultry, mutton, goat meat, reindeer, equines, cereals, sugar beet, starch potatoes, horticulture and storage aid. Five sub-zones (C1, C2, C2 North, C3, C4) modulate support based on regional agricultural characteristics. Aid is partly paid from national budgets, with EU co-financing for some elements.",
+    "source_name": "European Commission DG AGRI evaluation: 'Impact of Nordic Aid Schemes', 2007",
+    "source_url": "https://agriculture.ec.europa.eu/document/download/dcf7b183-94a7-4fda-817b-0d0b59781877_en?filename=ext-eval-nordic-fulltext_2007_en.pdf",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Coverage and aid levels reflect the 2007 evaluation period; the schemes have been adjusted in subsequent CAP reforms. Sweden's scheme is materially smaller than Finland's, reflecting smaller eligible northern agricultural area. Direct comparability to Iceland depends on how Iceland's agricultural zones would be classified in a future accession negotiation.",
+    "related_entries": [
+      "AGRI-LEGAL-007",
+      "AGRI-PREC-001"
+    ]
+  },
+  {
+    "evidence_id": "SOV-PARL-009",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "When the Icelandic government formally paused EU accession negotiations after the May 2013 government change, 27 of the 33 substantive negotiating chapters had been opened, of which 11 were provisionally closed. Six chapters were never opened: fisheries; agriculture and rural development; free movement of capital; right of establishment and freedom to provide services; food safety, veterinary and phytosanitary policy; and justice, freedom and security. Iceland did not table preliminary positions on the fisheries or agriculture chapters before the suspension. The 2014 Foreign Ministry summary report ('Aðildarviðræður Íslands og ESB — framvinda og staða') documents the chapter-by-chapter status.",
+    "source_name": "Foreign Ministry of Iceland — 'Aðildarviðræður Íslands og ESB — framvinda og staða' (Apr 2013/2014)",
+    "source_url": "https://www.stjornarradid.is/media/utanrikisraduneyti-media/media/skyrslur/skyrsla-um-samningavidraedur-islands-um-adild-ad-evropusambandinu.pdf",
+    "source_type": "official_statistics",
+    "confidence": "high",
+    "caveats": "Cross-confirmed by European Commission progress reports SWD(2012)337 and MEMO/11/690 (Oct 2011), and by 2026 secondary reporting (NordiskPost 10 March 2026). Numbers are at the suspension date in May 2013; the underlying chapters and acquis have evolved since.",
+    "related_entries": [
+      "SOV-PARL-010",
+      "SOV-PARL-011"
+    ]
+  },
+  {
+    "evidence_id": "SOV-PARL-010",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "On 12 March 2015, Foreign Minister Gunnar Bragi Sveinsson sent a letter to Commissioner for Enlargement Johannes Hahn and to the Latvian Foreign Minister Edgars Rinkevics (then EU presidency). The letter stated 'The government of Iceland has no intentions to resume accession talks' and requested 'Iceland should not be regarded as a candidate country for EU membership'. The European Council took note and undertook practical adjustments to its working procedures. The European Commission did not accept the letter as a formal withdrawal of the application; the application of 16 July 2009 remained on the books. The letter was sent without a preceding Alþingi resolution authorising withdrawal — a separate withdrawal bill subsequently failed in Alþingi due to opposition málþóf.",
+    "source_name": "EUobserver — 'Iceland says final EU goodbye', March 2015 (citing Sveinsson letter)",
+    "source_url": "https://euobserver.com/eu-political/ar3e6db024",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Direct quotes are from the published letter as reported by EUobserver; the original letter is in the Foreign Ministry archives. The Council's 'practical adjustments' formula is the usual diplomatic phrasing for demoting Iceland from active candidate status while preserving the application's legal pendency. The contested status of the letter is the core of the 'er aðildarumsóknin enn í gildi?' debate in 2026.",
+    "related_entries": [
+      "SOV-PARL-009",
+      "SOV-PARL-011"
+    ]
+  },
+  {
+    "evidence_id": "SOV-PARL-011",
+    "domain": "political",
+    "topic": "sovereignty",
+    "statement": "In March 2026, the European Commission confirmed publicly that Iceland's EU membership application from 16 July 2009 remains valid and on file. This confirmation came in advance of the 29 August 2026 referendum on continuing accession negotiations. The Commission's position is consistent with its 2015 stance that the 12 March 2015 Sveinsson letter did not constitute a formal withdrawal under EU procedure. Practical implication: if the 29 August 2026 referendum approves continuation, negotiations would resume from where they were paused in May 2013, not as a new application — though substantial chapter content would need updating to reflect post-2013 acquis development.",
+    "source_name": "European Commission statement, March 2026 (reported via NordiskPost 8 March 2026)",
+    "source_url": "https://www.nordiskpost.com/2026/03/08/eu-commission-iceland-application-valid/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Whether resumed negotiations would proceed under the 2009 framework or require a refreshed mandate from the Council is a procedural question the Commission has not addressed publicly. The applicable acquis at resumption would be the post-2013 version, so chapters Iceland had provisionally closed would need re-screening.",
+    "related_entries": [
+      "SOV-PARL-009",
+      "SOV-PARL-010"
+    ]
+  }
+]
