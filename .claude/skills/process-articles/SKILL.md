@@ -1,3 +1,8 @@
+---
+name: process-articles
+description: Batch-analyse multiple pending inbox articles through the full analyse-article pipeline (extract → evidence → assess + omissions → entities → capsule). Use when working through queued articles in batches of 3-5, or when the user says "process the top N", "analyse the pending articles", "run batch analysis", or "show triage". Default batch size 3 (= 6 concurrent agents).
+---
+
 # Process Articles
 
 Batch-analyse pending articles from the inbox using phase-based parallelism. Each article goes through the full `/analyse-article` pipeline (extract claims, retrieve evidence, assess, analyse omissions, assemble report, extract entities, write capsule).
@@ -200,24 +205,26 @@ Prompt: Lestu $WORK_DIR/_context_capsule.md og skrifaðu lesandanótu.
 
 Verify outputs. One retry per failed agent.
 
-### Phase 7: Finalise (Python, sequential)
+### Phase 7: Finalise
 
-For each article:
+Steps 1–2 can run in parallel across articles; **step 3 MUST run sequentially**.
 
-1. **Write capsule into report:**
+1. **Write capsule into report (parallel OK):**
    ```bash
    uv run python scripts/pipeline/write_capsule.py $WORK_DIR
    ```
 
-2. **Register sightings:**
+2. **Register sightings (parallel OK):**
    ```bash
    uv run python scripts/register_article_sightings.py --dir $(basename $WORK_DIR)
    ```
 
-3. **Update inbox status:**
+3. **Update inbox status (SEQUENTIAL ONLY):**
    ```bash
    uv run python scripts/manage_inbox.py set-status INBOX_ID processed
    ```
+
+   **Why sequential:** `manage_inbox.py set-status` reads, modifies, and rewrites the whole `data/inbox/inbox.json` file. Parallel calls silently lose writes — every thread reports success while the last writer wins. In a 12-article batch, this can leave 6+ articles stuck at `queued` even though Phase 7 reports OK. Always loop through `set-status` calls one at a time, after the parallel block for steps 1–2 completes.
 
 ### Final Summary
 
