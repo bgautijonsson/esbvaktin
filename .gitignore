@@ -78,3 +78,14 @@ metill-ehf.skill
 data/althingi.db
 althingi.db
 .gstack/
+
+# Local agent state (per-machine, not for source control)
+.claire/
+.superpowers/
+
+# Personal project overrides (private, machine-local)
+CLAUDE.local.md
+
+# R / ad-hoc binary outputs
+Rplots.pdf
+data/esbvaktin.db
