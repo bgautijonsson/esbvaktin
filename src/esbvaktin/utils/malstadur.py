@@ -43,10 +43,19 @@ DEFAULT_TIMEOUT = 60.0  # per-request HTTP timeout
 DEFAULT_GRAMMAR_BATCH_SIZE = 10  # API caps grammar texts at 10 per call
 
 RETRY_STATUS_CODES = frozenset({429, 502, 503, 504})
+AUTH_STATUS_CODES = frozenset({401, 403})
 
 
 class MalstadurError(RuntimeError):
     """Raised when the Málstaður API call fails after retries."""
+
+
+class MalstadurAuthError(MalstadurError):
+    """Raised when the API key is missing, revoked, or unauthorised.
+
+    Callers should treat this as fatal — every subsequent call will fail
+    the same way, so retrying or moving to the next batch is pointless.
+    """
 
 
 class MalstadurClient:
@@ -204,6 +213,11 @@ class MalstadurClient:
 
             if resp.is_success:
                 return resp.json()
+
+            if resp.status_code in AUTH_STATUS_CODES:
+                raise MalstadurAuthError(
+                    f"Málstaður {path} HTTP {resp.status_code}: {resp.text[:200]}"
+                )
 
             raise MalstadurError(f"Málstaður {path} HTTP {resp.status_code}: {resp.text[:200]}")
 

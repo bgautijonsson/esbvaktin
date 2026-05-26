@@ -26,7 +26,7 @@ import hashlib
 import sys
 from pathlib import Path
 
-from esbvaktin.utils.malstadur import MalstadurClient, MalstadurError
+from esbvaktin.utils.malstadur import MalstadurAuthError, MalstadurClient, MalstadurError
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -128,6 +128,10 @@ def translate_caveats(args: argparse.Namespace) -> None:
                 if i % 20 == 0 or i == len(rows):
                     print(f"  [{i}/{len(rows)}] {translated} translated, {chars_processed:,} chars")
 
+            except MalstadurAuthError as e:
+                print(f"\nFATAL auth error — aborting run: {e}", file=sys.stderr)
+                errors.append((eid, str(e)))
+                break
             except MalstadurError as e:
                 print(f"  {eid}: API ERROR — {e}")
                 errors.append((eid, str(e)))
@@ -247,6 +251,12 @@ def correct(args: argparse.Namespace) -> None:
 
                 chars_processed += sum(len(t) for t in texts)
 
+            except MalstadurAuthError as e:
+                eids = {item[0]["evidence_id"] for item in batch_items}
+                print(f"\nFATAL auth error — aborting run: {e}", file=sys.stderr)
+                for eid in eids:
+                    errors.append((eid, str(e)))
+                break
             except MalstadurError as e:
                 eids = {item[0]["evidence_id"] for item in batch_items}
                 print(f"  Batch API error ({', '.join(eids)}): {e}")
@@ -258,55 +268,55 @@ def correct(args: argparse.Namespace) -> None:
                 for eid in eids:
                     errors.append((eid, str(e)))
 
-        # Find entries fully processed in this batch and write them
-        # An entry is fully processed when all its fields have been sent
-        batch_eids = {item[0]["evidence_id"] for item in batch_items}
-        for eid in batch_eids:
-            entry = next(e for e in pending if e["evidence_id"] == eid)
-            # Check if all fields for this entry were in this batch
-            remaining_fields = [
-                f
-                for f in ("statement_is", "source_description_is", "caveats_is")
-                if entry.get(f)
-                and not any(bi[0]["evidence_id"] == eid and bi[1] == f for bi in batch_items)
-            ]
-            if not remaining_fields:
-                # All fields processed — write to DB
-                new_hash = _compute_hash(
-                    entry.get("statement_is"),
-                    entry.get("source_description_is"),
-                    entry.get("caveats_is"),
-                )
-                try:
-                    conn.execute(
-                        "UPDATE evidence "
-                        "SET statement_is = %s, source_description_is = %s, "
-                        "    caveats_is = %s, is_proofread_hash = %s "
-                        "WHERE evidence_id = %s",
-                        (
-                            entry.get("statement_is"),
-                            entry.get("source_description_is"),
-                            entry.get("caveats_is"),
-                            new_hash,
-                            eid,
-                        ),
+            # Find entries fully processed in this batch and write them
+            # An entry is fully processed when all its fields have been sent
+            batch_eids = {item[0]["evidence_id"] for item in batch_items}
+            for eid in batch_eids:
+                entry = next(e for e in pending if e["evidence_id"] == eid)
+                # Check if all fields for this entry were in this batch
+                remaining_fields = [
+                    f
+                    for f in ("statement_is", "source_description_is", "caveats_is")
+                    if entry.get(f)
+                    and not any(bi[0]["evidence_id"] == eid and bi[1] == f for bi in batch_items)
+                ]
+                if not remaining_fields:
+                    # All fields processed — write to DB
+                    new_hash = _compute_hash(
+                        entry.get("statement_is"),
+                        entry.get("source_description_is"),
+                        entry.get("caveats_is"),
                     )
-                    conn.commit()
-                    corrected_count += 1
-                except Exception as e:
-                    print(f"  DB error for {eid}: {e}")
-                    errors.append((eid, str(e)))
+                    try:
+                        conn.execute(
+                            "UPDATE evidence "
+                            "SET statement_is = %s, source_description_is = %s, "
+                            "    caveats_is = %s, is_proofread_hash = %s "
+                            "WHERE evidence_id = %s",
+                            (
+                                entry.get("statement_is"),
+                                entry.get("source_description_is"),
+                                entry.get("caveats_is"),
+                                new_hash,
+                                eid,
+                            ),
+                        )
+                        conn.commit()
+                        corrected_count += 1
+                    except Exception as e:
+                        print(f"  DB error for {eid}: {e}")
+                        errors.append((eid, str(e)))
 
-        # Advance past all entries that were in this batch
-        processed_eids = batch_eids
-        while i < len(pending) and pending[i]["evidence_id"] in processed_eids:
-            i += 1
+            # Advance past all entries that were in this batch
+            processed_eids = batch_eids
+            while i < len(pending) and pending[i]["evidence_id"] in processed_eids:
+                i += 1
 
-        if corrected_count % 20 == 0 and corrected_count > 0:
-            print(
-                f"  [{corrected_count}/{len(pending)}] corrected,"
-                f" {fields_fixed} fields fixed, {chars_processed:,} chars"
-            )
+            if corrected_count % 20 == 0 and corrected_count > 0:
+                print(
+                    f"  [{corrected_count}/{len(pending)}] corrected,"
+                    f" {fields_fixed} fields fixed, {chars_processed:,} chars"
+                )
 
     conn.close()
 
