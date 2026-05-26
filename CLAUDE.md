@@ -72,8 +72,8 @@ data/overviews/         # Weekly overview generation (gitignored)
 data/inbox/             # Article discovery inbox with persistent state
 data/{source}/          # CSV outputs from R scripts (gitignored)
 R/                      # Data fetching scripts (Hagstofa, Eurostat, OECD, etc.)
-.claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification, health, db, evidence-hunt, reassess, tidy, process-articles, weekly-review
-.claude/hooks/          # Pre-export validation hook
+.claude/skills/         # find-articles, analyse-article, fact-check, process-inbox, plan-verification, health, db, evidence-hunt, reassess, tidy, process-articles, weekly-review, link-check, entity-review, ci (15 total)
+.claude/hooks/          # Pre-export DB-integrity validation + post-push CI run-URL surfacing
 .claude/agents/         # Custom agents (11 total, see table below)
 ```
 
@@ -171,6 +171,12 @@ Documented limitations. Don't rediscover these — work around them or fix them.
 - **`manage_inbox.py add-batch` breaks on Icelandic quotes.** Pre-sanitise the JSON scan file, or use `extract_json()` to parse it.
 - **HTML form sentinel strings vs SQL NULL.** `<select>` dropdowns send `""` or `"none"` for "no value", but nullable DB columns need `NULL`. `update_entity()` normalises sentinels for nullable columns. New entity UI dropdowns must use `value=""` (not `value="none"`) for "None" options, and `saveEdit()` converts empties to `null` before PATCH.
 - **Entity test fixtures use transaction rollback isolation.** `conn.commit` is neutered during tests so production entity data is never wiped. New entity test fixtures must follow this pattern — never `DELETE FROM entities` + `conn.commit()` in teardown.
+- **`manage_inbox.py set-status` is not concurrency-safe.** The script reads, modifies, and rewrites the whole `data/inbox/inbox.json` file. Parallel invocations (e.g., from `ThreadPoolExecutor` in pipeline Phase 7) silently lose writes — each thread reports success while the last writer wins. **Always call `set-status` sequentially**, even when other Phase 7 steps (`write_capsule`, `register_sightings`) run in parallel. After parallel processing, do a single-threaded loop for `set-status` calls.
+- **`assemble_report.py` requires `confidence` on every claim object.** If the assessor agent returns a claim dict without `confidence`, Pydantic validation fails and assembly aborts. Symptoms: `pydantic_core.ValidationError: claim.confidence Field required`. Workaround: patch the `_assessments.json` by copying `confidence` from the corresponding `_claims.json` entry before retrying. Long-term fix: default `confidence` to 0.7 in `parse_assessments()` or strengthen the assessor system prompt.
+- **`reassess_claims.py prepare` doesn't clean old batches.** Old `_context_batch_N.md` and `_assessments_batch_N.json` files from prior `prepare` runs persist on disk. Subsequent `update` runs report "MISSING" for the orphans (harmless but noisy). Either clean `data/reassessment/` manually between unrelated reassess sessions or add `--clean` to the prepare script.
+- **`extract_json()` returns a cleaned string, not parsed JSON.** The caller must still do `json.loads(extract_json(text))`. Easy to forget — `len(extract_json(text))` returns the string length, not the array length, which makes empty-data look like success.
+- **Lightweight batched extraction is much more efficient than per-article.** For inbox processing without full assessment, concatenate ~15 article texts into one context file (`/tmp/lw_batches/batch_NN_context.md`) with `===ARTICLE===` separators. One `claim-extractor` agent processes all 15 and outputs `[{id, url, claims: []}, ...]`. ~5× less context vs 15 individual extractors. See `/tmp/build_batch_contexts.py` from 2026-05-25 sync for working template.
+- **`manage_inbox.py next --limit N` doesn't return LOW priority by default.** It prefers HIGH/MEDIUM and stops when those are exhausted, even if `N` isn't reached. To process LOW priority, query separately with explicit filter or iterate through the inbox JSON directly.
 
 ## Editorial Philosophy
 
