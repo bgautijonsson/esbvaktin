@@ -44,16 +44,56 @@ REQUEST_TIMEOUT = 15
 DELAY_BETWEEN_REQUESTS = 0.5  # polite crawling
 USER_AGENT = "ESBvaktin-LinkChecker/1.0 (+https://esbvaktin.is)"
 
+# Sites are inconsistent about which UA they trust. OECD, Consilium, island.is
+# block bot UAs and only accept browser-like fingerprints. EFTA does the
+# opposite — accepts identified bot UAs and blocks generic Mozilla UAs.
+# Strategy: try identified UA first; on 4xx fall back to browser headers.
+BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/148.0.0.0 Safari/537.36"
+    ),
+    "Accept": (
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+    ),
+    "Accept-Language": "en-US,en;q=0.9,is;q=0.8",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "Cache-Control": "max-age=0",
+    "DNT": "1",
+}
+IDENTIFIED_HEADERS = {"User-Agent": USER_AGENT}
+
 # Domains where we can extract text (others may be PDFs, APIs, etc.)
 EXTRACTABLE_DOMAINS = {
-    "www.althingi.is", "eur-lex.europa.eu", "ec.europa.eu",
-    "enlargement.ec.europa.eu", "neighbourhood-enlargement.ec.europa.eu",
-    "www.efta.int", "www.government.is", "www.stjornarradid.is",
-    "www.europarl.europa.eu", "www.eftasurv.int", "www.ecb.europa.eu",
-    "eeagrants.org", "island.is", "www.sedlabanki.is", "orkustofnun.is",
-    "fel.hi.is", "www.oecd.org", "commission.europa.eu",
-    "www.statice.is", "data.worldbank.org", "www.gallup.is",
-    "en.wikipedia.org", "is.wikipedia.org",
+    "www.althingi.is",
+    "eur-lex.europa.eu",
+    "ec.europa.eu",
+    "enlargement.ec.europa.eu",
+    "neighbourhood-enlargement.ec.europa.eu",
+    "www.efta.int",
+    "www.government.is",
+    "www.stjornarradid.is",
+    "www.europarl.europa.eu",
+    "www.eftasurv.int",
+    "www.ecb.europa.eu",
+    "eeagrants.org",
+    "island.is",
+    "www.sedlabanki.is",
+    "orkustofnun.is",
+    "fel.hi.is",
+    "www.oecd.org",
+    "commission.europa.eu",
+    "www.statice.is",
+    "data.worldbank.org",
+    "www.gallup.is",
+    "en.wikipedia.org",
+    "is.wikipedia.org",
 }
 
 # Domains that serve data APIs / statistical tables (not HTML pages)
@@ -106,23 +146,44 @@ def check_url(url: str) -> dict:
     if not url or not url.startswith("http"):
         return {"status": "invalid", "http_code": None, "final_url": None, "error": "not a URL"}
 
-    headers = {"User-Agent": USER_AGENT}
-
     try:
-        with httpx.Client(follow_redirects=True, timeout=REQUEST_TIMEOUT) as client:
-            # Try HEAD first (cheaper)
+        with httpx.Client(follow_redirects=True, timeout=REQUEST_TIMEOUT, http2=False) as client:
+            # Try identified UA first. Cheap and respectful.
             try:
-                resp = client.head(url, headers=headers)
+                resp = client.head(url, headers=IDENTIFIED_HEADERS)
             except httpx.HTTPError:
-                resp = client.get(url, headers=headers)
+                resp = client.get(url, headers=IDENTIFIED_HEADERS)
 
-            # Some servers return 405 for HEAD
-            if resp.status_code == 405:
-                resp = client.get(url, headers=headers)
+            # Any non-2xx from HEAD warrants a GET retry. HEAD is sometimes
+            # routed through different middleware than GET, and some servers
+            # (EEAS, others) return 5xx or 4xx to HEAD while accepting GET.
+            if resp.status_code >= 400:
+                resp = client.get(url, headers=IDENTIFIED_HEADERS)
+
+            # Still 4xx with identified UA? Some sites (OECD, Consilium,
+            # island.is) block bot UAs and require a browser fingerprint.
+            # Retry as a browser-style GET before giving up.
+            if 400 <= resp.status_code < 500:
+                resp = client.get(url, headers=BROWSER_HEADERS)
 
             final_url = str(resp.url)
 
             if resp.status_code >= 400:
+                # Cloudflare bot challenge — page works for humans, just blocks
+                # us. Treat as ok (we can't verify, but URL is functionally
+                # alive). Detect via "Just a moment..." or cf-mitigated header.
+                body = resp.text[:1500] if hasattr(resp, "text") else ""
+                if (
+                    "Just a moment..." in body
+                    or "challenges.cloudflare.com" in body
+                    or resp.headers.get("cf-mitigated") == "challenge"
+                ):
+                    return {
+                        "status": "ok",
+                        "http_code": resp.status_code,
+                        "final_url": final_url,
+                        "error": "cloudflare-protected (unverifiable but live)",
+                    }
                 return {
                     "status": "error",
                     "http_code": resp.status_code,
@@ -228,7 +289,9 @@ def _extract_key_terms(statement: str) -> list[str]:
 
     # Numbers and percentages (e.g. "75%", "€1.2 billion", "2024")
     terms.extend(re.findall(r"\d+(?:\.\d+)?%", statement))
-    terms.extend(re.findall(r"€[\d.,]+ (?:billion|million|milljón|milljarð)", statement, re.IGNORECASE))
+    terms.extend(
+        re.findall(r"€[\d.,]+ (?:billion|million|milljón|milljarð)", statement, re.IGNORECASE)
+    )
     terms.extend(re.findall(r"\b\d{4}\b", statement))  # years
 
     # Article references (e.g. "Article 49", "Chapter 13")
@@ -238,7 +301,12 @@ def _extract_key_terms(statement: str) -> list[str]:
     # (words starting with uppercase that aren't sentence-starters)
     words = statement.split()
     for i, w in enumerate(words):
-        if i > 0 and w[0].isupper() and len(w) > 3 and w not in {"The", "This", "That", "These", "Under"}:
+        if (
+            i > 0
+            and w[0].isupper()
+            and len(w) > 3
+            and w not in {"The", "This", "That", "These", "Under"}
+        ):
             terms.append(w.rstrip(".,;:"))
 
     return terms
@@ -389,12 +457,14 @@ def check_all(*, topic: str | None = None, recheck: bool = False) -> None:
         params.append(topic)
 
     if not recheck:
-        where_clauses.append("(source_url_checked IS NULL OR source_url_checked < CURRENT_DATE - INTERVAL '7 days')")
+        where_clauses.append(
+            "(source_url_checked IS NULL OR source_url_checked < CURRENT_DATE - INTERVAL '7 days')"
+        )
 
     query = f"""
         SELECT evidence_id, source_url, source_excerpt, topic
         FROM evidence
-        WHERE {' AND '.join(where_clauses)}
+        WHERE {" AND ".join(where_clauses)}
         ORDER BY topic, evidence_id
     """
     rows = conn.execute(query, params).fetchall()
@@ -447,7 +517,7 @@ def check_all(*, topic: str | None = None, recheck: bool = False) -> None:
         )
         conn.commit()
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print("Results:")
     for status, count in results.most_common():
         print(f"  {status}: {count}")
@@ -465,8 +535,12 @@ def show_report() -> None:
     conn = get_connection()
 
     # Summary
-    total = conn.execute("SELECT COUNT(*) FROM evidence WHERE source_url LIKE 'http%'").fetchone()[0]
-    checked = conn.execute("SELECT COUNT(*) FROM evidence WHERE source_url_checked IS NOT NULL").fetchone()[0]
+    total = conn.execute("SELECT COUNT(*) FROM evidence WHERE source_url LIKE 'http%'").fetchone()[
+        0
+    ]
+    checked = conn.execute(
+        "SELECT COUNT(*) FROM evidence WHERE source_url_checked IS NOT NULL"
+    ).fetchone()[0]
     print(f"Evidence URLs: {total} total, {checked} checked\n")
 
     # Status breakdown
@@ -517,7 +591,7 @@ def show_report() -> None:
         SELECT COUNT(*) FROM evidence
         WHERE source_url LIKE 'http%' AND source_excerpt IS NOT NULL
     """).fetchone()[0]
-    print(f"\nExcerpt coverage: {has_excerpt}/{total} ({100*has_excerpt/total:.0f}%)")
+    print(f"\nExcerpt coverage: {has_excerpt}/{total} ({100 * has_excerpt / total:.0f}%)")
 
     conn.close()
 
@@ -526,8 +600,12 @@ def show_status() -> None:
     """Quick one-line summary."""
     conn = get_connection()
 
-    total = conn.execute("SELECT COUNT(*) FROM evidence WHERE source_url LIKE 'http%'").fetchone()[0]
-    checked = conn.execute("SELECT COUNT(*) FROM evidence WHERE source_url_checked IS NOT NULL").fetchone()[0]
+    total = conn.execute("SELECT COUNT(*) FROM evidence WHERE source_url LIKE 'http%'").fetchone()[
+        0
+    ]
+    checked = conn.execute(
+        "SELECT COUNT(*) FROM evidence WHERE source_url_checked IS NOT NULL"
+    ).fetchone()[0]
     ok = conn.execute(
         "SELECT COUNT(*) FROM evidence WHERE source_url_status IN ('ok', 'redirect_ok')"
     ).fetchone()[0]
@@ -539,7 +617,7 @@ def show_status() -> None:
     ).fetchone()[0]
 
     print(f"Link health: {total} URLs, {checked} checked ({ok} ok, {problems} problems)")
-    print(f"Excerpt coverage: {has_excerpt}/{total} ({100*has_excerpt/total:.0f}%)")
+    print(f"Excerpt coverage: {has_excerpt}/{total} ({100 * has_excerpt / total:.0f}%)")
 
     conn.close()
 
@@ -579,7 +657,7 @@ def main() -> None:
     elif cmd == "set-excerpt":
         # Usage: set-excerpt EVIDENCE_ID "excerpt text"
         if len(sys.argv) < 4:
-            print("Usage: set-excerpt EVIDENCE_ID \"excerpt text\"")
+            print('Usage: set-excerpt EVIDENCE_ID "excerpt text"')
             sys.exit(1)
         eid = sys.argv[2]
         excerpt_text = sys.argv[3]
