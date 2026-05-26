@@ -15,16 +15,28 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# pg_dump/pg_restore from Homebrew libpq (not on default PATH)
-LIBPQ_PREFIX="$(brew --prefix libpq 2>/dev/null || echo "/opt/homebrew/Cellar/libpq/18.2")"
+# pg_dump/pg_restore from Homebrew libpq (not on default PATH).
+# Use the version-agnostic symlink so brew upgrades don't break us.
+LIBPQ_PREFIX="$(brew --prefix libpq 2>/dev/null || echo "/opt/homebrew/opt/libpq")"
 PG_DUMP="${PG_DUMP:-$LIBPQ_PREFIX/bin/pg_dump}"
 PG_RESTORE="${PG_RESTORE:-$LIBPQ_PREFIX/bin/pg_restore}"
 
 if [[ ! -x "$PG_DUMP" ]]; then
-    PG_DUMP="pg_dump"
+    if command -v pg_dump >/dev/null 2>&1; then
+        PG_DUMP="pg_dump"
+    else
+        echo "ERROR: pg_dump not found. Install with: brew install libpq" >&2
+        echo "Tried: $LIBPQ_PREFIX/bin/pg_dump and PATH=$PATH" >&2
+        exit 1
+    fi
 fi
 if [[ ! -x "$PG_RESTORE" ]]; then
-    PG_RESTORE="pg_restore"
+    if command -v pg_restore >/dev/null 2>&1; then
+        PG_RESTORE="pg_restore"
+    else
+        echo "ERROR: pg_restore not found. Install with: brew install libpq" >&2
+        exit 1
+    fi
 fi
 
 BACKUP_DIR="$HOME/Documents/esbvaktin-backups"
@@ -88,12 +100,19 @@ if [[ -d "$INBOX_DIR" ]]; then
     echo "Inbox backup: $INBOX_FILE ($INBOX_SIZE)"
 fi
 
-# Prune old backups (keep last RETENTION_DAYS days)
+# Prune old backups (keep last RETENTION_DAYS days).
+# Note: under launchd, macOS TCC may block directory listing on Documents
+# even though writes are permitted. Disable pipefail locally so a
+# blocked find doesn't fail the whole run.
+set +o pipefail
 PRUNED=0
 for pattern in "esbvaktin_*.dump" "inbox_*.tar.gz"; do
-    COUNT=$(find "$BACKUP_DIR" -name "$pattern" -mtime +${RETENTION_DAYS} -print -delete 2>/dev/null | wc -l | tr -d ' ')
-    PRUNED=$((PRUNED + COUNT))
+    COUNT=$(find "$BACKUP_DIR" -name "$pattern" -mtime +${RETENTION_DAYS} -print -delete 2>/dev/null | wc -l | tr -d ' \n')
+    if [[ "$COUNT" =~ ^[0-9]+$ ]]; then
+        PRUNED=$((PRUNED + COUNT))
+    fi
 done
+set -o pipefail
 if [[ "$PRUNED" -gt 0 ]]; then
     echo "Pruned $PRUNED file(s) older than $RETENTION_DAYS days"
 fi
