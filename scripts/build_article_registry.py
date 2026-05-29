@@ -23,7 +23,6 @@ SITE_REPORTS_DIR = Path.home() / "esbvaktin-site" / "_data" / "reports"
 REGISTRY_PATH = Path("data/article_registry.json")
 
 
-
 def _normalise_url(url: str) -> str:
     """Normalise URL for comparison."""
     return url.rstrip("/").lower()
@@ -43,6 +42,8 @@ def _load_analyses() -> dict[str, dict]:
             url = data.get("article_url", "")
             if not url:
                 continue
+            claims = data.get("claims", [])
+            substantive = sum(1 for c in claims if c.get("verdict", "") not in ("", "unverifiable"))
             key = _normalise_url(url)
             entries[key] = {
                 "url": url,
@@ -51,6 +52,8 @@ def _load_analyses() -> dict[str, dict]:
                 "source": data.get("article_source", ""),
                 "date": data.get("article_date", ""),
                 "analysis_dir": d.name,
+                "claims_in_report": len(claims),
+                "claims_substantive": substantive,
             }
         except (json.JSONDecodeError, KeyError):
             continue
@@ -131,6 +134,8 @@ def build_registry() -> list[dict]:
             "source": s.get("source") or a.get("source", ""),
             "date": s.get("date") or a.get("date") or d.get("date", ""),
             "analysis_dir": a.get("analysis_dir", ""),
+            "claims_in_report": a.get("claims_in_report"),
+            "claims_substantive": a.get("claims_substantive"),
             "in_analyses": key in analyses,
             "on_site": key in site,
             "in_db": key in db,
@@ -169,9 +174,7 @@ def main():
 
     if not args.no_write:
         REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
-        REGISTRY_PATH.write_text(
-            json.dumps(registry, indent=2, ensure_ascii=False, default=str)
-        )
+        REGISTRY_PATH.write_text(json.dumps(registry, indent=2, ensure_ascii=False, default=str))
 
     if args.check:
         match = check_url(args.check, registry)
@@ -189,11 +192,7 @@ def main():
         in_analyses = sum(1 for e in registry if e["in_analyses"])
         on_site = sum(1 for e in registry if e["on_site"])
         in_db = sum(1 for e in registry if e["in_db"])
-        all_three = sum(
-            1
-            for e in registry
-            if e["in_analyses"] and e["on_site"] and e["in_db"]
-        )
+        all_three = sum(1 for e in registry if e["in_analyses"] and e["on_site"] and e["in_db"])
         print(f"Total unique articles: {len(registry)}")
         print(f"  in data/analyses/:   {in_analyses}")
         print(f"  on site:             {on_site}")
@@ -201,19 +200,35 @@ def main():
         print(f"  in all three:        {all_three}")
 
         # Show gaps
-        site_only = [
-            e for e in registry if e["on_site"] and not e["in_analyses"]
-        ]
+        site_only = [e for e in registry if e["on_site"] and not e["in_analyses"]]
         if site_only:
             print(f"\nOn site but missing local analysis dir ({len(site_only)}):")
             for e in site_only:
                 print(f"  {e['title'][:60]}")
 
-        no_db = [e for e in registry if not e["in_db"]]
-        if no_db:
-            print(f"\nNot in DB sightings ({len(no_db)}):")
-            for e in no_db:
-                print(f"  {e['title'][:60]}")
+        no_db = [e for e in registry if not e["in_db"] and e["in_analyses"]]
+        # Split: "registration gap" (expected sightings but absent) vs
+        # "completed but empty" (analysis produced no substantive claims —
+        # working as designed, not a real orphan).
+        gap = [e for e in no_db if (e.get("claims_substantive") or 0) > 0]
+        empty = [e for e in no_db if (e.get("claims_substantive") or 0) == 0]
+
+        if gap:
+            print(f"\nNot in DB sightings — registration gap ({len(gap)}):")
+            for e in gap:
+                n = e.get("claims_in_report") or 0
+                s = e.get("claims_substantive") or 0
+                print(f"  {e['title'][:55]:55s}  ({s}/{n} substantive)")
+
+        if empty:
+            print(
+                f"\nNot in DB sightings — completed, no substantive claims "
+                f"({len(empty)}, informational):"
+            )
+            for e in empty:
+                n = e.get("claims_in_report") or 0
+                label = "0 extracted" if n == 0 else f"{n} all unverifiable"
+                print(f"  {e['title'][:55]:55s}  ({label})")
     else:
         print(f"Registry built: {len(registry)} articles → {REGISTRY_PATH}")
 

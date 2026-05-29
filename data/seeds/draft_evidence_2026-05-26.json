@@ -1,0 +1,88 @@
+[
+  {
+    "evidence_id": "ENERGY-LEGAL-004",
+    "domain": "legal",
+    "topic": "energy",
+    "statement": "Iceland's government formally decided on 12 May 2026 to withdraw from the Energy Charter Treaty (ECT), with withdrawal taking effect on 17 March 2027. The decision was led by Minister for the Environment, Energy and Climate Jóhann Páll Jóhannsson, who characterised the treaty as outdated and at odds with Iceland's climate and energy priorities. According to the ministry, no stakeholders argued in favour of continued membership during the consultation, and there was no evidence of Icelandic companies utilising the treaty's investor protection or dispute settlement mechanisms.",
+    "source_name": "Investment Arbitration Reporter",
+    "source_url": "https://www.iareporter.com/articles/iceland-withdraws-from-energy-charter-treaty/",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Iceland Review and The Reykjavík Grapevine (both 12–13 May 2026) corroborate the date and the minister's statement. A primary stjórnarráðið/utanríkisráðuneyti URL would strengthen this entry; the 17 March 2027 effective date follows from the ECT's standard 12-month notice provision under Article 47(2).",
+    "related_entries": [
+      "ENERGY-LEGAL-001",
+      "ENERGY-LEGAL-003"
+    ]
+  },
+  {
+    "evidence_id": "ENERGY-LEGAL-005",
+    "domain": "legal",
+    "topic": "energy",
+    "statement": "The Energy Charter Treaty (ECT) was signed in December 1994 and entered into force in April 1998. Iceland signed in 1995 and ratified in 2015. Under Article 47(2) of the treaty, withdrawal takes effect 12 months after written notification to the depositary. Article 47(3) — the 'sunset clause' — provides that the treaty's investment-protection provisions continue to apply for 20 years after withdrawal in respect of investments made before the withdrawal takes effect.",
+    "source_name": "Energy Charter Secretariat",
+    "source_url": "https://www.energycharter.org/process/energy-charter-treaty-1994/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Iceland's date of signature (1995) versus 1994 (the year of treaty conclusion) is occasionally conflated in popular reporting. The 20-year sunset under Article 47(3) is a notable obstacle to clean exit and a key reason for coordinated EU-level withdrawal initiatives.",
+    "related_entries": [
+      "ENERGY-LEGAL-004"
+    ]
+  },
+  {
+    "evidence_id": "ENERGY-INTL-001",
+    "domain": "legal",
+    "topic": "energy",
+    "statement": "Over 200 investor-state arbitration cases have been initiated under the Energy Charter Treaty since its entry into force, making it one of the most-invoked investment treaties globally. The European Union and a growing number of EU member states — including Germany, France, Spain, the Netherlands, Poland, Slovenia, Luxembourg, Denmark, Portugal, and Ireland — have notified withdrawal or have withdrawn from the treaty, primarily citing incompatibility with EU climate policy and concerns about fossil-fuel investor protection. The EU formally notified its withdrawal on 27 June 2024.",
+    "source_name": "Council of the European Union",
+    "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2024/06/27/energy-charter-treaty-eu-notifies-its-withdrawal/",
+    "source_type": "international_org",
+    "confidence": "high",
+    "caveats": "Case counts vary by source and date — UNCTAD's investment-dispute database lists over 160 known ECT cases, while broader counts including ICSID and ad-hoc tribunals exceed 200. The list of withdrawing states evolves; the figure of '10+ states' is conservative as of mid-2026.",
+    "related_entries": [
+      "ENERGY-LEGAL-004",
+      "ENERGY-LEGAL-005"
+    ]
+  },
+  {
+    "evidence_id": "EEA-LEGAL-031",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "statement": "Council Regulation (EU) 2022/576 of 8 April 2022 amended Regulation (EU) 833/2014 to introduce a port-access ban on Russian-flagged vessels as part of the EU's fifth sanctions package against Russia. Article 3ea(1) prohibits providing access to ports in the territory of the Union from 16 April 2022 to any vessel registered under the flag of Russia. Article 3ea(2) extends the prohibition to vessels that changed their Russian flag or their registration to a different flag or register after 24 February 2022. Article 3ea(4) and (5) provide exemptions for humanitarian operations, energy and food imports, nuclear fuel, and pharmaceutical products, subject to Member State authorisation.",
+    "source_name": "Official Journal of the European Union",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022R0576",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "Iceland is not bound by EU Common Foreign and Security Policy (CFSP) sanctions through the EEA Agreement — sanctions alignment with EU restrictive measures is a separate political commitment, typically implemented via Icelandic domestic regulation under lög nr. 93/2008 um framkvæmd alþjóðlegra þvingunaraðgerða. Iceland's specific transposition of the port-access measure (reportedly 3 May 2022) is not separately verified in this entry.",
+    "related_entries": []
+  },
+  {
+    "evidence_id": "PREC-LEGAL-003",
+    "domain": "precedent",
+    "topic": "agriculture",
+    "statement": "In Case E-3/22 EFTA Surveillance Authority v Iceland, the EFTA Court ruled on 29 July 2022 that Iceland had failed to fulfil its obligations under Regulation (EC) No 1069/2009 on animal by-products as incorporated into the EEA Agreement. The case concerned Iceland's collection, transport and disposal of animal by-products not intended for human consumption, which the Court found was not handled by methods that minimise potential risks to public and animal health as required by the regulation. The judgment followed a 2013 ESA fact-finding mission that had identified persistent infringements.",
+    "source_name": "EFTA Court",
+    "source_url": "https://eftacourt.int/cases/e-322/",
+    "source_type": "legal_text",
+    "confidence": "high",
+    "caveats": "The case demonstrates that EEA membership already imposes EU-aligned regulatory obligations on Iceland with binding enforcement via the EFTA Court — a relevant counterpoint to framings that EU accession would represent a fundamentally new constraint on Icelandic regulatory sovereignty. Distinct from AGRI-DATA-027, which concerns veterinary import controls on third-country goods.",
+    "related_entries": [
+      "AGRI-DATA-027",
+      "EEA-DATA-025"
+    ]
+  },
+  {
+    "evidence_id": "PREC-LEGAL-004",
+    "domain": "precedent",
+    "topic": "agriculture",
+    "statement": "Following Iceland's continued failure to comply with the 29 July 2022 judgment in Case E-3/22, the EFTA Surveillance Authority (ESA) referred a follow-up case to the EFTA Court on 27 March 2024 under Article 33 of the ESA-Court Agreement. By letter dated 25 June 2024, ESA noted that Iceland had not contested the declaration sought. On 22 October 2024 the EFTA Court issued a follow-up judgment confirming Iceland's continued non-compliance regarding the disposal of animal by-products.",
+    "source_name": "EFTA Surveillance Authority",
+    "source_url": "https://www.eftasurv.int/newsroom/updates/esa-refers-case-efta-court-concerning-icelands-failure-improve-disposal-animal",
+    "source_type": "international_org",
+    "confidence": "medium",
+    "caveats": "The 22 October 2024 EFTA Court judgment PDF (https://eftacourt.int/wp-content/uploads/2024/10/6_24_Judgment.pdf) provides the formal follow-up ruling. The 'June 2024' date referenced in Icelandic reporting corresponds to the 25 June 2024 ESA letter, not a freestanding reasoned opinion.",
+    "related_entries": [
+      "PREC-LEGAL-003",
+      "AGRI-DATA-027"
+    ]
+  }
+]

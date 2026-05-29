@@ -54,6 +54,7 @@ data/review/
 data/heimildin/
 data/backfill/
 data/drift_fix/
+data/evropuvefur/
 
 # Scratch / one-off scripts (underscore-prefix convention).
 # These are typically date-stamped generators kept locally for reproducibility

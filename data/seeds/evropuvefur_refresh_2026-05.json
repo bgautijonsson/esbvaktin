@@ -1,0 +1,590 @@
+[
+  {
+    "evidence_id": "CURR-DATA-019",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "cbi_reserve_balance_sheet_2025",
+    "statement": "At end-2025, the Central Bank of Iceland's balance sheet showed ISK 935 billion in foreign currency assets and ISK 367 billion in foreign currency liabilities, plus ISK 35 billion in gold, yielding a net positive foreign-currency position of ISK 602 billion. On the krona side, the CBI held only ISK 33 billion in assets against ISK 557 billion in liabilities, a net negative of ISK 524 billion in crowns, with ISK 78 billion in equity. Foreign exchange reserves constituted 97% of total CBI assets at end-2025.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Figures from CBI's own published accounts for end-2025. The 97% figure refers to foreign-currency reserves as a share of total CBI assets. Author: Gylfi Magnusson, professor of economics, University of Iceland. Further reading cited in the answer: Gylfi Magnusson (2014), 'Thrautalanveitandi rikja a sameiginlegu myntsvaedi', Timarit um stjornmal og stjornsyslu 2014:2, 613-642, https://doi.org/10.13177/irpa.a.2014.10.2.20.",
+    "related_entries": [
+      "CURR-DATA-006"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-020",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "cbi_state_loan_to_reserves",
+    "statement": "Of the Central Bank of Iceland's ISK 367 billion in foreign currency liabilities at end-2025, ISK 295 billion consisted of debt owed to the Icelandic state. The state itself borrowed in foreign currency on international markets and on-lent the proceeds to the CBI to build up the reserves. Magnusson notes that reserves financed this way can disappear when needed: if the state loses access to foreign credit markets, the reserves must be used to repay the state's underlying borrowings.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The ISK 295 billion figure is from CBI accounts as of end-2025. The fragility point (reserves must repay the state's borrowings if market access is lost) is the author's analytical assessment, not a primary-source statistic. Author: Gylfi Magnusson, professor of economics, University of Iceland.",
+    "related_entries": [
+      "CURR-DATA-006"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-021",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "cbi_operating_losses_2021_2024",
+    "statement": "The Central Bank of Iceland recorded operating losses in each of the four years 2021-2024, totalling ISK 58 billion, primarily due to currency mismatch (borrowing in high-interest kronas while holding low-interest foreign currencies) and a negative interest-rate differential; the krona was relatively stable over those years. By contrast, in 2018-2020 the CBI recorded cumulative gains of ISK 126 billion, when the krona weakened and the bank benefited from exchange-rate gains on its net foreign-currency position.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Figures drawn from CBI annual accounts. The author notes the krona was relatively stable in 2021-2024 (amplifying interest-mismatch losses) whereas earlier weakness in 2018-2020 generated exchange-rate profits. Author: Gylfi Magnusson, professor of economics, University of Iceland; further reading cited: Gylfi Magnusson (2014), Timarit um stjornmal og stjornsyslu 2014:2, 613-642.",
+    "related_entries": [
+      "CURR-DATA-006",
+      "CURRENCY-DATA-015"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-022",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "cbi_reserve_financing_cost_formula",
+    "statement": "Gylfi Magnusson provides a quantified rule of thumb for the cost of Iceland's foreign exchange reserves: a 1 percentage-point interest-rate spread between the CBI's krona funding cost and the return on its reserve assets corresponds to approximately ISK 6 billion per year, on the assumption that roughly ISK 600 billion of the reserve is financed in kronas.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "This is a simplified illustrative calculation given by the author ('til vidmidunar'), not a figure from official accounts. Actual costs also vary with exchange-rate movements (as the 2021-2024 vs. 2018-2020 comparison shows). The example uses a 1pp spread; realised spreads have been larger. Author: Gylfi Magnusson, professor of economics, University of Iceland.",
+    "related_entries": [
+      "CURR-DATA-006",
+      "CURRENCY-DATA-015"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-042",
+    "domain": "economic",
+    "topic": "precedents",
+    "subtopic": "snb_eur_chf_floor_collapse_2015",
+    "statement": "On 15 January 2015, the Swiss National Bank abandoned its EUR/CHF exchange-rate floor of 1.20 (the minimum price of one euro in francs). The franc surged immediately - by the end of that day the euro cost less than one franc - and the SNB lost about CHF 50 billion that day. Magnusson cites this as an illustration of the exchange-rate risk faced by central banks (like Iceland's) that hold a separate currency and reserves in other currencies.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The CHF ~50 billion one-day loss is the figure stated by the author. The author notes the Swiss case differs from Iceland's: the franc is a low-interest currency whereas the krona is high-interest, so Iceland faces negative carry in addition to exchange-rate risk. Author: Gylfi Magnusson, professor of economics, University of Iceland.",
+    "related_entries": [
+      "CURR-DATA-006"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-023",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "reserve_to_gdp_comparison_germany_us",
+    "statement": "Germany's foreign exchange reserves are about 50 times larger than Iceland's in absolute terms while its economy is roughly 200 times larger, implying Iceland holds reserves proportionally about four times larger relative to GDP than Germany. The United States holds reserves about 40 times larger than Iceland's while its economy is roughly 1,000 times larger, implying Iceland's reserve-to-GDP ratio is about 25 times the US level. Magnusson's explanation is that the euro and the dollar are the world's principal reserve currencies, whereas foreigners generally do not want to be paid in Icelandic kronur.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The headline multipliers (50x, 200x, 40x, 1000x) are the author's illustrative round-number estimates; the per-GDP ratios (4x Germany, 25x US) are arithmetic derivations from them. Precise figures depend on the date and data source. The underlying point - that small-currency countries bear disproportionate reserve costs - is well established in the optimal-currency-area literature. Author: Gylfi Magnusson, professor of economics, University of Iceland.",
+    "related_entries": [
+      "CURR-DATA-006",
+      "CURRENCY-DATA-019"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-024",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "iceland_sovereign_wealth_fund_empty",
+    "statement": "Iceland's proposed Sovereign Wealth Fund (Thjodarsjodurinn) is empty as of the answer's publication. Bills to establish the fund have been introduced in the Althingi but the matter has not progressed further.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Statement reflects the situation as of publication (25 March 2026). The author does not cite a specific bill number or parliamentary session. The fund's status may have changed since. Author: Gylfi Magnusson, professor of economics, University of Iceland.",
+    "related_entries": [],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-025",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "draghi_whatever_it_takes_ecb_2012",
+    "statement": "In 2012, ECB President Mario Draghi declared that the ECB would do 'whatever it takes' to ensure the market for euro-area sovereign bonds remained functional. Magnusson states this was enough to lower yield spreads and end the euro-area debt crisis that had begun with the debt difficulties of Greece, Ireland, and Mediterranean countries after 2008. He cites this as evidence that ECB membership would provide a lender-of-last-resort backstop for Icelandic banks that Iceland's independent central bank cannot replicate.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Hvad kostar ad halda uppi gjaldeyrisforda fyrir kronuna?\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=65443",
+    "source_date": "2026-03-25",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The causal claim (the Draghi statement was sufficient to compress spreads and end the crisis) is the author's interpretation; it is widely held but contested by economists who also credit later OMT/QE programmes and fiscal reforms. The author's own 2014 article on the lender-of-last-resort function in currency unions (Timarit um stjornmal og stjornsyslu 2014:2, 613-642, https://doi.org/10.13177/irpa.a.2014.10.2.20) is cited as further reading. Author: Gylfi Magnusson, professor of economics, University of Iceland.",
+    "related_entries": [
+      "CURR-DATA-016"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-026",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "denmark_krone_peg_economic_effect",
+    "statement": "Denmark negotiated an opt-out from euro adoption and formally retains the Danish krone, but in practice the krone is pegged to the euro at a fixed rate, meaning the economic effects of maintaining a separate currency are zero or near-zero for Denmark. According to economist Gylfi Magnússon (University of Iceland), Denmark's formal opt-out is thus a krone in name only.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Euro adoption and Denmark's krone peg\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=87971",
+    "source_date": "2026-03-09",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The author describes the economic effect of Denmark keeping its own currency as 'zero or near-zero' (Icelandic: 'engin eða nánast engin'), because the krone's exchange rate is fixed to the euro ('gengi dönsku krónunnar fest við evruna'). The source does not name the specific mechanism (e.g. ERM-II) by which the peg is maintained. No footnote citations for this characterisation; it is presented as the author's expert summary.",
+    "related_entries": [
+      "CURR-DATA-011"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-027",
+    "domain": "precedent",
+    "topic": "currency",
+    "subtopic": "sweden_2003_euro_referendum_no_erm_peg",
+    "statement": "Sweden rejected euro adoption in a 2003 national referendum and has taken no subsequent steps toward adopting the euro. Unlike Denmark, the Swedish krona is not pegged to the euro at a fixed rate, making Sweden a case of EU membership combined with a floating national currency — in contrast to Denmark's nominal-only currency independence.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Sweden's 2003 euro referendum and floating krona\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=87971",
+    "source_date": "2026-03-09",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The source states Sweden rejected the euro in a 2003 referendum, has taken no steps toward it ('hafa ekki tekið nein skref í átt að evru'), and that the Swedish krona — unlike the Danish krone — does not have a fixed exchange rate against the euro. The source does not discuss Sweden's legal opt-out status, ERM-II membership, or any de-facto EU acceptance of Sweden's position. No footnote citations provided.",
+    "related_entries": [
+      "CURR-DATA-012"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-028",
+    "domain": "precedent",
+    "topic": "currency",
+    "subtopic": "bulgaria_eu_to_euro_19_year_gap",
+    "statement": "Bulgaria joined the EU in 2007 but did not adopt the euro until early 2026 — a gap of approximately 19 years between EU accession and euro adoption. Bulgaria is the most recent EU member to adopt the euro, and the example is used by Gylfi Magnússon to illustrate that euro adoption for a new member state can take considerable time after accession (while noting other countries have been faster).",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Bulgaria: 19-year EU-to-euro timeline\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=87971",
+    "source_date": "2026-03-09",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The source states Bulgaria was the last country to adopt the euro, in early 2026 ('í ársbyrjun 2026'), and that it joined the EU in 2007 but did not adopt the euro until 2026, adding that 'other countries have been faster'. The ~19-year figure is arithmetic derived from the two dates given (2007 to 2026), not stated verbatim. No footnotes provided.",
+    "related_entries": [
+      "CURR-DATA-012",
+      "CURR-DATA-018"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-029",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "euro_adoption_pension_system_impact",
+    "statement": "According to economist Gylfi Magnússon (University of Iceland), if Iceland adopted the euro, interest rates would likely be somewhat lower, including yields on deposits and bonds, which would affect the pension system — described in the source as the single largest holder of ISK-denominated bonds. This is presented as the offsetting downside to lower borrowing costs for households.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Euro adoption and pension fund bond yields\" (University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=87971",
+    "source_date": "2026-03-09",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "This is the author's analytical judgement, hedged in the source ('Líklegt er' — it is likely; 'hefði áhrif' — would affect), not a modelled estimate. The claim that pension funds are the largest holder of ISK bonds ('langstærsta eiganda skuldabréfa í íslenskum krónum') is stated as fact but without a primary statistical citation. The source frames the effect on yields as the trade-off ('Á móti kæmi') against lower borrowing costs; it does not use the word 'negative', though reduced returns for bond-holders are directly entailed. No footnotes provided.",
+    "related_entries": [
+      "CURR-DATA-015",
+      "CURR-DATA-019"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-LEGAL-001",
+    "domain": "legal",
+    "topic": "currency",
+    "subtopic": "foreign_currency_accounting_legal_basis",
+    "statement": "Icelandic law generally requires companies to prepare accounts in Icelandic króna, but the Company Register (Ársreikningaskrá) may grant exemptions permitting use of a 'functional currency' (e.g. US dollars or euros). The legal basis is Articles 8–10 of the Act on Annual Accounts no. 3/2006, supplemented by Regulation 942/2014 issued under that Act. The Act and regulation specify the conditions for the exemption: it applies to companies whose primary operations are located abroad, or which derive a substantial share of their revenues in a foreign currency — criteria met by many Icelandic export companies, including those in fisheries, tourism, and energy sales to large industrial users.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Legal basis for foreign-currency accounting by Icelandic companies\" (prófessor í hagfræði við HÍ (University of Iceland), 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88690",
+    "source_date": "2026-05-27",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary legal sources cited in the answer: Act on Annual Accounts no. 3/2006, Arts. 8–10, and Regulation 942/2014. The exemption is granted by the Company Register on a case-by-case basis; the answer does not quantify how many companies have obtained it. The author notes there is generally no specific financial benefit to reporting in one currency over another — the gain is a clearer picture of operations, not cost savings.",
+    "related_entries": [
+      "CURR-DATA-011"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-030",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "export_pricing_in_foreign_currency",
+    "statement": "Most Icelandic export goods — including fish products, aluminium, and many other export commodities — are priced in foreign currencies (typically US dollars or euros) rather than in Icelandic króna. Professor Gylfi Magnússon attributes this to limited international interest in transacting in króna. As a structural consequence, Icelandic exporters tend to carry their revenues in foreign currency, making it economical to finance and report in that same currency; the author argues this is ordinary corporate behaviour (a British firm trading in dollars might likewise report in dollars) and that the phrase 'fleeing the króna' is propagandistic rather than describing anything unusual.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Icelandic export commodities priced in foreign currency\" (prófessor í hagfræði við HÍ (University of Iceland), 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88690",
+    "source_date": "2026-05-27",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Author's characterisation; the source says Icelandic exports are 'usually' (oftast) priced in foreign currency and names fish products, aluminium and 'many other' export goods — no statistical breakdown of the share of exports invoiced in each currency is given. The source states pricing (verðlagning), not settlement.",
+    "related_entries": [
+      "CURR-DATA-015"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "CURR-DATA-031",
+    "domain": "economic",
+    "topic": "currency",
+    "subtopic": "fx_loan_restrictions_post_2008",
+    "statement": "Before Iceland's 2008 banking collapse, it was common for Icelandic individuals and businesses with króna-denominated income and assets to borrow in foreign currencies to obtain lower interest rates, thereby taking on exchange-rate risk. When the króna weakened sharply after the crisis, the króna-equivalent value of these loans surged, and the practice 'ended badly'. In response, Icelandic banks were subsequently subject to strict restrictions on such foreign-currency lending. The author notes that foreign-currency loans from an Icelandic bank to an Icelandic export company — which has matching foreign-currency income — are not considered high-risk under this framework, since the exchange-rate risk lies with a borrower whose revenues are already in that currency.",
+    "source_name": "Evropuvefur - Gylfi Magnusson, \"Post-2008 restrictions on foreign-currency loans in Iceland\" (prófessor í hagfræði við HÍ (University of Iceland), 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88690",
+    "source_date": "2026-05-27",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The answer does not cite the specific law or regulation imposing the post-2008 restrictions on foreign-currency lending — it is presented as established regulatory fact. The contrast between restricted króna-income borrowers and permitted export-firm borrowers is the author's framing. The 2008 króna depreciation (~50% against the euro) is documented in CURR-DATA-001 and CURRENCY-DATA-016.",
+    "related_entries": [
+      "CURR-DATA-001",
+      "CURRENCY-DATA-016"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "EEA-DATA-034",
+    "domain": "precedent",
+    "topic": "eea_eu_law",
+    "subtopic": "gold_plating_origin_uk_1973",
+    "statement": "The term 'gold-plating' for going beyond the minimum requirements of an EU directive when transposing it into national law is not Icelandic in origin and is well known within the EU. According to Margrét Einarsdóttir (professor, Law Faculty, Reykjavik University), the earliest documented use of the term dates to the United Kingdom in 1973 — the same year the UK acceded to the European Communities (later the EU). Many EU member states have since adopted their own rules governing the use of gold-plating in national law.",
+    "source_name": "Evropuvefur — Margrét Einarsdóttir, 'Hvað er átt við með gullhúðun þegar EES-reglur eru innleiddar?' (professor, Law Faculty, Reykjavik University)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88538",
+    "source_date": "2026-03-18",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The UK-1973 origin rests on a single secondary source cited by the author: Squintani, Lorenzo, 'Beyond Minimum Harmonisation: Gold-Plating and Green-Plating of European Environmental Law', Cambridge University Press, 2019, p. 14. No independent corroboration is provided. NOTE: existing entry EEA-DATA-029 is the Vísindavefurinn twin of this same underlying answer (svar.php?id=88538) — the two share one author and source and are not independent corroboration of each other.",
+    "related_entries": [
+      "EEA-DATA-029"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "EEA-LEGAL-032",
+    "domain": "legal",
+    "topic": "eea_eu_law",
+    "subtopic": "iceland_gold_plating_disclosure_rules",
+    "statement": "Iceland has set specific procedural conditions on the use of gold-plating when transposing EEA acts, laid down in both Article 37(1) of Law 55/1991 on Parliamentary Procedures (þingsköp Alþingis) and Rule 8(b) of the Rules on Parliamentary Handling of EEA Affairs (reglur um þinglega meðferð EES-mála). Under Rule 8(b), the explanatory memorandum (greinargerð) accompanying a bill that transposes an EEA act must specify the extent to which the bill deviates from the original EU act, and must specifically identify and provide a justification where the bill goes beyond the act's minimum provisions.",
+    "source_name": "Evropuvefur — Margrét Einarsdóttir, 'Hvað er átt við með gullhúðun þegar EES-reglur eru innleiddar?' (professor, Law Faculty, Reykjavik University)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88538",
+    "source_date": "2026-03-18",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary sources cited in the answer: Law 55/1991 Article 37(1); Rule 8(b) of reglur um þinglega meðferð EES-mála (footnote 4). The author also cites an ML thesis by Sigrún Anna Gísladóttir, 'Gullhúðun EES-reglna' (28 May 2024). NOTE: existing entry EEA-DATA-029 is the Vísindavefurinn twin of this same underlying answer (svar.php?id=88538); EEA-DATA-029 mentions the January 2024 task force's transparency requirement but does NOT cite these specific statutory provisions. The two entries share one author and source.",
+    "related_entries": [
+      "EEA-DATA-029",
+      "EEA-DATA-018"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-LEGAL-005",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "article_49_teu_accession_procedure",
+    "statement": "Under Article 49 TEU, a Council decision to open EU accession negotiations requires the unanimous approval of all member states, following consultation with the European Commission and the consent of the European Parliament. Iceland's application was submitted on 16 July 2009; just under a year later, on 17 June 2010, the Council formally approved opening accession negotiations. If Iceland were to restart the process from scratch, all member states would again need to give unanimous consent before negotiations could begin.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, prófessor við lagadeild HR, „Skiptir einhverju máli hvort viðræður Íslands við ESB byrja upp á nýtt eða fyrri viðræðum er haldið áfram?\" (2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88600",
+    "source_date": "2026-04-17",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The Article 49 TEU procedural requirements (unanimous Council decision, after consultation with the Commission and consent of the European Parliament) are stated by the author with explicit reference to Art. 49 TEU, the primary source. The application date (16 July 2009) is stated directly. The author gives the Council decision date as „17. júní\" and describes it as „tæplega ári síðar\" (just under a year later) than the application — the year 2010 is entailed by that phrasing and corroborated by European Commission enlargement records and existing entry PREC-HIST-004. The author's footnote cites: EEAS readout of HRVP Kaja Kallas / Maroš Šefčovič meeting with FM Þorgerður Katrín Gunnarsdóttir (Brussels, sótt 16.04.2026); NordiskPost, 'The EU says Iceland's application is still valid before the August 29 vote' (sótt 16.04.2026).",
+    "related_entries": [
+      "PREC-HIST-004",
+      "PREC-HIST-005",
+      "PREC-DATA-037"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-043",
+    "domain": "political",
+    "topic": "precedents",
+    "subtopic": "iceland_application_status_suspended_not_withdrawn",
+    "statement": "As of April 2026, the European Commission's position is that Iceland's EU accession negotiations were only suspended — not formally withdrawn — when Iceland's government decided in 2013 to pause them. According to legal scholar Margrét Einarsdóttir, this means that if Iceland votes to continue negotiations in the 29 August 2026 referendum, the Article 49 TEU approval process (requiring unanimous consent of all member states) would not need to be repeated.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, prófessor við lagadeild HR, „Skiptir einhverju máli hvort viðræður Íslands við ESB byrja upp á nýtt eða fyrri viðræðum er haldið áfram?\" (2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88600",
+    "source_date": "2026-04-17",
+    "source_type": "expert_analysis",
+    "confidence": "medium",
+    "caveats": "The author states the Commission's position as a recent development („nú hefur komið í ljós\"), noting that since 2013 there had been ongoing speculation about whether the negotiations were merely suspended or the application formally withdrawn. The claim rests on a single EEAS meeting readout plus one secondary news article, and the practical implication — that Article 49 TEU approval can be skipped — is the Commission's interpretation and the author's legal inference, neither of which has been tested in a formal legal proceeding. Confidence set to medium accordingly: the underlying fact is asserted by a named legal expert but is a fast-moving current-events claim on thin secondary sourcing. Footnote cites: EEAS readout of the HRVP Kaja Kallas / Maroš Šefčovič meeting with FM Þorgerður Katrín Gunnarsdóttir (Brussels, sótt 16.04.2026); NordiskPost, 'The EU says Iceland's application is still valid before the August 29 vote' (sótt 16.04.2026).",
+    "related_entries": [
+      "PREC-HIST-004",
+      "PREC-HIST-005"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-LEGAL-006",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "danish_summer_house_exemption_1972",
+    "statement": "Denmark's 1972 Accession Treaty to the European Communities included a permanent exemption — Declaration No. 17 — allowing Denmark to impose a requirement of five years' residency in Denmark before purchasing a holiday/summer home. This is a derogation from the fundamental EU principle of free movement of capital. The exemption is permanent in nature, not time-limited, and was secured in the accession treaty itself.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in the answer: Declaration No. 17 to the Accession Treaty between Denmark, the United Kingdom, Ireland and Norway with the then EEC member states, dated 22 January 1972 (treaties index at eur-lex.europa.eu/collection/eu-law/treaties/treaties-accession.html). The derogation is from free movement of capital, not free movement of persons.",
+    "related_entries": [
+      "PREC-HIST-020"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-LEGAL-007",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "malta_fishing_exclusion_zone_25nm_2003",
+    "statement": "Malta's 2003 EU Accession Treaty included a special protective measure granting Maltese fishermen de facto exclusive access to home fishing grounds within 25 nautical miles of Maltese coasts. Malta also obtained a permanent exemption on acquisition of certain real estate — similar in kind to Denmark's summer-house exemption but broader in scope. These provisions were negotiated at accession and have the status of primary treaty law.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary sources cited in the answer: Koen Van den Bossche, „EU enlargement and fisheries: A legal analysis steps towards the re-nationalisation of EU maritime waters\", Jurisprudencija, 2005, t. 72(64), pp. 126–127 (for the 25 nm measure); and the 2003 Act of Accession with Ivna Godžirov, „Restrictions on the acquisition of certain categories of real estate...\", pp. 853–854 (for the real-estate exemption). The answer characterises the 25 nm access as 'de facto' exclusive (í framkvæmd) rather than a formal exclusion zone.",
+    "related_entries": [
+      "PREC-HIST-020"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-LEGAL-008",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "article_349_tfeu_remote_regions",
+    "statement": "Article 349 of the Treaty on the Functioning of the European Union (TFEU) legally enshrines special status for outermost/remote regions of the EU that are isolated and harsh to inhabit, allowing them to enjoy special treatment in EU rules. Within the Common Fisheries Policy, special protective measures take account of the position of such peripheral regions — for example Madeira and the Canary Islands — and allow certain islands to restrict access of fishing vessels from other EU member states within 100 nautical miles. These measures are temporary in legal form but have been repeatedly extended, most recently until the end of 2032.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in the answer: DG MARE, Commission proposal to extend the 'access to waters' regime under the Common Fisheries Policy, 5 July 2021. The 100 nm restriction is specific to designated peripheral regions (Madeira, Canary Islands). The answer treats Iceland's claim to special treatment separately (agriculture, fisheries) rather than as an Article 349 'outermost region' case — Iceland is not an EU outermost region — but cites the EU's recognition that remote/harsh areas can merit special status.",
+    "related_entries": [],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-LEGAL-009",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "finland_sweden_1994_agricultural_subsidy_62nd_parallel",
+    "statement": "Article 142 of the 1994 Accession Treaty (Norway, Austria, Finland, Sweden) permits Sweden and Finland to grant special national agricultural subsidies for farming areas located north of the 62nd parallel of north latitude — a derogation from the general prohibition on such state aid under the Common Agricultural Policy (CAP). The provision is relevant to Iceland because all of Iceland lies north of the 62nd parallel.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source as cited in the answer's footnote: Article 142 of the Accession Treaty of Norway, Austria, Finland and Sweden, dated 29 August 1994. (The answer's footnote gives 29 August 1994; the treaty was signed at Corfu on 24 June 1994 — date per the source is retained.) Norway did not ultimately join, so the provision is operative for Sweden and Finland only. The answer also mentions a separate tailored 'arctic/northern agriculture' (heimskautalandbúnaður/norðurslóðalandbúnaður) provision for Finnish and Swedish conditions in the same treaty.",
+    "related_entries": [
+      "PREC-HIST-018"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-044",
+    "domain": "political",
+    "topic": "precedents",
+    "subtopic": "norway_1994_fisheries_negotiations_failed",
+    "statement": "Norway did not achieve its negotiating objectives regarding exemptions from the EU Common Fisheries Policy (CFP) during its 1994 accession negotiations. Legal scholar Stefán Már Stefánsson documents Norway's negotiating positions and concludes that the 1994 negotiations did not deliver the CFP exemptions Norway had sought.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in the answer: Stefán Már Stefánsson, „Evrópusambandsréttur — Lissabons-sáttmálinn með áherslu á fiski- og auðlindamál og ríkjasambandið\", Reykjavík 2014, pp. 221–225 and 231 (Norway's negotiating objectives). The answer does NOT assert a causal link between this negotiating outcome and the 1994 referendum result, nor does it cite the referendum vote share — those have been removed from the draft. PREC-HIST-001 covers the 1994 referendum result (52.2% No) separately.",
+    "related_entries": [
+      "PREC-HIST-001"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-LEGAL-010",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "denmark_maastricht_opt_outs_edinburgh_1992",
+    "statement": "Denmark secured permanent exemptions from provisions of the Maastricht Treaty (1993), notably regarding participation in Economic and Monetary Union (the euro) and in security and defence policy, following the Edinburgh Decision of the European Council in December 1992. These are permanent derogations from primary EU law, not transitional periods. Denmark itself later decided, by referendum following Russia's invasion of Ukraine, to participate in the defence and security policy; the EMU exemption remained in force.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in the answer: the Edinburgh European Council Decision, December 1992, later confirmed in the Lisbon Treaty (the answer does not cite specific protocol numbers; Denmark's opt-outs are in Protocol No. 22 to the Lisbon Treaty, with the Schengen position in Protocol No. 19). The answer states Denmark reversed the defence opt-out by popular vote after Russia's invasion of Ukraine but does not give the referendum date (it was 1 June 2022); the EMU exemption was not part of that vote.",
+    "related_entries": [],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-LEGAL-011",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "ireland_jfs_schengen_opt_out_lisbon",
+    "statement": "Ireland has a permanent exemption from the EU's Area of Freedom, Security and Justice (Title V of Part Three of the TFEU) and is therefore not a participant in the Schengen Agreement on the abolition of border controls. The exemption is permanent and not time-limited, making Ireland an example of a member state retaining border-control arrangements outside Schengen while in the EU.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary sources cited in the answer: Protocol No. 19 (Schengen acquis) and Protocol No. 21 (position of the UK and Ireland in respect of the Area of Freedom, Security and Justice) to the Lisbon Treaty; Title V of Part Three of the TFEU. (The case-by-case opt-in to specific measures under Protocol 21 is standard background, not stated in the answer.)",
+    "related_entries": [],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-045",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "poland_hungary_2004_transition_periods_land",
+    "statement": "Poland and Hungary, upon joining the EU in 2004, obtained transition (adjustment) periods in two areas: agricultural policy and restrictions on foreign nationals acquiring land. Such transition periods are common negotiating outcomes in EU accession treaties, delaying full application of single-market rules and giving new member states time to adapt, with a legal basis in each Act of Accession.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in the answer: the 2004 Accession Treaties for Poland and Hungary (agriculture and foreign land acquisition). The answer does not specify the durations of the transition periods, which would need confirmation from the primary Acts of Accession. (Comparable land-acquisition restrictions secured by other 2004 entrants are not stated in this answer.)",
+    "related_entries": [
+      "PREC-DATA-023"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-046",
+    "domain": "legal",
+    "topic": "precedents",
+    "subtopic": "spain_portugal_1986_long_transition_periods",
+    "statement": "Spain and Portugal, upon joining the European Community in 1986, were granted long transition (adjustment) periods for adapting to EU rules on both agriculture and fisheries. The Acts of Accession for Spain and Portugal are primary-law precedents for how the EU accommodates significant sectoral gaps between new and existing member states.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in the answer's footnote: Accession Treaty of Spain and Portugal, 1985 (agriculture, fisheries); accession took effect 1986. The answer describes the periods only as 'long' (langan aðlögunartíma) — it does not quantify their length or claim they were among the longest in EU history; quantitative detail (e.g. Spain's roughly 10-year fisheries transition) is not from this source.",
+    "related_entries": [
+      "PREC-LEGAL-001",
+      "PREC-DATA-036"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-047",
+    "domain": "political",
+    "topic": "precedents",
+    "subtopic": "marta_kos_iceland_fisheries_commission_understanding",
+    "statement": "Marta Kos, the EU's Enlargement Commissioner, stated publicly that there is understanding within the European Commission for Iceland's special position in fisheries. She emphasised, however, that the final decision on any accession treaty with Iceland is taken by the EU member states themselves — so neither she nor anyone else can promise in advance whether or what kind of fisheries exemption Iceland would obtain; only accession negotiations can reveal that.",
+    "source_name": "Evrópuvefurinn — Margrét Einarsdóttir, „Er eitthvað um að semja þegar ríki gera aðildarsamning við ESB?\" (prófessor við lagadeild HR / Reykjavík University, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88601",
+    "source_date": "2026-04-21",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in the answer's footnote: interview with Marta Kos on RÚV's programme Torgið, 24 March 2026, relayed through the Evrópuvefurinn answer. This is a political signal of sympathy from a senior EU official, not a binding commitment — the answer stresses that accession terms are decided by the member states.",
+    "related_entries": [
+      "PREC-DATA-037"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-048",
+    "domain": "political",
+    "topic": "precedents",
+    "subtopic": "copenhagen_criteria_1993",
+    "statement": "At the Copenhagen European Council summit in 1993, EU member states adopted the 'Copenhagen criteria' — three foundational conditions any candidate country must meet to join the EU: (1) stable institutions guaranteeing democracy, the rule of law, human rights, and protection of minorities; (2) a functioning market economy with the capacity to cope with competition and market forces within the EU; and (3) the ability to take on and effectively implement EU membership obligations, including adherence to the aims of political, economic, and monetary union. The criteria were adopted against the backdrop of the anticipated post-communist Eastern European enlargement, when many former Soviet-bloc states sought EU membership and the Union had 15 members.",
+    "source_name": "Evropuvefur - Margret Einarsdottir, \"Copenhagen criteria and Iceland's accession context\" (professor, Reykjavik University Law Faculty, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88602",
+    "source_date": "2026-04-17",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The three criteria are stated here in summary form as presented by the expert. Primary source: Conclusions of the Copenhagen European Council, June 1993. The author uses these criteria to contextualise why post-communist countries had to undergo extensive legal adaptation ('accession negotiations as adaptation negotiations') while Iceland, already an EEA and Schengen member, does not. The statement does not assert the criteria were created solely for the post-communist enlargement — only that they were adopted in that context.",
+    "related_entries": [
+      "PREC-DATA-024",
+      "PREC-DATA-023",
+      "PREC-HIST-004",
+      "PREC-DATA-004"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "PREC-DATA-049",
+    "domain": "political",
+    "topic": "precedents",
+    "subtopic": "iceland_no_changes_before_referendum_agreement",
+    "statement": "During Iceland's EU accession negotiations, which opened in 2010, Icelandic authorities and the EU agreed that Iceland would not undertake changes to public institutions or implement legislative changes resulting from membership until after a public referendum had been held. This specific procedural commitment — freezing membership-consequent reforms until a democratic mandate was secured — is documented in the Icelandic Ministry of Foreign Affairs report 'Aðildarviðræður Íslands og ESB: Framvinda og staða' (April 2013), page 8.",
+    "source_name": "Evropuvefur - Margret Einarsdottir, \"Iceland's pre-referendum reform freeze agreement\" (professor, Reykjavik University Law Faculty, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88602",
+    "source_date": "2026-04-17",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary source cited in footnote 2: Icelandic Ministry of Foreign Affairs report, April 2013, 'Aðildarviðræður Íslands og ESB. Framvinda og staða', p. 8. This is a specific procedural arrangement reached between Iceland and the EU during negotiations, not a general EU accession rule. The negotiations were formally suspended in 2013 and Iceland withdrew its application in 2015.",
+    "related_entries": [
+      "PREC-HIST-004",
+      "PREC-DATA-037",
+      "PREC-DATA-024"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "SOV-DATA-037",
+    "domain": "political",
+    "topic": "sovereignty",
+    "subtopic": "eu_official_languages_founding",
+    "statement": "The European Union (then the European Community) was founded in 1957, and it was decided that its official languages would be the six that were official in the founding member states, each accorded equal status. As new member states have joined, their official languages have been added, bringing the total to 24 official languages, four times the original number. Additionally, certain languages spoken in member states hold semi-official status, such as Catalan, Galician, and Basque in Spain.",
+    "source_name": "Evropuvefur - Eirikur Rognvaldsson, \"Hver eru opinber tungumal ESB og hver er malstefna sambandsins i stuttu mali?\" (Professor Emeritus of Icelandic Linguistics, University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88509",
+    "source_date": "2026-03-06",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Author cites the EU's own Languages page (https://european-union.europa.eu/principles-countries-history/languages_en) and Gauti Kristmannsson's 2011 article in Ritið (vol 11, no 3, pp. 49-67). The semi-official status of Catalan, Galician, and Basque applies within Spain; these languages do not enjoy the same translation rights as the 24 official languages at EU level. The '24, four times the original' figure reflects the author's March 2026 statement.",
+    "related_entries": [
+      "SOV-DATA-032"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "SOV-LEGAL-034",
+    "domain": "legal",
+    "topic": "sovereignty",
+    "subtopic": "eu_language_equality_ep_resolution_2018",
+    "statement": "In 2017 the EU commissioned a detailed report on language equality in the digital age, and in autumn the following year the European Parliament adopted a resolution on the same subject (11 September 2018). The resolution emphasises the necessity of ensuring that speakers of all European languages can use their languages on an equal basis. The EU subsequently funded the 'European Language Equality' project, which reached most European nations and in which Iceland participated.",
+    "source_name": "Evropuvefur - Eirikur Rognvaldsson, \"Hver eru opinber tungumal ESB og hver er malstefna sambandsins i stuttu mali?\" (Professor Emeritus of Icelandic Linguistics, University of Iceland, 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88509",
+    "source_date": "2026-03-06",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "Primary sources listed in the answer's references: the European Parliament resolution of 11 September 2018 on language equality in the digital age (P8_TA(2018)0332), the European Parliament DG for Parliamentary Research Services report (2017) 'Language equality in the digital age' (DOI 10.2861/136527), and the European Language Equality project (https://european-language-equality.eu). These are verifiable official EU documents. The resolution is non-binding (a Parliament own-initiative resolution) and does not create enforceable language rights.",
+    "related_entries": [
+      "SOV-DATA-032",
+      "SOV-DATA-034"
+    ],
+    "last_verified": "2026-05-28"
+  },
+  {
+    "evidence_id": "SOV-DATA-038",
+    "domain": "precedent",
+    "topic": "sovereignty",
+    "subtopic": "irish_official_eu_language_2007",
+    "statement": "Irish (Gaelic) was granted official EU language status in 2007, which scholar Gauti Kristmannsson described as 'probably the most powerful vitamin injection Irish has received in decades, if not centuries.' Professor Eiríkur Rögnvaldsson cites this precedent as evidence that EU membership strengthens rather than weakens a minority language: if a language has official EU status, the country's representatives may speak it in EU forums and meetings are interpreted between that language and others.",
+    "source_name": "Evrópuvefur — Eiríkur Rögnvaldsson, prófessor emeritus í íslenskri málfræði, University of Iceland (March 2026)",
+    "source_url": "https://www.evropuvefur.is/svar.php?id=88510",
+    "source_date": "2026-03-05",
+    "source_type": "expert_analysis",
+    "confidence": "high",
+    "caveats": "The Kristmannsson quotation originates in: Gauti Kristmannsson (2011), 'Móðurmálshreyfingin og málstefna Evrópusambandsins,' Ritið: tímarit Hugvísindastofnunar, 11(3), pp. 49–67. Irish had treaty/limited-language arrangements before 2007; the 2007 date marks the move to full official working-language status. The analogy to Icelandic is the author's inference — no formal proposal for Icelandic as an EU official language has been tabled. The source describes meetings being interpreted; it does not assert that 'all documents must be translated' into a newly official language.",
+    "related_entries": [
+      "SOV-DATA-032",
+      "SOV-DATA-034"
+    ],
+    "last_verified": "2026-05-28"
+  }
+]

@@ -31,6 +31,7 @@ BATCH_SIZE = 30
 
 def _get_connection():
     from esbvaktin.ground_truth.operations import get_connection
+
     return get_connection()
 
 
@@ -65,8 +66,8 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
         "  Ef tölur eru í frumtextanum, haltu þeim nákvæmum. Ef aðeins er um staðreynd að ræða,",
         "  nægir ein setning.",
         "- **source_description_is**: 15\u201330 orð. Stutt lýsing á upprunastofnun/útgefanda.",
-        '  Dæmi: «Hagstofa Íslands er opinber tölfræðistofnun sem gefur reglulega út hagtölur'
-        ' um efnahag, fólksfjölda og samfélag.»',
+        "  Dæmi: «Hagstofa Íslands er opinber tölfræðistofnun sem gefur reglulega út hagtölur"
+        " um efnahag, fólksfjölda og samfélag.»",
         "- **Unicode skylda**: Sérhver íslensk setning VERÐUR að innihalda stafi úr",
         "  {þ, ð, á, é, í, ó, ú, ý, æ, ö}. Ef setning vantar þessa stafi er hún gölluð.",
         "- **ESB-hugtök**: Notaðu samræmd íslensk hugtök (sjá Block F hér að neðan).",
@@ -100,28 +101,30 @@ def _write_batch_context(batch: list[dict], batch_num: int) -> Path:
             lines.append("")
 
     # Output format
-    lines.extend([
-        "---\n",
-        "## Úttakssnið",
-        "",
-        f"Skrifaðu JSON-fylki í `_output_batch_{batch_num}.json` (hrátt JSON, engin markdown-umbúðir).",
-        "Hvert atriði:",
-        "",
-        "```json",
-        "{",
-        '  "evidence_id": "FISH-DATA-001",',
-        '  "statement_is": "Íslensk samantekt, 1-2 setningar.",',
-        '  "source_description_is": "Stutt lýsing á upprunastofnun, 15-30 orð."',
-        "}",
-        "```",
-        "",
-        "**Reglur um source_description_is:**",
-        "- Sama stofnun getur birst mörgum sinnum í lotunni.",
-        "  Skrifaðu SÖMU lýsinguna fyrir sömu stofnun í hvert skipti (samræmi).",
-        "- Ef stofnunin er þekkt (Hagstofa Íslands, Eurostat, OECD, Alþingi)",
-        "  — stutt og þekkt lýsing. Ef minna þekkt — lýstu hlutverki hennar.",
-        "",
-    ])
+    lines.extend(
+        [
+            "---\n",
+            "## Úttakssnið",
+            "",
+            f"Skrifaðu JSON-fylki í `_output_batch_{batch_num}.json` (hrátt JSON, engin markdown-umbúðir).",
+            "Hvert atriði:",
+            "",
+            "```json",
+            "{",
+            '  "evidence_id": "FISH-DATA-001",',
+            '  "statement_is": "Íslensk samantekt, 1-2 setningar.",',
+            '  "source_description_is": "Stutt lýsing á upprunastofnun, 15-30 orð."',
+            "}",
+            "```",
+            "",
+            "**Reglur um source_description_is:**",
+            "- Sama stofnun getur birst mörgum sinnum í lotunni.",
+            "  Skrifaðu SÖMU lýsinguna fyrir sömu stofnun í hvert skipti (samræmi).",
+            "- Ef stofnunin er þekkt (Hagstofa Íslands, Eurostat, OECD, Alþingi)",
+            "  — stutt og þekkt lýsing. Ef minna þekkt — lýstu hlutverki hennar.",
+            "",
+        ]
+    )
 
     # Append Icelandic quality blocks
     if _BLOCKS_PATH.exists():
@@ -139,9 +142,16 @@ def prepare() -> None:
     conn.close()
 
     cols = [
-        "evidence_id", "domain", "topic", "subtopic",
-        "statement", "source_name", "source_url", "source_type",
-        "confidence", "caveats",
+        "evidence_id",
+        "domain",
+        "topic",
+        "subtopic",
+        "statement",
+        "source_name",
+        "source_url",
+        "source_type",
+        "confidence",
+        "caveats",
     ]
     entries = [dict(zip(cols, row)) for row in rows]
 
@@ -154,39 +164,34 @@ def prepare() -> None:
     WORK_DIR.mkdir(parents=True, exist_ok=True)
 
     # Split into batches
-    batches = [
-        entries[i : i + BATCH_SIZE]
-        for i in range(0, len(entries), BATCH_SIZE)
-    ]
+    batches = [entries[i : i + BATCH_SIZE] for i in range(0, len(entries), BATCH_SIZE)]
 
     manifest = []
     for batch_num, batch in enumerate(batches, 1):
         path = _write_batch_context(batch, batch_num)
-        manifest.append({
-            "batch": batch_num,
-            "context_file": str(path),
-            "evidence_ids": [e["evidence_id"] for e in batch],
-            "count": len(batch),
-        })
+        manifest.append(
+            {
+                "batch": batch_num,
+                "context_file": str(path),
+                "evidence_ids": [e["evidence_id"] for e in batch],
+                "count": len(batch),
+            }
+        )
         print(f"  Batch {batch_num}: {len(batch)} entries → {path}")
 
     # Write manifest
     manifest_path = WORK_DIR / "_manifest.json"
-    manifest_path.write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
 
     # Write flat entries data for reference
     data_path = WORK_DIR / "_entries_data.json"
-    data_path.write_text(
-        json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    data_path.write_text(json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8")
 
     print(f"\nManifest: {manifest_path}")
     print(f"Entries data: {data_path}")
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("NEXT STEP: Run subagent for each batch.")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print()
     print("For each batch, launch a Claude Code subagent:")
     for batch_num, batch in enumerate(batches, 1):
@@ -235,6 +240,7 @@ def write() -> None:
     skipped = 0
     errors: list[tuple[str, str]] = []
     ascii_warnings: list[str] = []
+    proofread_enabled = True  # disabled on first failure (e.g. broken Greynir grammar)
 
     for batch_info in manifest:
         batch_num = batch_info["batch"]
@@ -279,27 +285,42 @@ def write() -> None:
                 ascii_warnings.append(f"{eid}:desc")
                 print(f"    WARNING: {eid} source_description_is lacks Icelandic chars")
 
-            # Optional GreynirCorrect post-processing
-            try:
-                from esbvaktin.corrections.greynir import (
-                    apply_fixes_to_text,
-                    check_with_library,
-                )
+            # Optional GreynirCorrect post-processing (best-effort; the IS text is
+            # already composed by the evidence-summariser agent). Degrade gracefully
+            # on any failure — e.g. a broken/missing Greynir.grammar file raises
+            # reynir.grammar.GrammarError at parser init, which must not abort the
+            # essential DB write. Disable after the first failure to avoid retrying
+            # a broken parser for every entry.
+            if proofread_enabled:
+                try:
+                    from esbvaktin.corrections.greynir import (
+                        apply_fixes_to_text,
+                        check_with_library,
+                    )
 
-                for label, text in [("statement_is", statement_is), ("source_description_is", source_desc_is)]:
-                    if text and len(text) > 10:
-                        sents = [(text, 1)]
-                        results = check_with_library(sents)
-                        if results:
-                            fixed, count = apply_fixes_to_text(text, results)
-                            if count > 0:
-                                print(f"    GreynirCorrect: {count} fix(es) for {label} ({eid})")
-                                if label == "statement_is":
-                                    statement_is = fixed
-                                else:
-                                    source_desc_is = fixed
-            except ImportError:
-                pass  # corrections package not installed
+                    for label, text in [
+                        ("statement_is", statement_is),
+                        ("source_description_is", source_desc_is),
+                    ]:
+                        if text and len(text) > 10:
+                            sents = [(text, 1)]
+                            results = check_with_library(sents)
+                            if results:
+                                fixed, count = apply_fixes_to_text(text, results)
+                                if count > 0:
+                                    print(
+                                        f"    GreynirCorrect: {count} fix(es) for {label} ({eid})"
+                                    )
+                                    if label == "statement_is":
+                                        statement_is = fixed
+                                    else:
+                                        source_desc_is = fixed
+                except Exception as e:  # ImportError, GrammarError, etc.
+                    proofread_enabled = False
+                    print(
+                        f"    GreynirCorrect proofread unavailable ({type(e).__name__}); "
+                        "writing agent text as-is for all remaining entries"
+                    )
 
             # Update DB
             try:
@@ -326,9 +347,9 @@ def write() -> None:
 
     conn.close()
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("ICELANDIC SUMMARY GENERATION COMPLETE")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print(f"  Updated:  {updated}")
     print(f"  Skipped:  {skipped}")
     if ascii_warnings:
@@ -345,18 +366,22 @@ def write() -> None:
 
 # ── Status ─────────────────────────────────────────────────────────────
 
+
 def status() -> None:
     """Show IS coverage and batch progress."""
     conn = _get_connection()
 
     total = conn.execute("SELECT COUNT(*) FROM evidence").fetchone()[0]
-    with_is = conn.execute("SELECT COUNT(*) FROM evidence WHERE statement_is IS NOT NULL").fetchone()[0]
-    with_desc = conn.execute("SELECT COUNT(*) FROM evidence WHERE source_description_is IS NOT NULL").fetchone()[0]
+    with_is = conn.execute(
+        "SELECT COUNT(*) FROM evidence WHERE statement_is IS NOT NULL"
+    ).fetchone()[0]
+    with_desc = conn.execute(
+        "SELECT COUNT(*) FROM evidence WHERE source_description_is IS NOT NULL"
+    ).fetchone()[0]
 
     # Per-topic breakdown
     topic_rows = conn.execute(
-        "SELECT topic, COUNT(*), COUNT(statement_is) "
-        "FROM evidence GROUP BY topic ORDER BY topic"
+        "SELECT topic, COUNT(*), COUNT(statement_is) FROM evidence GROUP BY topic ORDER BY topic"
     ).fetchall()
 
     conn.close()
@@ -364,9 +389,9 @@ def status() -> None:
     pct = with_is / total * 100 if total else 0
     desc_pct = with_desc / total * 100 if total else 0
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print("ICELANDIC EVIDENCE SUMMARY STATUS")
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
     print(f"  Total entries:       {total}")
     print(f"  With statement_is:   {with_is}/{total} ({pct:.0f}%)")
     print(f"  With description_is: {with_desc}/{total} ({desc_pct:.0f}%)")
@@ -384,14 +409,14 @@ def status() -> None:
         if manifest_path.exists():
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             done = sum(
-                1 for b in manifest
-                if (WORK_DIR / f"_output_batch_{b['batch']}.json").exists()
+                1 for b in manifest if (WORK_DIR / f"_output_batch_{b['batch']}.json").exists()
             )
             pending = len(manifest) - done
             print(f"\n  Batches: {done} done, {pending} pending (of {len(manifest)})")
 
 
 # ── Main ───────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     if len(sys.argv) < 2:
