@@ -456,13 +456,9 @@ fullyrðinguna ásamt matinu:
 ]
 ```
 
-{_TERMINOLOGY_IS}
-
-## Fullyrðingar og heimildir
-
-{claims_section}"""
+{_TERMINOLOGY_IS}"""
     else:
-        context = f"""# Claim Assessment Task
+        context = """# Claim Assessment Task
 
 You are assessing factual claims from an article about Iceland's EU membership
 referendum against curated evidence from the Ground Truth Database.
@@ -517,37 +513,39 @@ claim fields plus the assessment fields:
 
 ```json
 [
-  {{
-    "claim": {{
+  {
+    "claim": {
       "claim_text": "...",
       "original_quote": "...",
       "category": "...",
       "claim_type": "...",
       "epistemic_type": "...",
       "confidence": 0.9
-    }},
+    },
     "verdict": "partially_supported",
     "explanation": "...",
     "supporting_evidence": ["FISH-DATA-001"],
     "contradicting_evidence": ["FISH-LEGAL-003"],
     "missing_context": "...",
     "confidence": 0.8
-  }}
+  }
 ]
 ```
 
-## Claims and Evidence
-
-{claims_section}"""
-    # Append parliamentary speech context if available
-    if speech_context:
-        context += f"\n\n{speech_context}\n"
-
-    # Append full Icelandic quality blocks for assessment
+"""
+    # cost-02: assemble the invariant instruction + Icelandic quality block as a
+    # contiguous, byte-identical PREFIX (cacheable for cost-01), then the per-article
+    # claims, prior verdicts, and speech excerpts as the variable suffix. The claims
+    # still follow the rules below the block, so the assessment itself is unchanged.
     if language == "is":
         blocks = _load_icelandic_blocks()
         if blocks:
-            context += f"\n\n{blocks}\n"
+            context += f"\n\n{blocks}"
+        context += f"\n\n## Fullyrðingar og heimildir\n\n{claims_section}"
+    else:
+        context += f"\n\n## Claims and Evidence\n\n{claims_section}"
+    if speech_context:
+        context += f"\n\n{speech_context}\n"
 
     output_path = output_dir / "_context_assessment.md"
     output_path.write_text(context, encoding="utf-8")
