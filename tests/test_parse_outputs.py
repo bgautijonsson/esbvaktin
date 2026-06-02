@@ -374,3 +374,59 @@ class TestParseTranslation:
         f.write_text("\n\n  Halló  \n\n")
         result = parse_translation(f)
         assert result == "Halló"
+
+
+class TestHearsayAssessments:
+    """Hearsay claims are short-circuited to UNVERIFIABLE before the assessor and
+    excluded from _assessments.json; they must be persisted separately so they
+    don't vanish from the report (cost-04)."""
+
+    def _hearsay_assessment(self):
+        from esbvaktin.pipeline.models import (
+            Claim,
+            ClaimAssessment,
+            ClaimType,
+            EpistemicType,
+            Verdict,
+        )
+
+        claim = Claim(
+            claim_text="Sagt er að ráðherra hafi lofað breytingum",
+            original_quote="Heimildir herma...",
+            category="sovereignty",
+            claim_type=ClaimType.STATISTIC,
+            epistemic_type=EpistemicType.HEARSAY,
+            confidence=0.0,
+        )
+        return ClaimAssessment(
+            claim=claim,
+            verdict=Verdict.UNVERIFIABLE,
+            explanation="Byggir á ónafngreindum heimildum.",
+            confidence=0.0,
+        )
+
+    def test_roundtrip_persist_then_parse(self, tmp_path):
+        from esbvaktin.pipeline.models import EpistemicType, Verdict
+        from esbvaktin.pipeline.parse_outputs import (
+            parse_hearsay_assessments,
+            persist_hearsay_assessments,
+        )
+
+        persist_hearsay_assessments(tmp_path, [self._hearsay_assessment()])
+        loaded = parse_hearsay_assessments(tmp_path)
+        assert len(loaded) == 1
+        assert loaded[0].verdict == Verdict.UNVERIFIABLE
+        assert loaded[0].claim.epistemic_type == EpistemicType.HEARSAY
+        assert loaded[0].confidence == 0.0
+
+    def test_parse_missing_file_returns_empty(self, tmp_path):
+        from esbvaktin.pipeline.parse_outputs import parse_hearsay_assessments
+
+        assert parse_hearsay_assessments(tmp_path) == []
+
+    def test_persist_empty_writes_no_file(self, tmp_path):
+        from esbvaktin.pipeline.parse_outputs import persist_hearsay_assessments
+
+        result = persist_hearsay_assessments(tmp_path, [])
+        assert result is None
+        assert not (tmp_path / "_hearsay_assessments.json").exists()

@@ -44,9 +44,16 @@ def main():
         sys.exit(1)
 
     # ── Parse subagent outputs ──────────────────────────────────────────
-    from esbvaktin.pipeline.parse_outputs import parse_assessments, parse_omissions_safe
+    from esbvaktin.pipeline.parse_outputs import (
+        parse_assessments,
+        parse_hearsay_assessments,
+        parse_omissions_safe,
+    )
 
-    assessments = parse_assessments(assessments_path)
+    # Merge hearsay assessments (short-circuited before the assessor, persisted during
+    # evidence retrieval) so they appear in the report and sightings with their amber
+    # UNVERIFIABLE warning instead of silently vanishing. Disjoint from _assessments.json.
+    assessments = parse_assessments(assessments_path) + parse_hearsay_assessments(work_dir)
     omissions = parse_omissions_safe(omissions_path)
 
     # ── Read metadata ───────────────────────────────────────────────────

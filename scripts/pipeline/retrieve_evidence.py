@@ -70,6 +70,14 @@ def main():
     if bank_matches:
         print(f"Claim bank matches: {len(bank_matches)} (cache hits speed up assessment)")
 
+    # Persist hearsay assessments (short-circuited to UNVERIFIABLE before the assessor)
+    # so assemble_report can merge them — otherwise they silently vanish from the report.
+    from esbvaktin.pipeline.parse_outputs import persist_hearsay_assessments
+
+    if hearsay_assessments:
+        persist_hearsay_assessments(work_dir, hearsay_assessments)
+        print(f"Persisted {len(hearsay_assessments)} hearsay assessment(s) (UNVERIFIABLE).")
+
     # ── Build speech context (optional) ─────────────────────────────────
     article_text = article_path.read_text(encoding="utf-8")
     speech_ctx = None

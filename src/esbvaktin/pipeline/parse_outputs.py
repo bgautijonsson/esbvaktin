@@ -191,6 +191,45 @@ def parse_assessments_safe(output_path: Path) -> list[ClaimAssessment]:
     return parse_assessments(output_path)
 
 
+_HEARSAY_ASSESSMENTS_FILE = "_hearsay_assessments.json"
+
+
+def persist_hearsay_assessments(
+    work_dir: Path, hearsay_assessments: list[ClaimAssessment]
+) -> Path | None:
+    """Write pre-built hearsay assessments to ``_hearsay_assessments.json``.
+
+    Hearsay claims are short-circuited to UNVERIFIABLE during evidence retrieval
+    and never reach the assessor, so they are absent from ``_assessments.json``
+    (which the assessor overwrites). Persisting them in a separate file lets
+    ``assemble_report`` merge them back — honouring the documented contract that
+    hearsay is published with an amber warning rather than silently dropped.
+
+    Returns the path written, or ``None`` if there were no hearsay assessments.
+    """
+    if not hearsay_assessments:
+        return None
+    path = work_dir / _HEARSAY_ASSESSMENTS_FILE
+    payload = [a.model_dump(mode="json") for a in hearsay_assessments]
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
+
+
+def parse_hearsay_assessments(work_dir: Path) -> list[ClaimAssessment]:
+    """Load hearsay assessments persisted during evidence retrieval.
+
+    Returns an empty list when no ``_hearsay_assessments.json`` is present (the
+    common case — most articles contain no hearsay claims).
+    """
+    path = work_dir / _HEARSAY_ASSESSMENTS_FILE
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8")
+    raw = json.loads(_extract_json(text))
+    normalised = [_normalise_assessment(item) for item in raw]
+    return [ClaimAssessment.model_validate(item) for item in normalised]
+
+
 def parse_entities(output_path: Path) -> ArticleEntities:
     """Parse entity extraction output into ArticleEntities."""
     text = output_path.read_text(encoding="utf-8")

@@ -178,7 +178,9 @@ def cmd_run(args: argparse.Namespace) -> None:
     # 9. Parse assessments
     from esbvaktin.pipeline.parse_outputs import parse_assessments
 
-    assessments = parse_assessments(assessment_output)
+    # Merge the hearsay claims short-circuited before the assessor so they are registered
+    # as UNVERIFIABLE sightings instead of being dropped after only printing a count.
+    assessments = parse_assessments(assessment_output) + hearsay_assessments
     print(f"  Assessed {len(assessments)} claims")
 
     # Print verdict summary
