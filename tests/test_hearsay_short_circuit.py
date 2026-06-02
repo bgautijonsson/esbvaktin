@@ -49,7 +49,7 @@ def test_hearsay_claims_short_circuit(monkeypatch):
         lambda texts, batch_size=32: [[0.0] * 1024 for _ in texts],
     )
 
-    results, bank_matches, hearsay_assessments = retrieve_evidence_for_claims(
+    results, bank_matches, hearsay_assessments, _bank = retrieve_evidence_for_claims(
         [hearsay_claim, factual_claim],
         use_claim_bank=False,
     )

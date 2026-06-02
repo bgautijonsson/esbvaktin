@@ -46,14 +46,20 @@ def main():
     # ── Parse subagent outputs ──────────────────────────────────────────
     from esbvaktin.pipeline.parse_outputs import (
         parse_assessments,
+        parse_bank_assessments,
         parse_hearsay_assessments,
         parse_omissions_safe,
     )
 
-    # Merge hearsay assessments (short-circuited before the assessor, persisted during
-    # evidence retrieval) so they appear in the report and sightings with their amber
-    # UNVERIFIABLE warning instead of silently vanishing. Disjoint from _assessments.json.
-    assessments = parse_assessments(assessments_path) + parse_hearsay_assessments(work_dir)
+    # Merge the pre-built assessments that were short-circuited before the assessor and
+    # persisted during evidence retrieval — hearsay (UNVERIFIABLE, amber warning) and
+    # cost-03 bank-reuse (a fresh stored verdict) — so they reach the report and sightings
+    # instead of silently vanishing. Both are disjoint from _assessments.json.
+    assessments = (
+        parse_assessments(assessments_path)
+        + parse_hearsay_assessments(work_dir)
+        + parse_bank_assessments(work_dir)
+    )
     omissions = parse_omissions_safe(omissions_path)
 
     # ── Read metadata ───────────────────────────────────────────────────

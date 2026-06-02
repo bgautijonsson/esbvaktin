@@ -67,6 +67,10 @@ class ClaimBankMatch(BaseModel):
     confidence: float = Field(..., ge=0, le=1)
     last_verified: date
     is_fresh: bool = Field(..., description="True if last_verified < 30 days ago")
+    needs_reassessment: bool = Field(
+        default=False,
+        description="True if the stored verdict is flagged for revision (cost-03 must not reuse it)",
+    )
 
     @field_validator("supporting_evidence", "contradicting_evidence", mode="before")
     @classmethod

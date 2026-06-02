@@ -97,6 +97,40 @@ def _rrf_merge(
     )
 
 
+def is_reusable_bank_match(match: ClaimBankMatch) -> bool:
+    """Whether a claim-bank match is strong enough to reuse its verdict directly,
+    skipping the Opus assessor (cost-03, Option A — strict).
+
+    All four guards must hold: an exact match (>= BANK_EXACT_THRESHOLD), a fresh
+    verdict (verified within 30 days), no pending reassessment flag, and a factual
+    claim (predictions/counterfactuals keep their reasoning-based assessment; hearsay
+    is short-circuited upstream). Balance-neutral: it reuses whatever the prior
+    assessment concluded, equally for every stance.
+    """
+    return (
+        match.similarity >= BANK_EXACT_THRESHOLD
+        and match.is_fresh
+        and not match.needs_reassessment
+        and match.epistemic_type == "factual"
+    )
+
+
+def bank_match_to_assessment(claim: Claim, match: ClaimBankMatch) -> ClaimAssessment:
+    """Build a pre-built assessment that reuses a fresh bank verdict (cost-03), so a
+    short-circuited claim reaches the report and sightings without an Opus call. The
+    bank's stored evidence IDs ride along, so assemble_report resolves them to full
+    statements and the report stays evidence-rich."""
+    return ClaimAssessment(
+        claim=claim,
+        verdict=Verdict(match.verdict),
+        explanation=match.explanation_is,
+        supporting_evidence=list(match.supporting_evidence),
+        contradicting_evidence=list(match.contradicting_evidence),
+        missing_context=match.missing_context_is,
+        confidence=match.confidence,
+    )
+
+
 def check_claim_bank(
     claim: Claim,
     conn=None,
@@ -264,19 +298,26 @@ def retrieve_evidence_for_claims(
     top_k: int = 5,
     use_claim_bank: bool = True,
     conn=None,
-) -> tuple[list[ClaimWithEvidence], dict[int, ClaimBankMatch], list[ClaimAssessment]]:
+) -> tuple[
+    list[ClaimWithEvidence],
+    dict[int, ClaimBankMatch],
+    list[ClaimAssessment],
+    list[ClaimAssessment],
+]:
     """Retrieve evidence for multiple claims.
 
-    If use_claim_bank is True, checks the claim bank first. Returns
-    a tuple of:
-    - claims_with_evidence: list for non-hearsay claims (including bank hits)
-    - bank_matches: dict mapping claim index → ClaimBankMatch for claims
-      that had bank matches (for use in assessment context)
-    - hearsay_assessments: pre-built UNVERIFIABLE assessments for hearsay
-      claims (no evidence retrieval performed for these)
+    If use_claim_bank is True, checks the claim bank first. Returns a tuple of:
+    - claims_with_evidence: non-hearsay claims sent to the Opus assessor (EXCLUDES
+      cost-03 short-circuited claims).
+    - bank_matches: dict mapping each Opus-bound claim's 0-based index in
+      claims_with_evidence → its (fuzzy) ClaimBankMatch, shown as "Fyrra mat" context.
+    - hearsay_assessments: pre-built UNVERIFIABLE assessments for hearsay claims
+      (no evidence retrieval performed).
+    - bank_assessments: pre-built assessments reusing a strong, fresh, unflagged
+      factual bank verdict (cost-03) — no evidence retrieval and no Opus call.
 
-    For backward compatibility, if no bank matches are found, the second
-    element will be an empty dict.
+    Both pre-built lists are persisted and merged by assemble_report; if there are no
+    matches the dict/lists are empty.
     """
     # Short-circuit hearsay claims — no evidence retrieval or assessment needed
     hearsay_assessments: list[ClaimAssessment] = []
@@ -322,25 +363,32 @@ def retrieve_evidence_for_claims(
     else:
         claim_embeddings = []
 
+    bank_assessments: list[ClaimAssessment] = []
     for i, claim in enumerate(non_hearsay_claims):
         embedding = claim_embeddings[i]
-        # Check claim bank first
-        if use_claim_bank:
-            bank_match = check_claim_bank(claim, conn=conn, embedding=embedding)
-            if bank_match is not None:
-                bank_matches[i] = bank_match
-                # If exact match and fresh, we still retrieve evidence
-                # (needed for report context) but mark for potential strong prior
-                if bank_match.similarity >= BANK_EXACT_THRESHOLD and bank_match.is_fresh:
-                    logger.info(
-                        "Strong prior (%.3f, fresh) for claim %d: %s",
-                        bank_match.similarity,
-                        i,
-                        bank_match.claim_slug,
-                    )
+        bank_match = (
+            check_claim_bank(claim, conn=conn, embedding=embedding) if use_claim_bank else None
+        )
 
-        # Always retrieve evidence (needed for report even if bank hit)
+        # cost-03: a strong, fresh, unflagged factual verdict is reused directly —
+        # skip BOTH evidence retrieval and the Opus assessor. The pre-built assessment
+        # carries the stored verdict + evidence IDs, so the report stays evidence-rich.
+        if bank_match is not None and is_reusable_bank_match(bank_match):
+            logger.info(
+                "Reusing fresh bank verdict (%.3f) for claim %d: %s — skipping Opus",
+                bank_match.similarity,
+                i,
+                bank_match.claim_slug,
+            )
+            bank_assessments.append(bank_match_to_assessment(claim, bank_match))
+            continue
+
+        # Opus-bound: retrieve evidence (needed for the report) and record any fuzzy
+        # match as "Fyrra mat" context — keyed by the claim's index in the Opus-bound
+        # list so prepare_assessment_context's bank_matches[i-1] stays aligned after skips.
         cwe = retrieve_evidence_for_claim(claim, top_k=top_k, conn=conn, embedding=embedding)
+        if bank_match is not None:
+            bank_matches[len(claims_with_evidence)] = bank_match
         claims_with_evidence.append(cwe)
 
-    return claims_with_evidence, bank_matches, hearsay_assessments
+    return claims_with_evidence, bank_matches, hearsay_assessments, bank_assessments

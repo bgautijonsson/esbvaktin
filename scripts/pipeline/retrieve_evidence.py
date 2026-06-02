@@ -63,8 +63,8 @@ def main():
     # ── Retrieve evidence ───────────────────────────────────────────────
     from esbvaktin.pipeline.retrieve_evidence import retrieve_evidence_for_claims
 
-    claims_with_evidence, bank_matches, hearsay_assessments = retrieve_evidence_for_claims(
-        claims, top_k=args.top_k
+    claims_with_evidence, bank_matches, hearsay_assessments, bank_assessments = (
+        retrieve_evidence_for_claims(claims, top_k=args.top_k)
     )
     print(f"Retrieved evidence for {len(claims_with_evidence)} claims.")
     if bank_matches:
@@ -72,11 +72,20 @@ def main():
 
     # Persist hearsay assessments (short-circuited to UNVERIFIABLE before the assessor)
     # so assemble_report can merge them — otherwise they silently vanish from the report.
-    from esbvaktin.pipeline.parse_outputs import persist_hearsay_assessments
+    from esbvaktin.pipeline.parse_outputs import (
+        persist_bank_assessments,
+        persist_hearsay_assessments,
+    )
 
     if hearsay_assessments:
         persist_hearsay_assessments(work_dir, hearsay_assessments)
         print(f"Persisted {len(hearsay_assessments)} hearsay assessment(s) (UNVERIFIABLE).")
+    if bank_assessments:
+        persist_bank_assessments(work_dir, bank_assessments)
+        print(
+            f"Short-circuited {len(bank_assessments)} claim(s) to fresh bank verdicts "
+            "(reused verdict, no Opus call)."
+        )
 
     # ── Build speech context (optional) ─────────────────────────────────
     article_text = article_path.read_text(encoding="utf-8")

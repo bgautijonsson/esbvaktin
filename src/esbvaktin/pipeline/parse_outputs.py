@@ -230,6 +230,41 @@ def parse_hearsay_assessments(work_dir: Path) -> list[ClaimAssessment]:
     return [ClaimAssessment.model_validate(item) for item in normalised]
 
 
+_BANK_ASSESSMENTS_FILE = "_bank_assessments.json"
+
+
+def persist_bank_assessments(
+    work_dir: Path, bank_assessments: list[ClaimAssessment]
+) -> Path | None:
+    """Write pre-built bank-reuse assessments to ``_bank_assessments.json`` (cost-03).
+
+    Claims whose verdict was reused from a strong, fresh, unflagged bank match are
+    short-circuited before the assessor, so they are absent from ``_assessments.json``.
+    Persisting them separately lets ``assemble_report`` merge them back — mirroring the
+    hearsay pair. Returns the path written, or ``None`` if there were none.
+    """
+    if not bank_assessments:
+        return None
+    path = work_dir / _BANK_ASSESSMENTS_FILE
+    payload = [a.model_dump(mode="json") for a in bank_assessments]
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
+
+
+def parse_bank_assessments(work_dir: Path) -> list[ClaimAssessment]:
+    """Load bank-reuse assessments persisted during evidence retrieval (cost-03).
+
+    Returns an empty list when no ``_bank_assessments.json`` is present.
+    """
+    path = work_dir / _BANK_ASSESSMENTS_FILE
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8")
+    raw = json.loads(_extract_json(text))
+    normalised = [_normalise_assessment(item) for item in raw]
+    return [ClaimAssessment.model_validate(item) for item in normalised]
+
+
 def parse_entities(output_path: Path) -> ArticleEntities:
     """Parse entity extraction output into ArticleEntities."""
     text = output_path.read_text(encoding="utf-8")

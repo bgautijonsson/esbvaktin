@@ -133,13 +133,13 @@ def cmd_run(args: argparse.Namespace) -> None:
     print("Retrieving evidence...")
     from esbvaktin.pipeline.retrieve_evidence import retrieve_evidence_for_claims
 
-    claims_with_evidence, bank_matches, hearsay_assessments = retrieve_evidence_for_claims(
-        claims,
-        top_k=5,
-        use_claim_bank=True,
+    claims_with_evidence, bank_matches, hearsay_assessments, bank_assessments = (
+        retrieve_evidence_for_claims(claims, top_k=5, use_claim_bank=True)
     )
     if hearsay_assessments:
         print(f"  {len(hearsay_assessments)} hearsay claim(s) short-circuited as unverifiable")
+    if bank_assessments:
+        print(f"  {len(bank_assessments)} claim(s) reused a fresh bank verdict (no Opus)")
     for cwe in claims_with_evidence:
         print(f"  {cwe.claim.claim_text[:60]}... — {len(cwe.evidence)} evidence matches")
 
@@ -176,9 +176,10 @@ def cmd_run(args: argparse.Namespace) -> None:
     # 9. Parse assessments
     from esbvaktin.pipeline.parse_outputs import parse_assessments
 
-    # Merge the hearsay claims short-circuited before the assessor so they are registered
-    # as UNVERIFIABLE sightings instead of being dropped after only printing a count.
-    assessments = parse_assessments(assessment_output) + hearsay_assessments
+    # Merge the claims short-circuited before the assessor so they are registered as
+    # sightings instead of being dropped after only printing a count: hearsay
+    # (UNVERIFIABLE) and cost-03 bank-reuse (a fresh stored verdict).
+    assessments = parse_assessments(assessment_output) + hearsay_assessments + bank_assessments
     print(f"  Assessed {len(assessments)} claims")
 
     # Print verdict summary

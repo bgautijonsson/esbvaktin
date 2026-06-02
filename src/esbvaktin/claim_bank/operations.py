@@ -165,7 +165,7 @@ def search_claims(
         """
         SELECT id, claim_slug, canonical_text_is, verdict, epistemic_type,
                explanation_is, supporting_evidence, contradicting_evidence,
-               missing_context_is, confidence, last_verified,
+               missing_context_is, confidence, last_verified, needs_reassessment,
                1 - (embedding <=> %(embedding)s::vector) AS similarity
         FROM claims
         WHERE 1 - (embedding <=> %(embedding)s::vector) >= %(threshold)s
@@ -191,6 +191,7 @@ def search_claims(
         "missing_context_is",
         "confidence",
         "last_verified",
+        "needs_reassessment",
         "similarity",
     ]
 
