@@ -17,16 +17,22 @@ import os
 import re
 import sqlite3
 import sys
-import unicodedata
 from pathlib import Path
+
+from esbvaktin.utils.slugify import icelandic_slugify
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SITE_DIR = PROJECT_ROOT.parent / "esbvaktin-site"
 _ALTHINGI_DB_DEFAULT = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
 
 EU_ISSUE_PATTERNS = [
-    "%Evróp%", "%ESB%", "%aðild%Evrópu%", "%aðildarviðræð%",
-    "%aðildarumsókn%", "%þjóðaratkvæðagreiðsl%", "%Evrópumál%",
+    "%Evróp%",
+    "%ESB%",
+    "%aðild%Evrópu%",
+    "%aðildarviðræð%",
+    "%aðildarumsókn%",
+    "%þjóðaratkvæðagreiðsl%",
+    "%Evrópumál%",
 ]
 
 
@@ -77,24 +83,6 @@ def _capitalise_first(text: str) -> str:
     return text[0].upper() + text[1:]
 
 
-def icelandic_slugify(text: str) -> str:
-    """Create a URL-safe slug from Icelandic text."""
-    replacements = {
-        "þ": "th", "Þ": "th", "ð": "d", "Ð": "d",
-        "æ": "ae", "Æ": "ae", "ö": "o", "Ö": "o",
-        "á": "a", "Á": "a", "é": "e", "É": "e",
-        "í": "i", "Í": "i", "ó": "o", "Ó": "o",
-        "ú": "u", "Ú": "u", "ý": "y", "Ý": "y",
-    }
-    slug = text
-    for orig, repl in replacements.items():
-        slug = slug.replace(orig, repl)
-    slug = unicodedata.normalize("NFKD", slug)
-    slug = slug.encode("ascii", "ignore").decode("ascii").lower()
-    slug = re.sub(r"[^a-z0-9]+", "-", slug).strip("-")
-    return slug
-
-
 # ── Coalition lookup by session ──────────────────────────────────────
 # Maps each Alþingi session to the set of coalition party names.
 # Used to assign speeches to "coalition" or "opposition" side.
@@ -117,8 +105,7 @@ _COALITION_RANGES: list[tuple[int, int, set[str]]] = [
     # 2017 (brief): Bjarni Benediktsson II
     (147, 147, {"Sjálfstæðisflokkur", "Viðreisn", "Björt framtíð"}),
     # 2017-2024: Katrín Jakobsdóttir / Bjarni Benediktsson III
-    (148, 156, {"Sjálfstæðisflokkur", "Framsóknarflokkur",
-                "Vinstrihreyfingin - grænt framboð"}),
+    (148, 156, {"Sjálfstæðisflokkur", "Framsóknarflokkur", "Vinstrihreyfingin - grænt framboð"}),
     # 2024-: Kristrún Frostadóttir
     (157, 999, {"Samfylkingin", "Viðreisn", "Flokkur fólksins"}),
 ]
@@ -246,9 +233,7 @@ def make_slug(session: int, issue_nr: str) -> str:
     return f"{session}-{issue_nr}"
 
 
-def build_debate_detail(
-    debate: dict, speakers: list[dict], speeches: list[dict]
-) -> dict:
+def build_debate_detail(debate: dict, speakers: list[dict], speeches: list[dict]) -> dict:
     """Build the full detail JSON for one debate (for 11ty pagination)."""
     slug = make_slug(debate["session"], debate["issue_nr"])
     title_slug = icelandic_slugify(debate["issue_title"][:80])
@@ -348,7 +333,9 @@ def status(conn: sqlite3.Connection) -> None:
     top = sorted(debates, key=lambda d: d["speech_count"], reverse=True)[:10]
     print("\nTop 10 debates by speech count:")
     for d in top:
-        print(f"  {d['session']}-{d['issue_nr']:>4}  {d['speech_count']:>3} speeches  {d['issue_title'][:70]}")
+        print(
+            f"  {d['session']}-{d['issue_nr']:>4}  {d['speech_count']:>3} speeches  {d['issue_title'][:70]}"
+        )
 
 
 def export(conn: sqlite3.Connection, site_dir: Path) -> None:
