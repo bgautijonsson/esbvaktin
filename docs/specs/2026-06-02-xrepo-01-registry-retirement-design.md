@@ -1,7 +1,10 @@
 # xrepo-01 — Retire article_registry.json (consumer_state as sole dedup truth)
 
 **Date:** 2026-06-02
-**Status:** approved (Option A: minimal safe retirement); implementing gate-first
+**Status:** GATE BUILT + RUN → **BLOCKED**. 59 site/DB-only gaps (57 backfillable, 2
+orphan). Deletions **PAUSED** pending remediation (see "Gate result"). The gate is
+committed; `build_article_registry.py` / `check_duplicate.py` are **unchanged** —
+nothing irreversible done.
 **Branch:** `pipeline-optimisation`
 **Plan ref:** `esbvaktin-pipeline-optimisation-2026-06.html` → H3 / xrepo-01 / fresh-08 (Phase 4)
 
@@ -39,6 +42,28 @@ URLs absent from `consumer_state`.
   deletion. The gate never writes anything.
 
 I run the gate on real data before the deletion commit; the result decides the path.
+
+## Gate result (2026-06-02) — BLOCKED
+
+Running the gate corrected its own safety model first: `is_known_url` resolves a URL via
+frettasafn `article_id`, so an article analysed from a non-scraped URL can never be in
+consumer_state — but is still covered by `check_duplicate`'s `data/analyses/` scan. So
+the at-risk set excludes locally-scanned URLs (the gate now does this).
+
+Even corrected, the gate **blocks**:
+- 582 `data/analyses/` URLs — scan-covered, safe.
+- 169 site/DB-only URLs need consumer_state; **59 are gaps** (not local, not in
+  consumer_state):
+  - **57 backfillable** — in `frettasafn.articles`, just missing a consumer_state row
+    (pre-Phase-3 / write-through gaps). A `mark_urls(..., "processed")` fixes these.
+  - **2 orphan** — visir.is URLs with a slug-form mismatch, not in `frettasafn.articles`
+    (can't be backfilled by URL).
+
+This disproves the plan's "986 > 704 ⇒ superset" assumption (more rows ≠ full coverage).
+**Remediation before the deletions can proceed (operator decision):** backfill the 57
+via `mark_urls` (writes to shared frettasafn consumer_state), and decide the 2 orphans
+(accept the small re-analysis risk, or fix the URL-form mismatch). Re-run the gate to 0
+gaps, then do the deletions below.
 
 ## Deletions (only after the gate passes)
 
