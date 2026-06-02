@@ -1095,11 +1095,11 @@ def main() -> None:
         f"Wrote listing JSON: {len(listing)} reports ({len(sources)} sources: {', '.join(sorted(sources))})"
     )
 
-    # Prepare entity detail pages
-    prepare_entity_details(site_dir)
+    # Prepare entity detail pages (reuse the in-memory reports — latency-06)
+    prepare_entity_details(site_dir, reports=all_reports)
 
-    # Prepare evidence detail pages
-    prepare_evidence_details(site_dir)
+    # Prepare evidence detail pages (reuse the in-memory reports — latency-06)
+    prepare_evidence_details(site_dir, reports=all_reports)
 
 
 # ── Entity detail page preparation ───────────────────────────────────
@@ -1114,7 +1114,7 @@ _ATTRIBUTION_LABELS = {
 }
 
 
-def prepare_entity_details(site_dir: Path) -> None:
+def prepare_entity_details(site_dir: Path, reports: list[dict] | None = None) -> None:
     """Build per-entity detail JSONs by resolving claims through reports.
 
     For each entity, loads linked report JSONs and finds claims where the
@@ -1122,6 +1122,9 @@ def prepare_entity_details(site_dir: Path) -> None:
     truncated claim slug problem in entities.json.
 
     Party entities get a party_members array with their affiliated politicians.
+
+    Pass ``reports`` (the in-memory report dicts) to avoid re-reading the corpus
+    from disk (latency-06); the slug → data map is order-independent.
     """
     entities_path = site_dir / "_data" / "entities.json"
     reports_dir = site_dir / "_data" / "reports"
@@ -1146,12 +1149,17 @@ def prepare_entity_details(site_dir: Path) -> None:
         if ps and e.get("subtype") == "politician":
             party_members_map.setdefault(ps, []).append(e)
 
-    # Load all reports into a slug → data map
+    # Build a slug → data map from the in-memory reports (latency-06) or, when
+    # called standalone, by re-reading the corpus from disk.
     reports_map: dict[str, dict] = {}
-    for rp in sorted(reports_dir.glob("*.json")):
-        with open(rp, encoding="utf-8") as f:
-            rd = json.load(f)
-        reports_map[rd["slug"]] = rd
+    if reports is not None:
+        for rd in reports:
+            reports_map[rd["slug"]] = rd
+    else:
+        for rp in sorted(reports_dir.glob("*.json")):
+            with open(rp, encoding="utf-8") as f:
+                rd = json.load(f)
+            reports_map[rd["slug"]] = rd
 
     # Build details and collect scorecards for write-back to entities.json
     scorecards: dict[str, dict] = {}
@@ -1409,12 +1417,15 @@ def _enrich_outlet_coverage(
 EVIDENCE_FULL_PATH = PROJECT_ROOT / "data" / "export" / "evidence_full.json"
 
 
-def prepare_evidence_details(site_dir: Path) -> None:
+def prepare_evidence_details(site_dir: Path, reports: list[dict] | None = None) -> None:
     """Build per-evidence detail JSONs with cited-by reverse index.
 
     For each evidence entry, scans all report JSONs to find claims where
     this evidence_id appears in supporting_evidence or contradicting_evidence.
     Also resolves related_entries IDs to {slug, evidence_id, statement_is}.
+
+    Pass ``reports`` (the in-memory report dicts) to avoid re-reading the corpus
+    from disk for the cited-by index (latency-06).
     """
     details_dir = site_dir / "_data" / "evidence-details"
     details_dir.mkdir(parents=True, exist_ok=True)
@@ -1435,7 +1446,7 @@ def prepare_evidence_details(site_dir: Path) -> None:
         evidence_lookup[e["evidence_id"]] = e
 
     # Build cited-by reverse index from all reports
-    cited_by = _build_cited_by_index(reports_dir)
+    cited_by = _build_cited_by_index(reports_dir, reports=reports)
 
     written = 0
     for entry in entries:
@@ -1449,21 +1460,32 @@ def prepare_evidence_details(site_dir: Path) -> None:
     print(f"  {cited_count}/{len(entries)} entries cited by at least one report")
 
 
-def _build_cited_by_index(reports_dir: Path) -> dict[str, list[dict]]:
+def _build_cited_by_index(
+    reports_dir: Path | None = None,
+    reports: list[dict] | None = None,
+) -> dict[str, list[dict]]:
     """Scan all report JSONs and build evidence_id → [citation] reverse index.
 
     Each citation includes the report slug, claim text, verdict, and whether
     the evidence was supporting or contradicting.
+
+    Pass ``reports`` (the in-memory report dicts) to avoid re-reading the corpus
+    from disk (latency-06). They are sorted by output filename so the citation
+    lists stay byte-identical to the disk-glob path.
     """
     cited_by: dict[str, list[dict]] = {}
 
-    if not reports_dir.exists():
-        return cited_by
+    if reports is None:
+        if reports_dir is None or not reports_dir.exists():
+            return cited_by
+        reports = []
+        for rp in sorted(reports_dir.glob("*.json")):
+            with open(rp, encoding="utf-8") as f:
+                reports.append(json.load(f))
+    else:
+        reports = sorted(reports, key=lambda r: f"{r.get('slug', '')}.json")
 
-    for rp in sorted(reports_dir.glob("*.json")):
-        with open(rp, encoding="utf-8") as f:
-            report = json.load(f)
-
+    for report in reports:
         report_slug = report.get("slug", "")
         report_title = report.get("article_title", "")
         report_source = report.get("article_source")
