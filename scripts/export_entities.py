@@ -922,6 +922,121 @@ def _generate_descriptions(entities: dict[str, dict]) -> None:
         entity["description"] = " ".join(parts) if parts else ""
 
 
+# fresh-07: locked_field name -> (Entity attribute, export dict key). Accepts model field
+# names and their UI aliases. See
+# docs/specs/2026-06-02-fresh-07-entity-registry-export-overlay-design.md
+_LOCK_MAP: dict[str, tuple[str, str]] = {
+    "stance": ("stance", "stance"),
+    "stance_score": ("stance_score", "stance_score"),
+    "canonical_name": ("canonical_name", "name"),
+    "name": ("canonical_name", "name"),
+    "entity_type": ("entity_type", "type"),
+    "type": ("entity_type", "type"),
+    "subtype": ("subtype", "subtype"),
+    "party_slug": ("party_slug", "party"),
+    "party": ("party_slug", "party"),
+}
+
+
+def apply_registry_overlay(
+    export_entities: dict[str, dict],
+    registry: list,
+    obs_by_entity: dict,
+) -> dict[str, dict]:
+    """Overlay curated registry decisions onto the computed export (fresh-07 / Phase 3).
+
+    Per matched entity: locked fields override unconditionally (non-None only; a stance lock
+    also syncs stance_score); confirmed entities additionally honour the registry's
+    type/subtype (non-None). Registry-only entities that are confirmed AND have >=1
+    non-dismissed observation are added, reconstructed from the Entity + observations. No
+    blanket stance replacement; alias/merge folding is out of scope. Pure — registry and
+    observations are injected, so it is DB-free testable. See
+    docs/specs/2026-06-02-fresh-07-entity-registry-export-overlay-design.md.
+    """
+    from esbvaktin.entity_registry.models import VerificationStatus
+
+    for r in registry:
+        if r.slug in export_entities:
+            entity = export_entities[r.slug]
+            # Rule 1 — locked fields override unconditionally (non-None only).
+            for field in r.locked_fields or []:
+                mapping = _LOCK_MAP.get(field)
+                if mapping is None:
+                    continue
+                attr, export_key = mapping
+                value = getattr(r, attr, None)
+                if value is not None:
+                    entity[export_key] = value
+                    if field == "stance" and r.stance_score is not None:
+                        entity["stance_score"] = r.stance_score
+            # Rule 2 — confirmed: honour registry type/subtype (non-None only).
+            if r.verification_status == VerificationStatus.CONFIRMED:
+                if r.entity_type is not None:
+                    entity["type"] = r.entity_type
+                if r.subtype is not None:
+                    entity["subtype"] = r.subtype
+        elif r.verification_status == VerificationStatus.CONFIRMED:
+            # Rule 3 — registry-only + confirmed + observed -> add.
+            obs = [o for o in obs_by_entity.get(r.id, []) if not o.dismissed]
+            if not obs:
+                continue
+            articles = sorted({o.article_slug for o in obs})
+            export_entities[r.slug] = {
+                "slug": r.slug,
+                "name": r.canonical_name,
+                "type": r.entity_type,
+                "subtype": r.subtype,
+                "stance": r.stance,
+                "stance_score": r.stance_score,
+                "party": r.party_slug,
+                "role": None,
+                "description": "",
+                "articles": articles,
+                "claims": [],
+                "mention_count": len(articles),
+                "claim_count": sum(len(o.claim_indices) for o in obs),
+                "credibility": None,
+            }
+    return export_entities
+
+
+def _overlay_registry_curation(entities: dict[str, dict]) -> int:
+    """fresh-07 I/O shell: load the curated registry + add-candidate observations and apply
+    apply_registry_overlay. Degrades to the heuristic export (logged) if the registry DB is
+    unreachable. Returns the count of registry-only entities added."""
+    try:
+        from esbvaktin.entity_registry.models import VerificationStatus
+        from esbvaktin.entity_registry.operations import (
+            get_all_entities,
+            get_observations_for_entity,
+        )
+        from esbvaktin.ground_truth.operations import get_connection
+
+        conn = get_connection()
+        try:
+            registry = get_all_entities(conn)
+            add_candidates = [
+                r
+                for r in registry
+                if r.slug not in entities and r.verification_status == VerificationStatus.CONFIRMED
+            ]
+            obs_by_entity = {r.id: get_observations_for_entity(r.id, conn) for r in add_candidates}
+        finally:
+            conn.close()
+    except Exception as e:  # noqa: BLE001 — overlay is best-effort; never fail the export
+        print(f"  Registry overlay skipped ({e}); exporting heuristic entities unchanged")
+        return 0
+
+    before = set(entities)
+    apply_registry_overlay(entities, registry, obs_by_entity)
+    added = len(set(entities) - before)
+    unmatched = sum(1 for r in registry if r.slug not in entities)
+    print(f"  Registry overlay: {len(registry)} curated entities, {added} added")
+    if unmatched:
+        print(f"  Registry overlay: {unmatched} registry slugs neither matched nor added")
+    return added
+
+
 def export_entities(
     site_dir: Path | None = None,
     extra_dirs: list[Path] | None = None,
@@ -935,6 +1050,7 @@ def export_entities(
     roster = _load_mp_roster()
     party_enriched = _enrich_party_affiliations(entities, roster)
     party_created = _ensure_party_entities(entities)
+    _overlay_registry_curation(entities)  # fresh-07: curation overlays the heuristic export
     _generate_descriptions(entities)
 
     # Flag Icelandic parties and outlets
