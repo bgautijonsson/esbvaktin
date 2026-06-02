@@ -27,9 +27,9 @@ from textwrap import shorten
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from esbvaktin.speeches.fact_check import (
-    _session_for_date,
     get_speech_for_fact_check,
     prepare_speech_work_dir,
+    resolve_session,
     select_speeches_for_batch,
 )
 
@@ -84,9 +84,7 @@ def cmd_run(args: argparse.Namespace) -> None:
     print("Preparing extraction context...")
     from esbvaktin.pipeline.prepare_context import prepare_speech_extraction_context
 
-    session = speech["session"]
-    if session == "?":
-        session = _session_for_date(speech["date"])
+    session = resolve_session(speech.get("session"), speech.get("date", ""))
 
     speaker_metadata = {
         "name": speech["name"],

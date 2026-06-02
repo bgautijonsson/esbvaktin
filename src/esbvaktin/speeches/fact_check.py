@@ -204,8 +204,14 @@ def _load_checked_speech_ids() -> set[str]:
 
 
 def _session_for_date(date_str: str) -> str:
-    """Determine löggjafarþing session number from date."""
-    if date_str >= "2025-09":
+    """Best-effort löggjafarþing session from a date — FALLBACK ONLY.
+
+    Prefer resolve_session(), which reads the authoritative speeches.session from
+    althingi.db. This ladder is used only when the DB row carries no session.
+    """
+    if date_str >= "2026-09":
+        return "158"
+    elif date_str >= "2025-09":
         return "157"
     elif date_str >= "2024-09":
         return "156"
@@ -215,6 +221,21 @@ def _session_for_date(date_str: str) -> str:
         return "154"
     else:
         return "153"
+
+
+def resolve_session(db_session, date_str: str) -> str:
+    """Authoritative session for a speech, preferring althingi.db's speeches.session.
+
+    The date ladder (_session_for_date) is a fallback used only when the DB row carries
+    no session. Reading the DB value first defuses the session-158 mislabel bomb
+    (xrepo-07): once session 158 opens (~Oct 2026, inside the referendum window), the
+    ladder would mislabel new speeches as 157, corrupting the
+    https://www.althingi.is/altext/raeda/{session}/{speech_id}.html citation URL that
+    doubles as the cross-DB dedup key in claim_sightings.
+    """
+    if db_session is not None and str(db_session) not in ("", "?", "None"):
+        return str(db_session)
+    return _session_for_date(date_str or "")
 
 
 def prepare_speech_work_dir(speech_id: str) -> Path | None:
@@ -230,9 +251,7 @@ def prepare_speech_work_dir(speech_id: str) -> Path | None:
     work_dir = Path("data/speech_checks") / speech_id
     work_dir.mkdir(parents=True, exist_ok=True)
 
-    session = speech["session"]
-    if session == "?":
-        session = _session_for_date(speech["date"])
+    session = resolve_session(speech.get("session"), speech.get("date", ""))
 
     source_url = f"https://www.althingi.is/altext/raeda/{session}/{speech_id}.html"
 

@@ -28,11 +28,18 @@ import sys
 from pathlib import Path
 from textwrap import shorten
 
+from esbvaktin.speeches.fact_check import resolve_session
+
 _DEFAULT_DB = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
 
 EU_ISSUE_PATTERNS = [
-    "%Evróp%", "%ESB%", "%aðild%Evrópu%", "%aðildarviðræð%",
-    "%aðildarumsókn%", "%þjóðaratkvæðagreiðsl%", "%Evrópumál%",
+    "%Evróp%",
+    "%ESB%",
+    "%aðild%Evrópu%",
+    "%aðildarviðræð%",
+    "%aðildarumsókn%",
+    "%þjóðaratkvæðagreiðsl%",
+    "%Evrópumál%",
 ]
 
 # Speech types ranked by evidence value
@@ -136,17 +143,19 @@ def list_candidates(conn: sqlite3.Connection, limit: int = 20) -> list[dict]:
     candidates = []
     for row in rows:
         score = _score_speech(row)
-        candidates.append({
-            "speech_id": row["speech_id"],
-            "name": row["name"],
-            "date": row["date"][:10] if row["date"] else "?",
-            "issue_title": row["issue_title"],
-            "speech_type": row["speech_type"],
-            "word_count": row["word_count"] or 0,
-            "party": row["party"] or "?",
-            "score": score,
-            "topic": _classify_topic(row["issue_title"]),
-        })
+        candidates.append(
+            {
+                "speech_id": row["speech_id"],
+                "name": row["name"],
+                "date": row["date"][:10] if row["date"] else "?",
+                "issue_title": row["issue_title"],
+                "speech_type": row["speech_type"],
+                "word_count": row["word_count"] or 0,
+                "party": row["party"] or "?",
+                "score": score,
+                "topic": _classify_topic(row["issue_title"]),
+            }
+        )
 
     candidates.sort(key=lambda c: c["score"], reverse=True)
     return candidates[:limit]
@@ -163,7 +172,7 @@ def export_drafts(
     if speech_ids:
         placeholders = ", ".join("?" for _ in speech_ids)
         sql = f"""
-            SELECT s.speech_id, s.name, s.date, s.issue_title,
+            SELECT s.speech_id, s.name, s.date, s.session, s.issue_title,
                    s.speech_type, t.word_count, t.party,
                    substr(t.full_text, 1, 3000) AS excerpt
             FROM speeches s
@@ -173,7 +182,7 @@ def export_drafts(
         rows = conn.execute(sql, speech_ids).fetchall()
     else:
         sql = f"""
-            SELECT s.speech_id, s.name, s.date, s.issue_title,
+            SELECT s.speech_id, s.name, s.date, s.session, s.issue_title,
                    s.speech_type, t.word_count, t.party,
                    substr(t.full_text, 1, 3000) AS excerpt
             FROM speeches s
@@ -201,27 +210,31 @@ def export_drafts(
         excerpt = shorten(excerpt, width=500, placeholder="…")
 
         speech_type_is = row["speech_type"] or "ræða"
-        session = "157" if row["date"] and row["date"] >= "2025-09" else "156"
+        session = resolve_session(row["session"], row["date"])
 
-        drafts.append({
-            "evidence_id": f"{topic_prefix}-PARL-{900 + i:03d}",
-            "domain": "political" if topic in ("sovereignty", "party_positions") else ("legal" if topic == "eea_eu_law" else "economic"),
-            "topic": topic,
-            "subtopic": "REVIEW_AND_SET",
-            "statement": f"[DRAFT — summarise from excerpt] {excerpt}",
-            "source_name": f"Alþingi — {row['name']}, {row['party']} ({speech_type_is}, {session}. löggjafarþing)",
-            "source_url": f"https://www.althingi.is/altext/raeda/{session}/{row['speech_id']}.html",
-            "source_date": row["date"][:10] if row["date"] else None,
-            "source_type": "parliamentary_record",
-            "confidence": "high",
-            "caveats": "REVIEW — add speech-specific caveats",
-            "related_entries": [],
-            "_meta": {
-                "speech_id": row["speech_id"],
-                "word_count": row["word_count"] or 0,
-                "speech_type": speech_type_is,
-            },
-        })
+        drafts.append(
+            {
+                "evidence_id": f"{topic_prefix}-PARL-{900 + i:03d}",
+                "domain": "political"
+                if topic in ("sovereignty", "party_positions")
+                else ("legal" if topic == "eea_eu_law" else "economic"),
+                "topic": topic,
+                "subtopic": "REVIEW_AND_SET",
+                "statement": f"[DRAFT — summarise from excerpt] {excerpt}",
+                "source_name": f"Alþingi — {row['name']}, {row['party']} ({speech_type_is}, {session}. löggjafarþing)",
+                "source_url": f"https://www.althingi.is/altext/raeda/{session}/{row['speech_id']}.html",
+                "source_date": row["date"][:10] if row["date"] else None,
+                "source_type": "parliamentary_record",
+                "confidence": "high",
+                "caveats": "REVIEW — add speech-specific caveats",
+                "related_entries": [],
+                "_meta": {
+                    "speech_id": row["speech_id"],
+                    "word_count": row["word_count"] or 0,
+                    "speech_type": speech_type_is,
+                },
+            }
+        )
 
     return drafts
 
