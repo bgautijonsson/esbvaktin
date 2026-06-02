@@ -113,6 +113,8 @@ uv run python scripts/seed_evidence.py insert data/seeds/  # Seed all JSON files
 
 # Monthly evidence refresh (first Monday of month -- polling, party_positions, org_positions, currency)
 # These topics decay fastest; schedule via /evidence-hunt monthly
+uv run python scripts/monthly_evidence_refresh.py           # fresh-01: sweep stale + high-decay, flag claims for reassessment, print review note (never publishes; scheduled via docs/scheduled-tasks/evidence-refresh-monthly.md)
+uv run python scripts/monthly_evidence_refresh.py --dry-run # Preview the review note; flag nothing
 uv run python scripts/curate_speech_evidence.py list        # Find high-value Althingi speeches for evidence curation
 uv run python scripts/fact_check_speeches.py select --limit 5  # Rank speeches for fact-checking
 uv run python scripts/fact_check_speeches.py run <speech_id>   # Fact-check a single speech (run outside Claude Code session)
