@@ -1,11 +1,12 @@
 # xrepo-01 — Retire article_registry.json (consumer_state as sole dedup truth)
 
 **Date:** 2026-06-02
-**Status:** GATE BUILT + RUN → BLOCKED (59 gaps). **Backfill design RESOLVED 2026-06-02**
-(see "Backfill design") — `--backfill` mode + a 2-entry orphan id-map, user-approved
-("mark ids + allowlist"). The spec + the TDD'd code involve **no** real frettasafn writes;
-the live backfill run and the deletions are each separately user-gated. `build_article_registry.py`
-/ `check_duplicate.py` still **unchanged** — nothing irreversible done.
+**Status:** Backfill **DONE + VERIFIED** (gate ① 2026-06-02): 57 URLs + 2 orphan
+article_ids written to consumer_state; the read-only gate now reports **0 gaps**
+("Safe to retire"). Deletion **DEFERRED** — verification found it is a **3-consumer
+re-homing**, not the 1-file delete the spec first assumed (it would break
+`register_article_sightings.py`). `build_article_registry.py` / `check_duplicate.py`
+remain **unchanged**; nothing deleted. See "Deletion — DEFERRED" for the true scope.
 **Branch:** `pipeline-optimisation`
 **Plan ref:** `esbvaktin-pipeline-optimisation-2026-06.html` → H3 / xrepo-01 / fresh-08 (Phase 4)
 
@@ -145,24 +146,52 @@ post-backfill run reports **0**.
   (59 `consumer_state` rows) + re-run the plain gate → expect 0.
 - **Gate ②** (explicit go-ahead): the irreversible deletions below.
 
-## Deletions (only after the gate passes)
+## Deletion — DEFERRED (true scope: 3-consumer re-homing, found 2026-06-02)
 
-- `check_duplicate.py`: drop the registry branch of `load_processed()` (keep the
-  `data/analyses/` scan), remove `REGISTRY_PATH`, the `--rebuild` flag + its
-  `build_registry` import, and the staleness warning. Keep `check_url`/`check_title`/
-  `check_content`, the `consumer_state` check, and the frettasafn-id scan.
-- Delete `scripts/build_article_registry.py` and `data/article_registry.json` (the
-  latter is gitignored — a local cleanup).
-- Update the module docstring to describe consumer_state + `data/analyses/` only.
+The gate proved *data* coverage (consumer_state now has 0 gaps) but not *code* coverage.
+A `grep` for registry references found **three** consumers, not one — so the original
+"delete the builder + check_duplicate's branch + the json" plan is unsafe: it would break a
+live batch script (`register_article_sightings.py` does `sys.exit(1)` if the registry is
+absent). The full retirement is therefore a 3-consumer re-homing, deferred to its own
+focused pass (user decision 2026-06-02: bank gate ①, defer the deletion).
 
+**The three consumers to re-home (all off `data/article_registry.json`):**
+1. `check_duplicate.py` — drop the registry branch of `load_processed()` (keep the
+   `data/analyses/` scan), remove `REGISTRY_PATH`, the `--rebuild` flag + its
+   `build_registry` import, the staleness warning, and the now-unused `time` import. Keep
+   `check_url`/`check_title`/`check_content`, the `consumer_state` check, and the
+   frettasafn-id scan. (It already has consumer_state + scan, so it loses only title-fuzzy
+   matching against site/DB-only articles — the documented acceptable loss.)
+2. `register_article_sightings.py` — `load_unregistered_articles()` uses the registry's
+   `in_db`/`analysis_dir` flags and `sys.exit(1)`s if the file is absent. Re-home: scan
+   `data/analyses/` for analysis dirs and recompute "analysed but not yet in DB" from a
+   `claim_sightings` query (by `source_url`). **Load-bearing — a core post-analysis batch
+   step; breaking it breaks registration.**
+3. `manage_inbox.py` — `_load_processed_urls()` (two call sites) reads the registry for
+   inbox dedup. Re-home to consumer_state via a new read-only
+   `frettasafn_state.processed_urls(consumer_id)` helper. Likely partly vestigial: `scan_eu`
+   already anti-joins consumer_state server-side, so confirm whether the manual-add path
+   still needs it before re-homing vs removing.
+
+**Only after all three are re-homed + verified:** delete `scripts/build_article_registry.py`
+and `data/article_registry.json` (gitignored — local cleanup); update each module docstring.
 Removes ~240 lines, the esbvaktin→site filesystem coupling, and the drift class.
+
+Reversibility: the two tracked scripts stay in git history; `article_registry.json` is a
+gitignored derived artifact (its only builder is removed in the same pass — acceptable, it
+is no longer needed).
 
 ## TDD plan (gate + deletions — failing tests first)
 1. `uncovered_urls`: every source URL present in consumer_state ⇒ empty set; a URL with
-   `state=None` ⇒ in the returned gap set; an empty source set ⇒ empty.
-2. `check_duplicate.load_processed` (importlib-loaded, ANALYSES_DIR pointed at a fixture,
-   no registry file): scans `data/analyses/` and returns the fixture report's
-   title/url — proving the registry-free path works.
+   `state=None` ⇒ in the returned gap set; an empty source set ⇒ empty. (Done — green.)
+2. Deletion (deferred) — each re-homed consumer needs its own RED→GREEN:
+   - `check_duplicate.load_processed` ignores a *present* registry file and returns the
+     `data/analyses/` data — the meaningful failing test, since "no registry file present"
+     passes trivially today (the existing scan fallback) and proves nothing.
+   - `register_article_sightings.load_unregistered_articles` builds the worklist from
+     `data/analyses/` + a `claim_sightings` query, with no registry.
+   - `manage_inbox._load_processed_urls` reads consumer_state (via a new read-only
+     `processed_urls` helper) instead of the registry.
 
 ## Out of scope / follow-ups
 - Re-homing the content fallback to `frettasafn.articles.content` (Option B) — touches
