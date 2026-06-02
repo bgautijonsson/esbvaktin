@@ -49,7 +49,8 @@ src/esbvaktin/          # Main package
     register_sightings.py  # Panel show sighting registration (source_type='panel_show')
   speeches/             # Alþingi speech MCP server (read-only, althingi.db)
     constants.py        # Shared EU keyword/pattern constants
-    context.py          # Sync speech context for pipeline (MP name detection + excerpts)
+    context.py          # Sync speech context for pipeline (named-MP quote-fidelity + topical relevance)
+    speech_vectors.py   # Semantic speech retrieval from althingi.db speech_vec (sqlite-vec KNN, EU-scoped) — xrepo-04B
     fact_check.py       # Speech selection, loading, work dir setup for fact-checking
     register_sightings.py  # Post-assessment: match→sighting, new→unpublished claim
   ground_truth/         # Evidence database operations
