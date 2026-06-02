@@ -47,6 +47,11 @@ def _connect() -> sqlite3.Connection:
         )
     conn = sqlite3.connect(str(path))
     conn.row_factory = sqlite3.Row
+    # frettasafn's launchd scraper writes this same SQLite file every 30 min (embed every
+    # 60 min). Set an explicit, generous busy_timeout so a colliding write-back waits the
+    # lock out instead of raising "database is locked" — rather than relying on sqlite3's
+    # implicit 5s default, which a future refactor of this connect() call could silently drop.
+    conn.execute("PRAGMA busy_timeout=10000")
     return conn
 
 
