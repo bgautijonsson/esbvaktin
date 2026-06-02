@@ -15,6 +15,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from collections import Counter
@@ -942,6 +943,24 @@ def _listing_entry(report_data: dict) -> dict:
     return entry
 
 
+def _check_overlay_present(db_verdicts: dict, report_count: int, allow_empty: bool = False) -> None:
+    """Abort the export if reports exist but the DB verdict overlay is empty (xrepo-10).
+
+    An empty overlay means the DB was unreachable — ``_load_db_verdicts()`` swallows the
+    error and returns ``{}``. Building anyway would silently revert every reassessed
+    verdict to its stale snapshot value, the worst failure mode for a fact-check site.
+    Set ``ESBVAKTIN_ALLOW_EMPTY_OVERLAY=1`` to override for a genuinely empty database.
+    """
+    if report_count > 0 and not db_verdicts and not allow_empty:
+        print(
+            f"ERROR: DB verdict overlay is empty but {report_count} report(s) exist on "
+            "disk — refusing to ship stale snapshot verdicts. Is Postgres reachable? "
+            "(set ESBVAKTIN_ALLOW_EMPTY_OVERLAY=1 to override for a genuinely empty DB.)",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+
 def main() -> None:
     site_dir = (
         Path(sys.argv[sys.argv.index("--site-dir") + 1])
@@ -988,6 +1007,13 @@ def main() -> None:
     if not report_files:
         print("No analysis reports found.")
         return
+
+    # xrepo-10: refuse to ship if the DB overlay is empty while reports exist (DB was down).
+    _check_overlay_present(
+        db_verdicts,
+        len(report_files),
+        allow_empty=os.environ.get("ESBVAKTIN_ALLOW_EMPTY_OVERLAY") == "1",
+    )
 
     # Phase 1: prepare all reports
     prepared = []
