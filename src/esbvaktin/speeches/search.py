@@ -10,7 +10,7 @@ import re
 
 import aiosqlite
 
-from .constants import EU_ISSUE_PATTERNS
+from .constants import EU_ISSUE_PATTERNS, normalise_party
 
 # ── Helpers ───────────────────────────────────────────────────────────
 
@@ -117,7 +117,7 @@ async def _issue_eu_search(
     if speaker:
         w.add("s.name LIKE ?", f"%{speaker}%")
     if party:
-        w.add("t.party = ?", party)
+        w.add("t.party = ?", normalise_party(party))
 
     sql = f"""
         SELECT s.speech_id, s.name AS speaker, s.mp_id, s.date,
@@ -147,6 +147,10 @@ async def _fts_eu_search(
     fts_query = _prepare_fts_query(query)
 
     w = _WhereBuilder()
+    # Scope the full-text match to EU-related debates (same issue-title filter as
+    # the browse path) — otherwise the query leaks matches from every agenda item.
+    issue_clauses = " OR ".join("s.issue_title LIKE ?" for _ in EU_ISSUE_PATTERNS)
+    w.add(f"({issue_clauses})", *EU_ISSUE_PATTERNS)
     if date_from:
         w.add("s.date >= ?", date_from)
     if date_to:
@@ -154,7 +158,7 @@ async def _fts_eu_search(
     if speaker:
         w.add("s.name LIKE ?", f"%{speaker}%")
     if party:
-        w.add("t.party = ?", party)
+        w.add("t.party = ?", normalise_party(party))
 
     extra = (" AND " + w.sql) if w.clauses else ""
 
@@ -325,7 +329,7 @@ async def lookup_mp(
     if name:
         w.add("m.name LIKE ?", f"%{name}%")
     if party:
-        w.add("ms.party = ?", party)
+        w.add("ms.party = ?", normalise_party(party))
     if session:
         w.add("ms.session = ?", session)
 
@@ -400,7 +404,7 @@ async def list_ministers(
     if session:
         w.add("session = ?", session)
     if party:
-        w.add("party = ?", party)
+        w.add("party = ?", normalise_party(party))
 
     w.add("title != ''")
 
@@ -423,7 +427,7 @@ async def list_current_mps(
     w = _WhereBuilder()
     w.add("ms.session = ?", session)
     if party:
-        w.add("ms.party = ?", party)
+        w.add("ms.party = ?", normalise_party(party))
 
     sql = f"""
         SELECT m.id AS mp_id, m.name, m.birth_date,
