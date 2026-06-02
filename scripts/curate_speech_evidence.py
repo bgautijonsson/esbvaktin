@@ -28,19 +28,11 @@ import sys
 from pathlib import Path
 from textwrap import shorten
 
+from esbvaktin.speeches.constants import EU_ISSUE_PATTERNS
 from esbvaktin.speeches.fact_check import resolve_session
 
 _DEFAULT_DB = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
 
-EU_ISSUE_PATTERNS = [
-    "%Evróp%",
-    "%ESB%",
-    "%aðild%Evrópu%",
-    "%aðildarviðræð%",
-    "%aðildarumsókn%",
-    "%þjóðaratkvæðagreiðsl%",
-    "%Evrópumál%",
-]
 
 # Speech types ranked by evidence value
 HIGH_VALUE_TYPES = ["flutningsræða", "ráðherraræða"]

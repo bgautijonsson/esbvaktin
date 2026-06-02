@@ -17,6 +17,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from esbvaktin.speeches.constants import EU_ISSUE_PATTERNS as _EU_ISSUE_PATTERNS
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ANALYSES_DIR = PROJECT_ROOT / "data" / "analyses"
 EXPORT_DIR = PROJECT_ROOT / "data" / "export"
@@ -266,16 +268,6 @@ _ROLE_OVERRIDES: dict[str, str] = {
 # ── Alþingi speech enrichment ────────────────────────────────────────
 
 _ALTHINGI_DB_DEFAULT = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
-
-_EU_ISSUE_PATTERNS = [
-    "%Evróp%",
-    "%ESB%",
-    "%aðild%Evrópu%",
-    "%aðildarviðræð%",
-    "%aðildarumsókn%",
-    "%þjóðaratkvæðagreiðsl%",
-    "%Evrópumál%",
-]
 
 
 def _load_althingi_speakers() -> dict[str, dict]:

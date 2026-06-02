@@ -19,21 +19,12 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from esbvaktin.speeches.constants import EU_ISSUE_PATTERNS
 from esbvaktin.utils.slugify import icelandic_slugify
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SITE_DIR = PROJECT_ROOT.parent / "esbvaktin-site"
 _ALTHINGI_DB_DEFAULT = Path.home() / "althingi" / "althingi-mcp" / "data" / "althingi.db"
-
-EU_ISSUE_PATTERNS = [
-    "%Evróp%",
-    "%ESB%",
-    "%aðild%Evrópu%",
-    "%aðildarviðræð%",
-    "%aðildarumsókn%",
-    "%þjóðaratkvæðagreiðsl%",
-    "%Evrópumál%",
-]
 
 
 # ── Helpers ──────────────────────────────────────────────────────────
