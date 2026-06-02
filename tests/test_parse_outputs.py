@@ -6,11 +6,11 @@ import pytest
 
 from esbvaktin.pipeline.parse_outputs import (
     _extract_json,
-    sanitise_icelandic_quotes,
     parse_assessments,
     parse_claims,
     parse_omissions,
     parse_translation,
+    sanitise_icelandic_quotes,
 )
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -68,6 +68,59 @@ class TestParseAssessments:
         assessments = parse_assessments(FIXTURES / "sample_assessments.json")
         assert assessments[0].missing_context is not None
         assert assessments[2].missing_context is None
+
+    def test_missing_top_level_confidence_inherits_claim(self, tmp_path):
+        """A nested assessment lacking the (required) top-level confidence inherits the claim's."""
+        import json
+
+        f = tmp_path / "_assessments.json"
+        f.write_text(
+            json.dumps(
+                [
+                    {
+                        "claim": {
+                            "claim_text": "Test",
+                            "original_quote": "Test",
+                            "category": "fisheries",
+                            "claim_type": "statistic",
+                            "confidence": 0.65,
+                        },
+                        "verdict": "supported",
+                        "explanation": "Test",
+                        "supporting_evidence": [],
+                        "contradicting_evidence": [],
+                    }
+                ]
+            )
+        )
+        assessments = parse_assessments(f)
+        assert len(assessments) == 1
+        assert assessments[0].confidence == 0.65
+
+    def test_flat_without_confidence_does_not_abort(self, tmp_path):
+        """A flat assessment with no confidence field parses instead of aborting the whole article."""
+        import json
+
+        f = tmp_path / "_assessments.json"
+        f.write_text(
+            json.dumps(
+                [
+                    {
+                        "claim_text": "Test",
+                        "original_quote": "Test",
+                        "category": "fisheries",
+                        "claim_type": "statistic",
+                        "verdict": "supported",
+                        "explanation": "Test",
+                        "supporting_evidence": [],
+                        "contradicting_evidence": [],
+                    }
+                ]
+            )
+        )
+        assessments = parse_assessments(f)
+        assert len(assessments) == 1
+        assert 0 <= assessments[0].confidence <= 1
 
 
 class TestParseOmissions:
@@ -196,14 +249,14 @@ class TestEpistemicTypeParsing:
 
     def test_clamp_epistemic_confidence(self):
         """Prediction/counterfactual confidence clamped to 0.8."""
-        from esbvaktin.pipeline.parse_outputs import clamp_epistemic_confidence
         from esbvaktin.pipeline.models import (
             Claim,
+            ClaimAssessment,
             ClaimType,
             EpistemicType,
-            ClaimAssessment,
             Verdict,
         )
+        from esbvaktin.pipeline.parse_outputs import clamp_epistemic_confidence
 
         claim = Claim(
             claim_text="Test",
@@ -225,14 +278,14 @@ class TestEpistemicTypeParsing:
 
     def test_clamp_does_not_affect_factual(self):
         """Factual claims are not clamped."""
-        from esbvaktin.pipeline.parse_outputs import clamp_epistemic_confidence
         from esbvaktin.pipeline.models import (
             Claim,
+            ClaimAssessment,
             ClaimType,
             EpistemicType,
-            ClaimAssessment,
             Verdict,
         )
+        from esbvaktin.pipeline.parse_outputs import clamp_epistemic_confidence
 
         claim = Claim(
             claim_text="Test",
@@ -269,6 +322,36 @@ class TestEpistemicTypeParsing:
         }
         result = _normalise_assessment(item)
         assert result["claim"]["epistemic_type"] == "hearsay"
+
+    def test_parse_assessments_enforces_epistemic_ceiling(self, tmp_path):
+        """parse_assessments clamps prediction confidence to 0.8 (clamp is wired in, not just defined)."""
+        import json
+
+        f = tmp_path / "_assessments.json"
+        f.write_text(
+            json.dumps(
+                [
+                    {
+                        "claim": {
+                            "claim_text": "Ef Ísland gengur í ESB mun sjávarútvegur eflast",
+                            "original_quote": "Test",
+                            "category": "fisheries",
+                            "claim_type": "statistic",
+                            "epistemic_type": "prediction",
+                            "confidence": 0.95,
+                        },
+                        "verdict": "supported",
+                        "explanation": "Test",
+                        "supporting_evidence": [],
+                        "contradicting_evidence": [],
+                        "confidence": 0.95,
+                    }
+                ]
+            )
+        )
+        assessments = parse_assessments(f)
+        assert assessments[0].confidence == 0.8
+        assert assessments[0].claim.confidence == 0.8
 
 
 class TestParseTranslation:

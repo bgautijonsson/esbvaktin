@@ -5,6 +5,7 @@ extracts the JSON, and validates it into Pydantic models.
 """
 
 import json
+import logging
 import re
 from pathlib import Path
 
@@ -42,9 +43,9 @@ def _normalise_assessment(item: dict) -> dict:
     nesting them under a 'claim' key. They may also use different field
     names (e.g. 'evidence_ids' instead of 'supporting_evidence').
     """
+    item = dict(item)  # shallow copy (also lets us safely set defaults on nested items)
     if "claim" not in item and "claim_text" in item:
         # Reconstruct nested claim from flat fields
-        item = dict(item)  # shallow copy
         claim_dict = {
             "claim_text": item.pop("claim_text"),
             "original_quote": item.pop("quote", item.pop("original_quote", "")),
@@ -67,6 +68,18 @@ def _normalise_assessment(item: dict) -> dict:
         # Remove extra fields not in the model
         item.pop("context", None)
         item.pop("quote", None)
+    # ClaimAssessment.confidence is required, but the assessor agent sometimes omits the
+    # top-level field (documented ~1-in-N occurrence). Inherit the claim's confidence if
+    # present, else default to 0.7 — so a missing field no longer aborts the whole article.
+    if "confidence" not in item:
+        claim_conf = item.get("claim", {}).get("confidence")
+        if claim_conf is not None:
+            item["confidence"] = claim_conf
+        else:
+            item["confidence"] = 0.7
+            logging.getLogger(__name__).warning(
+                "Assessment missing top-level confidence; defaulted to 0.7"
+            )
     return item
 
 
@@ -75,7 +88,10 @@ def parse_assessments(output_path: Path) -> list[ClaimAssessment]:
     text = output_path.read_text(encoding="utf-8")
     raw = json.loads(_extract_json(text))
     normalised = [_normalise_assessment(item) for item in raw]
-    return [ClaimAssessment.model_validate(item) for item in normalised]
+    assessments = [ClaimAssessment.model_validate(item) for item in normalised]
+    # Enforce the 0.8 confidence ceiling for prediction/counterfactual claims on the article
+    # path too (reassess_claims.py already clamps; this closes the single-article/batch gap).
+    return clamp_epistemic_confidence(assessments)
 
 
 _EPISTEMIC_CONFIDENCE_CEILING = 0.8
