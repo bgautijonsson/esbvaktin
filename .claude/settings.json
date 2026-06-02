@@ -32,6 +32,17 @@
           }
         ]
       }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/verify-subagent-output.sh",
+            "timeout": 20
+          }
+        ]
+      }
     ]
   }
 }
