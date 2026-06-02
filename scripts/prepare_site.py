@@ -25,6 +25,7 @@ from urllib.parse import urlparse
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from export_entities import _NAME_ALIASES, _OUTLET_SOURCE_ALIASES  # noqa: E402
 
+from esbvaktin.utils.json_io import write_json_if_changed  # noqa: E402
 from esbvaktin.utils.slugify import icelandic_slugify  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -1071,8 +1072,7 @@ def main() -> None:
 
         out_path = reports_dir / f"{slug}.json"
 
-        with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(report_data, f, ensure_ascii=False, indent=2)
+        write_json_if_changed(out_path, report_data)
 
         all_reports.append(report_data)
         print(
@@ -1088,8 +1088,7 @@ def main() -> None:
     listing_path = listing_dir / "reports.json"
 
     listing = [_listing_entry(r) for r in all_reports]
-    with open(listing_path, "w", encoding="utf-8") as f:
-        json.dump(listing, f, ensure_ascii=False, indent=2)
+    write_json_if_changed(listing_path, listing)
 
     sources = set(r.get("article_source") for r in all_reports if r.get("article_source"))
     print(
@@ -1160,8 +1159,7 @@ def prepare_entity_details(site_dir: Path) -> None:
     for entity in entities:
         detail = _build_entity_detail(entity, reports_map, party_members_map)
         out_path = details_dir / f"{entity['slug']}.json"
-        with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(detail, f, ensure_ascii=False, indent=2)
+        write_json_if_changed(out_path, detail)
         scorecards[entity["slug"]] = detail.get("scorecard", {})
         written += 1
 
@@ -1171,13 +1169,11 @@ def prepare_entity_details(site_dir: Path) -> None:
         entity["scorecard"] = scorecards.get(entity["slug"], {})
         if entity["scorecard"]:
             updated += 1
-    with open(entities_path, "w", encoding="utf-8") as f:
-        json.dump(entities, f, ensure_ascii=False, indent=2)
+    write_json_if_changed(entities_path, entities)
     # Also update client-side copy
     assets_entities = site_dir / "assets" / "data" / "entities.json"
     if assets_entities.exists():
-        with open(assets_entities, "w", encoding="utf-8") as f:
-            json.dump(entities, f, ensure_ascii=False, indent=2)
+        write_json_if_changed(assets_entities, entities)
 
     print(f"\nWrote {written} entity detail pages to {details_dir}")
     print(f"Updated {updated} entity scorecards in entities.json")
@@ -1445,8 +1441,7 @@ def prepare_evidence_details(site_dir: Path) -> None:
     for entry in entries:
         detail = _build_evidence_detail(entry, evidence_lookup, cited_by)
         out_path = details_dir / f"{entry['slug']}.json"
-        with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(detail, f, ensure_ascii=False, indent=2)
+        write_json_if_changed(out_path, detail)
         written += 1
 
     cited_count = sum(1 for e in entries if e["evidence_id"] in cited_by)
