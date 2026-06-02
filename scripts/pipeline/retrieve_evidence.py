@@ -84,11 +84,15 @@ def main():
 
     if not args.no_speech_context:
         try:
-            from esbvaktin.speeches.context import build_speech_context
+            from esbvaktin.speeches.context import build_speech_context_combined
 
-            speech_ctx = build_speech_context(article_text, language=args.language)
+            speech_ctx = build_speech_context_combined(
+                article_text,
+                [c.claim_text for c in claims],
+                language=args.language,
+            )
             if speech_ctx:
-                print("Found parliamentary speech context for MPs in article.")
+                print("Found parliamentary speech context (named MPs + topical relevance).")
         except Exception as e:
             print(f"Speech context unavailable: {e}")
 

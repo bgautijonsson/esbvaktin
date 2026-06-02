@@ -184,3 +184,110 @@ def build_speech_context(
         return None
 
     return _format_speech_context(excerpts, language=language)
+
+
+def _format_topical_speech_context(
+    speeches: list[dict],
+    language: str = "is",
+    max_excerpt_len: int = 400,
+) -> str:
+    """Format topically-related speeches as a markdown block for the assessor."""
+    if not speeches:
+        return ""
+
+    if language == "is":
+        header = (
+            "## Þingræður — efnislega tengt efni greinarinnar\n\n"
+            "Eftirfarandi ræður af Alþingi tengjast efnislega þeim fullyrðingum sem "
+            "hér eru metnar. Þær eru sóttar með merkingarleit í ræðusafni Alþingis og "
+            "veita samhengi um hvað raunverulega hefur verið sagt á þinginu um þessi "
+            "mál — óháð því hverjir eru nefndir í greininni.\n"
+        )
+    else:
+        header = (
+            "## Parliamentary Speeches — Topically Related\n\n"
+            "The following Alþingi speeches are semantically related to the claims "
+            "being assessed. Use them for context on what has actually been said in "
+            "parliament about these topics.\n"
+        )
+
+    sections = [header]
+    for s in speeches:
+        date = (s.get("date") or "")[:10] or "?"
+        name = s.get("name") or "?"
+        title = s.get("issue_title") or ""
+        excerpt = (s.get("excerpt") or "").replace("\n", " ").strip()
+        if len(excerpt) > max_excerpt_len:
+            excerpt = excerpt[:max_excerpt_len].rsplit(" ", 1)[0] + "…"
+        sections.append(f"\n### {name} — {date}\n_{title}_\n> {excerpt}\n")
+
+    return "\n".join(sections)
+
+
+def build_topical_speech_context(
+    claim_texts: list[str],
+    *,
+    claim_embeddings: list[list[float]] | None = None,
+    language: str = "is",
+    max_speeches: int = 6,
+    db_path: Path | None = None,
+) -> str | None:
+    """Build a context block of Alþingi speeches semantically related to the claims.
+
+    Complements ``build_speech_context`` (named-MP quote-fidelity): this surfaces
+    what has actually been said in parliament about the claims' topics, retrieved
+    from althingi.db's pre-built speech vectors (xrepo-04B). Returns None if no
+    relevant speeches are found or the vector store is unavailable — the caller
+    then keeps only the quote-fidelity block.
+
+    ``claim_embeddings`` may be supplied to reuse already-computed claim vectors
+    (and to allow testing without loading bge-m3); otherwise the claims are
+    embedded here.
+    """
+    if not claim_texts and not claim_embeddings:
+        return None
+
+    if claim_embeddings is None:
+        from esbvaktin.ground_truth.operations import embed_texts
+
+        claim_embeddings = embed_texts(claim_texts)
+
+    from .speech_vectors import search_speeches_by_vectors
+
+    speeches = search_speeches_by_vectors(
+        claim_embeddings, max_speeches=max_speeches, db_path=db_path
+    )
+    if not speeches:
+        return None
+
+    return _format_topical_speech_context(speeches, language=language)
+
+
+def build_speech_context_combined(
+    article_text: str,
+    claim_texts: list[str],
+    *,
+    claim_embeddings: list[list[float]] | None = None,
+    language: str = "is",
+    db_path: Path | None = None,
+) -> str | None:
+    """Build the full parliamentary speech context for the assessor.
+
+    Combines two complementary blocks:
+    - named-MP quote-fidelity (``build_speech_context``): speeches by MPs named in
+      the article, for verifying quote accuracy;
+    - topical relevance (``build_topical_speech_context``): speeches semantically
+      related to the claims, for context on what parliament has said (xrepo-04B).
+
+    Additive and graceful: if either block is unavailable the other still flows;
+    if both are empty, returns None so the caller adds no speech context.
+    """
+    quote = build_speech_context(article_text, language=language)
+    topical = build_topical_speech_context(
+        claim_texts,
+        claim_embeddings=claim_embeddings,
+        language=language,
+        db_path=db_path,
+    )
+    blocks = [b for b in (quote, topical) if b]
+    return "\n\n".join(blocks) if blocks else None
