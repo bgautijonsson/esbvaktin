@@ -141,16 +141,20 @@ def search_claims(
     threshold: float = 0.70,
     top_k: int = 5,
     conn: psycopg.Connection | None = None,
+    embedding: list[float] | None = None,
 ) -> list[ClaimBankMatch]:
     """Semantic search against the claim bank.
 
     Returns claims above the similarity threshold, sorted by similarity
     descending. Each result includes an `is_fresh` flag indicating whether
     the claim's verdict has been verified within the last 30 days.
+
+    Pass ``embedding`` to reuse a precomputed query vector and skip re-embedding
+    (cost-07).
     """
     from ..ground_truth.operations import embed_text, get_connection
 
-    query_embedding = embed_text(query)
+    query_embedding = embedding if embedding is not None else embed_text(query)
 
     close = False
     if conn is None:

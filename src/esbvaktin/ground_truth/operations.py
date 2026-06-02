@@ -174,9 +174,14 @@ def search_evidence(
     domain_filter: str | None = None,
     top_k: int = 10,
     conn: psycopg.Connection | None = None,
+    embedding: list[float] | None = None,
 ) -> list[SearchResult]:
-    """Semantic search: embed the query, find closest evidence entries."""
-    query_embedding = embed_text(query)
+    """Semantic search: embed the query, find closest evidence entries.
+
+    Pass ``embedding`` to reuse a precomputed query vector and skip re-embedding
+    (cost-07: a claim is embedded once and threaded through every search).
+    """
+    query_embedding = embedding if embedding is not None else embed_text(query)
 
     close = False
     if conn is None:

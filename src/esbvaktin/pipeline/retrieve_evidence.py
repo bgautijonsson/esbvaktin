@@ -100,12 +100,14 @@ def _rrf_merge(
 def check_claim_bank(
     claim: Claim,
     conn=None,
+    embedding: list[float] | None = None,
 ) -> ClaimBankMatch | None:
     """Check if a similar claim exists in the claim bank.
 
     Returns the best match above BANK_FUZZY_THRESHOLD, or None.
     Caller decides whether to treat as strong prior (>= BANK_EXACT_THRESHOLD
-    and fresh) or just as context.
+    and fresh) or just as context. Pass ``embedding`` to reuse a precomputed
+    query vector (cost-07).
     """
     try:
         from esbvaktin.claim_bank.operations import search_claims
@@ -115,6 +117,7 @@ def check_claim_bank(
             threshold=BANK_FUZZY_THRESHOLD,
             top_k=1,
             conn=conn,
+            embedding=embedding,
         )
         if matches:
             match = matches[0]
@@ -135,6 +138,7 @@ def retrieve_evidence_for_claim(
     claim: Claim,
     top_k: int = 5,
     conn=None,
+    embedding: list[float] | None = None,
 ) -> ClaimWithEvidence:
     """Retrieve evidence for a single claim using hybrid BM25 + vector search.
 
@@ -151,7 +155,7 @@ def retrieve_evidence_for_claim(
     If the embedding model fails to load (ImportError, OOM, or any exception),
     falls back to keyword-only search and logs a warning to stderr.
     """
-    from esbvaktin.ground_truth.operations import keyword_search
+    from esbvaktin.ground_truth.operations import embed_text, keyword_search
 
     results: dict[str, SearchResult] = {}
     _embedding_failed = False
@@ -159,12 +163,19 @@ def retrieve_evidence_for_claim(
     # Filtered search if category matches a known topic
     topic_filter = claim.category if claim.category in KNOWN_TOPICS else None
     try:
+        # Embed the claim once and reuse for both vector searches (cost-07). When
+        # the caller batched the article up front, the vector is passed in and we
+        # skip re-embedding entirely. Done inside the try so a model-load failure
+        # falls through to the keyword-only path below.
+        if embedding is None:
+            embedding = embed_text(claim.claim_text)
         if topic_filter:
             filtered = search_evidence(
                 query=claim.claim_text,
                 topic_filter=topic_filter,
                 top_k=top_k,
                 conn=conn,
+                embedding=embedding,
             )
             for r in filtered:
                 results[r.evidence_id] = r
@@ -174,6 +185,7 @@ def retrieve_evidence_for_claim(
             query=claim.claim_text,
             top_k=top_k,
             conn=conn,
+            embedding=embedding,
         )
         for r in unfiltered:
             if r.evidence_id not in results:
@@ -291,10 +303,30 @@ def retrieve_evidence_for_claims(
     claims_with_evidence: list[ClaimWithEvidence] = []
     bank_matches: dict[int, ClaimBankMatch] = {}
 
+    # Embed every claim for the article in one batched bge-m3 pass (cost-07/
+    # latency-02), then thread each vector through bank lookup + evidence search so
+    # no claim is embedded more than once. On model failure, fall back to None and
+    # let each retrieval re-embed (and degrade to keyword-only) on its own.
+    from esbvaktin.ground_truth.operations import embed_texts
+
+    claim_embeddings: list[list[float] | None]
+    if non_hearsay_claims:
+        try:
+            claim_embeddings = list(embed_texts([c.claim_text for c in non_hearsay_claims]))
+        except Exception as exc:
+            print(
+                f"WARNING: batch embedding unavailable, falling back per-claim: {exc}",
+                file=sys.stderr,
+            )
+            claim_embeddings = [None] * len(non_hearsay_claims)
+    else:
+        claim_embeddings = []
+
     for i, claim in enumerate(non_hearsay_claims):
+        embedding = claim_embeddings[i]
         # Check claim bank first
         if use_claim_bank:
-            bank_match = check_claim_bank(claim, conn=conn)
+            bank_match = check_claim_bank(claim, conn=conn, embedding=embedding)
             if bank_match is not None:
                 bank_matches[i] = bank_match
                 # If exact match and fresh, we still retrieve evidence
@@ -308,7 +340,7 @@ def retrieve_evidence_for_claims(
                     )
 
         # Always retrieve evidence (needed for report even if bank hit)
-        cwe = retrieve_evidence_for_claim(claim, top_k=top_k, conn=conn)
+        cwe = retrieve_evidence_for_claim(claim, top_k=top_k, conn=conn, embedding=embedding)
         claims_with_evidence.append(cwe)
 
     return claims_with_evidence, bank_matches, hearsay_assessments

@@ -3,8 +3,6 @@
 These tests do not require a database — they use monkeypatching.
 """
 
-import pytest
-
 from esbvaktin.pipeline.models import Claim, ClaimType, EpistemicType, Verdict
 from esbvaktin.pipeline.retrieve_evidence import retrieve_evidence_for_claims
 
@@ -30,7 +28,7 @@ def test_hearsay_claims_short_circuit(monkeypatch):
 
     calls = []
 
-    def mock_retrieve(claim, top_k=5, conn=None):
+    def mock_retrieve(claim, top_k=5, conn=None, embedding=None):
         calls.append(claim.claim_text)
         from esbvaktin.pipeline.models import ClaimWithEvidence
 
@@ -42,7 +40,13 @@ def test_hearsay_claims_short_circuit(monkeypatch):
     )
     monkeypatch.setattr(
         "esbvaktin.pipeline.retrieve_evidence.check_claim_bank",
-        lambda claim, conn=None: None,
+        lambda claim, conn=None, embedding=None: None,
+    )
+    # The orchestrator now batch-embeds all non-hearsay claims up front (cost-07);
+    # stub it so this test stays model-free.
+    monkeypatch.setattr(
+        "esbvaktin.ground_truth.operations.embed_texts",
+        lambda texts, batch_size=32: [[0.0] * 1024 for _ in texts],
     )
 
     results, bank_matches, hearsay_assessments = retrieve_evidence_for_claims(
