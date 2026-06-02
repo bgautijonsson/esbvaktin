@@ -124,6 +124,27 @@ def main():
         encoding="utf-8",
     )
 
+    # ── Record telemetry (cost-09) — additive, must never break assembly ─
+    try:
+        from datetime import datetime
+
+        from esbvaktin.pipeline.metrics import append_metric
+
+        ctx_path = work_dir / "_context_assessment.md"
+        append_metric(
+            {
+                "ts": datetime.now().isoformat(timespec="seconds"),
+                "work_dir": work_dir.name,
+                "claim_count": len(assessments),
+                "verdict_counts": dict(vc),
+                # Byte size of the assessor context = proxy for Opus input cost
+                # until real token counts are available (cost-01 SDK harness).
+                "assessment_context_bytes": (ctx_path.stat().st_size if ctx_path.exists() else 0),
+            }
+        )
+    except Exception as exc:  # noqa: BLE001 — telemetry is best-effort
+        print(f"(metrics not recorded: {exc})", file=sys.stderr)
+
     # ── Print summary ───────────────────────────────────────────────────
     print("=== GREINING LOKIÐ ===")
     print(f"Vinnusvæði: {work_dir}")

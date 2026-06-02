@@ -111,6 +111,12 @@ for state in ('processed', 'rejected', 'skipped', 'in_progress'):
 
 The `consumer_state` totals (Phase 3 — written by `register_article_sightings.py` and `manage_inbox.py reject/skip`) should be roughly aligned with the registry's processed count. Divergence means either fresh activity hasn't propagated, or the registry is stale.
 
+```bash
+uv run python scripts/show_metrics.py
+```
+
+Pipeline telemetry (cost-09) — per-article claim counts, verdict mix, and assessment-context byte size (a proxy for Opus input cost until real token counts land via the SDK harness). Accrues in the gitignored `data/analyses/_metrics.jsonl` as `assemble_report.py` runs; empty until the next analysis.
+
 ### Step 4: Icelandic Quality
 
 ```bash
