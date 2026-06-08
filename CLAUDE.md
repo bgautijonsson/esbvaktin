@@ -150,12 +150,34 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 - `uv sync --extra dev` — pytest, pytest-asyncio, ruff
 - `uv sync --extra email` — Mailgun integration
 - `uv sync --extra ghost` — Ghost CMS publishing
+- `uv sync --extra eval` — iseval harness (correction-quality CI gate)
 
 ### Icelandic Output
 - Icelandic output uses GreynirCorrect (local) and Málstaður API (via `mideind` MCP server) for quality — cost rules in `.claude/rules/mcp-costs.md`
 - Subagent JSON output: always parse with `_extract_json()` (sanitises `„"` quotes, strips markdown fences). Subagent field names may vary (e.g. `verdict` vs `new_verdict`) — handle both.
 - Icelandic language rules auto-load via `.claude/rules/` for `*_is.*` and `data/analyses/**` paths
 - Environment variables for secrets (`.env`, never committed)
+
+## Eval gate (iseval)
+
+CI gates the Icelandic correction pipeline against a committed baseline via the shared [iseval](https://github.com/bgautijonsson/iseval) harness (pinned by git ref in the `eval` extra of `pyproject.toml`). Adapter: `eval/iseval_adapter.py::EsbvaktinAdapter`; goldens: `eval/golden/`; tolerances: `eval/gate.json`.
+
+- **Per-push** (`icelandic-eval` job): re-scores `eval/golden/` and fails the build if `fp_rate` rises >0.05 or any voice heuristic newly fires. Key-free, seconds.
+- **Nightly** (`icelandic-eval-nightly`, Monday cron): also gates IceErrorCorpus precision/recall + gec detection (clones the corpora via a checkout of the iseval repo).
+
+**If your change legitimately moves a number, re-baseline in the SAME PR** (fetch the corpora first with `~/iseval/scripts/eval_fetch_datasets` — they live in the gitignored `~/iseval/data/`):
+
+```bash
+uv run --extra icelandic --extra eval python -m iseval run \
+  --product esbvaktin --family correction \
+  --adapter eval.iseval_adapter:EsbvaktinAdapter \
+  --golden eval/golden \
+  --dataset iceerrorcorpus:$HOME/iseval/data/iceErrorCorpus/data/essays \
+  --dataset gec:$HOME/iseval/data/gec-test-set/Type2 --sample 300 \
+  --out eval/baseline.json
+```
+
+…then commit `eval/baseline.json` with the delta explained. The `--dataset` flags are required — omit them and the corpus metrics vanish from the baseline. Never widen `eval/gate.json` to dodge a real regression. Bump the iseval pin (`@vX.Y.Z`) + re-baseline when adopting a new iseval.
 
 ## Commands
 
