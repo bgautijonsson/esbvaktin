@@ -48,6 +48,7 @@ from iseval.models import PipelineFlag
 from esbvaktin.corrections.confusables import check_confusables
 from esbvaktin.corrections.eu_terms import check_eu_terms
 from esbvaktin.corrections.greynir import check_with_library
+from esbvaktin.corrections.naturalness import run_heuristic_checks
 
 # Pull the corrected word out of a GreynirCorrect annotation message such as
 #   "Orðið 'setníng' var leiðrétt í 'setning'"
@@ -119,3 +120,14 @@ class EsbvaktinAdapter:
             )
 
         return flags
+
+    def voice_checks(self, texts: list[str]) -> dict[str, int]:
+        """Tier-A translationese heuristic counts over a corpus of sentences.
+
+        Delegates to esbvaktin's dependency-free ``run_heuristic_checks`` (which
+        wants ``(text, line_num)`` pairs) and reduces each check's flagged list
+        to a count. Good goldens should score 0 on every check.
+        """
+        sentences = [(t, i + 1) for i, t in enumerate(texts)]
+        results = run_heuristic_checks(sentences)
+        return {name: len(items) for name, items in results.items()}

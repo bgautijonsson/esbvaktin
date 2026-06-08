@@ -40,7 +40,7 @@ ghost = [
     "pyjwt>=2.10",
 ]
 eval = [
-    "iseval @ git+https://github.com/bgautijonsson/iseval.git@v0.3.0",
+    "iseval @ git+https://github.com/bgautijonsson/iseval.git@v0.4.0",
 ]
 
 [tool.ruff]

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "product": "esbvaktin",
   "family": "correction",
-  "generated_at": "2026-06-08T16:56:39.150992+00:00",
-  "pipeline_git_sha": "76bb60e4229d265c8ec0dfbba85808c5289e6d27",
+  "generated_at": "2026-06-08T20:03:57.046127+00:00",
+  "pipeline_git_sha": "864dd1bdafa1b40700f6360eef4c97b45b0f2233",
   "n_goldens": 81,
   "metrics": {
     "n_goldens": 81,
@@ -17,11 +17,11 @@
         "n_available": 7982,
         "n_sampled": 300,
         "precision_recall": {
-          "precision": 0.2191780821917808,
+          "precision": 0.2206896551724138,
           "recall": 0.2318840579710145,
-          "f1": 0.22535211267605632,
+          "f1": 0.22614840989399293,
           "tp": 32,
-          "fp": 114,
+          "fp": 113,
           "fn": 106
         }
       },
@@ -36,20 +36,12 @@
           "n_flagged_clean": 0,
           "detection_recall": 0.673469387755102
         }
-      },
-      "inflection": {
-        "dataset": "inflection",
-        "path": "/Users/brynjolfurjonsson/iseval/data/icelandic-inflection-all-flat/train.jsonl",
-        "n_available": 2400,
-        "n_sampled": 300,
-        "skipped": true,
-        "reason": "adapter has no inflect(lemma, number, case) method"
       }
     },
     "voice": {
       "family": "voice",
       "tier": "A",
-      "method": "naturalness.run_heuristic_checks (free, deterministic, no icegrams)",
+      "method": "adapter.voice_checks (run_heuristic_checks counts; deterministic, free)",
       "n_goldens": 81,
       "checks": {
         "monotonous_openings": 0,
@@ -57,8 +49,7 @@
         "missing_icelandic_chars": 0,
         "overformal_register": 0
       },
-      "total_flagged": 0,
-      "note": "Deterministic translationese probe over the 81 goldens; good goldens should score LOW. All four tier-A checks = 0. hedging and overformal_register are per-sentence pattern matches (no length floor) -> a clean 0 is genuine signal. monotonous_openings needs 3 consecutive same-opening sentences and missing_icelandic_chars needs 20+ words per sentence; goldens are individual (often short) sentences, so those two 0s are partly structural as well as genuine."
+      "total_flagged": 0
     }
   },
   "flagged_examples": [

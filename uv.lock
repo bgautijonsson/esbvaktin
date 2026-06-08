@@ -545,7 +545,7 @@ requires-dist = [
     { name = "flagembedding", marker = "extra == 'embeddings'", specifier = ">=1.2,<2" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "icegrams", marker = "extra == 'icelandic'", specifier = ">=1.1" },
-    { name = "iseval", marker = "extra == 'eval'", git = "https://github.com/bgautijonsson/iseval.git?rev=v0.3.0" },
+    { name = "iseval", marker = "extra == 'eval'", git = "https://github.com/bgautijonsson/iseval.git?rev=v0.4.0" },
     { name = "islenska", marker = "extra == 'icelandic'", specifier = ">=1.0" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.2.0" },
     { name = "pgvector", specifier = ">=0.3" },
@@ -940,8 +940,8 @@ wheels = [
 
 [[package]]
 name = "iseval"
-version = "0.3.0"
-source = { git = "https://github.com/bgautijonsson/iseval.git?rev=v0.3.0#8a54d80ee91e4bd65b8a27ea48f5cd19abd03a2d" }
+version = "0.4.0"
+source = { git = "https://github.com/bgautijonsson/iseval.git?rev=v0.4.0#799ff2b95881d883070e088c0fbcd37f8cfff574" }
 
 [[package]]
 name = "islenska"
