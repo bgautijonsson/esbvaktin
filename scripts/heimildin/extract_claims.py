@@ -12,12 +12,9 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
 
 from config import (
     DEBATES,
-    DELIVERABLES_DIR,
-    EU_TITLE_PATTERNS,
     KNOWN_TOPICS,
     MIN_WORDS_REPLY,
     MIN_WORDS_SPEECH,
@@ -50,8 +47,7 @@ def _min_words(speech_type: str) -> int:
 # ---------------------------------------------------------------------------
 
 
-def list_speeches(era: str, issue_nr: str | None = None,
-                  include_replies: bool = False) -> None:
+def list_speeches(era: str, issue_nr: str | None = None, include_replies: bool = False) -> None:
     """List substantive speeches from target debates."""
     debates = DEBATES.get(era, [])
     if not debates:
@@ -94,10 +90,10 @@ def list_speeches(era: str, issue_nr: str | None = None,
                     continue
                 filtered.append(row)
 
-            print(f"\n## {debate['title']} (issue {debate['issue_nr']}, "
-                  f"session {debate['session']})")
-            print(f"{'ID':<28} {'Speaker':<35} {'Party':<25} {'Words':>6} "
-                  f"{'Date':<12} {'Type'}")
+            print(
+                f"\n## {debate['title']} (issue {debate['issue_nr']}, session {debate['session']})"
+            )
+            print(f"{'ID':<28} {'Speaker':<35} {'Party':<25} {'Words':>6} {'Date':<12} {'Type'}")
             print("-" * 130)
 
             total_words = 0
@@ -106,8 +102,10 @@ def list_speeches(era: str, issue_nr: str | None = None,
                 total_words += wc
                 date = row["date"][:10] if row["date"] else "?"
                 party = row["party"] or "?"
-                print(f"{row['speech_id']:<28} {row['name']:<35} "
-                      f"{party:<25} {wc:>6} {date:<12} {row['speech_type']}")
+                print(
+                    f"{row['speech_id']:<28} {row['name']:<35} "
+                    f"{party:<25} {wc:>6} {date:<12} {row['speech_type']}"
+                )
 
             print(f"\nTotal: {len(filtered)} speeches, {total_words:,} words")
             if skipped_short:
@@ -194,8 +192,9 @@ for frequency counting.
 """
 
 
-def prepare(era: str, issue_nr: str | None = None, limit: int | None = None,
-            include_replies: bool = False) -> None:
+def prepare(
+    era: str, issue_nr: str | None = None, limit: int | None = None, include_replies: bool = False
+) -> None:
     """Fetch speeches and write context files for extraction."""
     debates = DEBATES.get(era, [])
     if not debates:
@@ -272,15 +271,10 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None,
                 )
 
                 context = (
-                    instructions
-                    + metadata
-                    + "\n---\n\n"
-                    + (row["full_text"] or "(enginn texti)")
+                    instructions + metadata + "\n---\n\n" + (row["full_text"] or "(enginn texti)")
                 )
 
-                (work / "_context_extraction.md").write_text(
-                    context, encoding="utf-8"
-                )
+                (work / "_context_extraction.md").write_text(context, encoding="utf-8")
 
                 # Write metadata JSON for later assembly
                 meta = {
@@ -311,7 +305,7 @@ def prepare(era: str, issue_nr: str | None = None, limit: int | None = None,
         conn.close()
 
     print(f"\nPrepared {prepared} speeches in {WORK_DIR / era}/")
-    print(f"Run claim-extractor agent on each _context_extraction.md → _claims.json")
+    print("Run claim-extractor agent on each _context_extraction.md → _claims.json")
 
 
 # ---------------------------------------------------------------------------
@@ -347,10 +341,7 @@ def parse(era: str) -> None:
         # Strip markdown fences if present
         if raw.strip().startswith("```"):
             lines = raw.strip().split("\n")
-            raw = "\n".join(
-                line for line in lines
-                if not line.strip().startswith("```")
-            )
+            raw = "\n".join(line for line in lines if not line.strip().startswith("```"))
 
         try:
             claims = json.loads(raw)
@@ -367,20 +358,22 @@ def parse(era: str) -> None:
 
         for n, claim in enumerate(claims):
             instance_id = f"{sid}:{n}"
-            all_claims.append({
-                "instance_id": instance_id,
-                "speech_id": meta["speech_id"],
-                "speaker": meta["speaker"],
-                "party": meta["party"],
-                "date": meta["date"],
-                "session": meta["session"],
-                "speech_url": meta["url"],
-                "era": meta["era"],
-                "exact_quote": claim.get("exact_quote", ""),
-                "claim_summary": claim.get("claim_summary", ""),
-                "topic": claim.get("topic", "other"),
-                "stance": claim.get("stance", "neutral"),
-            })
+            all_claims.append(
+                {
+                    "instance_id": instance_id,
+                    "speech_id": meta["speech_id"],
+                    "speaker": meta["speaker"],
+                    "party": meta["party"],
+                    "date": meta["date"],
+                    "session": meta["session"],
+                    "speech_url": meta["url"],
+                    "era": meta["era"],
+                    "exact_quote": claim.get("exact_quote", ""),
+                    "claim_summary": claim.get("claim_summary", ""),
+                    "topic": claim.get("topic", "other"),
+                    "stance": claim.get("stance", "neutral"),
+                }
+            )
 
     # Write merged output
     output_file = WORK_DIR / f"{era}_claims_raw.json"
@@ -458,26 +451,25 @@ def status() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Extract rhetorical claims from Alþingi speeches"
-    )
+    parser = argparse.ArgumentParser(description="Extract rhetorical claims from Alþingi speeches")
     sub = parser.add_subparsers(dest="command")
 
     # list-speeches
     ls = sub.add_parser("list-speeches", help="List available speeches")
     ls.add_argument("--era", default="esb", choices=["esb", "ees"])
     ls.add_argument("--issue", default=None, help="Filter to specific issue number")
-    ls.add_argument("--include-replies", action="store_true",
-                    help="Include andsvör/svar (≥150 words)")
+    ls.add_argument(
+        "--include-replies", action="store_true", help="Include andsvör/svar (≥150 words)"
+    )
 
     # prepare
     prep = sub.add_parser("prepare", help="Prepare context files for extraction")
     prep.add_argument("--era", default="esb", choices=["esb", "ees"])
     prep.add_argument("--issue", default=None, help="Filter to specific issue number")
-    prep.add_argument("--limit", type=int, default=None,
-                      help="Max speeches to prepare")
-    prep.add_argument("--include-replies", action="store_true",
-                      help="Include andsvör/svar (≥150 words)")
+    prep.add_argument("--limit", type=int, default=None, help="Max speeches to prepare")
+    prep.add_argument(
+        "--include-replies", action="store_true", help="Include andsvör/svar (≥150 words)"
+    )
 
     # parse
     p = sub.add_parser("parse", help="Parse extraction outputs into unified format")

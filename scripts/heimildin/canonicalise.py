@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
 
 from config import WORK_DIR
 
@@ -121,18 +120,13 @@ def prepare(era: str) -> None:
             continue
 
         # Build context using stable instance_ids
-        context = CLUSTERING_INSTRUCTIONS.format(
-            topic=topic, count=len(topic_claims)
-        )
+        context = CLUSTERING_INSTRUCTIONS.format(topic=topic, count=len(topic_claims))
 
         for claim in topic_claims:
             iid = claim.get("instance_id", "?")
             stance_tag = claim.get("stance", "?")
             speaker = claim.get("speaker", "?")
-            context += (
-                f"[{iid}] ({stance_tag}, {speaker}): "
-                f"{claim['claim_summary']}\n"
-            )
+            context += f"[{iid}] ({stance_tag}, {speaker}): {claim['claim_summary']}\n"
 
         context_file = out_dir / f"_context_{topic}.md"
         context_file.write_text(context, encoding="utf-8")
@@ -206,13 +200,15 @@ def parse(era: str) -> None:
 
             if not clean_ids:
                 continue  # all IDs were fabricated or duplicated
-            canonical_claims.append({
-                "canonical_id": cid,
-                "canonical_text": group.get("canonical_text", ""),
-                "stance": group.get("stance", "neutral"),
-                "instance_count": len(clean_ids),
-                "instance_ids": clean_ids,
-            })
+            canonical_claims.append(
+                {
+                    "canonical_id": cid,
+                    "canonical_text": group.get("canonical_text", ""),
+                    "stance": group.get("stance", "neutral"),
+                    "instance_count": len(clean_ids),
+                    "instance_ids": clean_ids,
+                }
+            )
 
     # Handle unmapped claims (single-instance topics, or missed by clustering)
     all_ids = {c.get("instance_id") for c in claims if c.get("instance_id")}
@@ -224,8 +220,10 @@ def parse(era: str) -> None:
             if idx is not None:
                 single_topics.add(claims[idx].get("topic", "other"))
         if single_topics:
-            print(f"Note: {len(unmapped)} unmapped claims "
-                  f"({', '.join(single_topics)}) — creating singleton canonicals")
+            print(
+                f"Note: {len(unmapped)} unmapped claims "
+                f"({', '.join(single_topics)}) — creating singleton canonicals"
+            )
 
         for iid in sorted(unmapped):
             idx = id_to_idx.get(iid)
@@ -237,13 +235,15 @@ def parse(era: str) -> None:
             # Use speech_id fragment for readable singleton IDs
             short_id = iid.split(":")[0][-6:] if ":" in iid else iid[-6:]
             cid = f"{prefix}-S{short_id}"
-            canonical_claims.append({
-                "canonical_id": cid,
-                "canonical_text": claim.get("claim_summary", ""),
-                "stance": claim.get("stance", "neutral"),
-                "instance_count": 1,
-                "instance_ids": [iid],
-            })
+            canonical_claims.append(
+                {
+                    "canonical_id": cid,
+                    "canonical_text": claim.get("claim_summary", ""),
+                    "stance": claim.get("stance", "neutral"),
+                    "instance_count": 1,
+                    "instance_ids": [iid],
+                }
+            )
             instance_map[iid] = cid
 
     # Enrich raw claims with canonical_id
@@ -276,10 +276,12 @@ def parse(era: str) -> None:
         print(f"  Stripped {fabricated} fabricated instance IDs")
 
     # Show top canonical claims by frequency
-    print(f"\nTop 20 canonical claims:")
+    print("\nTop 20 canonical claims:")
     for cc in canonical_claims[:20]:
-        print(f"  {cc['canonical_id']:8} ({cc['instance_count']:2}×) "
-              f"[{cc['stance']:8}] {cc['canonical_text'][:70]}")
+        print(
+            f"  {cc['canonical_id']:8} ({cc['instance_count']:2}×) "
+            f"[{cc['stance']:8}] {cc['canonical_text'][:70]}"
+        )
 
     if errors:
         print(f"\n{len(errors)} errors:")
@@ -309,11 +311,20 @@ def status() -> None:
 
 
 _TOPIC_PREFIXES = {
-    "fisheries": "FIS", "trade": "TRA", "sovereignty": "SOV",
-    "eea_eu_law": "EEA", "agriculture": "AGR", "precedents": "PRE",
-    "currency": "CUR", "labour": "LAB", "energy": "ENE",
-    "housing": "HOU", "defence": "DEF", "democracy": "DEM",
-    "environment": "ENV", "other": "OTH",
+    "fisheries": "FIS",
+    "trade": "TRA",
+    "sovereignty": "SOV",
+    "eea_eu_law": "EEA",
+    "agriculture": "AGR",
+    "precedents": "PRE",
+    "currency": "CUR",
+    "labour": "LAB",
+    "energy": "ENE",
+    "housing": "HOU",
+    "defence": "DEF",
+    "democracy": "DEM",
+    "environment": "ENV",
+    "other": "OTH",
 }
 
 
@@ -322,9 +333,7 @@ def _topic_prefix(topic: str) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Canonicalise extracted claims"
-    )
+    parser = argparse.ArgumentParser(description="Canonicalise extracted claims")
     sub = parser.add_subparsers(dest="command")
 
     prep = sub.add_parser("prepare", help="Group claims and write clustering contexts")
