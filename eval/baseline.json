@@ -1,0 +1,577 @@
+{
+  "schema_version": 1,
+  "product": "esbvaktin",
+  "family": "correction",
+  "generated_at": "2026-06-08T16:35:56.448284+00:00",
+  "pipeline_git_sha": "480d1a1c2ca91e4ff444327a64e36d9a63673e16",
+  "n_goldens": 81,
+  "metrics": {
+    "n_goldens": 81,
+    "n_flagged_goldens": 34,
+    "n_flags_total": 51,
+    "fp_rate": 0.41975308641975306
+  },
+  "flagged_examples": [
+    {
+      "sentence": "FISH-DATA-003 staðfestir að sjávarútvegur og fiskvinnsla leggi til um 8% af vergri landsframleiðslu, en víðtækari efnahagsleg þýðing greinarinnar nái langt út fyrir beina hlutdeild í landsframleiðslu vegna margfeldisáhrifa og atvinnu á landsbyggðinni.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E005",
+          "start": 0,
+          "end": 0,
+          "message": "Málsgreinin er í lengra lagi",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "PREC-HIST-003 og PREC-DATA-008 sýna að Brexit hefur haft veruleg neikvæð áhrif á breska hagkerfið — OBR áætlar 4% samdrátt í langtíma-VLF, vöruviðskipti við ESB minnkuðu um 7-15%, og matvælaverð hækkaði.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "U001",
+          "start": 125,
+          "end": 137,
+          "message": "Óþekkt orð: 'langtíma-VLF'",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Samkvæmt SOV-LEGAL-008 og SOV-LEGAL-014 er öryggis- og varnarstefna ESB (CSDP) viðbót við NATO, ekki staðgengill.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "EEA-DATA-004 staðfestir að kvótakerfi Íslands var talið „ósamrýmanlegt meginreglum sjávarútvegsstefnunnar án verulegrar aðlögunar\" í aðildarviðræðunum 2010–2013.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "N001",
+          "start": 0,
+          "end": 0,
+          "message": "Gæsalappirnar \" ættu að vera “",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "FISH-LEGAL-001 staðfestir að sjávarútvegsstefnan setur leyfilegan heildarafla miðlægt og úthlutar kvótum með hlutfallslegum stöðugleika.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "W001/w",
+          "start": 29,
+          "end": 48,
+          "message": "Orðið 'sjávarútvegsstefnan' gæti átt að vera 'sjávarútvegsstefna'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Hins vegar ýkir fullyrðingin málið: „skipta út\" felur í sér algjöra afnám, en gögnin benda til þess að aðlögun yrði nauðsynleg fremur en alger afnám.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "Z002",
+          "start": 37,
+          "end": 43,
+          "message": "Orð á að byrja á hástaf: 'skipta'",
+          "layer": "greynir"
+        },
+        {
+          "category": "N001",
+          "start": 0,
+          "end": 0,
+          "message": "Gæsalappirnar \" ættu að vera “",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "FISH-COMP-002 gefur raunverulegar tölur: ESB-flotinn minnkaði úr um 97.000 skipum árið 2000 í um 73.000 árið 2023, sem er samdráttur um 25%, ekki hinar fullyrti 40%.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "P_NT_ÍTölu",
+          "start": 0,
+          "end": 0,
+          "message": "Sögnin á sennilega að vera í fleirtölu, þ.e. 'gefa'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Ennfremur eru fyrirvörar FISH-COMP-002 mikilvægir: flotaminnkunin var knúin áfram af skipulegum úreldingaráætlunum sem miðuðu að því að samræma flotastærð við tiltækar auðlindir — þetta var stefnumarkmið, ekki mistök.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "C002",
+          "start": 0,
+          "end": 9,
+          "message": "Orðinu 'Ennfremur' var skipt upp",
+          "layer": "greynir"
+        },
+        {
+          "category": "S004",
+          "start": 14,
+          "end": 24,
+          "message": "Orðið 'fyrirvörar' var leiðrétt í 'fyrirvarar'",
+          "layer": "greynir"
+        },
+        {
+          "category": "Z002",
+          "start": 51,
+          "end": 65,
+          "message": "Orð á að byrja á hástaf: 'flotaminnkunin'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "FISH-COMP-003 sýnir verulegar framfarir: í Norðaustur-Atlantshafi ESB hækkaði hlutfall metinna stofna sem veiddir voru við eða undir hámarkssjálfbærri nýtingu úr 5–10% árið 2003 í um 60% árið 2023.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "P_NT_ÍTölu",
+          "start": 0,
+          "end": 0,
+          "message": "Sögnin á sennilega að vera í fleirtölu, þ.e. 'sýna'",
+          "layer": "greynir"
+        },
+        {
+          "category": "Z002",
+          "start": 41,
+          "end": 42,
+          "message": "Orð á að byrja á hástaf: 'í'",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Fullyrðingin velur verstu hliðarnar og hunsar verulegar framfarir.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "W001/w",
+          "start": 39,
+          "end": 45,
+          "message": "Orðið 'hunsar' gæti átt að vera 'hugsar'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Fullyrðingin endurspeglar raunverulega þróun — SOV-LEGAL-006 og SOV-LEGAL-010 staðfesta að ESB hefur verið síður tilbúið til að veita undanþágur frá stækkun 2004 og Króatía (2013) fékk engar verulegar undanþágur.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Hins vegar er of aftrátt að segja að „engar undanþágur séu í boði lengur\".",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "S004",
+          "start": 17,
+          "end": 24,
+          "message": "Orðið 'aftrátt' var leiðrétt í 'afdrátt'",
+          "layer": "greynir"
+        },
+        {
+          "category": "N001",
+          "start": 0,
+          "end": 0,
+          "message": "Gæsalappirnar \" ættu að vera “",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "SOV-LEGAL-006 segir beinlínis að „sérstök staða Íslands (einkum sjávarútvegur) gæti verið grundvöllur viðræðna.\" Greinarmunurinn á formlegum undanþágum, sáttmálabókunum, aðlögunarfyrirkomulagi og raunverulegri óhlýðni (Svíþjóð/evra) er mikilvægt samhengi sem fullyrðingin vanrækir.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "N001",
+          "start": 0,
+          "end": 0,
+          "message": "Gæsalappirnar \" ættu að vera “",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "ENERGY-LEGAL-002 segir skýrt að Ísland taki þátt í ETS-kerfinu í gegnum tvíhliða samning við ESB, ekki í gegnum EES-samninginn.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Ísland er stofnaðili NATO (1949) og hefur engan her.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Fullyrðingin gefur til kynna að ESB hafi virkan áhuga á aðild Íslands sem hluta af stækkunarpakka og að Ísland sé efnahagslega eftirsóknarvert.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "TRADE-DATA-022 sýnir hins vegar að Ísland er efnahagslega mjög lítið (VLF um 25 milljarðar evra) og aðild þess hefði óveruleg áhrif á efnahag ESB.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Sama heimild bendir á að engin skjalfest ESB-stefna sé til um að sækjast eftir aðild Íslands sem hluta af stækkunarpakka, og forgangsröð ESB í stækkun er nú á Vestur-Balkanskaga, Úkraínu og Moldóvu.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E005",
+          "start": 0,
+          "end": 0,
+          "message": "Málsgreinin er í lengra lagi",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "ESB myndi taka vel á móti Íslandi en leitar ekki virkt eftir aðild landsins.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "október 2012 (fullyrðingin segir 67%, sem er nákvæm sléttun).",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E001",
+          "start": 0,
+          "end": 0,
+          "message": "Ekki tókst að þátta setningu; mögulega felst villa í henni",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Bæði meginefnisatriði fullyrðingarinnar eru þannig staðfest: hlutfall samþykktar og vanefnd Alþingis.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "Z002",
+          "start": 61,
+          "end": 69,
+          "message": "Orð á að byrja á hástaf: 'hlutfall'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Framkvæmdastjórn ESB mat Ísland sem „auðveldan\" umsækjanda árið 2010 vegna EES-aðildar, sterkra stofnana og virkrar markaðshagkerfis (TRADE-DATA-022).",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        },
+        {
+          "category": "N001",
+          "start": 0,
+          "end": 0,
+          "message": "Gæsalappirnar \" ættu að vera “",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Samningsstaðan styrkist af háu samræmi við regluverkið í gegnum EES.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Hins vegar eru erfiðustu málaflokkar — sjávarútvegur, landbúnaður og gjaldmiðill — alveg utan EES og krefjast nýrra viðræðna, og ESB hefur ekki veitt nýjum aðildarríkjum varanlegar undanþágur síðan Króatía gekk inn 2013 (SOV-LEGAL-006, EEA-LEGAL-012).",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E005",
+          "start": 0,
+          "end": 0,
+          "message": "Málsgreinin er í lengra lagi",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Innrás Rússlands í Úkraínu 2022 jók verulega hernaðarlegt mikilvægi Íslands og leiddi til nýrrar öryggisstefnu ESB (SOV-HIST-003).",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Stuðningur við ESB-aðild tengist efnahagslegum sveiflum — hann jókst í kreppunni 2008–2010 og aftur í verðbólgubyljunni 2022–2023 (POLL-DATA-009).",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "S004",
+          "start": 102,
+          "end": 119,
+          "message": "Orðið 'verðbólgubyljunni' var leiðrétt í 'verðbólgubylgjunni'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Auk þess hefur regluverk ESB stækkað umtalsvert á efnahagssviðum (EEA-LEGAL-018).",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "POLL-DATA-015 sýnir skýran kynjamun: 39% karla eru andvígir áframhaldandi viðræðum samanborið við 22% kvenna.",
+      "source": "assessment_goldens_is.md",
+      "flags": [
+        {
+          "category": "P_NT_ÍTölu",
+          "start": 0,
+          "end": 0,
+          "message": "Sögnin á sennilega að vera í fleirtölu, þ.e. 'sýna'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Á milli þeirra liggur stór hluti umræðunnar — en lítill hluti efnissviðsins.",
+      "source": "editorial_goldens_is.md",
+      "flags": [
+        {
+          "category": "E001",
+          "start": 0,
+          "end": 0,
+          "message": "Ekki tókst að þátta setningu; mögulega felst villa í henni",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Ríflega helmingur fullyrðinga vikunnar um landbúnaðarstefnu ESB nefndu beingreiðslur — en engin nefndi að Ísland hefur þegar sína eigin landbúnaðarstuðningsstefnu og að samanburðurinn snýst um breytingu á kerfi, ekki innleiðingu frá grunni.",
+      "source": "editorial_goldens_is.md",
+      "flags": [
+        {
+          "category": "E005",
+          "start": 0,
+          "end": 0,
+          "message": "Málsgreinin er í lengra lagi",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Talan „95% af reglubókum ESB eru óhagganlegar\" kom fram í sex greinum — en heimildir sýna að aðlögunartímabil geta verið veruleg.",
+      "source": "editorial_goldens_is.md",
+      "flags": [
+        {
+          "category": "E001",
+          "start": 0,
+          "end": 0,
+          "message": "Ekki tókst að þátta setningu; mögulega felst villa í henni",
+          "layer": "greynir"
+        },
+        {
+          "category": "E006",
+          "start": 0,
+          "end": 0,
+          "message": "Skammstafanir ætti að skrifa út",
+          "layer": "greynir"
+        },
+        {
+          "category": "N001",
+          "start": 0,
+          "end": 0,
+          "message": "Gæsalappirnar \" ættu að vera “",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Gögnin um þessi efni eru þó ítarleg: yfir þrjátíu heimildir um gjaldmiðil ein.",
+      "source": "editorial_goldens_is.md",
+      "flags": [
+        {
+          "category": "Z002",
+          "start": 37,
+          "end": 41,
+          "message": "Orð á að byrja á hástaf: 'yfir'",
+          "layer": "greynir"
+        }
+      ]
+    },
+    {
+      "sentence": "Sjávarútvegur fékk eina tilvísun á þessari viku.",
+      "source": "editorial_goldens_is.md",
+      "flags": [
+        {
+          "category": "confusable",
+          "start": 33,
+          "end": 47,
+          "message": "\"á þessari viku\" — usually should be \"í þessari viku\"",
+          "layer": "confusables"
+        }
+      ]
+    },
+    {
+      "sentence": "Ef umræðan heldur áfram á svipuðum nótum — fjórar vikur af fullveldisumræðu og ein tilvísun í sjávarútveg — mun raunverulegt innihald aðildarviðræðna hafa fengið minna rými en formsatriðin sem umlykja þau.",
+      "source": "editorial_goldens_is.md",
+      "flags": [
+        {
+          "category": "E001",
+          "start": 0,
+          "end": 0,
+          "message": "Ekki tókst að þátta setningu; mögulega felst villa í henni",
+          "layer": "greynir"
+        },
+        {
+          "category": "W001/w",
+          "start": 176,
+          "end": 188,
+          "message": "Orðið 'formsatriðin' gæti átt að vera 'formsatriði'",
+          "layer": "greynir"
+        }
+      ]
+    }
+  ]
+}
