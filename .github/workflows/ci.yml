@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, pipeline-optimisation]
   pull_request:
     branches: [main]
   schedule:
@@ -41,3 +41,18 @@ jobs:
       - run: uv sync --extra dev
       - run: uv run python scripts/init_db.py
       - run: uv run python -m pytest
+
+  icelandic-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --extra icelandic --extra eval
+      - name: Gate correction quality (goldens — fp_rate; voice lands in a later milestone)
+        run: |
+          uv run python -m iseval gate \
+            --product esbvaktin --family correction \
+            --adapter eval.iseval_adapter:EsbvaktinAdapter \
+            --golden eval/golden \
+            --baseline eval/baseline.json \
+            --gate-config eval/gate.json

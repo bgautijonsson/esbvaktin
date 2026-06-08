@@ -1,0 +1,26 @@
+{
+  "fp_rate": {
+    "direction": "lower_better",
+    "tol": 0.05
+  },
+  "voice.total_flagged": {
+    "direction": "lower_better",
+    "tol": 0.0
+  },
+  "datasets.iceerrorcorpus.precision_recall.precision": {
+    "direction": "higher_better",
+    "tol": 0.02
+  },
+  "datasets.iceerrorcorpus.precision_recall.recall": {
+    "direction": "higher_better",
+    "tol": 0.02
+  },
+  "datasets.iceerrorcorpus.precision_recall.f1": {
+    "direction": "higher_better",
+    "tol": 0.02
+  },
+  "datasets.gec.detection.detection_recall": {
+    "direction": "higher_better",
+    "tol": 0.02
+  }
+}
