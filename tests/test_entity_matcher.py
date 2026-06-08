@@ -89,6 +89,46 @@ class TestSubsetMatch:
         assert result.confidence < MATCH_THRESHOLDS["flag"]
 
 
+class TestCorruptedNameMasking:
+    """Pins why the corrupted `Daði Más Kristóferssonn` duplicate escaped the registry.
+
+    Root cause of the spurious entity-details/dadi-mas-kristoferssonn.json on the site:
+    the haiku entity-extractor transcribed "Daði Már Kristófersson" as
+    "Daði Más Kristóferssonn" (two typos: Má*s* not Má*r*, and a doubled trailing *n*).
+    The matcher behaved correctly — it must NOT fuzzy-merge a name that differs in two of
+    three words to the canonical entity, or it would risk wrong merges. With two corrupted
+    words the only overlap is the shared first name, which lands at the weak-fuzzy 0.30 tier
+    (below the 0.5 flag threshold), so register_sightings minted a NEW entity instead of
+    flagging it for review. A *single* typo would still subset-match above the flag line and
+    be caught. The fix is upstream data correction, not a matcher change.
+    """
+
+    @pytest.fixture
+    def dadi_registry(self) -> list[Entity]:
+        return [
+            Entity(
+                id=42,
+                slug="dadi-mar-kristofersson",
+                canonical_name="Daði Már Kristófersson",
+                entity_type="individual",
+                stance="neutral",
+                aliases=[],
+            ),
+        ]
+
+    def test_double_typo_falls_below_flag_threshold(self, dadi_registry):
+        # The corruption seen in the wild: matches only on the shared first name ->
+        # weak fuzzy 0.30, below flag -> treated as a new (duplicate) entity.
+        result = match_entity("Daði Más Kristóferssonn", "individual", dadi_registry)
+        assert result.confidence < MATCH_THRESHOLDS["flag"]
+
+    def test_clean_name_auto_links(self, dadi_registry):
+        # The correct name exact-matches the canonical entity -> auto-link, no duplicate.
+        result = match_entity("Daði Már Kristófersson", "individual", dadi_registry)
+        assert result.entity_id == 42
+        assert result.confidence >= MATCH_THRESHOLDS["auto_link"]
+
+
 class TestNoMatch:
     def test_unknown_name(self, registry):
         result = match_entity("Guðmundur Sigurðsson", "individual", registry)
