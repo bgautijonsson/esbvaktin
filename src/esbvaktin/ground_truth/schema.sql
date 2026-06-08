@@ -38,6 +38,15 @@ CREATE INDEX IF NOT EXISTS idx_evidence_embedding ON evidence
 CREATE INDEX IF NOT EXISTS idx_evidence_fts ON evidence
     USING gin(to_tsvector('simple', statement || ' ' || COALESCE(caveats, '')));
 
+-- Icelandic summary fields for /heimildir/ pages.
+-- NB: statement_is MUST be added before the fts_is generated column below
+-- references it — on a fresh DB the schema runs top-to-bottom, and a STORED
+-- generated column validates its expression at creation time.
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS statement_is TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS source_description_is TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS caveats_is TEXT;
+ALTER TABLE evidence ADD COLUMN IF NOT EXISTS is_proofread_hash TEXT;
+
 -- Hybrid BM25+vector: generated tsvector columns for keyword search
 -- fts_en: English statement text; fts_is: Icelandic statement text
 ALTER TABLE evidence
@@ -64,16 +73,6 @@ DROP TRIGGER IF EXISTS evidence_updated_at ON evidence;
 CREATE TRIGGER evidence_updated_at
     BEFORE UPDATE ON evidence
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
-
--- ═══════════════════════════════════════════════════════════════════════
--- Migration: Icelandic summary fields for /heimildir/ pages
--- ═══════════════════════════════════════════════════════════════════════
-
-ALTER TABLE evidence ADD COLUMN IF NOT EXISTS statement_is TEXT;
-ALTER TABLE evidence ADD COLUMN IF NOT EXISTS source_description_is TEXT;
-ALTER TABLE evidence ADD COLUMN IF NOT EXISTS caveats_is TEXT;
-ALTER TABLE evidence ADD COLUMN IF NOT EXISTS is_proofread_hash TEXT;
 
 
 -- ═══════════════════════════════════════════════════════════════════════
