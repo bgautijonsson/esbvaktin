@@ -526,6 +526,9 @@ embeddings = [
     { name = "torch" },
     { name = "transformers" },
 ]
+eval = [
+    { name = "iseval" },
+]
 ghost = [
     { name = "pyjwt" },
 ]
@@ -542,6 +545,7 @@ requires-dist = [
     { name = "flagembedding", marker = "extra == 'embeddings'", specifier = ">=1.2,<2" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "icegrams", marker = "extra == 'icelandic'", specifier = ">=1.1" },
+    { name = "iseval", marker = "extra == 'eval'", git = "https://github.com/bgautijonsson/iseval.git?rev=v0.3.0" },
     { name = "islenska", marker = "extra == 'icelandic'", specifier = ">=1.0" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.2.0" },
     { name = "pgvector", specifier = ">=0.3" },
@@ -561,7 +565,7 @@ requires-dist = [
     { name = "trafilatura", specifier = ">=2.0" },
     { name = "transformers", marker = "extra == 'embeddings'", specifier = ">=4.41,<5" },
 ]
-provides-extras = ["embeddings", "icelandic", "dev", "email", "ghost"]
+provides-extras = ["embeddings", "icelandic", "dev", "email", "ghost", "eval"]
 
 [[package]]
 name = "filelock"
@@ -933,6 +937,11 @@ sdist = { url = "https://files.pythonhosted.org/packages/80/c6/f02811c51fec845ee
 wheels = [
     { url = "https://files.pythonhosted.org/packages/81/38/73fa582d6997362d9b4901b2a8ba1177b2d2896aa59ab8d069a3884e2e0d/ir_datasets-0.5.11-py3-none-any.whl", hash = "sha256:ae78549e5a7fa45e50462b7acb9f0765fc344fec6054108bf3dd063050555206", size = 866095, upload-time = "2025-06-24T07:58:29.958Z" },
 ]
+
+[[package]]
+name = "iseval"
+version = "0.3.0"
+source = { git = "https://github.com/bgautijonsson/iseval.git?rev=v0.3.0#8a54d80ee91e4bd65b8a27ea48f5cd19abd03a2d" }
 
 [[package]]
 name = "islenska"

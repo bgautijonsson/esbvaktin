@@ -39,6 +39,9 @@ email = [
 ghost = [
     "pyjwt>=2.10",
 ]
+eval = [
+    "iseval @ git+https://github.com/bgautijonsson/iseval.git@v0.3.0",
+]
 
 [tool.ruff]
 line-length = 100
@@ -58,3 +61,7 @@ testpaths = ["tests"]
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+# Permit the `iseval @ git+https://…` direct reference in the `eval` extra
+allow-direct-references = true
