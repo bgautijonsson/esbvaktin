@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
       - run: uv sync --extra icelandic --extra eval
-      - name: Gate correction quality (goldens — fp_rate; voice lands in a later milestone)
+      - name: Gate correction quality (goldens — fp_rate + voice)
         run: |
           uv run python -m iseval gate \
             --product esbvaktin --family correction \
@@ -56,3 +56,30 @@ jobs:
             --golden eval/golden \
             --baseline eval/baseline.json \
             --gate-config eval/gate.json
+
+  icelandic-eval-nightly:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch iseval (for the dataset clone script)
+        uses: actions/checkout@v4
+        with:
+          repository: bgautijonsson/iseval
+          ref: v0.4.0
+          path: _iseval
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --extra icelandic --extra eval
+      - name: Fetch evaluation corpora
+        run: uv run python _iseval/scripts/eval_fetch_datasets --data-dir _iseval/data
+      - name: Gate correction quality (corpus — IceErrorCorpus P/R + gec detection)
+        run: |
+          uv run python -m iseval gate \
+            --product esbvaktin --family correction \
+            --adapter eval.iseval_adapter:EsbvaktinAdapter \
+            --golden eval/golden \
+            --baseline eval/baseline.json \
+            --gate-config eval/gate.json \
+            --dataset iceerrorcorpus:_iseval/data/iceErrorCorpus/data/essays \
+            --dataset gec:_iseval/data/gec-test-set/Type2 \
+            --sample 300
