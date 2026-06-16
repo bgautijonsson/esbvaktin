@@ -2,8 +2,8 @@
   "schema_version": 1,
   "product": "esbvaktin",
   "family": "correction",
-  "generated_at": "2026-06-08T20:03:57.046127+00:00",
-  "pipeline_git_sha": "864dd1bdafa1b40700f6360eef4c97b45b0f2233",
+  "generated_at": "2026-06-16T12:35:01.587286+00:00",
+  "pipeline_git_sha": "704d6f13e366082462aedb2ef694420b9c085780",
   "n_goldens": 81,
   "metrics": {
     "n_goldens": 81,
@@ -32,9 +32,9 @@
         "n_sampled": 98,
         "detection": {
           "n_changed": 98,
-          "n_flagged_changed": 66,
+          "n_flagged_changed": 69,
           "n_flagged_clean": 0,
-          "detection_recall": 0.673469387755102
+          "detection_recall": 0.7040816326530612
         }
       }
     },

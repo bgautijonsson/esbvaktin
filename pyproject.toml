@@ -27,6 +27,9 @@ icelandic = [
     "icegrams>=1.1",
     "islenska>=1.0",
     "reynir>=3.0",
+    # Shared Icelandic correction pipeline (union of esbvaktin + althingi forks).
+    # Pinned by git ref like iseval; layer functions re-exported at top level.
+    "ispipeline @ git+https://github.com/bgautijonsson/ispipeline.git@v0.1.0",
 ]
 dev = [
     "pytest>=8.0",

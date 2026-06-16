@@ -23,40 +23,30 @@ import re
 import sys
 from pathlib import Path
 
-from esbvaktin.corrections.confusables import (
-    check_confusables,
-    format_confusable_results,
-)
-from esbvaktin.corrections.eu_terms import (
-    check_eu_terms,
-    format_eu_term_results,
-)
-from esbvaktin.corrections.greynir import (
-    apply_fixes,
-    check_with_api,
-    check_with_library,
-    format_results,
-)
-from esbvaktin.corrections.inflections import (
+# Correction layers now come from the shared ispipeline package (union of the
+# esbvaktin + althingi forks); only ESBvaktin's CLI orchestration lives here.
+from ispipeline import (
+    _HAS_GREYNIR,
+    _HAS_ICEGRAMS,
     _HAS_ISLENSKA,
-    check_inflections,
-    format_inflection_results,
-)
-from esbvaktin.corrections.malfridur import (
+    apply_fixes,
     apply_malfridur_fixes,
     apply_malfridur_fixes_to_file,
+    check_confusables,
+    check_eu_terms,
+    check_inflections,
+    check_with_api,
+    check_with_library,
     check_with_malfridur,
-    format_malfridur_results,
-)
-from esbvaktin.corrections.naturalness import (
-    _HAS_ICEGRAMS,
-    format_naturalness_results,
-    score_naturalness,
-)
-from esbvaktin.corrections.parsing import (
-    _HAS_GREYNIR,
     deep_parse,
+    format_confusable_results,
     format_deep_parse_results,
+    format_eu_term_results,
+    format_inflection_results,
+    format_malfridur_results,
+    format_naturalness_results,
+    format_results,
+    score_naturalness,
 )
 
 # Icelandic character set for the Unicode check
@@ -139,7 +129,7 @@ def _check_unicode(sentences: list[tuple[str, int]], filename: str) -> int:
         if len(words) >= 10 and not _ICE_CHARS.search(text):
             flagged += 1
             display = text[:100] + "..." if len(text) > 100 else text
-            print(f'  #{line_num:3d} [ASCII] No Icelandic characters in {len(words)}-word sentence')
+            print(f"  #{line_num:3d} [ASCII] No Icelandic characters in {len(words)}-word sentence")
             print(f'        "{display}"')
 
     if flagged == 0:
@@ -171,19 +161,15 @@ def main():
     check_parser.add_argument("path", type=Path, help="JSON file or directory to check")
     check_parser.add_argument("--fix", action="store_true", help="Auto-apply safe fixes")
     check_parser.add_argument("--json", action="store_true", help="Machine-readable output")
+    check_parser.add_argument("--api", action="store_true", help="Use yfirlestur.is REST API")
     check_parser.add_argument(
-        "--api", action="store_true", help="Use yfirlestur.is REST API"
-    )
-    check_parser.add_argument(
-        "--malfridur", action="store_true",
-        help="Use Málstaður API (requires MALSTADUR_API_KEY)"
+        "--malfridur", action="store_true", help="Use Málstaður API (requires MALSTADUR_API_KEY)"
     )
     check_parser.add_argument(
         "--no-deep", action="store_true", help="Skip GreynirEngine deep parsing"
     )
     check_parser.add_argument(
-        "--threshold", type=float, default=2.0,
-        help="Naturalness threshold in σ (default: 2.0)"
+        "--threshold", type=float, default=2.0, help="Naturalness threshold in σ (default: 2.0)"
     )
 
     # check-editorial command
@@ -193,25 +179,23 @@ def main():
     editorial_parser.add_argument("path", type=Path, help="Markdown file to check")
     editorial_parser.add_argument("--fix", action="store_true", help="Auto-apply safe fixes")
     editorial_parser.add_argument(
-        "--malfridur", action="store_true",
-        help="Use Málstaður API (requires MALSTADUR_API_KEY)"
+        "--malfridur", action="store_true", help="Use Málstaður API (requires MALSTADUR_API_KEY)"
     )
     editorial_parser.add_argument(
         "--no-deep", action="store_true", help="Skip GreynirEngine deep parsing"
     )
     editorial_parser.add_argument(
-        "--threshold", type=float, default=2.0,
-        help="Naturalness threshold in σ (default: 2.0)"
+        "--threshold", type=float, default=2.0, help="Naturalness threshold in σ (default: 2.0)"
     )
 
     # check-claims command
-    claims_parser = subparsers.add_parser(
-        "check-claims", help="Check exported claims file"
-    )
+    claims_parser = subparsers.add_parser("check-claims", help="Check exported claims file")
     claims_parser.add_argument(
-        "path", type=Path, nargs="?",
+        "path",
+        type=Path,
+        nargs="?",
         default=Path("data/export/claims.json"),
-        help="Claims JSON file (default: data/export/claims.json)"
+        help="Claims JSON file (default: data/export/claims.json)",
     )
 
     args = parser.parse_args()

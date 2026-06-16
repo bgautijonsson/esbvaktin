@@ -219,4 +219,4 @@ uv run python scripts/correct_icelandic.py check data/reassessment/ --fix
 | `knowledge/exemplars_editorial_is.md` | Gold-standard Icelandic editorial exemplars |
 | `knowledge/eu_terms_is.md` | EU terminology glossary (Icelandic) |
 | `scripts/correct_icelandic.py` | Post-processing pipeline entry point |
-| `src/esbvaktin/corrections/` | Correction layer modules |
+| `src/esbvaktin/corrections/` | Project CLI wrapper (`cli.py`); correction layers now live in the shared [`ispipeline`](https://github.com/bgautijonsson/ispipeline) package |

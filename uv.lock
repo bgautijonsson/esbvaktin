@@ -535,6 +535,7 @@ ghost = [
 icelandic = [
     { name = "icegrams" },
     { name = "islenska" },
+    { name = "ispipeline" },
     { name = "reynir" },
     { name = "reynir-correct" },
 ]
@@ -547,6 +548,7 @@ requires-dist = [
     { name = "icegrams", marker = "extra == 'icelandic'", specifier = ">=1.1" },
     { name = "iseval", marker = "extra == 'eval'", git = "https://github.com/bgautijonsson/iseval.git?rev=v0.4.0" },
     { name = "islenska", marker = "extra == 'icelandic'", specifier = ">=1.0" },
+    { name = "ispipeline", marker = "extra == 'icelandic'", git = "https://github.com/bgautijonsson/ispipeline.git?rev=v0.1.0" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.2.0" },
     { name = "pgvector", specifier = ">=0.3" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
@@ -958,6 +960,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/9f/db/a1d6423442cb584fc3eea10973a386de087013bfc865e0d30af880b6f0c2/islenska-1.1.1-cp39-abi3-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:2a174c4dbe8397fc540b710f848f787ed882e05bf2228e7fdb95a541b615ab13", size = 50949862, upload-time = "2025-12-11T18:53:43.481Z" },
     { url = "https://files.pythonhosted.org/packages/05/72/d2531c1e15bb2d858150df4e356cff972e952fa5040a98c4b7dccec8dd4b/islenska-1.1.1-cp39-abi3-win_amd64.whl", hash = "sha256:29f19bc7c20e02ba44a22d9e153a57a456229359b472e9200274ed06a35c8644", size = 50397472, upload-time = "2025-12-11T18:53:46.372Z" },
 ]
+
+[[package]]
+name = "ispipeline"
+version = "0.1.0"
+source = { git = "https://github.com/bgautijonsson/ispipeline.git?rev=v0.1.0#f456a15c4a5fe526513ba7bde8bfe6e5fb5d1b88" }
 
 [[package]]
 name = "jinja2"

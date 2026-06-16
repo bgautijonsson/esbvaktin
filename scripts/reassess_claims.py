@@ -1002,7 +1002,7 @@ def update():
             explanation_is = item.get("explanation_is", "")
             missing_context_is = item.get("missing_context_is")
             try:
-                from esbvaktin.corrections.greynir import (
+                from ispipeline import (
                     apply_fixes_to_text,
                     check_with_library,
                 )

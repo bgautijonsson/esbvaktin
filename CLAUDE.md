@@ -60,7 +60,7 @@ src/esbvaktin/          # Main package
     matcher.py          # Name matching cascade (BÍN lemmatisation + aliases)
   claim_bank/           # Canonical claims storage with verdicts for reuse across articles
   gap_planner/          # Evidence gap identification and research task generation
-  corrections/          # Icelandic text correction pipeline (greynir, naturalness, inflections, EU terms)
+  corrections/          # Project CLI wrapper (cli.py) over the shared ispipeline package; correction layers (greynir, naturalness, inflections, EU terms, Málstaður) now live in ispipeline
   utils/                # Shared utilities (embeddings, Icelandic NLP)
 tests/                  # Tests
 scripts/                # One-off and pipeline scripts
@@ -146,7 +146,7 @@ Skills orchestrate, agents execute. Skills (invoked via `/analyse-article` etc.)
 
 ### Optional Dependency Groups
 - `uv sync --extra embeddings` — FlagEmbedding + torch (for BAAI/bge-m3)
-- `uv sync --extra icelandic` — GreynirCorrect, Icegrams, Islenska
+- `uv sync --extra icelandic` — GreynirCorrect, Icegrams, Islenska, + `ispipeline` (shared correction layers, pinned by git ref @v0.1.0)
 - `uv sync --extra dev` — pytest, pytest-asyncio, ruff
 - `uv sync --extra email` — Mailgun integration
 - `uv sync --extra ghost` — Ghost CMS publishing

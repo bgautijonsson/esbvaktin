@@ -293,7 +293,7 @@ def write() -> None:
             # a broken parser for every entry.
             if proofread_enabled:
                 try:
-                    from esbvaktin.corrections.greynir import (
+                    from ispipeline import (
                         apply_fixes_to_text,
                         check_with_library,
                     )

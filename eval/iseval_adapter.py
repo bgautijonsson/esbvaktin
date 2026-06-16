@@ -1,7 +1,8 @@
 """iseval PipelineAdapter for ESBvaktin's correction-correctness family.
 
-This shim is the seam between ESBvaktin's local Icelandic correction layers and
-the shared `iseval` harness. It implements `iseval.adapter.PipelineAdapter`:
+This shim is the seam between ESBvaktin's Icelandic correction layers (now the
+shared `ispipeline` package) and the `iseval` harness. It implements
+`iseval.adapter.PipelineAdapter`:
 given one sentence, it runs the real correction layers and returns each finding
 as an `iseval.models.PipelineFlag`.
 
@@ -44,11 +45,12 @@ from __future__ import annotations
 import re
 
 from iseval.models import PipelineFlag
-
-from esbvaktin.corrections.confusables import check_confusables
-from esbvaktin.corrections.eu_terms import check_eu_terms
-from esbvaktin.corrections.greynir import check_with_library
-from esbvaktin.corrections.naturalness import run_heuristic_checks
+from ispipeline import (
+    check_confusables,
+    check_eu_terms,
+    check_with_library,
+    run_heuristic_checks,
+)
 
 # Pull the corrected word out of a GreynirCorrect annotation message such as
 #   "Orðið 'setníng' var leiðrétt í 'setning'"
