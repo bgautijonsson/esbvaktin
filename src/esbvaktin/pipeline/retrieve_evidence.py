@@ -11,6 +11,8 @@ import logging
 import sys
 from typing import TYPE_CHECKING
 
+from isretrieval import rrf_fuse
+
 from esbvaktin.ground_truth import SearchResult, search_evidence
 
 from .models import (
@@ -77,23 +79,17 @@ def _rrf_merge(
 
     Returns (SearchResult, rrf_score) tuples sorted by score descending.
     Documents appearing in both lists rank higher than either alone.
+
+    Thin wrapper over the shared ``isretrieval.rrf_fuse`` (golden-tested to
+    reproduce this fusion byte-identically): 1-based ranks, the RRF_K constant,
+    and insertion-order tie-breaking (vector list before keyword list).
     """
-    scores: dict[str, float] = {}
-    result_map: dict[str, SearchResult] = {}
-
-    for rank, r in enumerate(vector_results, 1):
-        scores[r.evidence_id] = scores.get(r.evidence_id, 0) + vector_weight / (RRF_K + rank)
-        result_map[r.evidence_id] = r
-
-    for rank, r in enumerate(keyword_results, 1):
-        scores[r.evidence_id] = scores.get(r.evidence_id, 0) + keyword_weight / (RRF_K + rank)
-        if r.evidence_id not in result_map:
-            result_map[r.evidence_id] = r
-
-    return sorted(
-        [(result_map[eid], score) for eid, score in scores.items()],
-        key=lambda x: x[1],
-        reverse=True,
+    return rrf_fuse(
+        vector_results,
+        keyword_results,
+        key=lambda r: r.evidence_id,
+        weights=[vector_weight, keyword_weight],
+        k=RRF_K,
     )
 
 

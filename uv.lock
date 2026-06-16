@@ -502,6 +502,7 @@ source = { editable = "." }
 dependencies = [
     { name = "aiosqlite" },
     { name = "httpx" },
+    { name = "isretrieval" },
     { name = "mcp", extra = ["cli"] },
     { name = "pgvector" },
     { name = "psycopg", extra = ["binary"] },
@@ -549,6 +550,7 @@ requires-dist = [
     { name = "iseval", marker = "extra == 'eval'", git = "https://github.com/bgautijonsson/iseval.git?rev=v0.4.0" },
     { name = "islenska", marker = "extra == 'icelandic'", specifier = ">=1.0" },
     { name = "ispipeline", marker = "extra == 'icelandic'", git = "https://github.com/bgautijonsson/ispipeline.git?rev=v0.1.0" },
+    { name = "isretrieval", git = "https://github.com/bgautijonsson/isretrieval.git?rev=v0.1.0" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.2.0" },
     { name = "pgvector", specifier = ">=0.3" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
@@ -965,6 +967,11 @@ wheels = [
 name = "ispipeline"
 version = "0.1.0"
 source = { git = "https://github.com/bgautijonsson/ispipeline.git?rev=v0.1.0#f456a15c4a5fe526513ba7bde8bfe6e5fb5d1b88" }
+
+[[package]]
+name = "isretrieval"
+version = "0.1.0"
+source = { git = "https://github.com/bgautijonsson/isretrieval.git?rev=v0.1.0#4efcb0a779e9f536d211fc1dca72ccf0a40fe4b5" }
 
 [[package]]
 name = "jinja2"
