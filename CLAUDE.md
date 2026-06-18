@@ -179,6 +179,8 @@ uv run --extra icelandic --extra eval python -m iseval run \
 
 …then commit `eval/baseline.json` with the delta explained. The `--dataset` flags are required — omit them and the corpus metrics vanish from the baseline. Never widen `eval/gate.json` to dodge a real regression. Bump the iseval pin (`@vX.Y.Z`) + re-baseline when adopting a new iseval.
 
+**Updating a shared package** (`ispipeline` · `isretrieval` · `iseval`): bump the pin → re-prove (iseval gate for ispipeline/iseval; `pytest tests/test_rrf_merge.py` for isretrieval) → `cd ~/ispipeline && ispipeline-check-pins && ispipeline-estate-health` → merge. Full end-to-end procedure + consumer registry: `~/ispipeline/README.md` § *Updating a shared package*.
+
 ## Commands
 
 Skills and key commands are in `.claude/rules/commands-reference.md` (auto-loaded when working in `scripts/` or `R/`).
