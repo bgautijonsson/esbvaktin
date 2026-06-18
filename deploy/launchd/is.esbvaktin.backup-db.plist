@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  ESBvaktin daily database backup — runs scripts/backup_db.sh at 03:00, writing
+  a verified pg_dump to ~/Documents/esbvaktin-backups/ (synced to iCloud).
+
+  Tracked here so the job is recoverable from git — the production plist that
+  ran (and silently failed for ~23 days in 2026) was never under version
+  control. PGPASSWORD is the local Docker dev credential (also in docker-
+  compose.yml and SETUP.md), not a real secret.
+
+  Install on a new machine (paths are absolute — adjust the user dir if needed):
+    cp deploy/launchd/is.esbvaktin.backup-db.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/is.esbvaktin.backup-db.plist
+
+  PATH uses the version-agnostic libpq symlink (/opt/homebrew/opt/libpq/bin) so
+  a `brew upgrade libpq` doesn't break the job — do NOT pin a Cellar version.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>is.esbvaktin.backup-db</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/brynjolfurjonsson/esbvaktin/scripts/backup_db.sh</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/Users/brynjolfurjonsson/Documents/esbvaktin-backups/backup.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/brynjolfurjonsson/Documents/esbvaktin-backups/backup.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/opt/libpq/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>PGPASSWORD</key>
+        <string>localdev</string>
+    </dict>
+</dict>
+</plist>

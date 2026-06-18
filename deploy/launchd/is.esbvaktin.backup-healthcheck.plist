@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  ESBvaktin backup watchdog — daily active surfacing of backup failures.
+
+  Runs scripts/backup_healthcheck.sh at 09:00 (after the 03:00 backup, at a
+  time the user is at the desk to see the notification). If the last backup run
+  FAILED, or the newest valid dump is stale / missing, it fires a macOS
+  notification. Decoupled from is.esbvaktin.backup-db on purpose, so it still
+  alerts when the backup job itself never ran.
+
+  Install on a new machine (paths are absolute — adjust the user dir if needed):
+    cp deploy/launchd/is.esbvaktin.backup-healthcheck.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/is.esbvaktin.backup-healthcheck.plist
+
+  PATH includes the version-agnostic libpq symlink because --status shells out
+  to pg_restore --list to validate dumps. No PGPASSWORD: --status never connects
+  to the database.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>is.esbvaktin.backup-healthcheck</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/brynjolfurjonsson/esbvaktin/scripts/backup_healthcheck.sh</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/Users/brynjolfurjonsson/Documents/esbvaktin-backups/backup-healthcheck.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/brynjolfurjonsson/Documents/esbvaktin-backups/backup-healthcheck.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/opt/libpq/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+</dict>
+</plist>

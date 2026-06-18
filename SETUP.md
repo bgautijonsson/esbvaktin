@@ -106,49 +106,38 @@ Export scripts assume `~/esbvaktin-site` exists. Pass `--site-dir` to override.
 
 Daily DB backup at 03:00, writes to `~/Documents/esbvaktin-backups/` (synced to iCloud).
 
-Create `~/Library/LaunchAgents/is.esbvaktin.backup-db.plist`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>is.esbvaktin.backup-db</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/bin/bash</string>
-        <string>/Users/brynjolfurjonsson/esbvaktin/scripts/backup_db.sh</string>
-    </array>
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Hour</key>
-        <integer>3</integer>
-        <key>Minute</key>
-        <integer>0</integer>
-    </dict>
-    <key>StandardOutPath</key>
-    <string>/Users/brynjolfurjonsson/Documents/esbvaktin-backups/backup.log</string>
-    <key>StandardErrorPath</key>
-    <string>/Users/brynjolfurjonsson/Documents/esbvaktin-backups/backup.log</string>
-    <key>EnvironmentVariables</key>
-    <dict>
-        <key>PATH</key>
-        <string>/opt/homebrew/Cellar/libpq/18.2/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
-        <key>PGPASSWORD</key>
-        <string>localdev</string>
-    </dict>
-</dict>
-</plist>
-```
+The plist is tracked in the repo — install it from the committed template rather than hand-writing it:
 
 ```bash
+cp deploy/launchd/is.esbvaktin.backup-db.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/is.esbvaktin.backup-db.plist
 ```
 
 Verify: `./scripts/backup_db.sh --status`
 
-Note: if libpq version differs from `18.2`, update the PATH in the plist (`brew info libpq` to check).
+The template's PATH uses the version-agnostic libpq symlink (`/opt/homebrew/opt/libpq/bin`), so a `brew upgrade libpq` won't break the job. `PGPASSWORD=localdev` is the local Docker dev credential, not a secret.
+
+---
+
+## Backup Healthcheck (launchd)
+
+Active surfacing so a backup failure can't stay silent (the 03:00 job once exited non-zero for ~23 days with no one notified — its only sink was `backup.log`). A separate watchdog runs daily at 09:00, polls the durable signals `backup_db.sh` emits, and fires a macOS notification when the last run **FAILED** or the newest valid dump is **stale / missing**:
+
+```bash
+cp deploy/launchd/is.esbvaktin.backup-healthcheck.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/is.esbvaktin.backup-healthcheck.plist
+```
+
+Verify (prints the decision, fires no notification):
+
+```bash
+./scripts/backup_healthcheck.sh --dry-run
+```
+
+- It is a **separate** LaunchAgent, not a hook inside the backup job, so it still alerts when the backup job never ran at all (unloaded, throttled off, or died early).
+- It needs no database — it only reads `last_backup_status.txt` and runs `backup_db.sh --status`. It does shell out to `pg_restore` to validate dumps, so its plist PATH includes libpq.
+- Notification backend: `terminal-notifier` if installed, else `osascript`. `ESBVAKTIN_STALE_DAYS` (default 2) sets the staleness threshold.
+- Logs: `~/Documents/esbvaktin-backups/backup-healthcheck.log`.
 
 ---
 
@@ -212,7 +201,7 @@ uv run python scripts/manage_inbox.py status    # Inbox state
 
 ## Notes
 
-- Plist content is in this file — create them manually at `~/Library/LaunchAgents/` on a new machine.
+- Backup plists are committed templates in `deploy/launchd/` — `cp` them to `~/Library/LaunchAgents/` and `launchctl load`. The linkcheck plist content is inline above; create it manually.
 - Backup dir `~/Documents/esbvaktin-backups/` is created automatically on first `backup_db.sh` run.
 - `data/analyses/`, `data/reassessment/`, `data/inbox/` are gitignored — restore from backup if needed.
 - Inbox (`data/inbox/inbox.json`) is backed up daily alongside the DB dump.
