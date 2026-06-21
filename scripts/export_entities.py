@@ -530,9 +530,11 @@ def _resolve_attributions(speaker: dict) -> list[dict]:
     """
     attributions = speaker.get("attributions", [])
     if attributions:
+        # claim_index may be absent or null for 'mentioned'-only attributions
+        # (entity referenced, makes no specific claim) — normalise to None.
         return [
             {
-                "claim_index": a["claim_index"],
+                "claim_index": a.get("claim_index"),
                 "attribution": a.get("attribution", "asserted"),
             }
             for a in attributions
@@ -620,7 +622,9 @@ def _merge_entity(
         if attr_type in entity["_attribution_counts"]:
             entity["_attribution_counts"][attr_type] += 1
 
-        if 0 <= idx < len(claim_data):
+        # idx is None for 'mentioned'-only attributions with no claim — skip
+        # claim linkage but keep the article mention and attribution count above.
+        if idx is not None and 0 <= idx < len(claim_data):
             cd = claim_data[idx]
             # Only link claims for active attributions (not 'mentioned')
             if attr_type not in _ACTIVE_ATTRIBUTIONS:

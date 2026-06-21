@@ -355,7 +355,12 @@ def register_entity_observations(
         attributions = speaker.get("attributions", [])
         if attributions and isinstance(attributions[0], dict):
             attr_types = list({a.get("attribution", "asserted") for a in attributions})
-            claim_indices = [a.get("claim_index") for a in attributions if "claim_index" in a]
+            # A 'mentioned'-only attribution may carry claim_index=null (entity
+            # referenced, makes no specific claim) — keep only real indices so
+            # EntityObservation.claim_indices (list[int]) still validates.
+            claim_indices = [
+                a["claim_index"] for a in attributions if a.get("claim_index") is not None
+            ]
         else:
             # Legacy format: claim_indices list, defaults to ["asserted"]
             attr_types = ["asserted"]

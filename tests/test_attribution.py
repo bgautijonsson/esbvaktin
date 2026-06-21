@@ -1,6 +1,7 @@
 """Tests for the attribution-type system (Speaker, ClaimAttribution, export logic)."""
 
 import json
+
 import pytest
 from pydantic import ValidationError
 
@@ -12,7 +13,6 @@ from esbvaktin.pipeline.models import (
     Speaker,
     Stance,
 )
-
 
 # ── Model tests ───────────────────────────────────────────────────────
 
@@ -209,6 +209,35 @@ class TestResolveAttributionsDict:
         speaker = {"name": "Test"}
         assert _resolve_attributions(speaker) == []
 
+    def test_mentioned_null_claim_index(self):
+        """A 'mentioned' attribution may carry a null claim_index (entity referenced
+        but making no specific claim). It must resolve to claim_index=None, not crash."""
+        from scripts.export_entities import _resolve_attributions
+
+        speaker = {
+            "name": "Heimssýn",
+            "attributions": [
+                {"claim_index": None, "attribution": "mentioned"},
+            ],
+        }
+        assert _resolve_attributions(speaker) == [
+            {"claim_index": None, "attribution": "mentioned"},
+        ]
+
+    def test_mentioned_missing_claim_index_key(self):
+        """An attribution dict may omit claim_index entirely; resolve to None, not KeyError."""
+        from scripts.export_entities import _resolve_attributions
+
+        speaker = {
+            "name": "Heimssýn",
+            "attributions": [
+                {"attribution": "mentioned"},
+            ],
+        }
+        assert _resolve_attributions(speaker) == [
+            {"claim_index": None, "attribution": "mentioned"},
+        ]
+
 
 class TestMergeEntityAttributionCounts:
     """Test that _merge_entity correctly tracks attribution counts."""
@@ -282,6 +311,31 @@ class TestMergeEntityAttributionCounts:
         entity = entities["active-speaker"]
         # Only asserted + quoted should be in _verdicts
         assert entity["_verdicts"] == ["supported", "unsupported"]
+
+    def test_mentioned_null_claim_index_registers_without_claim(self):
+        """A 'mentioned'-only speaker with a null claim_index (referenced but making
+        no claim) must still register its article mention, not crash on the index guard."""
+        from scripts.export_entities import _merge_entity
+
+        entities: dict[str, dict] = {}
+        speaker = {
+            "name": "Heimssýn",
+            "type": "institution",
+            "stance": "neutral",
+            "attributions": [
+                {"claim_index": None, "attribution": "mentioned"},
+            ],
+        }
+        claim_data = [{"slug": "c-0", "verdict": "supported"}]
+        _merge_entity(entities, speaker, "article-1", claim_data)
+        entity = entities["heimssyn"]
+        # Article mention preserved, but no claim linkage and no verdicts counted
+        assert entity["articles"] == ["article-1"]
+        assert entity["mention_count"] == 1
+        assert entity["claims"] == []
+        assert entity["_verdicts"] == []
+        # The 'mentioned' attribution is still counted
+        assert entity["_attribution_counts"]["mentioned"] == 1
 
 
 # ── prepare_site.py speaker resolution tests ──────────────────────────
